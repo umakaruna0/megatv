@@ -20,97 +20,16 @@ IncludeTemplateLangFile(__FILE__);
         $APPLICATION->SetAdditionalCSS(SITE_TEMPLATE_PATH.'/css/main.css');
         $APPLICATION->ShowHeadStrings();
     	$APPLICATION->ShowHeadScripts();
+        
+        global $USER;
+        session_start();
         ?>
 		<title><?$APPLICATION->ShowTitle()?></title>
 	</head>
 	<body>
         <div id="panel"><?$APPLICATION->ShowPanel();?></div>
         
-		<div class="modal fade" id="auth-screens">
-			<div class="modal-dialog">
-				<div class="modal-content">
-					<ul class="modal-nav">
-						<li class="active"><a href="#singin-form" data-toggle="tab">Войти</a></li>
-						<li><a href="#singup-form" data-toggle="tab">Регистрация</a></li>
-						<li><a href="#reset-form" data-toggle="tab">Восстановить пароль</a></li>
-					</ul>
-					<div class="tab-content">
-						<div role="tabpanel" class="tab-pane fade in active" id="singin-form">
-							<div class="modal-form-wrap signin-form-wrap">
-								<a href="#" class="close-link" data-dismiss="modal"><span data-icon="icon-times"></span></a>
-								<form action="#" class="signin-form">
-									<div class="form-group">
-										<label for="" class="sr-only">Эл. почта</label>
-										<input type="text" name="" id="" class="form-control" placeholder="Эл. почта">
-									</div>
-									<div class="form-group">
-										<label for="" class="sr-only">Пароль</label>
-										<input type="text" name="" id="" class="form-control" placeholder="Пароль">
-									</div>
-									<span class="divider"><span>или</span></span>
-									<ul class="social-singin-list">
-										<li><a href="#"><span data-icon="icon-ya-social"></span></a></li>
-										<li><a href="#"><span data-icon="icon-ok-social"></span></a></li>
-										<li><a href="#"><span data-icon="icon-gp-social"></span></a></li>
-										<li><a href="#"><span data-icon="icon-in-social"></span></a></li>
-										<li><a href="#"><span data-icon="icon-vk-social"></span></a></li>
-										<li><a href="#"><span data-icon="icon-tw-social"></span></a></li>
-										<li><a href="#"><span data-icon="icon-im-social"></span></a></li>
-										<li><a href="#"><span data-icon="icon-fb-social"></span></a></li>
-									</ul>
-									<button type="submit" class="btn btn-primary btn-block">Войти</button>
-								</form>
-							</div>
-						</div>
-						<div role="tabpanel" class="tab-pane fade" id="singup-form">
-							<div class="modal-form-wrap singup-userdata-form-wrap">
-								<a href="#" class="close-link" data-dismiss="modal"><span data-icon="icon-times"></span></a>
-								<form action="#" class="singup-userdata-form">
-									<label for="">Введите ваши данные и мы вышлем<br> вам пароль на электронную почту</label>
-									<div class="form-group">
-										<input type="text" name="" id="" class="form-control" placeholder="Имя">
-									</div>
-									<div class="form-group">
-										<label for="" class="sr-only">Фамилия</label>
-										<input type="text" name="" id="" class="form-control" placeholder="Фамилия">
-									</div>
-									<div class="form-group">
-										<label for="" class="sr-only">Отчество</label>
-										<input type="text" name="" id="" class="form-control" placeholder="Отчество">
-									</div>
-									<div class="form-group has-feedback">
-										<label for="" class="sr-only">Дата рождения</label>
-										<input type="text" name="" id="" class="form-control" placeholder="Дата рождения">
-										<span class="form-control-feedback"><span data-icon="icon-calendar"></span></span>
-									</div>
-									<div class="form-group has-error">
-										<label for="" class="sr-only">Эл. почта</label>
-										<input type="text" name="" id="" class="form-control" placeholder="Эл. почта" value="rom$yandex.ru">
-										<span class="form-control-message">Не верный формат данных</span>
-									</div>
-									<div class="checkbox">
-										<label for="_id-singup-userdata-form--chackbox"><input type="checkbox" name="singup-userdata-form--chackbox" id="_id-singup-userdata-form--chackbox"><span>Я принимаю условия <a href="#">договора оферты</a></span></label>
-									</div>
-									<button type="submit" class="btn btn-primary btn-block">Зарегистрироваться</button>
-								</form>
-							</div>
-						</div>
-						<div role="tabpanel" class="tab-pane fade" id="reset-form">
-							<div class="modal-form-wrap reset-form-wrap">
-								<a href="#" class="close-link" data-dismiss="modal"><span data-icon="icon-times"></span></a>
-								<form action="#" class="reset-form">
-									<div class="form-group">
-										<label for="" class="sr-only">Эл. почта</label>
-										<input type="text" name="" id="" class="form-control" placeholder="Эл. почта">
-									</div>
-									<button type="submit" class="btn btn-primary btn-block">Восстановить пароль</button>
-								</form>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div><!-- /.modal-dialog -->
-		</div><!-- /.modal -->
+        <?$APPLICATION->IncludeComponent("bitrix:main.include", "", array("AREA_FILE_SHOW" => "file", "PATH" => SITE_DIR."include/header-signin.php"), false);?>
         
 		<div class="site-wrapper" data-module="page">
 			<script type="text/x-config">{ "bannersHideTime": 1 }</script> <!-- конфиг для модуля page -->
@@ -131,19 +50,77 @@ IncludeTemplateLangFile(__FILE__);
 				</div>
 				<div class="top-panel">
 					<span class="logo"></span>
-					<div class="city-select" data-module="city-select">
-						<select name="city-select" id="_id-city-select">
-							<option value="0">Москва</option>
-							<option value="1" selected>Санкт-Петербург</option>
-							<option value="2">Томск</option>
-							<option value="3">Омск</option>
-							<option value="4">Ноябрьск</option>
-						</select>
-					</div>
+                    
+                    <?$APPLICATION->IncludeComponent(
+                    	"bitrix:news.list",
+                    	"cities",
+                    	Array(
+                    		"DISPLAY_DATE" => "Y",
+                    		"DISPLAY_NAME" => "Y",
+                    		"DISPLAY_PICTURE" => "Y",
+                    		"DISPLAY_PREVIEW_TEXT" => "Y",
+                    		"AJAX_MODE" => "N",
+                    		"IBLOCK_TYPE" => "directories",
+                    		"IBLOCK_ID" => "5",
+                    		"NEWS_COUNT" => "100",
+                    		"SORT_BY1" => "SORT",
+                    		"SORT_ORDER1" => "ASC",
+                    		"SORT_BY2" => "NAME",
+                    		"SORT_ORDER2" => "ASC",
+                    		"FILTER_NAME" => "",
+                    		"FIELD_CODE" => array("NAME"),
+                    		"PROPERTY_CODE" => array(),
+                    		"CHECK_DATES" => "Y",
+                    		"DETAIL_URL" => "",
+                    		"PREVIEW_TRUNCATE_LEN" => "",
+                    		"ACTIVE_DATE_FORMAT" => "d.m.Y",
+                    		"SET_TITLE" => "Y",
+                    		"SET_BROWSER_TITLE" => "Y",
+                    		"SET_META_KEYWORDS" => "Y",
+                    		"SET_META_DESCRIPTION" => "Y",
+                    		"SET_STATUS_404" => "N",
+                    		"INCLUDE_IBLOCK_INTO_CHAIN" => "Y",
+                    		"ADD_SECTIONS_CHAIN" => "Y",
+                    		"HIDE_LINK_WHEN_NO_DETAIL" => "N",
+                    		"PARENT_SECTION" => "",
+                    		"PARENT_SECTION_CODE" => "",
+                    		"INCLUDE_SUBSECTIONS" => "Y",
+                    		"CACHE_TYPE" => "A",
+                    		"CACHE_TIME" => "36000000",
+                    		"CACHE_FILTER" => "N",
+                    		"CACHE_GROUPS" => "Y",
+                    		"PAGER_TEMPLATE" => "",
+                    		"DISPLAY_TOP_PAGER" => "N",
+                    		"DISPLAY_BOTTOM_PAGER" => "Y",
+                    		"PAGER_TITLE" => "Новости",
+                    		"PAGER_SHOW_ALWAYS" => "N",
+                    		"PAGER_DESC_NUMBERING" => "N",
+                    		"PAGER_DESC_NUMBERING_CACHE_TIME" => "36000",
+                    		"PAGER_SHOW_ALL" => "N",
+                    		"AJAX_OPTION_JUMP" => "N",
+                    		"AJAX_OPTION_STYLE" => "Y",
+                    		"AJAX_OPTION_HISTORY" => "N",
+                            "CITY_GEO" => \Olegpro\IpGeoBase\IpGeoBase::getInstance()->getRecord()
+                    	),
+                    false
+                    );?>
+                    
 					<nav class="header-nav">
 						<ul class="user-actions">
-							<li><a href="#" class="signin-link" data-type="auth-screens-trigger" data-target="#singin-form">Войти</a></li>
-							<li><a href="#" class="signup-link" data-type="auth-screens-trigger" data-target="#singup-form">Зарегистрироваться</a></li>
+                            <?
+                            if($USER->IsAuthorized())
+                            {
+                                ?>
+                                <li><a href="<?=$APPLICATION->GetCurDir()?>?logout=yes" class="signin-link">Выйти</a></li>
+                                <?
+                            }else{
+                                ?>
+                                <li><a href="#" class="signin-link" data-type="auth-screens-trigger" data-target="#singin-form">Войти</a></li>
+                                <li><a href="#" class="signup-link" data-type="auth-screens-trigger" data-target="#singup-form">Зарегистрироваться</a></li>
+                                <?
+                            }
+                            ?>
+							
 						</ul>
 					</nav>
 				</div>
