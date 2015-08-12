@@ -54,7 +54,7 @@ class CProg
         {
             $arLoadProductArray["NAME"] = trim($arLoadProductArray["NAME"]." (".$PROP["SUB_TITLE"]).")";
         }
-        echo "<pre>"; print_r($arLoadProductArray); echo "</pre>";
+        //echo "<pre>"; print_r($arLoadProductArray); echo "</pre>";
         $prog_id = $el->Add($arLoadProductArray);
         if($prog_id)
         {
