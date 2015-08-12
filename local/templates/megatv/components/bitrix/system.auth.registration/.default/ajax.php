@@ -29,8 +29,8 @@ if(!$USER->IsAuthorized() && count($result['errors'])==0)
     $SECOND_NAME = htmlspecialcharsbx(strip_tags($_POST["USER_SECOND_NAME"]));
     $BIRTHDAY = htmlspecialcharsbx(strip_tags($_POST["USER_PERSONAL_BIRTHDAY"]));
     $EMAIL = htmlspecialcharsbx(strip_tags($_POST["USER_EMAIL"]));
-    $PASS_1 = htmlspecialcharsbx(strip_tags($_POST["USER_PASSWORD"]));
-    $PASS_2 = htmlspecialcharsbx(strip_tags($_POST["USER_CONFIRM_PASSWORD"]));
+    //$PASS_1 = htmlspecialcharsbx(strip_tags($_POST["USER_PASSWORD"]));
+    //$PASS_2 = htmlspecialcharsbx(strip_tags($_POST["USER_CONFIRM_PASSWORD"]));
     $AGREE = htmlspecialcharsbx(strip_tags($_POST["AGREE"]));
     
     if(!check_email($EMAIL))
@@ -54,15 +54,16 @@ if(!$USER->IsAuthorized() && count($result['errors'])==0)
         $result['errors']["USER_PERSONAL_BIRTHDAY"] = "Не верный формат данных";
     }
 
-    if(strlen($PASS_1)<6 || strlen($PASS_2)<6)
+    /*if(strlen($PASS_1)<6 || strlen($PASS_2)<6)
     {
         $result['errors']["USER_PASSWORD"] = $result['errors']["USER_CONFIRM_PASSWORD"] = "Длина пароля должна быть не менее 6 символов!";
     }
 
-    if($password!=$password2)
+    if($PASS_1!=$PASS_2)
     {
         $result['errors']["USER_PASSWORD"] = $result['errors']["USER_CONFIRM_PASSWORD"] ="Пароли не совпадают!<br />";
-    }
+    }*/
+    
     
     if($AGREE!="on")
     {
@@ -77,6 +78,8 @@ if(!$USER->IsAuthorized() && count($result['errors'])==0)
         $default_group = COption::GetOptionString("main", "new_user_registration_def_group");
         if(!empty($default_group))
             $arrGroups = explode(",", $default_group);
+        
+        $PASS_1 = mb_substr(md5(uniqid(rand(),true)), 0, 8);
         
         $user = new CUser;
         $arFields = Array(

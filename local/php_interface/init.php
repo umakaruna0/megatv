@@ -1,10 +1,20 @@
 <?
+//Константы
+define("FULL_PATH_DOCUMENT_ROOT", "Z:/home/megatv/www"); //изменить на сервере
+define("CHANNEL_IB", 6);    //ид каналов
+define("PROG_IB", 7);   //ид программ
+
 // Классы
-$sClassesPath = BX_PERSONAL_ROOT.'/php_interface/classes/';
+$sClassesPath = '/local/php_interface/classes/';
 CModule::AddAutoloadClasses(
 	'',
 	array(
-		'CDev' => $sClassesPath.'CDev.php',
+        '\CCacheEx' => $sClassesPath.'CCacheEx.php',
+        '\CXmlEx' => $sClassesPath.'CXmlEx.php',
+		'\CDev' => $sClassesPath.'CDev.php',
+        '\CChannel' => $sClassesPath.'CChannel.php',
+        '\CProg' => $sClassesPath.'CProg.php',
+        '\CEpg' => $sClassesPath.'CEpg.php',
 	)
 );
 

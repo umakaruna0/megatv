@@ -20,8 +20,7 @@
 
 //if(method_exists($this, 'setFrameMode')) $this->setFrameMode(TRUE);
 ?>
-<div class="modal-form-wrap singup-userdata-form-wrap">
-    <a href="#" class="close-link" data-dismiss="modal"><span data-icon="icon-times"></span></a>
+
     <form action="<?= $templateFolder ?>/ajax.php"  method="post" class="singup-userdata-form" id="register-form">
         <?if (strlen($arResult["BACKURL"]) > 0):?>
 			<input type="hidden" name="backurl" value="<?= $arResult["BACKURL"] ?>"/>
@@ -54,14 +53,14 @@
     		<label for="" class="sr-only">Эл. почта</label>
     		<input type="text" name="USER_EMAIL" id="" class="form-control" placeholder="Эл. почта" value="<?=$arResult["USER_EMAIL"]?>">
     	</div>
-        <div class="form-group">
+        <?/*<div class="form-group">
     		<label for="" class="sr-only">Пароль (мин. 6 символа)</label>
     		<input type="password" name="USER_PASSWORD" class="form-control" placeholder="Пароль">
     	</div>
     	<div class="form-group">
     		<label for="" class="sr-only">Подтверждение пароля</label>
     		<input type="password" name="USER_CONFIRM_PASSWORD" class="form-control" placeholder="Подтверждение пароля">
-    	</div>
+    	</div>*/?>
     	<div class="checkbox">
     		<label for="_id-singup-userdata-form--chackbox">
                 <input type="checkbox" name="AGREE" id="_id-singup-userdata-form--chackbox">
@@ -70,7 +69,7 @@
     	</div>
     	<button type="submit" name="Register" class="btn btn-primary btn-block">Зарегистрироваться</button>
     </form>
-</div>
+
 
 
 

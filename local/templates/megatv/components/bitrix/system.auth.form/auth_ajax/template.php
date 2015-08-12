@@ -32,8 +32,6 @@ if ($arResult["FORM_TYPE"] != "login")
 else 
 {    
     ?> 
-    <div class="modal-form-wrap signin-form-wrap">
-	<a href="#" class="close-link" data-dismiss="modal"><span data-icon="icon-times"></span></a>
     <form action="<?=$arResult["AUTH_URL"]?>" method="POST" target="_top" id="login-form" class="signin-form" data-redirect="<?=$arParams["PROFILE_URL"]?>">
     	<input type="hidden" name="AUTH_FORM" value="Y" />
     	<input type="hidden" name="TYPE" value="AUTH" />
@@ -62,11 +60,7 @@ else
 		</ul>*/?>
 		<button type="submit" name="Login" class="btn btn-primary btn-block">Войти</button>
 	</form>
-</div>
-    
-    
 
-    
     <?/*
     <span class="view_form open_form">Личный кабинет</span>
     <div class="form_holder">
