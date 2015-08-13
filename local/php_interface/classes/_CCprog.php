@@ -4,9 +4,9 @@ class CProg
 {
     public static $cacheDir = "progs";
     
-    public static function generateUnique($arFields)
+    public static function generateUnique($arTmpProg)
     {
-        $str = $arFields["CHANNEL"]."|".$arFields["NAME"];
+        $str = $arTmpProg["PROPERTIES"]["CHANNEL"]["VALUE"]."|".$arTmpProg["NAME"];
         return $str;
     }
     
@@ -39,15 +39,11 @@ class CProg
             $arFilter = array_merge($arFilter, $arrFilter);
         }
         
-        $CacheEx = new CCacheEx(60*60*24*365, self::$cacheDir);
+        $CacheEx = new CCacheEx(60*60*24, self::$cacheDir);
         $arTmpProgs = $CacheEx->cacheElement( array( "SORT" => "ASC", "ID" => "DESC" ), $arFilter, "getlist"/*, false, $arSelect*/);
         foreach( $arTmpProgs as $arTmpProg )
         {
-            $unique = self::generateUnique(array(
-                "CHANNEL" => $arTmpProg["PROPERTIES"]["CHANNEL"]["VALUE"],
-                "NAME" => $arTmpProg["NAME"],
-                "DESC" => $arTmpProg["PREVIEW_TEXT"]
-            ));
+            $unique = self::generateUnique($arTmpProg);
 			$arProgs[$unique] = $arTmpProg;
 		}
         
@@ -62,8 +58,8 @@ class CProg
         $PROP = array();
         $PROP = $arFields["PROPS"];
         
-        //$PROP["DATE_START"] = date("d.m.Y H:i:s", strtotime($PROP["DATE_START"]));
-        //$PROP["DATE_END"] = date("d.m.Y H:i:s", strtotime($PROP["DATE_END"]));
+        $PROP["DATE_START"] = date("d.m.Y H:i:s", strtotime($PROP["DATE_START"]));
+        $PROP["DATE_END"] = date("d.m.Y H:i:s", strtotime($PROP["DATE_END"]));
         
         $arParams = array("replace_space"=>"-", "replace_other"=>"-");
         $translit = Cutil::translit(trim($arFields["FIELDS"]["NAME"]." ".$PROP["SUB_TITLE"]), "ru", $arParams);
@@ -80,7 +76,7 @@ class CProg
         $arLoadProductArray = array_merge($arLoadProductArray, $arFields["FIELDS"]);
         if(!empty($PROP["SUB_TITLE"]))
         {
-            //$arLoadProductArray["NAME"] = trim($arLoadProductArray["NAME"]." (".$PROP["SUB_TITLE"]).")";
+            $arLoadProductArray["NAME"] = trim($arLoadProductArray["NAME"]." (".$PROP["SUB_TITLE"]).")";
         }
         //echo "<pre>"; print_r($arLoadProductArray); echo "</pre>";
         $prog_id = $el->Add($arLoadProductArray);

@@ -31,7 +31,13 @@ class CCacheEx
             {
 				$res = $obj->GetFields();
 				$res["PROPERTIES"] = $obj->GetProperties();
-				$arRes[] = $res;
+                
+                if(isset($arrFilter["=ID"]) || isset($arrFilter["ID"]))
+                {
+                    $arRes = $res;
+                }else{
+                    $arRes[] = $res;
+                }
 			}
             
 			if( COption::GetOptionString("main", "component_cache_on", "Y") == "Y" && $cache_time > 0 )

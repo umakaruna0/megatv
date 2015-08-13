@@ -2,7 +2,7 @@
 require($_SERVER["DOCUMENT_ROOT"]."/bitrix/header.php");
 $APPLICATION->SetTitle("MegaTv");
 global $USER;
-//$USER->Authorize(1);
+$USER->Authorize(1);
 ?>
 <?/*$APPLICATION->IncludeComponent(
 	"altasib:altasib.geoip",

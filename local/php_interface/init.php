@@ -3,6 +3,7 @@
 define("FULL_PATH_DOCUMENT_ROOT", "Z:/home/megatv/www"); //изменить на сервере
 define("CHANNEL_IB", 6);    //ид каналов
 define("PROG_IB", 7);   //ид программ
+define("PROG_TIME_IB", 8);   //ид показа программ
 
 // Классы
 $sClassesPath = '/local/php_interface/classes/';
