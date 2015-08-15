@@ -53,6 +53,15 @@ Class conversion extends CModule
 			Option::set('conversion', 'START_DATE_TIME', date('Y-m-d H:i:s'));
 		}
 
+		if (ModuleManager::isModuleInstalled('sale') && ($currency = Option::get('sale', 'default_currency')))
+		{
+			Option::set('conversion', 'BASE_CURRENCY', $currency);
+		}
+		elseif (Bitrix\Main\Loader::includeModule('currency'))
+		{
+			Option::set('conversion', 'BASE_CURRENCY', Bitrix\Currency\CurrencyManager::getBaseCurrency());
+		}
+
 		return true;
 	}
 

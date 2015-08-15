@@ -5,23 +5,23 @@ class CChannel
 {
     public static $cacheDir = "channels";
         
-    public static function getList($arrFilter = false)
+    public static function getList($arrFilter=false, $arSelect = array())
     {
         CModule::IncludeModule("iblock");
         $arChannels = array();
-        $arSelect = Array("ID", "NAME", "PREVIEW_PICTURE", "PROPERTY_*");
-        $arFilter = array("IBLOCK_ID" => CHANNEL_IB, "ACTIVE" => "Y");
         
+        if(empty($arSelect))
+            $arSelect = Array("ID", "NAME", "PREVIEW_PICTURE");
+            
+        $arFilter = array("IBLOCK_ID" => CHANNEL_IB, "ACTIVE" => "Y");
         if($arrFilter)
-        {
             $arFilter = array_merge($arFilter, $arrFilter);
-        }
         
         $CacheEx = new CCacheEx(60*60*24, self::$cacheDir);
-        $arTmpChannels = $CacheEx->cacheElement( array( "SORT" => "ASC", "ID" => "DESC" ), $arFilter, "getlist"/*, false, $arSelect*/);
+        $arTmpChannels = $CacheEx->cacheElement( array( "SORT" => "ASC", "NAME" => "ASC" ), $arFilter, "getlist", false, $arSelect);
         foreach( $arTmpChannels as $arTmpChannel )
         {
-			$arChannels[$arTmpChannel["PROPERTIES"]["EPG_ID"]["VALUE"]] = $arTmpChannel;
+			$arChannels[$arTmpChannel["PROPERTY_EPG_ID_VALUE"]] = $arTmpChannel;
 		}
         
         return $arChannels;
@@ -43,7 +43,7 @@ class CChannel
         $PROP["EPG_ID"] = $arFields["EPG_ID"];
         
         $arParams = array("replace_space"=>"-", "replace_other"=>"-");
-        $translit = Cutil::translit(trim($arFields["NAME"]), "ru", $arParams);
+        $translit = CDev::translit(trim($arFields["NAME"]), "ru", $arParams);
         
         $arLoadProductArray = Array(
             "IBLOCK_SECTION_ID" => false,

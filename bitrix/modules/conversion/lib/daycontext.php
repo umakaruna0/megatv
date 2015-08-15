@@ -6,7 +6,6 @@ use Bitrix\Main\SiteTable;
 use Bitrix\Main\EventManager;
 use Bitrix\Main\Web\Json;
 use Bitrix\Main\Type\Date;
-use Bitrix\Main\Page\Asset;
 use Bitrix\Main\ArgumentException;
 use Bitrix\Main\ArgumentTypeException;
 
@@ -166,36 +165,17 @@ final class DayContext extends Internals\BaseContext
 					}
 				}
 
-				// validate cookie
-
+				// check if cookie is valid
 				if (   is_array($cookie)
 					&& is_array($cookie['UNIQUE'])
 					&& $cookie['EXPIRE'] === $expire
 					&& ($id = $cookie['ID']) !== null
-					&& is_int($id) //preg_match('/^[0-9]+$/', $id)
+					&& is_int($id)
 					&& ($id === self::EMPTY_CONTEXT_ID || Internals\ContextTable::getByPrimary($id)->fetch())
 				)
 				{
-					// 1. valid cookie
 					$session['ID'    ] = $id;
 					$session['UNIQUE'] = $cookie['UNIQUE'];
-				}
-				else
-				{
-					// 2. invalid cookie
-					Asset::getInstance()->addString('
-					<script type="text/javascript">
-						BX.ajax.post(
-							"/bitrix/tools/conversion/ajax_counter.php",
-							{
-								SITE_ID: BX.message("SITE_ID"),
-								sessid: BX.message("bitrix_sessid"),
-								HTTP_REFERER: "'.\CUtil::JSEscape($_SERVER['HTTP_REFERER']).'"
-							},
-							function () {}
-						);
-					</script>
-					');
 				}
 			}
 
@@ -213,7 +193,7 @@ final class DayContext extends Internals\BaseContext
 
 		//$APPLICATION->set_cookie($varname, $id, strtotime('today 23:59'));
 		setcookie(self::getVarName(), Json::encode(array(
-			'ID'     => $session['ID'    ], // $this->id,
+			'ID'     => $session['ID'    ],
 			'EXPIRE' => $session['EXPIRE'],
 			'UNIQUE' => $session['UNIQUE'],
 		)), strtotime('+1 year'), '/');

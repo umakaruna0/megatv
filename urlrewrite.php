@@ -6,17 +6,17 @@ $arUrlRewrite = array(
 		"ID"	=>	"bitrix:catalog",
 		"PATH"	=>	"/services/index.php",
 	),
-	array(
-		"CONDITION"	=>	"#^/products/#",
-		"RULE"	=>	"",
-		"ID"	=>	"bitrix:catalog",
-		"PATH"	=>	"/products/index.php",
+    array(
+		"CONDITION"	=>	"#^/(date-[0-9]{2}-[0-9]{2}-[0-9]{4})/(.*)#",
+		"RULE"	=>	"DATE_CURRENT_SHOW=\$1",
+		"ID"	=>	"",
+		"PATH"	=>	"/date/index.php",
 	),
-	array(
-		"CONDITION"	=>	"#^/news/#",
-		"RULE"	=>	"",
-		"ID"	=>	"bitrix:news",
-		"PATH"	=>	"/news/index.php",
+    array(
+		"CONDITION"	=>	"#^/(date-[0-9]{2}-[0-9]{2}-[0-9]{4})/#",
+		"RULE"	=>	"DATE_CURRENT_SHOW=\$1",
+		"ID"	=>	"",
+		"PATH"	=>	"/date/index.php",
 	),
 );
 

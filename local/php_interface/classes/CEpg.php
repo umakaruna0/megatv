@@ -25,9 +25,9 @@ class CEpg
         
         if (ftp_get($conn, $this->file , self::$ftpFile, FTP_BINARY)) 
         {
-            echo "Произведена запись в $this->file \n";
+            echo "Downloaded $this->file \r\n<br />";
         } else {
-            echo "Не удалось завершить операцию\n";
+            echo "Error downloaded\r\n<br />";
         }
         
         // закрытие соединения
@@ -39,11 +39,18 @@ class CEpg
         if (file_exists($this->file))
             $xml = simplexml_load_file($this->file);
         
+        $log_file = "/logs/import_".date("d_m_Y_H_i").".txt";
+        
         $epgUrl = CXmlEx::getAttr($xml, "generator-info-url");
         $epgName = CXmlEx::getAttr($xml, "generator-info-name");
         
+        //Расписание, которое нужно удалить
+        $arProgTimeDelete = array();
+        
         //получим все каналы из кэша
-        $arChannels = CChannel::getList();
+        CChannel::updateCache();
+        $arChannels = CChannel::getList(false, array("ID", "PROPERTY_EPG_ID"));
+        
         foreach($xml->channel as $arChannel)
         {
             $id = (string)CXmlEx::getAttr($arChannel, "id");
@@ -62,108 +69,167 @@ class CEpg
                 $newID = CChannel::add($arFields);
                 if(intval($newID)==0)
                 {
-                    echo $newID."<br />";
+                    echo $newID."\r\n<br />";
                 }else{
-                    echo "Добавлен канал  ".$newID."<br />";
+                    echo "Added channel  ".$newID."\r\n<br />";
                 }
             }
         }
         
         //сбросим и обновим кэш после загрузки
         CChannel::updateCache();
-        $arChannels = CChannel::getList();
-        
+        $arChannels = CChannel::getList(false, array("ID", "PROPERTY_EPG_ID"));
+
+        //список программ и время вещания из кэша
+        CProg::updateCache();
+        CProgTime::updateCache();        
+        $arProgs = CProg::getList(false, array("ID", "NAME", "PREVIEW_TEXT", "PROPERTY_CHANNEL"));
+        $arProgTimes = CProgTime::getList(false, array("ID", "PROPERTY_CHANNEL", "PROPERTY_DATE_START"));
+
         foreach($xml->programme as $arProg)
         {
-            $arChannel = $arChannels[(string)CXmlEx::getAttr($arProg, "channel")];
+            $json = json_encode($arProg);
+            $arProg = json_decode($json, TRUE);
+            
+            $arChannel = $arChannels[$arProg["@attributes"]["channel"]];
+            
+            if(intval($arChannel["ID"])==0)
+                continue; 
+            
             $arFields = array(
                 "FIELDS" => array(
-                    "NAME" => (string)$arProg->title,
-                    "PREVIEW_TEXT" => (string)$arProg->desc,
-                    "DETAIL_TEXT" => (string)$arProg->desc,
+                    "NAME" => trim($arProg["title"]),
+                    "PREVIEW_TEXT" => $arProg["desc"],
+                    "DETAIL_TEXT" => $arProg["desc"],
                 ),
                 "PROPS" => array(
-                    "DATE_START" => (string)CXmlEx::getAttr($arProg, "start"),
-                    "DATE_END" => (string)CXmlEx::getAttr($arProg, "stop"),
                     "CHANNEL" => $arChannel["ID"],
-                    "DATE" =>  date("d.m.Y", strtotime((string)$arProg->date)),
-                    "RATING" => (int)$arProg->rating->value,
-                    "YEAR" => (string)$arProg->year
+                    "YEAR_LIMIT" => $arProg["rating"]["value"],
+                    "YEAR" => $arProg["year"]
                 )
             );
             
-            if(isset($arProg->{'episode-num'}))
+            if(isset($arProg["sub-title"]))
             {
-                $arFields["PROPS"]["SERIA"] = intval($arProg->{'episode-num'});
-            }
-            if(isset($arProg->{'season-num'}))
-            {
-                $arFields["PROPS"]["SEASON"] = intval($arProg->{'season-num'});
-            }
-            if(isset($arProg->{'sub-title'}))
-            {
-                $arFields["PROPS"]["SUB_TITLE"] = (string)$arProg->{'sub-title'};
+                $arFields["PROPS"]["SUB_TITLE"] = trim($arProg["sub-title"]);
             }
             
-            $category = (array)$arProg->category;
-            unset($category["@attributes"]);
-            if(count($category)>0)
+            //генерируем идентификатор программы для проверки на существование
+            if(!empty($arFields["PROPS"]["SUB_TITLE"]))
             {
-                $arFields["PROPS"]["CATEGORY"] = implode(", ", $category);
-            }
-            
-            $topic = (array)$arProg->topic;
-            unset($topic["@attributes"]);
-            if(count($topic)>0)
-            {
-                $arFields["PROPS"]["TOPIC"] = implode(", ", $topic);
-            }
-            
-            $country = (array)$arProg->country;
-            unset($country["@attributes"]);
-            if(count($country)>0)
-            {
-                $arFields["PROPS"]["COUNTRY"] = implode(", ", $country);
-            }
-            
-            $director = (array)$arProg->credits->director;
-            unset($director["@attributes"]);
-            if(count($director)>0)
-            {
-                $arFields["PROPS"]["DIRECTOR"] = implode(", ", $director);
-            }
-            
-            $actor = (array)$arProg->credits->actor;
-            unset($actor["@attributes"]);
-            if(count($actor)>0)
-            {
-                $arFields["PROPS"]["ACTOR"] = implode(", ", $actor);
-            }
-            
-            $presenter = (array)$arProg->credits->presenter;
-            unset($presenter["@attributes"]);
-            if(count($presenter)>0)
-            {
-                $arFields["PROPS"]["PRESENTER"] = implode(", ", $presenter);
-            }
-            
-            $newID = CProg::add($arFields);
-            if(intval($newID)==0)
-            {
-                echo $newID."<br />";
+                $progName = $arFields["FIELDS"]["NAME"]." (".$arFields["PROPS"]["SUB_TITLE"].")";
             }else{
-                echo "Добавлена программа ".$newID."<br />";
+                $progName = $arFields["FIELDS"]["NAME"];
             }
+            
+            $unique = CProg::generateUnique(array(
+                "CHANNEL" => intval($arFields["PROPS"]["CHANNEL"]),
+                "NAME" => $progName,
+                "DESC" => $arFields["FIELDS"]["PREVIEW_TEXT"]
+            ));
+            
+            if (!array_key_exists($unique, $arProgs))
+            {
+                if(isset($arProg['episode-num']))
+                {
+                    $arFields["PROPS"]["SERIA"] = intval($arProg['episode-num']);
+                }
+                if(isset($arProg['season-num']))
+                {
+                    $arFields["PROPS"]["SEASON"] = intval($arProg['season-num']);
+                }
+                
+                if(!is_array($arProg["category"]))
+                    $arProg["category"] = array($arProg["category"]);
+                $arFields["PROPS"]["CATEGORY"] = implode(", ", $arProg["category"]);
+                
+                if(!is_array($arProg["topic"]))
+                    $arProg["topic"] = array($arProg["topic"]);
+                $arFields["PROPS"]["TOPIC"] = implode(", ", $arProg["topic"]);
+                
+                if(!is_array($arProg["country"]))
+                    $arProg["country"] = array($arProg["country"]);
+                $arFields["PROPS"]["COUNTRY"] = implode(", ", $arProg["country"]);
 
-            //echo "<pre>"; print_r($arProg); echo "</pre>";
-            //echo "<pre>"; print_r($arFields); echo "</pre>";
-            //die();
+                if(!is_array($arProg["credits"]["director"]))
+                    $arProg["credits"]["director"] = array($arProg["credits"]["director"]);
+                $arFields["PROPS"]["DIRECTOR"] = implode(", ", $arProg["credits"]["director"]);
+                
+                if(!is_array($arProg["credits"]["actor"]))
+                    $arProg["credits"]["actor"] = array($arProg["credits"]["actor"]);
+                $arFields["PROPS"]["ACTOR"] = implode(", ", $arProg["credits"]["actor"]);
+                
+                if(!is_array($arProg["credits"]["presenter"]))
+                    $arProg["credits"]["presenter"] = array($arProg["credits"]["presenter"]);
+                $arFields["PROPS"]["PRESENTER"] = implode(", ", $arProg["credits"]["presenter"]);                
+                
+                $progID = CProg::add($arFields);
+                if(intval($progID)==0)
+                {
+                    CDev::log(array(
+                        "ERROR" => $progID,
+                        "PROG" => $arFields,
+                    ), false, $log_file);
+                    
+                    echo $progID."<br />";
+                }else{
+                    echo "Added prog ".$progID."<br />";
+                    
+                    //Добавляем в массив, чтобы дубляжа при подании одинаковой передачи
+                    $arProgs[$unique] = array(
+                        "ID" => $progID
+                    );
+                }
+            }else{
+                $progID = $arProgs[$unique]["ID"];
+            }
+            
+            //Добавление расписания для программы
+            $dateStart = $arProg["@attributes"]["start"];
+            
+            $uniqueTimeID = CProgTime::generateUnique(array(
+                "CHANNEL" => $arChannel["ID"],
+                "DATE_START" => date("d.m.Y H:i:s", strtotime($dateStart))
+            ));
+            
+            //Если дата меньше сегодняшне - не грузим расписание
+            if( CTimeEx::dateDiff($arProg["date"], CTimeEx::getCurDate()) )
+                continue;
+            
+            if(!isset($arProgTimes[$uniqueTimeID]) && intval($progID)>0)  
+                echo $uniqueTimeID."<br />";
+            
+            if(!isset($arProgTimes[$uniqueTimeID]) && intval($progID)>0)
+            {
+                $arFields = array(
+                    "FIELDS" => array(
+                        "NAME" => $progName,
+                    ),
+                    "PROPS" => array(
+                        "DATE_START" => $dateStart,
+                        "DATE_END" => $arProg["@attributes"]["stop"],
+                        "DATE" =>  date("d.m.Y", strtotime($arProg["date"])),
+                        "CHANNEL" => $arChannel["ID"],
+                        "PROG" => $progID
+                    )
+                );
+                $progTimeID = CProgTime::add($arFields);
+                if(intval($progTimeID)==0)
+                {
+                    CDev::log(array(
+                        "ERROR" => $progTimeID,
+                        "PROG" => $arFields,
+                    ), false, $log_file);
+                    echo $progTimeID."<br />";
+                }else{
+                    $arProgTimes[$uniqueTimeID] = array(
+                        "ID" => $progTimeID
+                    );
+                    echo "Added prog schedule ".$progTimeID."<br />";
+                }
+            }
         }
-    }
-    
-    public static function implode_key($glue = "", $pieces = array())
-    {
-        $keys = array_keys($pieces);
-        return implode($glue, $keys);
+        CProg::updateCache();
+        CProgTime::updateCache();
     }
 }

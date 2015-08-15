@@ -1,8 +1,14 @@
 <?
 //Константы
-define("FULL_PATH_DOCUMENT_ROOT", "Z:/home/megatv/www"); //изменить на сервере
+define("FULL_PATH_DOCUMENT_ROOT", "/home/d/daotel/MEGATV/public_html"); //изменить на сервере
+define("LOG_FILENAME", "/logs/import.txt");
 define("CHANNEL_IB", 6);    //ид каналов
 define("PROG_IB", 7);   //ид программ
+define("PROG_TIME_IB", 8);   //ид показа программ
+define("CITY_IB", 5);
+define("BROADCAT_COLS", 24);
+
+\Bitrix\Main\Loader::includeModule('olegpro.ipgeobase');
 
 // Классы
 $sClassesPath = '/local/php_interface/classes/';
@@ -12,13 +18,14 @@ CModule::AddAutoloadClasses(
         '\CCacheEx' => $sClassesPath.'CCacheEx.php',
         '\CXmlEx' => $sClassesPath.'CXmlEx.php',
 		'\CDev' => $sClassesPath.'CDev.php',
+        '\CCityEx' => $sClassesPath.'CCity.php',
         '\CChannel' => $sClassesPath.'CChannel.php',
         '\CProg' => $sClassesPath.'CProg.php',
+        '\CProgTime' => $sClassesPath.'CProgTime.php',
         '\CEpg' => $sClassesPath.'CEpg.php',
+        '\CTimeEx' => $sClassesPath.'CTimeEx.php',
 	)
 );
-
-\Bitrix\Main\Loader::includeModule('olegpro.ipgeobase');
 
 AddEventHandler("main", 'OnProlog', 'setCurrentSectioCodeBySectionCodePath');
 AddEventHandler('main', 'OnEpilog', '_Check404Error', 1);

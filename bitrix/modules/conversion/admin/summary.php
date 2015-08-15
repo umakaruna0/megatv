@@ -156,7 +156,7 @@ require($_SERVER['DOCUMENT_ROOT'].'/bitrix/modules/conversion/admin/helpers/scal
 
 $APPLICATION->SetTitle(Loc::getMessage('CONVERSION_SUMMARY_TITLE'));
 
-CUtil::initJSCore(array('amcharts', 'amcharts_serial'));
+CJSCore::Init(array('amcharts', 'amcharts_serial'));
 
 function conversion_renderRate(array $rate, array $rateType)
 {

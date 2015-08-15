@@ -30,11 +30,6 @@ $context = Bitrix\Conversion\DayContext::getInstance();
 $context->saveInstance();
 $context->addDayCounter('conversion_visit_day', 1);
 
-//$GLOBALS['APPLICATION']->RestartBuffer();
-//header('Content-Type: application/json');
-//echo '{"contextId":"'.$contextId.'"}';
-//echo json_encode($arResult);
-
 echo 'OK';
 
 require_once $_SERVER['DOCUMENT_ROOT'].'/bitrix/modules/main/include/epilog_after.php';

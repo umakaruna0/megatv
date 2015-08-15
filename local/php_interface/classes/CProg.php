@@ -3,24 +3,65 @@ IncludeModuleLangFile(__FILE__);
 class CProg
 {
     public static $cacheDir = "progs";
+    
+    public static function generateUnique($arFields)
+    {
+        $str = $arFields["CHANNEL"]."-".htmlspecialchars_decode($arFields["NAME"]); //!!!!!!
         
-    public static function getList($arrFilter = false)
+        $arParams = array("replace_space"=>"-", "replace_other"=>"-");
+        $str = CDev::translit($str, "ru", $arParams);
+        
+        return $str;
+    }
+    
+    public static function getByID($ID, $arSelect = false)
+    {
+        CModule::IncludeModule("iblock");
+        
+        if(!$ID)
+            return false;
+        
+        if(empty($arSelect))
+            $arSelect = Array("ID", "NAME", "PROPERTY_CHANNEL");
+        
+        $arProgs = array();
+        $arFilter = array("IBLOCK_ID" => PROG_IB, "ACTIVE" => "Y", "=ID" => $ID);
+        
+        $CacheEx = new CCacheEx(60*60*24*365, self::$cacheDir);
+        $arProg = $CacheEx->cacheElement( array( "SORT" => "ASC", "ID" => "DESC" ), $arFilter, "getlist", false, $arSelect);
+        
+        return $arProg;
+    }
+    
+    public static function getList($arrFilter=false, $arSelect = array())
     {
         CModule::IncludeModule("iblock");
         $arProgs = array();
-        $arSelect = Array("ID", "NAME", "PROPERTY_*");
+        
+        if(empty($arSelect))
+            $arSelect = Array("ID", "NAME", "PREVIEW_TEXT", "PROPERTY_CHANNEL");
+            
         $arFilter = array("IBLOCK_ID" => PROG_IB, "ACTIVE" => "Y");
-        
         if($arrFilter)
-        {
             $arFilter = array_merge($arFilter, $arrFilter);
-        }
         
-        $CacheEx = new CCacheEx(60*60*24, self::$cacheDir);
-        $arTmpChannels = $CacheEx->cacheElement( array( "SORT" => "ASC", "ID" => "DESC" ), $arFilter, "getlist"/*, false, $arSelect*/);
-        foreach( $arTmpChannels as $arTmpChannel )
+        $CacheEx = new CCacheEx(60*60*24*365, self::$cacheDir);
+        $arTmpProgs = $CacheEx->cacheElement( array( "SORT" => "ASC", "ID" => "DESC" ), $arFilter, "getlist", false, $arSelect);
+        foreach( $arTmpProgs as $arTmpProg )
         {
-			$arProgs[] = $arTmpChannel;
+            $unique = self::generateUnique(array(
+                "CHANNEL" => $arTmpProg["PROPERTY_CHANNEL_VALUE"],
+                "NAME" => $arTmpProg["NAME"],
+                "DESC" => $arTmpProg["PREVIEW_TEXT"]
+            ));
+            
+            //Для множественного свойства
+            /*if(isset($arProgs[$unique]))
+            {
+                $arTmpProg = array_merge_recursive($arProgs[$unique], $arTmpProg);
+            }*/
+            
+			$arProgs[$unique] = $arTmpProg;
 		}
         
         return $arProgs;
@@ -34,27 +75,20 @@ class CProg
         $PROP = array();
         $PROP = $arFields["PROPS"];
         
-        $PROP["DATE_START"] = date("d.m.Y H:i:s", strtotime($PROP["DATE_START"]));
-        $PROP["DATE_END"] = date("d.m.Y H:i:s", strtotime($PROP["DATE_END"]));
-        
-        $arParams = array("replace_space"=>"-", "replace_other"=>"-");
-        $translit = Cutil::translit(trim($arFields["FIELDS"]["NAME"]." ".$PROP["SUB_TITLE"]), "ru", $arParams);
-        
         $arLoadProductArray = Array(
             "IBLOCK_SECTION_ID" => false,
             "IBLOCK_ID"      => PROG_IB,
             "PROPERTY_VALUES"=> $PROP,
             "NAME"           => $arFields["FIELDS"]["NAME"],
-            "CODE"           => $translit,   
             "ACTIVE"         => "Y",
         );
         
         $arLoadProductArray = array_merge($arLoadProductArray, $arFields["FIELDS"]);
         if(!empty($PROP["SUB_TITLE"]))
         {
-            $arLoadProductArray["NAME"] = trim($arLoadProductArray["NAME"]." (".$PROP["SUB_TITLE"]).")";
+            $arLoadProductArray["NAME"] = $arLoadProductArray["NAME"]." (".$PROP["SUB_TITLE"].")";
         }
-        //echo "<pre>"; print_r($arLoadProductArray); echo "</pre>";
+        
         $prog_id = $el->Add($arLoadProductArray);
         if($prog_id)
         {

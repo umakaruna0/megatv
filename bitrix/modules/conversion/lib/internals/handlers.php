@@ -4,6 +4,9 @@ namespace Bitrix\Conversion\Internals;
 
 use Bitrix\Conversion\DayContext;
 use Bitrix\Main\SiteTable;
+use Bitrix\Main\Page\Asset;
+use Bitrix\Main\Page\AssetMode;
+use Bitrix\Main\Page\AssetLocation;
 use Bitrix\Main\Localization\Loc;
 
 Loc::loadMessages(__FILE__);
@@ -285,6 +288,45 @@ final class Handlers
 
 	static public function onProlog()
 	{
-		DayContext::getInstance();
+		static $done = false;
+		if (! $done)
+		{
+			$done = true;
+
+			DayContext::getInstance();
+
+			// For composite site this script must not be changing often!!!
+			Asset::getInstance()->addString(
+				'<script type="text/javascript">
+					(function () {
+						"use strict";
+
+						var cookie = (function (name) {
+							var parts = ("; " + document.cookie).split("; " + name + "=");
+							if (parts.length == 2) {
+								try {return JSON.parse(decodeURIComponent(parts.pop().split(";").shift()));}
+								catch (e) {}
+							}
+						})("'.DayContext::getVarName().'");
+
+						if (! cookie || cookie.EXPIRE < BX.message("SERVER_TIME"))
+						{
+							var request = new XMLHttpRequest();
+							request.open("POST", "/bitrix/tools/conversion/ajax_counter.php", true);
+							request.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+							request.send(
+								"SITE_ID="      + encodeURIComponent(BX.message("SITE_ID"))       + "&" +
+								"sessid="       + encodeURIComponent(BX.message("bitrix_sessid")) + "&" +
+								"HTTP_REFERER=" + encodeURIComponent(document.referrer)
+							);
+						}
+
+					})();
+				</script>',
+				false,
+				AssetLocation::AFTER_JS_KERNEL,
+				AssetMode::STANDARD
+			);
+		}
 	}
 }

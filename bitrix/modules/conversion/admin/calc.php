@@ -10,7 +10,6 @@ use Bitrix\Main\Loader;
 use Bitrix\Main\SiteTable;
 use Bitrix\Main\Web\Json;
 use Bitrix\Main\Type\Date;
-use Bitrix\Main\Page\Asset;
 use Bitrix\Main\Localization\Loc;
 
 Loc::loadMessages(__FILE__);
@@ -144,13 +143,7 @@ require($_SERVER['DOCUMENT_ROOT'].'/bitrix/modules/conversion/admin/helpers/scal
 
 $APPLICATION->SetTitle(Loc::getMessage('CONVERSION_CALC_TITLE'));
 
-
-$asset = Asset::getInstance();
-//$asset->addJs('/bitrix/js/conversion/profit_calc.js');
-//$asset->addCss('/bitrix/themes/.default/conversion/profit_calc.js');
-
-CUtil::initJSCore(array('amcharts', 'amcharts_funnel'));
-
+CJSCore::Init(array('amcharts', 'amcharts_funnel'));
 
 Bitrix\Conversion\AdminHelpers\renderFilter($filter);
 

@@ -178,6 +178,8 @@ foreach ($splitRates as $name => $rates)
 	if (isset($attributeValues[$name]['NAME']))
 	{
 		$name = $attributeValues[$name]['NAME'];
+		if (is_array($name))
+			$name = $name[0];
 	}
 
 	$rate = current($rates);
