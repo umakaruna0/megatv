@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <?
 //Константы
 define("FULL_PATH_DOCUMENT_ROOT", "/home/d/daotel/MEGATV/public_html"); //изменить на сервере

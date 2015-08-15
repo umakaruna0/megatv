@@ -43,35 +43,7 @@ class CCacheEx
             
 			$obCache->EndDataCache($arRes); 
 		}
-        
-        /*
-        $arRes = array();
-		if($cache->InitCache($cache_time, $cache_id, $cache_path) )
-        {
-			$res = $cache->GetVars();
-			$arRes = $res["arRes"];
-		}else{
-			                                   
-            
-			if( COption::GetOptionString("main", "component_cache_on", "Y") == "Y" && $cache_time > 0 )
-            {
-				$cache->StartDataCache( $cache_time, $cache_id, $cache_path );
-				
-				if( !empty( $tag_cache ) )
-                {
-					global $CACHE_MANAGER;
-					$CACHE_MANAGER->StartTagCache( $cache_path );
-					$CACHE_MANAGER->RegisterTag( $tag_cache );
-					$CACHE_MANAGER->EndTagCache();
-				}
-				
-				$cache->EndDataCache( 
-					array(
-						"arRes" => $arRes
-					)
-				);
-			}
-		}*/
+  
 		return $arRes;
 	}
     
