@@ -196,14 +196,8 @@ class CEpg
             ));
             
             //Если дата меньше сегодняшне - не грузим расписание
-            if( CTimeEx::dateDiff($arProg["date"], CTimeEx::getCurDate()) )
+            if( CTimeEx::dateDiff( date("d.m.Y", strtotime($arProg["date"])), date("d.m.Y") ) )
                 continue;
-            
-            if($arProg["@attributes"]["channel"]=="000000005")
-            {
-                echo $progID." ".date("d.m.Y H:i:s", strtotime($dateStart))." ".$uniqueTimeID."<br />";
-                CDev::pre($arProgTimes[$uniqueTimeID]);
-            }
             
             if(!isset($arProgTimes[$uniqueTimeID]) && intval($progID)>0)  
                 echo $uniqueTimeID."<br />";

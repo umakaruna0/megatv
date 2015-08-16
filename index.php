@@ -4,12 +4,13 @@ $APPLICATION->SetTitle("MegaTV");
 global $USER;
 //$USER->Authorize(1);
 
+/*
 CChannel::updateCache();
 CProg::updateCache();
 CProgTime::updateCache();
 CCityEx::updateCache();
 $arCity = CCityEx::getGeoCity();
-
+*/
 //CDev::pre($arCity);
 ?>
 <?$APPLICATION->IncludeComponent("bitrix:news.list", "channels", Array(

@@ -11,6 +11,25 @@
 /** @var string $componentPath */
 /** @var CBitrixComponent $component */
 $this->setFrameMode(true);
+
+function getProgInfoIndex($arProg)
+{
+    ob_start();
+    ?>
+    <div class="item-image-holder" style="background-image: url(<?=$arProg["PICTURE"]["SRC"]?>"></div>
+	<span class="item-status-icon">
+		<span data-icon="icon-recordit"></span>
+	</span>
+	<div class="item-header">
+		<time><?=substr($arProg["DATE_START"], 10, 5)?></time>
+		<a href="<?=$arProg["DETAIL_PAGE_URL"]?>"><?=$arProg["NAME"]?></a>
+	</div>
+    <?
+    $content = ob_get_contents();  
+    ob_end_clean();
+    
+    return $content;
+}
 ?>
 
 <section class="broadcast-results" data-module="broadcast-results">
@@ -38,14 +57,15 @@ $this->setFrameMode(true);
                         {
                             ?>
                             <div class="item status-recordable is-noimage">
-            					<div class="item-image-holder" style="background-image: url(<?=$arProg["PICTURE"]["SRC"]?>"></div>
+                                <?=getProgInfoIndex($arProg)?>
+            					<?/*<div class="item-image-holder" style="background-image: url(<?=$arProg["PICTURE"]["SRC"]?>"></div>
             					<span class="item-status-icon">
         							<span data-icon="icon-recordit"></span>
         						</span>
             					<div class="item-header">
-            						<time><?=$arProg["DATE_START"]?></time>
+            						<time><?=substr($arProg["DATE_START"], 10, 5)?></time>
             						<a href="<?=$arProg["DETAIL_PAGE_URL"]?>"><?=$arProg["NAME"]?></a>
-            					</div>
+            					</div>*/?>
             				</div>
                             <?
                         }
@@ -61,7 +81,7 @@ $this->setFrameMode(true);
             							<span data-icon="icon-recordit"></span>
             						</span>
                 					<div class="item-header">
-                						<time><?=$arProg["DATE_START"]?></time>
+                						<time><?=substr($arProg["DATE_START"], 10, 5)?></time>
                 						<a href="<?=$arProg["DETAIL_PAGE_URL"]?>"><?=$arProg["NAME"]?></a>
                 					</div>
                 				</div>
@@ -71,7 +91,7 @@ $this->setFrameMode(true);
             							<span data-icon="icon-recordit"></span>
             						</span>
                 					<div class="item-header">
-                						<time><?=$arProg["DATE_START"]?></time>
+                						<time><?=substr($arProgNext["DATE_START"], 10, 5)?></time>
                 						<a href="<?=$arProgNext["DETAIL_PAGE_URL"]?>"><?=$arProgNext["NAME"]?></a>
                 					</div>
                 				</div>
@@ -89,7 +109,7 @@ $this->setFrameMode(true);
         							<span data-icon="icon-recordit"></span>
         						</span>
             					<div class="item-header">
-            						<time><?=$arProg["DATE_START"]?></time>
+            						<time><?=substr($arProg["DATE_START"], 10, 5)?></time>
             						<a href="<?=$arProg["DETAIL_PAGE_URL"]?>"><?=$arProg["NAME"]?></a>
             					</div>
             				</div>

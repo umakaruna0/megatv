@@ -18,6 +18,18 @@ $arUrlRewrite = array(
 		"ID"	=>	"",
 		"PATH"	=>	"/date/index.php",
 	),
+    array(
+		"CONDITION"	=>	"#^/channel/(.*)/(.*)/#",
+		"RULE"	=>	"CHANNEL_CODE=\$1&SCHEDULE_CODE=\$2",
+		"ID"	=>	"",
+		"PATH"	=>	"/channel/schedule.php",
+	),
+    array(
+		"CONDITION"	=>	"#^/channel/(.*)/#",
+		"RULE"	=>	"CHANNEL_CODE=\$1",
+		"ID"	=>	"bitrix:news.detail",
+		"PATH"	=>	"/channel/index.php",
+	),
 );
 
 ?>

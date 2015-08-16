@@ -71,6 +71,6 @@ class CTimeEx
     
     public static function dateDiff($date1, $date2)
     {
-        return strtotime($date1)<=strtotime($date2);
+        return strtotime($date1)<strtotime($date2);
     }
 }
