@@ -108,6 +108,27 @@ class CProgTime
         self::updateCache();
 	}
     
+    public static function getProgInfoIndex($arProg)
+    {
+        ob_start();
+        ?>
+        <div class="item status-recordable is-noimage<?if($arProg["CLASS"]=="double"):?> double-item<?endif;?>">
+            <div class="item-image-holder" style="background-image: url(<?=$arProg["PICTURE"]["SRC"]?>"></div>
+        	<span class="item-status-icon">
+        		<span data-icon="icon-recordit"></span>
+        	</span>
+        	<div class="item-header">
+        		<time><?=substr($arProg["DATE_START"], 11, 5)?></time>
+        		<a href="<?=$arProg["DETAIL_PAGE_URL"]?>"><?=$arProg["NAME"]?></a>
+        	</div>
+        </div>
+        <?
+        $content = ob_get_contents();  
+        ob_end_clean();
+        
+        return $content;
+    }
+    
     public static function updateCache() 
     {
 		CCacheEx::clean(self::$cacheDir);

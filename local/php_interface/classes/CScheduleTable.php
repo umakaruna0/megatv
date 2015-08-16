@@ -24,11 +24,17 @@ class CScheduleTable
 			$arProgs = $obCache->GetVars();
 		}
         elseif($obCache->StartDataCache())
-        {*/
+        {*/        
             $arResult = array();
             $needDelete = false;
+        
+            $arProgs = $arParams["PROGS"];
+            unset($arParams["PROGS"]);
             
-            $arParams["COUNT"] = count($arParams["PROGS"]);
+            $arParams["COUNT"] = count($arProgs);
+            
+            if(count($arProgs)==0)
+                return false;
             
             if($arParams["NEWS"] || $arParams["COUNT"]>BROADCAT_COLS*2)
             {
@@ -43,85 +49,97 @@ class CScheduleTable
                 }else{
                     $double = BROADCAT_COLS - $arParams["COUNT"];
                     $arParts["DOUBLE"] = $double;
-                    $arParts["ONE"] = $arParams["COUNT"];
+                    $arParts["ONE"] = $arParams["COUNT"]-$double;
                 }
             }
+            
+            
             
             //Удаляем каждый 3-й
-            if($needDelete)
+            /*if($needDelete)
             {
                 $k = 0;
-                foreach($arParams["PROGS"] as $key=>$arProg)
+                foreach($arProgs as $key=>$arProg)
                 {
                     if($k%3==0 && $k!=0)
-                        unset($arParams["PROGS"][$key]);
+                        unset($arProgs[$key]);
                     $k++;
                 }
-            }
-            
-            $arProgs = $arParams["PROGS"];
-            unset($arParams["PROGS"]);
-            
-            $doubleKeys = array();
-            $halfKeys = array();
-            $oneKeys = array();
-            
+            }*/
+
+            //echo count($arProgs);
+            //CDev::pre($arParts, true, false);
+
+            //Все ключи программ
+            $allKeys = array_keys($arProgs); 
             $countHalfs = $arParts["HALF"];
-            $countDoubles = $arParts["DOUBLE"];
-            $countOnes = $arParts["ONE"];
             
             if(count($arParts["HALF"])>0)
             {
+                $doubleKeys = self::getDoubleArray($allKeys);
+                $allDoubleKeys = array_keys($doubleKeys); 
+                
                 while($arParts["HALF"]>0)
                 {
-                    $key = rand(0, $countHalfs);
-                    if(!in_array($key, $halfKeys) && $key+1<$countHalfs)
-                    {
-                        $halfKeys[] = $key; 
-                        $arProgs[$key]["CLASS"] = "half";
-                        $halfKeys[] = $key+1; 
-                        $arProgs[$key+1]["CLASS"] = "half";
-                        $arParts["HALF"]-=2;
-                    }
+                    $key = array_rand($allDoubleKeys, 1);
+                    $keys = $doubleKeys[$key];
+                    unset($allDoubleKeys[$key]);
+
+                    $arProgs[$keys[0]]["CLASS"] = "half"; 
+                    $arProgs[$keys[1]]["CLASS"] = "half";
+                    $allKeys = array_diff($allKeys, array($keys[0], $keys[1]));
+                    
+                    //echo $keys[0]." ".$keys[1]." ".$arParts["HALF"]."<br />";
+                    
+                    $arParts["HALF"]--;
                 }
             }
             
-            echo $arParams["COUNT"]."<br />";
-            print_r($arParts);
-            echo $countDoubles."<br />";
-            
+
             if(count($arParts["DOUBLE"])>0)
             {
                 while($arParts["DOUBLE"]>0)
                 {
-                    $key = rand(0, $countDoubles);
-                    if(!in_array($key, $doubleKeys) && !in_array($key, $halfKeys))
-                    {
-                        $doubleKeys[] = $key;
-                        $arProgs[$key]["CLASS"] = "double";
-                        $arParts["DOUBLE"]--;
-                    }
+                    $key = array_rand($allKeys, 1);
+                    $arProgs[$key]["CLASS"] = "double"; 
+                    $allKeys = array_diff($allKeys, array($key));
+                    $arParts["DOUBLE"]--;
                 }
             }
             
-            /*
             if(count($arParts["ONE"])>0)
             {
                 while($arParts["ONE"]>0)
                 {
-                    $key = rand(0, $countOnes);
-                    if(!in_array($key, $doubleKeys) && !in_array($key, $halfKeys) && !in_array($key, $oneKeys))
-                    {
-                        $oneKeys[] = $key; 
-                        $arProgs[$key]["CLASS"] = "one";
-                        $arParts["ONE"]--;
-                    }
+                    $key = array_rand($allKeys, 1);
+                    $arProgs[$key]["CLASS"] = "one"; 
+                    $allKeys = array_diff($allKeys, array($key));
+                    $arParts["ONE"]--;
                 }
-            }*/
+            }
             
+            //CDev::pre($arParts, true, false);
 			//$obCache->EndDataCache($arRes); 
 		//} // END CACHE
         
         return $arProgs;
     }
+    
+    public static function getDoubleArray($array)
+    {
+        $doubleArray = array();
+        $count = floor(count($array)/2);
+        
+        for($key = 0; $key<count($array); $key=$key+2)
+        {
+            if($key/2<$count)
+            {
+                $doubleArray[] = array($key, ($key+1));
+            }else{
+                break;
+            }
+        }
+        
+        return $doubleArray;
+    }    
 }
