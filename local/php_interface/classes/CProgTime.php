@@ -60,8 +60,8 @@ class CProgTime
         
         if(strlen($time)==2) $time.="00";
         
+        $arFields["FIELDS"]["NAME"] = trim($arFields["FIELDS"]["NAME"]);
         $arParams = array("replace_space"=>"-", "replace_other"=>"-");
-        //$translit = CDev::translit($date."-".$arFields["FIELDS"]["NAME"]."-".$time, "ru", $arParams);
         $translit = CDev::translit($date."-".$time."-".$PROP["CHANNEL"]."-".$arFields["FIELDS"]["NAME"], "ru", $arParams);
         
         $arLoadProductArray = Array(

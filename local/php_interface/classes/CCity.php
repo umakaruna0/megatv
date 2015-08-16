@@ -19,7 +19,7 @@ class CCityEx
         $CacheEx = new CCacheEx(60*60*24*365, self::$cacheDir);
         $arCity = $CacheEx->cacheElement( array( "SORT" => "ASC", "ID" => "DESC" ), $arFilter, "getId", false, $arSelect);
         
-        return $arCity;
+        return $arCity[0];
     }
     
     public static function getList($arrFilter = false, $arSelect = array())

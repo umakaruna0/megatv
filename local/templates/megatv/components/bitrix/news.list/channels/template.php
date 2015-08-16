@@ -13,7 +13,6 @@
 $this->setFrameMode(true);
 ?>
 
-
 <section class="broadcast-results" data-module="broadcast-results">
 	<div class="categories-logos">
         <?foreach($arResult["CHANNELS"] as $arItem):?>
@@ -29,6 +28,77 @@ $this->setFrameMode(true);
 	</div>
 	<div class="categories-items">
         <div class="row-wrap">
+            <?foreach($arResult["CHANNELS"] as $arItem):?>
+                <div class="category-row">
+                    <?
+                    foreach($arItem["PROGS"] as $key=>$arProg)
+                    {
+                        //CDev::pre($arProg);
+                        if($arProg["CLASS"]=="one")
+                        {
+                            ?>
+                            <div class="item status-recordable is-noimage">
+            					<div class="item-image-holder" style="background-image: url(<?=$arProg["PICTURE"]["SRC"]?>"></div>
+            					<span class="item-status-icon">
+        							<span data-icon="icon-recordit"></span>
+        						</span>
+            					<div class="item-header">
+            						<time><?=$arProg["DATE_START"]?></time>
+            						<a href="<?=$arProg["DETAIL_PAGE_URL"]?>"><?=$arProg["NAME"]?></a>
+            					</div>
+            				</div>
+                            <?
+                        }
+                        
+                        if($arProg["CLASS"]=="double")
+                        {
+                            $arProgNext = $arItem["PROGS"][$key+1];
+                            ?>
+                            <div class="pair-container">
+                                <div class="item status-recordable is-noimage" data-type="draggable" data-target="drop-area">
+                					<div class="item-image-holder" style="background-image: url(<?=$arProg["PICTURE"]["SRC"]?>"></div>
+                					<span class="item-status-icon">
+            							<span data-icon="icon-recordit"></span>
+            						</span>
+                					<div class="item-header">
+                						<time><?=$arProg["DATE_START"]?></time>
+                						<a href="<?=$arProg["DETAIL_PAGE_URL"]?>"><?=$arProg["NAME"]?></a>
+                					</div>
+                				</div>
+                                <div class="item status-recordable is-noimage" data-type="draggable" data-target="drop-area">
+                					<div class="item-image-holder" style="background-image: url(<?=$arProgNext["PICTURE"]["SRC"]?>"></div>
+                					<span class="item-status-icon">
+            							<span data-icon="icon-recordit"></span>
+            						</span>
+                					<div class="item-header">
+                						<time><?=$arProg["DATE_START"]?></time>
+                						<a href="<?=$arProgNext["DETAIL_PAGE_URL"]?>"><?=$arProgNext["NAME"]?></a>
+                					</div>
+                				</div>
+            				</div>
+                            <?
+                            $key++;
+                        }
+                        
+                        if($arProg["CLASS"]=="half")
+                        {
+                            ?>
+                            <div class="item double-item status-recordable is-noimage" data-type="draggable" data-target="drop-area">
+            					<div class="item-image-holder" style="background-image: url(<?=$arProg["PICTURE"]["SRC"]?>"></div>
+            					<span class="item-status-icon">
+        							<span data-icon="icon-recordit"></span>
+        						</span>
+            					<div class="item-header">
+            						<time><?=$arProg["DATE_START"]?></time>
+            						<a href="<?=$arProg["DETAIL_PAGE_URL"]?>"><?=$arProg["NAME"]?></a>
+            					</div>
+            				</div>
+                            <?
+                        }
+                    }
+                    ?>
+                </div>
+            <?endforeach?>
         </div>
     </div><!-- /.categories-items -->
 </section>

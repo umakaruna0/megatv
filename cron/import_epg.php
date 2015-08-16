@@ -19,12 +19,27 @@ CModule::IncludeModule("iblock");
 CModule::IncludeModule("catalog");
 CModule::IncludeModule("sale");
 
+
+//DELETE ALL PROGS & SCHEDULE
+/*CProg::updateCache();
+CProgTime::updateCache();
+$arProgs = CProg::getList(false, array("ID"));
+$arProgTimes = CProgTime::getList(false, array("ID"));
+foreach($arProgs as $arProg)
+{
+    CIBlockElement::Delete($arProg["ID"]);
+}
+foreach($arProgTimes as $arProg)
+{
+    CIBlockElement::Delete($arProg["ID"]);
+}
+*/
 //Удаляем устаревшие программы
-//CProgTime::delete();
+CProgTime::delete();
 
 //Загружаем и импортируем данные из EPG
 $Epg = new CEpg();
-//$Epg->download();
+$Epg->download();
 $Epg->import();
 
 echo " --finish loading--";

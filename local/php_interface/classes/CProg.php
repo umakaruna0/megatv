@@ -7,10 +7,10 @@ class CProg
     public static function generateUnique($arFields)
     {
         $str = $arFields["CHANNEL"]."-".htmlspecialchars_decode($arFields["NAME"]); //!!!!!!
+        //$str = htmlspecialchars_decode($arFields["NAME"]."-".$arFields["DESC"]."-".$arFields["ACTOR"]."-".$arFields["PRESENTER"]);
         
         $arParams = array("replace_space"=>"-", "replace_other"=>"-");
         $str = CDev::translit($str, "ru", $arParams);
-        
         return $str;
     }
     
@@ -22,7 +22,7 @@ class CProg
             return false;
         
         if(empty($arSelect))
-            $arSelect = Array("ID", "NAME", "PROPERTY_CHANNEL");
+            $arSelect = Array("ID", "NAME"/*, "PROPERTY_CHANNEL"*/);
         
         $arProgs = array();
         $arFilter = array("IBLOCK_ID" => PROG_IB, "ACTIVE" => "Y", "=ID" => $ID);
@@ -30,7 +30,7 @@ class CProg
         $CacheEx = new CCacheEx(60*60*24*365, self::$cacheDir);
         $arProg = $CacheEx->cacheElement( array( "SORT" => "ASC", "ID" => "DESC" ), $arFilter, "getlist", false, $arSelect);
         
-        return $arProg;
+        return $arProg[0];
     }
     
     public static function getList($arrFilter=false, $arSelect = array())
@@ -39,7 +39,7 @@ class CProg
         $arProgs = array();
         
         if(empty($arSelect))
-            $arSelect = Array("ID", "NAME", "PREVIEW_TEXT", "PROPERTY_CHANNEL");
+            $arSelect = Array("ID", "NAME", "PREVIEW_TEXT", /*"PROPERTY_PRESENTER", "PROPERTY_ACTOR",*/ "PROPERTY_CHANNEL");
             
         $arFilter = array("IBLOCK_ID" => PROG_IB, "ACTIVE" => "Y");
         if($arrFilter)
@@ -52,7 +52,9 @@ class CProg
             $unique = self::generateUnique(array(
                 "CHANNEL" => $arTmpProg["PROPERTY_CHANNEL_VALUE"],
                 "NAME" => $arTmpProg["NAME"],
-                "DESC" => $arTmpProg["PREVIEW_TEXT"]
+                "DESC" => $arTmpProg["PREVIEW_TEXT"],
+                "ACTOR" => $arTmpProg["PROPERTY_ACTOR_VALUE"],
+                "PRESENTER" => $arTmpProg["PROPERTY_PRESENTER_VALUE"],
             ));
             
             //Для множественного свойства

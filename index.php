@@ -4,8 +4,13 @@ $APPLICATION->SetTitle("MegaTV");
 global $USER;
 //$USER->Authorize(1);
 
-//$arDates = CTimeEx::getCurDateTime("+1");
-//CDev::pre($arDates);
+CChannel::updateCache();
+CProg::updateCache();
+CProgTime::updateCache();
+CCityEx::updateCache();
+$arCity = CCityEx::getGeoCity();
+
+//CDev::pre($arCity);
 ?>
 <?$APPLICATION->IncludeComponent("bitrix:news.list", "channels", Array(
 	"DISPLAY_DATE" => "Y",	// Выводить дату элемента
@@ -66,7 +71,8 @@ global $USER;
 		"PAGER_BASE_LINK_ENABLE" => "N",	// Включить обработку ссылок
 		"SHOW_404" => "N",	// Показ специальной страницы
 		"MESSAGE_404" => "",	// Сообщение для показа (по умолчанию из компонента)
-        "CURRENT_DATE" => CTimeEx::getCurDateTime()
+        "CURRENT_DATETIME" => CTimeEx::getDateTimeOffset(),
+        "CITY" => CCityEx::getGeoCity()
 	),
 	false
 );?>

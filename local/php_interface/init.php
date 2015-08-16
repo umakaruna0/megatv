@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 <?
 //Константы
 define("FULL_PATH_DOCUMENT_ROOT", "/home/d/daotel/MEGATV/public_html"); //изменить на сервере
@@ -25,6 +24,7 @@ CModule::AddAutoloadClasses(
         '\CProgTime' => $sClassesPath.'CProgTime.php',
         '\CEpg' => $sClassesPath.'CEpg.php',
         '\CTimeEx' => $sClassesPath.'CTimeEx.php',
+        '\CScheduleTable' => $sClassesPath.'CScheduleTable.php',
 	)
 );
 

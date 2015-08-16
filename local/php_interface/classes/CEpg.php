@@ -83,7 +83,7 @@ class CEpg
         //список программ и время вещания из кэша
         CProg::updateCache();
         CProgTime::updateCache();        
-        $arProgs = CProg::getList(false, array("ID", "NAME", "PREVIEW_TEXT", "PROPERTY_CHANNEL"));
+        $arProgs = CProg::getList(false, array("ID", "NAME", "PREVIEW_TEXT",/* "PROPERTY_PRESENTER", "PROPERTY_ACTOR",*/ "PROPERTY_CHANNEL"));
         $arProgTimes = CProgTime::getList(false, array("ID", "PROPERTY_CHANNEL", "PROPERTY_DATE_START"));
 
         foreach($xml->programme as $arProg)
@@ -94,7 +94,7 @@ class CEpg
             $arChannel = $arChannels[$arProg["@attributes"]["channel"]];
             
             if(intval($arChannel["ID"])==0)
-                continue; 
+                continue;
             
             $arFields = array(
                 "FIELDS" => array(
@@ -122,10 +122,20 @@ class CEpg
                 $progName = $arFields["FIELDS"]["NAME"];
             }
             
+            if(!is_array($arProg["credits"]["actor"]))
+                $arProg["credits"]["actor"] = array($arProg["credits"]["actor"]);
+            $arFields["PROPS"]["ACTOR"] = implode(", ", $arProg["credits"]["actor"]);
+            
+            if(!is_array($arProg["credits"]["presenter"]))
+                $arProg["credits"]["presenter"] = array($arProg["credits"]["presenter"]);
+            $arFields["PROPS"]["PRESENTER"] = implode(", ", $arProg["credits"]["presenter"]);
+            
             $unique = CProg::generateUnique(array(
                 "CHANNEL" => intval($arFields["PROPS"]["CHANNEL"]),
                 "NAME" => $progName,
-                "DESC" => $arFields["FIELDS"]["PREVIEW_TEXT"]
+                "DESC" => $arFields["FIELDS"]["PREVIEW_TEXT"],
+                "ACTOR" => $arFields["PROPS"]["ACTOR"],
+                "PRESENTER" => $arFields["PROPS"]["PRESENTER"],
             ));
             
             if (!array_key_exists($unique, $arProgs))
@@ -155,14 +165,6 @@ class CEpg
                     $arProg["credits"]["director"] = array($arProg["credits"]["director"]);
                 $arFields["PROPS"]["DIRECTOR"] = implode(", ", $arProg["credits"]["director"]);
                 
-                if(!is_array($arProg["credits"]["actor"]))
-                    $arProg["credits"]["actor"] = array($arProg["credits"]["actor"]);
-                $arFields["PROPS"]["ACTOR"] = implode(", ", $arProg["credits"]["actor"]);
-                
-                if(!is_array($arProg["credits"]["presenter"]))
-                    $arProg["credits"]["presenter"] = array($arProg["credits"]["presenter"]);
-                $arFields["PROPS"]["PRESENTER"] = implode(", ", $arProg["credits"]["presenter"]);                
-                
                 $progID = CProg::add($arFields);
                 if(intval($progID)==0)
                 {
@@ -181,6 +183,7 @@ class CEpg
                     );
                 }
             }else{
+                
                 $progID = $arProgs[$unique]["ID"];
             }
             
@@ -195,6 +198,12 @@ class CEpg
             //Если дата меньше сегодняшне - не грузим расписание
             if( CTimeEx::dateDiff($arProg["date"], CTimeEx::getCurDate()) )
                 continue;
+            
+            if($arProg["@attributes"]["channel"]=="000000005")
+            {
+                echo $progID." ".date("d.m.Y H:i:s", strtotime($dateStart))." ".$uniqueTimeID."<br />";
+                CDev::pre($arProgTimes[$uniqueTimeID]);
+            }
             
             if(!isset($arProgTimes[$uniqueTimeID]) && intval($progID)>0)  
                 echo $uniqueTimeID."<br />";

@@ -10,7 +10,8 @@ class CCacheEx
     
     public function cacheElement( $arOrder, $arrFilter, $tag_cache = '', $limit, $arSelect )
     {
-		//$cache = new CPHPCache();
+        global $CACHE_MANAGER;
+        
         $obCache = new CPHPCache;
 		$cache_time = $this->cache_time;
 		$cache_path = $this->cache_path;
@@ -20,8 +21,6 @@ class CCacheEx
 		if($cache_time > 0 && $obCache->InitCache($cache_time, $cache_id, $cache_path))
         {
 			$arRes = $obCache->GetVars();
-            
-            //print_r($arRes);
 		}
         elseif($obCache->StartDataCache())
         {
@@ -35,11 +34,6 @@ class CCacheEx
             {
                 $arRes[] = $arItem;
 			}
-            
-            if(count($arRes)==1)
-            {
-                $arRes = $arRes[0];            
-            } 
             
 			$obCache->EndDataCache($arRes); 
 		}

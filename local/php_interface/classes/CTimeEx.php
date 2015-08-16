@@ -36,20 +36,19 @@ class CTimeEx
         return date('d.m.Y H:i:s', strtotime($offset." hour", strtotime($datetime)));
     }
     
-    //Высчитываем с учетом города сдвиг по времени
-    public static function getCurDateTime($offset = 0)
+    //Высчитываем с учетом города сдвиг по времени относительно дня
+    public static function getDateTimeOffset($offset = 0)
     {       
         if(!$offset)
         {
             $arCity = CCityEx::getGeoCity();
-            $offset = $arCity["PROPERTY_OFFSET_VALUE"];
+            $offset = intval($arCity["PROPERTY_OFFSET_VALUE"]);
         }
         
         $date = self::getCurDate();
-        if(strlen($date)==10)
-            $date.=date(" H:i:s");
+        $date = substr($date, 0, 10).date(" 00:00:00");
             
-        $next_date = date('d.m.Y H:i:s', strtotime("+1 day", strtotime($date)));
+        $next_date = date('d.m.Y 00:00:00', strtotime("+1 day", strtotime($date)));
            
         $arDate = array(
             "DATE_FROM" => self::dateOffset($offset, $date),
@@ -72,6 +71,6 @@ class CTimeEx
     
     public static function dateDiff($date1, $date2)
     {
-        return strtotime($date1)<strtotime($date2);
+        return strtotime($date1)<=strtotime($date2);
     }
 }
