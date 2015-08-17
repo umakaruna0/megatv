@@ -58,11 +58,11 @@ class CTimeEx
         $next_date = date('d.m.Y 00:00:00', strtotime("+1 day", strtotime($date)));
            
         $arDate = array(
-            "DATE_FROM" => self::dateOffset($offset, $date),
-            "DATE_TO" => self::dateOffset($offset, $next_date),
-            "OFFSET" => $offset,
-            "DATE_REAL" => substr($date, 0, 10),
-            "DATETIME_REAL" => substr($date, 0, 10).date(" H:i:s")
+            "DATE_FROM" => self::dateOffset($offset, $date),    //дата со смещением
+            "DATE_TO" => self::dateOffset($offset, $next_date), //дата со смещением +1 день
+            "OFFSET" => $offset,    //сдвиг
+            "DATETIME_REAL" => date("d.m.Y H:i:s"), //дата настоящая без сдвигов и выборов
+            "DATETIME_CURRENT" => substr($date, 0, 10).date(" H:i:s"),  //дата выбранная без сдвига
         );
         
         return $arDate;
@@ -96,5 +96,21 @@ class CTimeEx
             "i" => $min,
             "s" => $sec
         );
+    }
+    
+    public static function secToStr($sec)
+    {
+        $arTime = self::secToTime($sec);
+        
+        $str = "";
+        if($arTime["h"])
+        {
+            $str.= $arTime["h"]." ".CDev::number_ending($arTime["h"], "часов", "час", "часа")." ";
+        }
+        if($arTime["i"])
+        {
+            $str.= $arTime["i"]." ".CDev::number_ending($arTime["i"], "минут", "минута", "минуты");
+        }
+        return $str;
     }
 }

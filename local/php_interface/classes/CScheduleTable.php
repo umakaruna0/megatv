@@ -147,6 +147,26 @@ class CScheduleTable
         return $arProgs;
     }
     
+    public static function setRecommendIndex($arParams)
+    {
+        $arProgs = $arParams["PROGS"];        
+        $arParams["COUNT"] = count($arProgs);
+        
+        if(count($arProgs)==0)
+            return false;
+        
+        foreach($arProgs as $key=>$arProg)
+        {
+            if($key<4)
+            {
+                $arProgs[$key]["CLASS"] = "quadro"; 
+            }else{
+                $arProgs[$key]["CLASS"] = "one"; 
+            }
+        }
+        return $arProgs;
+    }
+    
     public static function getDoubleArray($array)
     {
         $doubleArray = array();

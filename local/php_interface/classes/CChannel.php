@@ -11,7 +11,7 @@ class CChannel
         $arChannels = array();
         
         if(empty($arSelect))
-            $arSelect = Array("ID", "NAME", "PREVIEW_PICTURE");
+            $arSelect = Array("ID", "NAME", "PREVIEW_PICTURE", "PROPERTY_EPG_ID");
             
         $arFilter = array("IBLOCK_ID" => CHANNEL_IB);
         if($arrFilter)
@@ -21,7 +21,10 @@ class CChannel
         $arTmpChannels = $CacheEx->cacheElement( array( "SORT" => "ASC", "NAME" => "ASC" ), $arFilter, "getlist", false, $arSelect);
         foreach( $arTmpChannels as $arTmpChannel )
         {
-			$arChannels[$arTmpChannel["PROPERTY_EPG_ID_VALUE"]] = $arTmpChannel;
+            if($arTmpChannel["PROPERTY_EPG_ID_VALUE"])
+                $arChannels[$arTmpChannel["PROPERTY_EPG_ID_VALUE"]] = $arTmpChannel;
+            else
+                $arChannels[] = $arTmpChannel;
 		}
         
         return $arChannels;

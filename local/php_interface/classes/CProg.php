@@ -22,7 +22,7 @@ class CProg
             return false;
         
         if(empty($arSelect))
-            $arSelect = Array("ID", "NAME"/*, "PROPERTY_CHANNEL"*/);
+            $arSelect = Array("ID", "NAME");
         
         $arProgs = array();
         $arFilter = array("IBLOCK_ID" => PROG_IB, "ACTIVE" => "Y", "=ID" => $ID);

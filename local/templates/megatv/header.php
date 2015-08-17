@@ -18,6 +18,7 @@ IncludeTemplateLangFile(__FILE__);
         $APPLICATION->ShowCSS(true, true);
         
         $APPLICATION->SetAdditionalCSS(SITE_TEMPLATE_PATH.'/css/main.css');
+        $APPLICATION->SetAdditionalCSS(SITE_TEMPLATE_PATH.'/project.css');
         $APPLICATION->ShowHeadStrings();
     	$APPLICATION->ShowHeadScripts();
         
@@ -118,8 +119,18 @@ IncludeTemplateLangFile(__FILE__);
                             <?
                             if($USER->IsAuthorized())
                             {
+                                $rsUser = CUser::GetByID($USER->GetID());
+                                $arUser = $rsUser->Fetch();
                                 ?>
-                                <li><a href="<?=$APPLICATION->GetCurDir()?>?logout=yes" class="signin-link">Выйти</a></li>
+                                <div class="user-card">
+        							<a href="#" class="user-avatar">
+        								<img src="<?=SITE_TEMPLATE_PATH?>/img/temp/user-avatar-01.jpg" alt="Александр Пушкин" width="50" height="50">
+        							</a>
+        							<div class="info-panel">
+        								<a class="username" href="#"><?=$USER->GetFullName()?></a><br>
+        								<a href="<?=$APPLICATION->GetCurDir()?>?logout=yes" class="signout-link">Выйти</a>
+        							</div>
+        						</div>
                                 <?
                             }else{
                                 ?>
@@ -158,13 +169,13 @@ IncludeTemplateLangFile(__FILE__);
 					</div>
 					<ul class="sections-menu">
 						<li class="active"><a href="index.html"><span data-icon="icon-channels"></span><span>Каналы</span></a></li>
-						<li><a href="themes.html"><span data-icon="icon-themes"></span><span>Тематики</span></a></li>
-						<li><a href="recommendations.html"><span data-icon="icon-recommendations"></span><span>Рекомендации</span></a></li>
+						<?/*<li><a href="themes.html"><span data-icon="icon-themes"></span><span>Тематики</span></a></li>
+						<li><a href="recommendations.html"><span data-icon="icon-recommendations"></span><span>Рекомендации</span></a></li>*/?>
 					</ul>
 					<form action="#" class="search-form" data-module="search-form">
 						<div class="form-group has-feedback">
-							<label for="" class="sr-only">Название программы или сериала</label>
-							<input type="text" data-type="search-field" name="" id="" class="form-control" placeholder="Название программы или сериала">
+							<label for="" class="sr-only">Поиск</label>
+							<input type="text" data-type="search-field" name="" id="" class="form-control" placeholder="Поиск">
 							<span class="form-control-feedback"><span data-icon="icon-search"></span></span>
 						</div>
 					</form>

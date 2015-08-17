@@ -45,6 +45,6 @@ class CCacheEx
     {
 		global $CACHE_MANAGER;
 		$obCache = new CPHPCache();
-		$obCache->CleanDir($cache_path);
+		$obCache->CleanDir($cache_path."/");
 	}
 }

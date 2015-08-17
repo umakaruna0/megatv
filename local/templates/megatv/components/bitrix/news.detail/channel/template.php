@@ -15,7 +15,7 @@ $this->setFrameMode(true);
 <section class="channel-card" data-module="channel-card">
 	<div class="channel-info">
 		<div class="channel-logo">
-			<span data-icon="icon-<?=$arResult["PROPERTIES"]["ICON"]["VALUE"]?>-channel" data-size="small"></span>
+			<span data-icon="<?=$arResult["PROPERTIES"]["ICON"]["VALUE"]?>" data-size="small"></span>
 		</div>
 		<div class="channel-descr">
 			<?=htmlspecialchars_decode($arResult["DETAIL_TEXT"])?>

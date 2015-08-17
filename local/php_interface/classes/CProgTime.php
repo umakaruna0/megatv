@@ -15,6 +15,25 @@ class CProgTime
         return $str;
     }
     
+    public static function getByID($ID, $arSelect = false)
+    {
+        CModule::IncludeModule("iblock");
+        
+        if(!$ID)
+            return false;
+        
+        if(empty($arSelect))
+            $arSelect = Array("ID", "NAME");
+        
+        $arProgs = array();
+        $arFilter = array("IBLOCK_ID" => PROG_TIME_IB, "ACTIVE" => "Y", "=ID" => $ID);
+        
+        $CacheEx = new CCacheEx(60*60*24*365, self::$cacheDir);
+        $arProg = $CacheEx->cacheElement( array( "SORT" => "ASC", "ID" => "DESC" ), $arFilter, "getlist", false, $arSelect);
+        
+        return $arProg[0];
+    }
+    
     public static function getList($arrFilter = false, $arSelect = array())
     {
         CModule::IncludeModule("iblock");
@@ -127,14 +146,17 @@ class CProgTime
         
         ob_start();
         ?>
-        <div class="item status-recordable <?if(!empty($arProg["PICTURE"]["SRC"])):?> is-noimage<?endif;?><?if($arProg["CLASS"]=="double"):?> double-item<?endif;?>">
+        <div class="item status-recordable<?if(empty($arProg["PICTURE"]["SRC"])):?> is-noimage<?endif;?><?if($arProg["CLASS"]=="double"):?> double-item<?endif;?>">
             <div class="item-image-holder" style="background-image: url(<?=$arProg["PICTURE"]["SRC"]?>"></div>
-        	<span class="item-status-icon">
-        		<span data-icon="icon-recordit"></span>
-        	</span>
+        	<a class="item-status-icon">
+				<span data-icon="icon-recordit"></span>
+				<span class="status-desc">Записать</span>
+			</a>
         	<div class="item-header">
         		<time><?=substr($arProg["DATE_START"], 11, 5)?></time>
-        		<a href="<?=$arProg["DETAIL_PAGE_URL"]?>"><?=$arProg["NAME"]?></a>
+        		<a href="<?=$arProg["DETAIL_PAGE_URL"]?>">
+                    <?=$arProg["NAME"]?>.<?if(!empty($arProg["PROPERTY_SUB_TITLE_VALUE"])):?><br><?=$arProg["PROPERTY_SUB_TITLE_VALUE"]?>.<?endif;?> 
+                </a>
         	</div>
         </div>
         <?
@@ -161,7 +183,7 @@ class CProgTime
         $end = $arProg["DATE_END"];
         $datetime = CTimeEx::dateOffset($arParams["OFFSET"], $arParams["DATETIME_REAL"]);
         ?>
-        <div class="item status-recordable <?if($arProg["CLASS"]=="half"):?> half-item<?endif;?>" data-type="draggable" data-target="drop-area">
+        <div class="item status-recordable<?if($arProg["CLASS"]=="half"):?> half-item<?endif;?>" data-type="draggable" data-target="drop-area">
 			<div class="item-image-holder" style="background-image: url(<?=$arProg["PICTURE"]["SRC"]?>)"></div>
 			
             <?if(CTimeEx::dateDiff($start, $datetime) && CTimeEx::dateDiff($datetime, $end)):?>
@@ -183,11 +205,11 @@ class CProgTime
                     $secs = strtotime($datetime) - strtotime($start);
                     
                     $proc = ceil($secs/($allSecs/100));
-                    $arTime = CTimeEx::secToTime($secs);
+                    $duration = CTimeEx::secToStr($secs);
                     ?>
     				<div class="timeline" data-progress="<?=$proc?>">
     					<span class="progress-bg"></span>
-    					<span>прошло <?/*if($arTime["h"]):?><?=$arTime["h"]?> ч. <?endif;*/?><?=$arTime["i"]?> мин.</span>
+    					<span>прошло <?=$duration?></span>
     				</div>
                 <?endif;?>
 				<span class="descr-trigger" data-type="descr-trigger"><span>&times;</span></span>
@@ -202,6 +224,62 @@ class CProgTime
 				</div>
 			</div>
 		</div>
+        <?
+        $content = ob_get_contents();  
+        ob_end_clean();
+        
+        return $content;
+    }
+    
+    public static function getProgInfoRecommendIndex($arProg, $arParams)
+    {
+        $arProg["PICTURE"]["SRC"] = CFile::GetPath($arProg["PREVIEW_PICTURE"]);
+        ob_start();
+        ?>
+        <div class="item status-recordable<?if(empty($arProg["PICTURE"]["SRC"])):?> is-noimage<?endif;?>">
+            <div class="item-image-holder" style="background-image: url(<?=$arProg["PICTURE"]["SRC"]?>"></div>
+        	<span class="item-status-icon">
+        		<span data-icon="icon-recordit"></span>
+        	</span>
+            <div class="item-header">
+				<time><?=substr($arProg["DATE_START"], 11, 5)?> <span class="date">| <?=substr($arProg["DATE_START"], 0, 10)?></span></time>
+				<a href="<?=$arProg["DETAIL_PAGE_URL"]?>">
+                    <?=$arProg["NAME"]?>.
+                    <?if(!empty($arProg["PROPERTY_SUB_TITLE_VALUE"])):?><br><?=$arProg["PROPERTY_SUB_TITLE_VALUE"]?>.<?endif;?> 
+                </a>
+                <?if($arParams["NOT_SHOW_CHANNEL"]!="Y"):?>
+    				<div class="channel-icon">
+    					<span data-icon="<?=$arProg["CHANNEL"]["PROPERTY_ICON_VALUE"]?>" data-size="small"></span>
+    				</div>
+                <?endif;?>
+			</div>
+        </div>
+        <?
+        $content = ob_get_contents();  
+        ob_end_clean();
+        
+        return $content;
+    }
+    
+    public static function getProgSimilar($arProg, $arParams)
+    {
+        $arProg["PICTURE"]["SRC"] = CFile::GetPath($arProg["PREVIEW_PICTURE"]);
+        ob_start();
+        ?>
+        <li class="item status-recordable<?if(empty($arProg["PICTURE"]["SRC"])):?> is-noimage<?endif;?>">
+			<div class="item-image-holder" style="background-image: url(<?=$arProg["PICTURE"]["SRC"]?>)"></div>
+			<a class="item-status-icon">
+				<span data-icon="icon-recordit"></span>
+				<span class="status-desc">Записать</span>
+			</a>
+			<div class="item-header">
+				<time><?=substr($arProg["DATE_START"], 11, 5)?> | <?=substr($arProg["DATE_START"], 0, 10)?></time>
+				<a href="<?=$arProg["DETAIL_PAGE_URL"]?>">
+                    <?=$arProg["NAME"]?>.
+                    <?if(!empty($arProg["PROPERTY_SUB_TITLE_VALUE"])):?><br><?=$arProg["PROPERTY_SUB_TITLE_VALUE"]?>.<?endif;?> 
+                </a>
+			</div>
+		</li>
         <?
         $content = ob_get_contents();  
         ob_end_clean();
