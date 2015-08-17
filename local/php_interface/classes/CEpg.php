@@ -78,14 +78,15 @@ class CEpg
         
         //сбросим и обновим кэш после загрузки
         CChannel::updateCache();
-        $arChannels = CChannel::getList(false, array("ID", "PROPERTY_EPG_ID"));
+        $arChannels = CChannel::getList(false, array("ID", "PROPERTY_EPG_ID", "ACTIVE"));
 
         //список программ и время вещания из кэша
         CProg::updateCache();
         CProgTime::updateCache();        
-        $arProgs = CProg::getList(false, array("ID", "NAME", "PREVIEW_TEXT",/* "PROPERTY_PRESENTER", "PROPERTY_ACTOR",*/ "PROPERTY_CHANNEL"));
+        $arProgs = CProg::getList(false, array("ID", "NAME", "PREVIEW_TEXT", "PROPERTY_CHANNEL", "PROPERTY_SUB_TITLE"));
         $arProgTimes = CProgTime::getList(false, array("ID", "PROPERTY_CHANNEL", "PROPERTY_DATE_START"));
-
+        
+        //die();
         foreach($xml->programme as $arProg)
         {
             $json = json_encode($arProg);
@@ -93,7 +94,7 @@ class CEpg
             
             $arChannel = $arChannels[$arProg["@attributes"]["channel"]];
             
-            if(intval($arChannel["ID"])==0)
+            if(intval($arChannel["ID"])==0 || $arChannel["ACTIVE"]=="N")
                 continue;
             
             $arFields = array(
@@ -117,7 +118,7 @@ class CEpg
             //генерируем идентификатор программы для проверки на существование
             if(!empty($arFields["PROPS"]["SUB_TITLE"]))
             {
-                $progName = $arFields["FIELDS"]["NAME"]." (".$arFields["PROPS"]["SUB_TITLE"].")";
+                $progName = $arFields["FIELDS"]["NAME"]." (".trim($arFields["PROPS"]["SUB_TITLE"]).")";
             }else{
                 $progName = $arFields["FIELDS"]["NAME"];
             }

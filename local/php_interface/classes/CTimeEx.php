@@ -25,8 +25,15 @@ class CTimeEx
             $date = str_replace("date-", "", $_GET["DATE_CURRENT_SHOW"]);
             $date = date("d.m.Y", strtotime($date));
         }else{
-            $date = date("d.m.Y");  //текущая дата пользователя
+            if(!isset($_SESSION["DATE_CURRENT_SHOW"]) || empty($_SESSION["DATE_CURRENT_SHOW"]))
+            {
+                $date = date("d.m.Y");  //текущая дата пользователя
+            }else{
+                $date = $_SESSION["DATE_CURRENT_SHOW"];
+            }  
         }
+        
+        $_SESSION["DATE_CURRENT_SHOW"] = $date;
         
         return $date;
     }
@@ -54,7 +61,8 @@ class CTimeEx
             "DATE_FROM" => self::dateOffset($offset, $date),
             "DATE_TO" => self::dateOffset($offset, $next_date),
             "OFFSET" => $offset,
-            "DATE_REAL" => date('d.m.Y H:i:s')
+            "DATE_REAL" => substr($date, 0, 10),
+            "DATETIME_REAL" => substr($date, 0, 10).date(" H:i:s")
         );
         
         return $arDate;
@@ -72,5 +80,21 @@ class CTimeEx
     public static function dateDiff($date1, $date2)
     {
         return strtotime($date1)<strtotime($date2);
+    }
+    
+    public static function secToTime($sec) 
+    {
+        if ($sec <= 0)
+            return false;
+            
+        $hh = floor($sec/3600); 
+        $min = floor(($sec-$hh*3600)/60); 
+        $sec = $sec-$hh*3600-$min*60; 
+    
+        return array(
+            "h" => $hh,
+            "i" => $min,
+            "s" => $sec
+        );
     }
 }

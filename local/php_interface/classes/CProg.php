@@ -39,7 +39,7 @@ class CProg
         $arProgs = array();
         
         if(empty($arSelect))
-            $arSelect = Array("ID", "NAME", "PREVIEW_TEXT", /*"PROPERTY_PRESENTER", "PROPERTY_ACTOR",*/ "PROPERTY_CHANNEL");
+            $arSelect = Array("ID", "NAME", "PREVIEW_TEXT", "PROPERTY_CHANNEL", "PROPERTY_SUB_TITLE");
             
         $arFilter = array("IBLOCK_ID" => PROG_IB, "ACTIVE" => "Y");
         if($arrFilter)
@@ -49,9 +49,16 @@ class CProg
         $arTmpProgs = $CacheEx->cacheElement( array( "SORT" => "ASC", "ID" => "DESC" ), $arFilter, "getlist", false, $arSelect);
         foreach( $arTmpProgs as $arTmpProg )
         {
+            if(!empty($arTmpProg["PROPERTY_SUB_TITLE_VALUE"]))
+            {
+                $name = $arTmpProg["NAME"]." (".trim($arTmpProg["PROPERTY_SUB_TITLE_VALUE"]).")";
+            }else{
+                $name = $arTmpProg["NAME"];
+            }
+            
             $unique = self::generateUnique(array(
                 "CHANNEL" => $arTmpProg["PROPERTY_CHANNEL_VALUE"],
-                "NAME" => $arTmpProg["NAME"],
+                "NAME" => $name,
                 "DESC" => $arTmpProg["PREVIEW_TEXT"],
                 "ACTOR" => $arTmpProg["PROPERTY_ACTOR_VALUE"],
                 "PRESENTER" => $arTmpProg["PROPERTY_PRESENTER_VALUE"],
@@ -81,15 +88,15 @@ class CProg
             "IBLOCK_SECTION_ID" => false,
             "IBLOCK_ID"      => PROG_IB,
             "PROPERTY_VALUES"=> $PROP,
-            "NAME"           => $arFields["FIELDS"]["NAME"],
+            "NAME"           => trim($arFields["FIELDS"]["NAME"]),
             "ACTIVE"         => "Y",
         );
         
         $arLoadProductArray = array_merge($arLoadProductArray, $arFields["FIELDS"]);
-        if(!empty($PROP["SUB_TITLE"]))
+        /*if(!empty($PROP["SUB_TITLE"]))
         {
             $arLoadProductArray["NAME"] = $arLoadProductArray["NAME"]." (".$PROP["SUB_TITLE"].")";
-        }
+        }*/
         
         $prog_id = $el->Add($arLoadProductArray);
         if($prog_id)

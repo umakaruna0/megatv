@@ -125,6 +125,28 @@ class CScheduleTable
         return $arProgs;
     }
     
+    public static function setChannel($arParams)
+    {
+        $arProgs = $arParams["PROGS"];
+        unset($arParams["PROGS"]);
+        
+        $arParams["COUNT"] = count($arProgs);
+        
+        if(count($arProgs)==0)
+            return false;
+
+        $allKeys = array_keys($arProgs);
+        $key = array_rand($allKeys, 1);
+        unset($allKeys[$key]);
+        $arProgs[$key]["CLASS"] = "one"; 
+        
+        foreach($allKeys as $key)
+        {
+            $arProgs[$key]["CLASS"] = "half"; 
+        }
+        return $arProgs;
+    }
+    
     public static function getDoubleArray($array)
     {
         $doubleArray = array();

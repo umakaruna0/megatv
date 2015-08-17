@@ -25,7 +25,11 @@
         ?>
         <script src="<?=SITE_TEMPLATE_PATH?>/js/vendor.js"></script>
 		<script src="<?=SITE_TEMPLATE_PATH?>/js/plugins.js"></script>
-		<script src="<?=SITE_TEMPLATE_PATH?>/js/main.js"></script>
+        <?if(strpos($APPLICATION->GetCurDir(), "/channel/")!==false):?>
+            <script src="<?=SITE_TEMPLATE_PATH?>/js/channel-card.js"></script>
+        <?else:?>
+            <script src="<?=SITE_TEMPLATE_PATH?>/js/main.js"></script>
+        <?endif;?>
         <script src="<?=SITE_TEMPLATE_PATH?>/project.js"></script>
 	</body>
 </html>

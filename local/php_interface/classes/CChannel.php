@@ -13,7 +13,7 @@ class CChannel
         if(empty($arSelect))
             $arSelect = Array("ID", "NAME", "PREVIEW_PICTURE");
             
-        $arFilter = array("IBLOCK_ID" => CHANNEL_IB, "ACTIVE" => "Y");
+        $arFilter = array("IBLOCK_ID" => CHANNEL_IB);
         if($arrFilter)
             $arFilter = array_merge($arFilter, $arrFilter);
         

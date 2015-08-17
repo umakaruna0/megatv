@@ -41,7 +41,9 @@ $APPLICATION->SetTitle("MegaTV");
 		"PAGER_SHOW_ALL" => "N",
 		"AJAX_OPTION_JUMP" => "N",
 		"AJAX_OPTION_STYLE" => "Y",
-		"AJAX_OPTION_HISTORY" => "N"
+		"AJAX_OPTION_HISTORY" => "N",
+        "CURRENT_DATETIME" => CTimeEx::getDateTimeOffset(),
+        "CITY" => CCityEx::getGeoCity()
 	),
 false
 );?>

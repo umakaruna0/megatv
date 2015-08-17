@@ -62,7 +62,7 @@ class CProgTime
         
         $arFields["FIELDS"]["NAME"] = trim($arFields["FIELDS"]["NAME"]);
         $arParams = array("replace_space"=>"-", "replace_other"=>"-");
-        $translit = CDev::translit($date."-".$time."-".$PROP["CHANNEL"]."-".$arFields["FIELDS"]["NAME"], "ru", $arParams);
+        $translit = CDev::translit(trim($date."-".$time."-".$PROP["CHANNEL"]."-".$arFields["FIELDS"]["NAME"]), "ru", $arParams);
         
         $arLoadProductArray = Array(
             "IBLOCK_SECTION_ID" => false,
@@ -110,9 +110,24 @@ class CProgTime
     
     public static function getProgInfoIndex($arProg)
     {
+        if($arProg["CLASS"]=="double")
+        {
+            $arProg["PICTURE"]["SRC"] = CFile::GetPath($arProg["PROPERTY_PICTURE_DOUBLE_VALUE"]);
+        }
+        
+        if($arProg["CLASS"]=="one")
+        {
+            $arProg["PICTURE"]["SRC"] = CFile::GetPath($arProg["PREVIEW_PICTURE"]);
+        }
+        
+        if($arProg["CLASS"]=="half")
+        {
+            $arProg["PICTURE"]["SRC"] = CFile::GetPath($arProg["PROPERTY_PICTURE_HALF_VALUE"]);
+        }
+        
         ob_start();
         ?>
-        <div class="item status-recordable is-noimage<?if($arProg["CLASS"]=="double"):?> double-item<?endif;?>">
+        <div class="item status-recordable <?if(!empty($arProg["PICTURE"]["SRC"])):?> is-noimage<?endif;?><?if($arProg["CLASS"]=="double"):?> double-item<?endif;?>">
             <div class="item-image-holder" style="background-image: url(<?=$arProg["PICTURE"]["SRC"]?>"></div>
         	<span class="item-status-icon">
         		<span data-icon="icon-recordit"></span>
@@ -122,6 +137,71 @@ class CProgTime
         		<a href="<?=$arProg["DETAIL_PAGE_URL"]?>"><?=$arProg["NAME"]?></a>
         	</div>
         </div>
+        <?
+        $content = ob_get_contents();  
+        ob_end_clean();
+        
+        return $content;
+    }
+    
+    public static function getProgInfoChannel($arProg, $arParams)
+    {        
+        if($arProg["CLASS"]=="one")
+        {
+            $arProg["PICTURE"]["SRC"] = CFile::GetPath($arProg["PROPERTY_PICTURE_VERTICAL_DOUBLE_VALUE"]);
+        }
+        
+        if($arProg["CLASS"]=="half")
+        {
+            $arProg["PICTURE"]["SRC"] = CFile::GetPath($arProg["PROPERTY_PICTURE_VERTICAL_VALUE"]);
+        }
+        
+        ob_start();
+        $start = $arProg["DATE_START"];
+        $end = $arProg["DATE_END"];
+        $datetime = CTimeEx::dateOffset($arParams["OFFSET"], $arParams["DATETIME_REAL"]);
+        ?>
+        <div class="item status-recordable <?if($arProg["CLASS"]=="half"):?> half-item<?endif;?>" data-type="draggable" data-target="drop-area">
+			<div class="item-image-holder" style="background-image: url(<?=$arProg["PICTURE"]["SRC"]?>)"></div>
+			
+            <?if(CTimeEx::dateDiff($start, $datetime) && CTimeEx::dateDiff($datetime, $end)):?>
+                <span class="badge">в эфире</span>
+            <?endif;?>
+            
+            <?if($arProg["PROPERTY_HD_VALUE"]):?>
+                <span class="badge">HD</span>
+            <?endif;?>
+            
+			<span class="item-status-icon">
+				<span data-icon="icon-recordit"></span>
+				<span class="status-desc">Записать</span>
+			</span>
+			<div class="item-header">
+                <?if(CTimeEx::dateDiff($start, $datetime) && CTimeEx::dateDiff($datetime, $end)):?>
+                    <?
+                    $allSecs = strtotime($end) - strtotime($start);
+                    $secs = strtotime($datetime) - strtotime($start);
+                    
+                    $proc = ceil($secs/($allSecs/100));
+                    $arTime = CTimeEx::secToTime($secs);
+                    ?>
+    				<div class="timeline" data-progress="<?=$proc?>">
+    					<span class="progress-bg"></span>
+    					<span>прошло <?/*if($arTime["h"]):?><?=$arTime["h"]?> ч. <?endif;*/?><?=$arTime["i"]?> мин.</span>
+    				</div>
+                <?endif;?>
+				<span class="descr-trigger" data-type="descr-trigger"><span>&times;</span></span>
+				<time><?=substr($arProg["DATE_START"], 11, 5)?></time>
+				<a href="<?=$arProg["DETAIL_PAGE_URL"]?>">
+                    <?=$arProg["NAME"]?>.<br>
+                    <?if(!empty($arProg["PROPERTY_SUB_TITLE_VALUE"])):?><?=$arProg["PROPERTY_SUB_TITLE_VALUE"]?>.<?endif;?> 
+                    <?if(!empty($arProg["PROPERTY_YEAR_VALUE"])):?>(<?=$arProg["PROPERTY_YEAR_VALUE"]?>)<?endif;?>
+                </a>
+				<div class="item-descr">
+					<p><?=strip_tags($arProg["PREVIEW_TEXT"])?></p>
+				</div>
+			</div>
+		</div>
         <?
         $content = ob_get_contents();  
         ob_end_clean();
