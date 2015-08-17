@@ -13,6 +13,21 @@
 $this->setFrameMode(true);
 ?>
 
+<?
+/*** В настройки компонента
+** "AJAX" => $_REQUEST["AJAX"],
+** "LIST_URL" => $APPLICATION->GetCurDir()
+**/
+
+// номер текущей страницы
+$curPage = $arResult["NAV_RESULT"]->NavPageNomer;
+// всего страниц - номер последней страницы
+$totalPages = $arResult["NAV_RESULT"]->NavPageCount;
+// номер постраничной навигации на странице
+$navNum = $arResult["NAV_RESULT"]->NavNum;
+$curPage++;
+?>
+
 <section class="broadcast-results" data-module="broadcast-results">
 	<div class="categories-logos">
         <?foreach($arResult["CHANNELS"] as $arItem):?>
@@ -26,7 +41,7 @@ $this->setFrameMode(true);
     		</a>
         <?endforeach?>
 	</div>
-	<div class="categories-items">
+	<div class="categories-items kinetic-active">
         <div class="row-wrap">
             <?foreach($arResult["CHANNELS"] as $arItem):?>
                 <div class="category-row">
@@ -57,10 +72,15 @@ $this->setFrameMode(true);
                     ?>
                 </div>
             <?endforeach?>
+            <?if($totalPages<$curPage):?>
+                <script>
+                    var el = document.getElementById('channels-show-ajax-link');
+                    el.parentNode.removeChild(el);
+                </script>
+            <?endif;?>
         </div>
     </div><!-- /.categories-items -->
+    <?if($arParams["DISPLAY_BOTTOM_PAGER"] == "Y" && $totalPages>1):?>
+        <a href="#" class="more-link" id="channels-show-ajax-link" data-load="<?=$arParams["LIST_URL"]?>" data-page="<?=$curPage?>" data-ajax-type="CHANNELS" data-type="fetch-results-link"><span data-icon="icon-show-more-arrow"></span> Показать еще каналы</a>
+    <?endif;?>
 </section>
-
-<?if($arParams["DISPLAY_BOTTOM_PAGER"]):?>
-	<br /><?=$arResult["NAV_STRING"]?>
-<?endif;?>

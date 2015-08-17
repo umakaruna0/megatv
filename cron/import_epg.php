@@ -39,7 +39,7 @@ CProgTime::delete();
 
 //Загружаем и импортируем данные из EPG
 $Epg = new CEpg();
-//$Epg->download();
+$Epg->download();
 $Epg->import();
 
 echo " --finish loading--";

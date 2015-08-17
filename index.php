@@ -3,8 +3,9 @@ require($_SERVER["DOCUMENT_ROOT"]."/bitrix/header.php");
 $APPLICATION->SetTitle("MegaTV");
 global $USER;
 
-//CProg::updateCache();
-//CProgTime::updateCache();
+CChannel::updateCache();
+CProg::updateCache();
+CProgTime::updateCache();
 //$USER->Authorize(1);
 ?>
 <?$APPLICATION->IncludeComponent("bitrix:news.list", "channels_index", Array(
@@ -51,7 +52,7 @@ global $USER;
 		"CACHE_GROUPS" => "Y",	// Учитывать права доступа
 		"PAGER_TEMPLATE" => "",	// Шаблон постраничной навигации
 		"DISPLAY_TOP_PAGER" => "N",	// Выводить над списком
-		"DISPLAY_BOTTOM_PAGER" => "N",                                    //
+		"DISPLAY_BOTTOM_PAGER" => "Y",                                    //
 		"PAGER_TITLE" => "Новости",	// Название категорий
 		"PAGER_SHOW_ALWAYS" => "N",	// Выводить всегда
 		"PAGER_DESC_NUMBERING" => "N",	// Использовать обратную навигацию
@@ -67,7 +68,10 @@ global $USER;
 		"SHOW_404" => "N",	// Показ специальной страницы
 		"MESSAGE_404" => "",	// Сообщение для показа (по умолчанию из компонента)
         "CURRENT_DATETIME" => CTimeEx::getDateTimeOffset(),
-        "CITY" => CCityEx::getGeoCity()
+        "CITY" => CCityEx::getGeoCity(),
+        "AJAX" => $_REQUEST["AJAX"],
+        "LIST_URL" => $APPLICATION->GetCurDir(),
+        "AJAX_TYPE" => $_REQUEST["AJAX_TYPE"]
 	),
 	false
 );?>
@@ -154,7 +158,7 @@ $arRecommendFilter["PROPERTY_CHANNEL"] = $ids;
 		"SHOW_404" => "N",	// Показ специальной страницы
 		"MESSAGE_404" => "",	// Сообщение для показа (по умолчанию из компонента)
         "CURRENT_DATETIME" => $arTime,
-        "CITY" => CCityEx::getGeoCity()
+        "CITY" => CCityEx::getGeoCity(),
 	),
 	false
 );?>

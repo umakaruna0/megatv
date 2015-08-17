@@ -47,7 +47,7 @@ $APPLICATION->SetTitle("MegaTv");
 		"CACHE_GROUPS" => "Y",	// Учитывать права доступа
 		"PAGER_TEMPLATE" => "",	// Шаблон постраничной навигации
 		"DISPLAY_TOP_PAGER" => "N",	// Выводить над списком
-		"DISPLAY_BOTTOM_PAGER" => "N",                                    //
+		"DISPLAY_BOTTOM_PAGER" => "Y",                                    //
 		"PAGER_TITLE" => "Новости",	// Название категорий
 		"PAGER_SHOW_ALWAYS" => "N",	// Выводить всегда
 		"PAGER_DESC_NUMBERING" => "N",	// Использовать обратную навигацию
@@ -63,7 +63,10 @@ $APPLICATION->SetTitle("MegaTv");
 		"SHOW_404" => "N",	// Показ специальной страницы
 		"MESSAGE_404" => "",	// Сообщение для показа (по умолчанию из компонента)
         "CURRENT_DATETIME" => CTimeEx::getDateTimeOffset(),
-        "CITY" => CCityEx::getGeoCity()
+        "CITY" => CCityEx::getGeoCity(),
+        "AJAX" => $_REQUEST["AJAX"],
+        "LIST_URL" => $APPLICATION->GetCurDir(),
+        "AJAX_TYPE" => $_REQUEST["AJAX_TYPE"]
 	),
 	false
 );?>

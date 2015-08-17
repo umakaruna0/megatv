@@ -88,4 +88,97 @@ $(document).on('ready', function(){
         $("#city-select-form").submit();
     });
     
+    $('a#channels-show-ajax-link').on('click', function (e) {
+		e.preventDefault();
+        var _this = this;
+        
+        var 
+            furl = $(_this).data('load'),
+            //feed = $(_this).data('feed'),
+            page = $(_this).data('page');
+            type = $(_this).data('ajax-type');
+        
+        if(!$(_this).hasClass("loading"))
+        {
+            //show loading
+            $(_this).hide().addClass("loading");
+            $(_this).next('div').css({display: 'inline-block'});
+            
+            if(furl.indexOf("?")>-1)
+            {
+                furl=$(_this).data('load') + "&PAGEN_2="+page + "&PAGEN_1="+page;
+            }else{
+                furl=$(_this).data('load') + "?PAGEN_2="+page + "&PAGEN_1="+page;
+            }
+            
+            //console.log(furl);
+            //console.log(type);
+            
+            $.ajax({
+                url: furl,
+                type: "POST",
+                data: {
+                    AJAX : 'Y',
+                    AJAX_TYPE : type
+                },
+                success: function(response) {
+                    var $response = $(response);
+
+                    $(".categories-logos").append($response.find(".categories-logos").html());
+                    $(".categories-items .row-wrap").append($response.find(".categories-items .row-wrap").html());
+                    
+                    renderIcons();
+                    
+                    $(_this).show().removeClass("loading");
+                    $(_this).next('div').hide();
+                    $(_this).data('page', ++page);
+                },
+                error: function() {
+                    alert('Error load materials');
+                }
+            });
+        }
+
+        return false;
+    });
+    
+    function icon(name, options) {
+    	var optionsz = options || {};
+    	var size	= optionsz.size ? 'is-' + optionsz.size : '';
+    	var klass	= 'icon ' + name + ' ' + size + '' + (optionsz.class || '');
+    
+    	var iconz	=	'<svg class="icon__cnt">' +
+    					'<use xlink:href="#' + name + '" />' +
+    					'</svg>';
+    
+    	var html =  '<div class="' + klass + '">' +
+    					wrapSpinner(iconz, klass) +
+    				'</div>';
+    
+    	return html;
+    }
+    function wrapSpinner(html, klass) 
+    {
+    	if (klass.indexOf('spinner') > -1) {
+    		return '<div class="icon__spinner">' + html + '</div>';
+    	} else {
+    		return html;
+    	}
+    }
+    function renderIcons() {
+    	var icons = document.querySelectorAll('[data-icon]');
+    
+    	for (var i = 0; i < icons.length; i++) {
+    		var currentIcon = icons[i];
+    		var name        = currentIcon.getAttribute('data-icon');
+    		var options = {
+    			class:  currentIcon.className,
+    			size:   currentIcon.getAttribute('data-size')
+    		};
+    
+    		currentIcon.insertAdjacentHTML('beforebegin', icon(name, options));
+    		currentIcon.parentNode.removeChild(currentIcon);
+    	}
+    }
+    
 });
