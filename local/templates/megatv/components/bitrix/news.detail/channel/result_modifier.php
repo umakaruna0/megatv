@@ -48,6 +48,8 @@ if(substr($arParams["CURRENT_DATETIME"]["DATETIME_REAL"], 0, 10)!=substr($arPara
 //echo $filterDateStart."<br />";
 //echo $filterDateEnd."<br />";
 
+//CDev::pre($arFilter);
+
 $arSelect = array(
     "ID", "NAME", "CODE", "PROPERTY_DATE_START", "PROPERTY_DATE_END", "PROPERTY_PROG", "PROPERTY_DATE"
 );
@@ -71,8 +73,12 @@ foreach($arProgTimes as $arProgTime)
         "PROPERTY_PICTURE_VERTICAL", "PROPERTY_YEAR", "PROPERTY_SUB_TITLE", "PROPERTY_HD"
     ));
     
-    $arProg["DATE_START"] = CTimeEx::dateOffset($arParams["CURRENT_DATETIME"]["OFFSET"], $arProgTime["PROPERTY_DATE_START_VALUE"]);
-    $arProg["DATE_END"] = CTimeEx::dateOffset($arParams["CURRENT_DATETIME"]["OFFSET"], $arProgTime["PROPERTY_DATE_END_VALUE"]);
+    //$arProg["DATE_START"] = CTimeEx::dateOffset($arParams["CURRENT_DATETIME"]["OFFSET"], $arProgTime["PROPERTY_DATE_START_VALUE"]);
+    //$arProg["DATE_END"] = CTimeEx::dateOffset($arParams["CURRENT_DATETIME"]["OFFSET"], $arProgTime["PROPERTY_DATE_END_VALUE"]);
+    
+    $arProg["DATE_START"] = $arProgTime["PROPERTY_DATE_START_VALUE"];
+    $arProg["DATE_END"] = $arProgTime["PROPERTY_DATE_END_VALUE"];
+    
     $arProg["DATE"] = $arProgTime["PROPERTY_DATE_VALUE"];
 
     $arProg["DETAIL_PAGE_URL"] = $arResult["CHANNELS"][$channel]["DETAIL_PAGE_URL"].$arProgTime["CODE"]."/";

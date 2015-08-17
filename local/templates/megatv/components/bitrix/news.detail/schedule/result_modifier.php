@@ -15,8 +15,11 @@ $arProg = CProg::getByID($prog, array(
 $arResult = array_merge($arResult, $arProg);
 $arResult["DETAIL_PICTURE"] = $arProg["PREVIEW_PICTURE"];
 
-$arResult["DATE_START"] = CTimeEx::dateOffset($arParams["CURRENT_DATETIME"]["OFFSET"], $arResult["PROPERTIES"]["DATE_START"]["VALUE"]);
-$arResult["DATE_END"] = CTimeEx::dateOffset($arParams["CURRENT_DATETIME"]["OFFSET"], $arResult["PROPERTIES"]["DATE_END"]["VALUE"]);
+//$arResult["DATE_START"] = CTimeEx::dateOffset($arParams["CURRENT_DATETIME"]["OFFSET"], $arResult["PROPERTIES"]["DATE_START"]["VALUE"]);
+//$arResult["DATE_END"] = CTimeEx::dateOffset($arParams["CURRENT_DATETIME"]["OFFSET"], $arResult["PROPERTIES"]["DATE_END"]["VALUE"]);
+
+$arResult["DATE_START"] = $arResult["PROPERTIES"]["DATE_START"]["VALUE"];
+$arResult["DATE_END"] = $arResult["PROPERTIES"]["DATE_END"]["VALUE"];
 
 $sec = strtotime($arResult["DATE_END"]) - strtotime($arResult["DATE_START"]);
 $arResult["DURATION"] = CTimeEx::secToStr($sec);

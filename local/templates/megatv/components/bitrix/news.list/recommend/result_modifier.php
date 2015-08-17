@@ -16,8 +16,10 @@ foreach($arResult["ITEMS"] as $arProgTime)
     $arProg["CHANNEL"] = CChannel::getList(array("=ID"=>$channel), array("DETAIL_PAGE_URL", "PROPERTY_ICON"));
     $arProg["CHANNEL"] = array_shift($arProg["CHANNEL"]);
     
-    $arProg["DATE_START"] = CTimeEx::dateOffset($arParams["CURRENT_DATETIME"]["OFFSET"], $arProgTime["PROPERTIES"]["DATE_START"]["VALUE"]);
-    $arProg["DATE_END"] = CTimeEx::dateOffset($arParams["CURRENT_DATETIME"]["OFFSET"], $arProgTime["PROPERTIES"]["DATE_END"]["VALUE"]);
+    //$arProg["DATE_START"] = CTimeEx::dateOffset($arParams["CURRENT_DATETIME"]["OFFSET"], $arProgTime["PROPERTIES"]["DATE_START"]["VALUE"]);
+    //$arProg["DATE_END"] = CTimeEx::dateOffset($arParams["CURRENT_DATETIME"]["OFFSET"], $arProgTime["PROPERTIES"]["DATE_END"]["VALUE"]);
+    $arProg["DATE_START"] = $arProgTime["PROPERTIES"]["DATE_START"]["VALUE"];
+    $arProg["DATE_END"] = $arProgTime["PROPERTIES"]["DATE_END"]["VALUE"];
     $arProg["DATE"] = $arProgTime["PROPERTIES"]["DATE"]["VALUE"];
 
     $arProg["DETAIL_PAGE_URL"] = $arProg["CHANNEL"]["DETAIL_PAGE_URL"].$arProgTime["CODE"]."/";

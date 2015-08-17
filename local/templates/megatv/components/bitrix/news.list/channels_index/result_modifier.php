@@ -41,8 +41,11 @@ foreach($arProgTimes as &$arProgTime)
         "ID", "NAME", "PROPERTY_PICTURE_DOUBLE", "PROPERTY_PICTURE_HALF", "PREVIEW_PICTURE", "PROPERTY_YEAR", "PROPERTY_SUB_TITLE"
     ));
     
-    $arProg["DATE_START"] = CTimeEx::dateOffset($arParams["CURRENT_DATETIME"]["OFFSET"], $arProgTime["PROPERTY_DATE_START_VALUE"]);
-    $arProg["DATE_END"] = CTimeEx::dateOffset($arParams["CURRENT_DATETIME"]["OFFSET"], $arProgTime["PROPERTY_DATE_END_VALUE"]);
+    //$arProg["DATE_START"] = CTimeEx::dateOffset($arParams["CURRENT_DATETIME"]["OFFSET"], $arProgTime["PROPERTY_DATE_START_VALUE"]);
+    //$arProg["DATE_END"] = CTimeEx::dateOffset($arParams["CURRENT_DATETIME"]["OFFSET"], $arProgTime["PROPERTY_DATE_END_VALUE"]);
+    
+    $arProg["DATE_START"] = $arProgTime["PROPERTY_DATE_START_VALUE"];
+    $arProg["DATE_END"] = $arProgTime["PROPERTY_DATE_END_VALUE"];
     $arProg["DATE"] = $arProgTime["PROPERTY_DATE_VALUE"];
 
     $arProg["DETAIL_PAGE_URL"] = $arResult["CHANNELS"][$channel]["DETAIL_PAGE_URL"].$arProgTime["CODE"]."/";
