@@ -1,8 +1,6 @@
 <?
 ini_set('max_execution_time', 30);
 
-//CDev::pre($arResult["ITEMS"]);
-
 $arResult["PROGS"] = array();
 foreach($arResult["ITEMS"] as $arProgTime)
 {
@@ -16,10 +14,10 @@ foreach($arResult["ITEMS"] as $arProgTime)
     $arProg["CHANNEL"] = CChannel::getList(array("=ID"=>$channel), array("DETAIL_PAGE_URL", "PROPERTY_ICON"));
     $arProg["CHANNEL"] = array_shift($arProg["CHANNEL"]);
     
-    //$arProg["DATE_START"] = CTimeEx::dateOffset($arParams["CURRENT_DATETIME"]["OFFSET"], $arProgTime["PROPERTIES"]["DATE_START"]["VALUE"]);
-    //$arProg["DATE_END"] = CTimeEx::dateOffset($arParams["CURRENT_DATETIME"]["OFFSET"], $arProgTime["PROPERTIES"]["DATE_END"]["VALUE"]);
-    $arProg["DATE_START"] = $arProgTime["PROPERTIES"]["DATE_START"]["VALUE"];
-    $arProg["DATE_END"] = $arProgTime["PROPERTIES"]["DATE_END"]["VALUE"];
+    $arProg["DATE_START"] = CTimeEx::dateOffset($arParams["DATETIME"]["OFFSET"], $arProgTime["PROPERTIES"]["DATE_START"]["VALUE"]);
+    $arProg["DATE_END"] = CTimeEx::dateOffset($arParams["DATETIME"]["OFFSET"], $arProgTime["PROPERTIES"]["DATE_END"]["VALUE"]);
+    //$arProg["DATE_START"] = $arProgTime["PROPERTIES"]["DATE_START"]["VALUE"];
+    //$arProg["DATE_END"] = $arProgTime["PROPERTIES"]["DATE_END"]["VALUE"];
     $arProg["DATE"] = $arProgTime["PROPERTIES"]["DATE"]["VALUE"];
 
     $arProg["DETAIL_PAGE_URL"] = $arProg["CHANNEL"]["DETAIL_PAGE_URL"].$arProgTime["CODE"]."/";
@@ -29,6 +27,4 @@ foreach($arResult["ITEMS"] as $arProgTime)
 $arResult["PROGS"] = CScheduleTable::setRecommendIndex(array(
     "PROGS" => $arResult["PROGS"],
 ));
-
-//CDev::pre($arResult["PROGS"]);
 ?>

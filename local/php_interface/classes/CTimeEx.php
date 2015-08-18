@@ -1,10 +1,41 @@
 <?
 class CTimeEx
 {
+    public static function getDatetime()
+    {
+        global $APPLICATION;
+        
+        $arCity = CCityEx::getGeoCity();
+        $offset = intval($arCity["PROPERTY_OFFSET_VALUE"]); //сдвиг относительно время сервера
+        
+        $arResult = array();
+        $arResult["SERVER_DATETIME"] = date("d.m.Y H:i:s");     //серверная дата 
+        $arResult["OFFSET"] = $offset;  //сдвиг относительно Москвы (берется из города)
+        $arResult["SERVER_DATETIME_WITH_OFFSET"] = self::dateOffset($offset, $arResult["SERVER_DATETIME"]);
+        $arResult["SELECTED_DATE"] = $_SESSION["DATE_CURRENT_SHOW"];
+        $arResult["SELECTED_DATETIME"] = $_SESSION["DATE_CURRENT_SHOW"].date(" H:i:s");
+        $arResult["SELECTED_DATETIME_WITH_OFFSET"] = self::dateOffset($offset, $arResult["SELECTED_DATETIME"]);
+        return $arResult;
+    }
+    
+    public static function datetimeForFilter($datetime, $add = false)
+    {
+        /*if($add)
+        {
+            return date("Y-m-d H:i:s", strtotime($add, strtotime($datetime)));
+        }else{
+            return date("Y-m-d H:i:s", strtotime($datetime));
+        }*/
+        return date("Y-m-d H:i:s", strtotime("-3 hour ".$add, strtotime($datetime))); 
+    }
+    
     public static function getCalendarDays()
     {
-        $w = date("w");
-                
+        $arDate = self::getDatetime();
+        $datetime = $arDate["SERVER_DATETIME_WITH_OFFSET"];
+        
+        //$w = date("w");
+        $w = date("w", strtotime($datetime));                
         $dateFullDownload = 6;
         
         //понедельник
@@ -18,44 +49,22 @@ class CTimeEx
         return $countDays;
     }
     
-    /*
-    public static function getCurDate()
-    {
-        if(isset($_GET["DATE_CURRENT_SHOW"]) && !empty($_GET["DATE_CURRENT_SHOW"]))
-        {
-            $date = str_replace("date-", "", $_GET["DATE_CURRENT_SHOW"]);
-            $date = date("d.m.Y", strtotime($date));
-            
-            setcookie("DATE_CURRENT_SHOW", $date, time()+3600); 
-            
-        }else{
-            if(!isset($_COOKIE["DATE_CURRENT_SHOW"]) || empty($_COOKIE["DATE_CURRENT_SHOW"]))
-            {
-                $date = date("d.m.Y");  //текущая дата пользователя
-                setcookie("DATE_CURRENT_SHOW", $date, time()+3600);
-            }else{
-                $date = @$_COOKIE["DATE_CURRENT_SHOW"];
-            }   
-        }
-        
-        return $date;
-    }
-    */
+    
     
     public static function getCurDate()
     {
         global $APPLICATION;
-        if($APPLICATION->GetCurDir()=="/")
+        if($APPLICATION->GetCurDir()=="/" && !isset($_GET["cur_date"]))
             $_SESSION["DATE_CURRENT_SHOW"] = date("d.m.Y");
         
-        if(isset($_GET["DATE_CURRENT_SHOW"]) && !empty($_GET["DATE_CURRENT_SHOW"]))
+        if(isset($_GET["cur_date"]) && !empty($_GET["cur_date"]))
         {
-            $date = str_replace("date-", "", $_GET["DATE_CURRENT_SHOW"]);
+            $date = substr($_GET["cur_date"], 0, 10);
             $date = date("d.m.Y", strtotime($date));
         }else{
             if(!isset($_SESSION["DATE_CURRENT_SHOW"]) || empty($_SESSION["DATE_CURRENT_SHOW"]))
             {
-                $date = date("d.m.Y");  //текущая дата пользователя
+                $date = date("d.m.Y");  //текущая дата сервера
             }else{
                 $date = $_SESSION["DATE_CURRENT_SHOW"];
             }  
@@ -77,7 +86,7 @@ class CTimeEx
         if(!$offset)
         {
             $arCity = CCityEx::getGeoCity();
-            $offset = intval($arCity["PROPERTY_OFFSET_VALUE"]);
+            $offset = intval($arCity["PROPERTY_OFFSET_VALUE"]); //сдвиг относительно время сервера
         }
         
         $date = self::getCurDate();

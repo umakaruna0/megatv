@@ -27,7 +27,7 @@ $this->setFrameMode(true);
             <?
             foreach($arResult["PROGS"] as $arProg)
             {
-                echo CProgTime::getProgInfoChannel($arProg, $arParams["CURRENT_DATETIME"]);
+                echo CProgTime::getProgInfoChannel($arProg, $arParams);
             }
             ?>
 		</div>

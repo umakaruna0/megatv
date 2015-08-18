@@ -1,0 +1,25 @@
+<?
+$aMenuLinks = Array(
+	Array(
+		"Каналы", 
+		"/channels/", 
+		Array(), 
+		Array(), 
+		"" 
+	),
+	Array(
+		"Тематики", 
+		"/topics/", 
+		Array(), 
+		Array(), 
+		"" 
+	),
+	Array(
+		"Рекомендации", 
+		"/recommendations/", 
+		Array(), 
+		Array(), 
+		"" 
+	)
+);
+?>

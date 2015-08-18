@@ -155,7 +155,7 @@ class CProgTime
         	<div class="item-header">
         		<time><?=substr($arProg["DATE_START"], 11, 5)?></time>
         		<a href="<?=$arProg["DETAIL_PAGE_URL"]?>">
-                    <?=$arProg["NAME"]?>.<?if(!empty($arProg["PROPERTY_SUB_TITLE_VALUE"])):?><br><?=$arProg["PROPERTY_SUB_TITLE_VALUE"]?>.<?endif;?> 
+                    <?=$arProg["NAME"]?><?if(!empty($arProg["PROPERTY_SUB_TITLE_VALUE"])):?>.<br><?=$arProg["PROPERTY_SUB_TITLE_VALUE"]?><?endif;?> 
                 </a>
         	</div>
         </div>
@@ -181,7 +181,7 @@ class CProgTime
         ob_start();
         $start = $arProg["DATE_START"];
         $end = $arProg["DATE_END"];
-        $datetime = CTimeEx::dateOffset($arParams["OFFSET"], $arParams["DATETIME_REAL"]);
+        $datetime = $arParams["DATETIME"]["SERVER_DATETIME_WITH_OFFSET"];
         ?>
         <div class="item status-recordable<?if($arProg["CLASS"]=="half"):?> half-item<?endif;?>" data-type="draggable" data-target="drop-area">
 			<div class="item-image-holder" style="background-image: url(<?=$arProg["PICTURE"]["SRC"]?>)"></div>
@@ -215,9 +215,9 @@ class CProgTime
 				<span class="descr-trigger" data-type="descr-trigger"><span>&times;</span></span>
 				<time><?=substr($arProg["DATE_START"], 11, 5)?></time>
 				<a href="<?=$arProg["DETAIL_PAGE_URL"]?>">
-                    <?=$arProg["NAME"]?>.<br>
-                    <?if(!empty($arProg["PROPERTY_SUB_TITLE_VALUE"])):?><?=$arProg["PROPERTY_SUB_TITLE_VALUE"]?>.<?endif;?> 
-                    <?if(!empty($arProg["PROPERTY_YEAR_VALUE"])):?>(<?=$arProg["PROPERTY_YEAR_VALUE"]?>)<?endif;?>
+                    <?=$arProg["NAME"]?>
+                    <?if(!empty($arProg["PROPERTY_SUB_TITLE_VALUE"])):?>.<br><?=$arProg["PROPERTY_SUB_TITLE_VALUE"]?><?endif;?> 
+                    <?if(!empty($arProg["PROPERTY_YEAR_VALUE"])):?>.(<?=$arProg["PROPERTY_YEAR_VALUE"]?>)<?endif;?>
                 </a>
 				<div class="item-descr">
 					<p><?=strip_tags($arProg["PREVIEW_TEXT"])?></p>
@@ -244,8 +244,8 @@ class CProgTime
             <div class="item-header">
 				<time><?=substr($arProg["DATE_START"], 11, 5)?> <span class="date">| <?=substr($arProg["DATE_START"], 0, 10)?></span></time>
 				<a href="<?=$arProg["DETAIL_PAGE_URL"]?>">
-                    <?=$arProg["NAME"]?>.
-                    <?if(!empty($arProg["PROPERTY_SUB_TITLE_VALUE"])):?><br><?=$arProg["PROPERTY_SUB_TITLE_VALUE"]?>.<?endif;?> 
+                    <?=$arProg["NAME"]?>
+                    <?if(!empty($arProg["PROPERTY_SUB_TITLE_VALUE"])):?>.<br><?=$arProg["PROPERTY_SUB_TITLE_VALUE"]?><?endif;?> 
                 </a>
                 <?if($arParams["NOT_SHOW_CHANNEL"]!="Y"):?>
     				<div class="channel-icon">
@@ -275,8 +275,8 @@ class CProgTime
 			<div class="item-header">
 				<time><?=substr($arProg["DATE_START"], 11, 5)?> | <?=substr($arProg["DATE_START"], 0, 10)?></time>
 				<a href="<?=$arProg["DETAIL_PAGE_URL"]?>">
-                    <?=$arProg["NAME"]?>.
-                    <?if(!empty($arProg["PROPERTY_SUB_TITLE_VALUE"])):?><br><?=$arProg["PROPERTY_SUB_TITLE_VALUE"]?>.<?endif;?> 
+                    <?=$arProg["NAME"]?>
+                    <?if(!empty($arProg["PROPERTY_SUB_TITLE_VALUE"])):?>.<br><?=$arProg["PROPERTY_SUB_TITLE_VALUE"]?><?endif;?> 
                 </a>
 			</div>
 		</li>
@@ -285,6 +285,43 @@ class CProgTime
         ob_end_clean();
         
         return $content;
+    }
+    
+    public static function getFilterByChannel($arDatetime = array(), $channelId)
+    {
+        $arFilter = array();
+        $arProgTimes = CProgTime::getList(
+            array(
+                "PROPERTY_DATE" => substr(date("Y-m-d", strtotime($arDatetime["SELECTED_DATE"])), 0, 10),
+                "PROPERTY_CHANNEL" => $channelId
+            ),
+            array(
+                "ID", "PROPERTY_DATE_START", "PROPERTY_DATE_END", "PROPERTY_CHANNEL"
+            )
+        );
+        
+        $arFirst = array_shift($arProgTimes);
+        $minDate = $arFirst["PROPERTY_DATE_START_VALUE"];
+        
+        $arLast = array_pop($arProgTimes); 
+        $maxDate = $arLast["PROPERTY_DATE_END_VALUE"];
+            
+        $minDate = CTimeEx::dateOffset((-1)*$arDatetime["OFFSET"], $minDate);
+        $maxDate = CTimeEx::dateOffset((-1)*$arDatetime["OFFSET"], $maxDate); 
+        
+        //echo $minDate."<br />".$maxDate;
+        
+        $filterDateStart = date("Y-m-d H:i:s", strtotime("-3 hour", strtotime($minDate)));
+        $filterDateEnd = date('Y-m-d H:i:s', strtotime("-3 hour", strtotime($maxDate)));
+        
+        //echo $filterDateStart."<br />".$filterDateEnd;
+               
+        $arFilter = array(
+            ">=PROPERTY_DATE_START" => $filterDateStart,
+            "<PROPERTY_DATE_END" => $filterDateEnd,
+            "PROPERTY_CHANNEL" => $channelId
+        );
+        return $arFilter;       
     }
     
     public static function updateCache() 

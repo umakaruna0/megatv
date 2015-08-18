@@ -75,7 +75,7 @@ CProgTime::updateCache();
 		"PAGER_BASE_LINK_ENABLE" => "N",	// Включить обработку ссылок
 		"SHOW_404" => "N",	// Показ специальной страницы
 		"MESSAGE_404" => "",	// Сообщение для показа (по умолчанию из компонента)
-        "CURRENT_DATETIME" => CTimeEx::getDateTimeOffset(),
+        "DATETIME" => CTimeEx::getDatetime(),
         "CITY" => CCityEx::getGeoCity(),
         "AJAX" => $_REQUEST["AJAX"],
         "LIST_URL" => $APPLICATION->GetCurDir(),
@@ -84,24 +84,33 @@ CProgTime::updateCache();
 	false
 );?>
 
+
 <?
-global $arRecommendFilter;
-$arTime = CTimeEx::getDateTimeOffset();
 $activeChannels = CChannel::getList(array("ACTIVE"=>"Y"), array("ID"));
 $ids = array();
 foreach($activeChannels as $activeChannel)
 {
     $ids[] = $activeChannel["ID"];
 }
-$filterDateStart = date("Y-m-d H:i:s", strtotime("-3 hour", strtotime($arTime["DATETIME_CURRENT"])));
-$filterDateEnd = date('Y-m-d H:i:s', strtotime("+1 day -3 hour", strtotime($arTime["DATETIME_CURRENT"])));
 
-//echo $filterDateStart." ".$filterDateEnd;
+//Выберем все программы с такими же темами
+$progIds = array(0);
+$arProgs = CProg::getList(array(
+    "!PROPERTY_RECOMMEND_VALUE" => false, 
+    ), array("ID", "NAME", "PROPERTY_CHANNEL", "PROPERTY_SUB_TITLE")
+);
+foreach($arProgs as $arProg)
+{
+    $progIds[] = $arProg["ID"];
+}
+$progIds = array_unique($progIds);
 
+$filterDateStart = CTimeEx::datetimeForFilter(date("Y-m-d H:i:s"));
+
+global $arRecommendFilter;
 $arRecommendFilter[">=PROPERTY_DATE_START"] = $filterDateStart;
-$arRecommendFilter["<PROPERTY_DATE_END"] = $filterDateEnd;
 $arRecommendFilter["PROPERTY_CHANNEL"] = $ids;
-//$arRecommendFilter["!PROPERTY_RECOMMEND_VALUE"] = false;
+//$arRecommendFilter["PROPERTY_PROG"] = $progIds;
 ?>
 
 <?$APPLICATION->IncludeComponent("bitrix:news.list", "recommend", Array(
@@ -165,7 +174,7 @@ $arRecommendFilter["PROPERTY_CHANNEL"] = $ids;
 		"PAGER_BASE_LINK_ENABLE" => "N",	// Включить обработку ссылок
 		"SHOW_404" => "N",	// Показ специальной страницы
 		"MESSAGE_404" => "",	// Сообщение для показа (по умолчанию из компонента)
-        "CURRENT_DATETIME" => $arTime,
+        "DATETIME" => CTimeEx::getDatetime(),
         "CITY" => CCityEx::getGeoCity(),
 	),
 	false

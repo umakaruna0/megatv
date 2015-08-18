@@ -17,7 +17,7 @@ IncludeTemplateLangFile(__FILE__);
         $APPLICATION->ShowMeta("description", false, true);
         $APPLICATION->ShowCSS(true, true);
         
-        $APPLICATION->SetAdditionalCSS(SITE_TEMPLATE_PATH.'/css/main.css');
+        $APPLICATION->SetAdditionalCSS(SITE_TEMPLATE_PATH.'/megatv/dist/css/main.css');
         $APPLICATION->SetAdditionalCSS(SITE_TEMPLATE_PATH.'/project.css');
         $APPLICATION->ShowHeadStrings();
     	$APPLICATION->ShowHeadScripts();
@@ -167,11 +167,21 @@ IncludeTemplateLangFile(__FILE__);
 						<div class="dates-holder" data-type="dates-carousel"></div>
 						<a href="#" class="next-trigger" data-type="next-trigger"><span data-icon="icon-right-arrow-days"></span></a>
 					</div>
-					<ul class="sections-menu">
-						<li class="active"><a href="index.html"><span data-icon="icon-channels"></span><span>Каналы</span></a></li>
-						<?/*<li><a href="themes.html"><span data-icon="icon-themes"></span><span>Тематики</span></a></li>
-						<li><a href="recommendations.html"><span data-icon="icon-recommendations"></span><span>Рекомендации</span></a></li>*/?>
-					</ul>
+                    
+                    <?$APPLICATION->IncludeComponent("bitrix:menu","top",Array(
+                            "ROOT_MENU_TYPE" => "top", 
+                            "MAX_LEVEL" => "1", 
+                            "CHILD_MENU_TYPE" => "top", 
+                            "USE_EXT" => "Y",
+                            "DELAY" => "N",
+                            "ALLOW_MULTI_SELECT" => "Y",
+                            "MENU_CACHE_TYPE" => "N", 
+                            "MENU_CACHE_TIME" => "3600", 
+                            "MENU_CACHE_USE_GROUPS" => "Y", 
+                            "MENU_CACHE_GET_VARS" => "" 
+                        )
+                    );?>
+
 					<form action="#" class="search-form" data-module="search-form">
 						<div class="form-group has-feedback">
 							<label for="" class="sr-only">Поиск</label>

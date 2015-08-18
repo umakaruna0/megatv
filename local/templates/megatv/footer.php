@@ -1,5 +1,4 @@
 <?if(!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED!==true) die();?>
-
             </main>
 			<footer class="site-footer">
 				<div class="fullsize-banner adv-styling-01<?if(strpos($_COOKIE['advertizing_hidden_banners'], "footer-adv")!==false):?> hide<?endif;?>" data-type="advertizing" id="footer-adv">
@@ -23,14 +22,14 @@
         //$APPLICATION->AddHeadScript(SITE_TEMPLATE_PATH.'/js/plugins.js');
         //$APPLICATION->AddHeadScript(SITE_TEMPLATE_PATH.'/js/main.js');
         ?>
-        <script src="<?=SITE_TEMPLATE_PATH?>/js/vendor.js"></script>
-		<script src="<?=SITE_TEMPLATE_PATH?>/js/plugins.js"></script>
-        <?if(strpos($APPLICATION->GetCurDir(), "/channel/")!==false && isset($_REQUEST["SCHEDULE_CODE"])):?>
-            <script src="<?=SITE_TEMPLATE_PATH?>/js/broadcast-card.js"></script>
-        <?elseif(strpos($APPLICATION->GetCurDir(), "/channel/")!==false):?>
-            <script src="<?=SITE_TEMPLATE_PATH?>/js/channel-card.js"></script>
+        <script src="<?=SITE_TEMPLATE_PATH?>/megatv/dist/js/vendor.js"></script>
+		<script src="<?=SITE_TEMPLATE_PATH?>/megatv/dist/js/plugins.js"></script>
+        <?if(strpos($APPLICATION->GetCurDir(), "/channels/")!==false && isset($_REQUEST["SCHEDULE_CODE"])):?>
+            <script src="<?=SITE_TEMPLATE_PATH?>/megatv/dist/js/broadcast-card.js"></script>
+        <?elseif(strpos($APPLICATION->GetCurDir(), "/channels/")!==false):?>
+            <script src="<?=SITE_TEMPLATE_PATH?>/megatv/dist/js/channel-card.js"></script>
         <?else:?>
-            <script src="<?=SITE_TEMPLATE_PATH?>/js/main.js"></script>
+            <script src="<?=SITE_TEMPLATE_PATH?>/megatv/dist/js/main.js"></script>
         <?endif;?>
         <script src="<?=SITE_TEMPLATE_PATH?>/project.js"></script>
 	</body>
