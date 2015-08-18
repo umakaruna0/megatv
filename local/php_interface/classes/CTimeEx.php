@@ -18,8 +18,36 @@ class CTimeEx
         return $countDays;
     }
     
+    /*
     public static function getCurDate()
     {
+        if(isset($_GET["DATE_CURRENT_SHOW"]) && !empty($_GET["DATE_CURRENT_SHOW"]))
+        {
+            $date = str_replace("date-", "", $_GET["DATE_CURRENT_SHOW"]);
+            $date = date("d.m.Y", strtotime($date));
+            
+            setcookie("DATE_CURRENT_SHOW", $date, time()+3600); 
+            
+        }else{
+            if(!isset($_COOKIE["DATE_CURRENT_SHOW"]) || empty($_COOKIE["DATE_CURRENT_SHOW"]))
+            {
+                $date = date("d.m.Y");  //текущая дата пользователя
+                setcookie("DATE_CURRENT_SHOW", $date, time()+3600);
+            }else{
+                $date = @$_COOKIE["DATE_CURRENT_SHOW"];
+            }   
+        }
+        
+        return $date;
+    }
+    */
+    
+    public static function getCurDate()
+    {
+        global $APPLICATION;
+        if($APPLICATION->GetCurDir()=="/")
+            $_SESSION["DATE_CURRENT_SHOW"] = date("d.m.Y");
+        
         if(isset($_GET["DATE_CURRENT_SHOW"]) && !empty($_GET["DATE_CURRENT_SHOW"]))
         {
             $date = str_replace("date-", "", $_GET["DATE_CURRENT_SHOW"]);

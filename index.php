@@ -3,6 +3,14 @@ require($_SERVER["DOCUMENT_ROOT"]."/bitrix/header.php");
 $APPLICATION->SetTitle("MegaTV");
 global $USER;
 
+/*CDev::pre($_COOKIE);
+
+$filterDateStart = date("Y-m-d 00:00:00", strtotime(date("d.m.Y")));
+$filterDateEnd = date('Y-m-d 00:00:00', strtotime("+10 day", strtotime($filterDateStart)));
+
+echo $filterDateStart."<br />";
+echo $filterDateEnd;
+*/
 CChannel::updateCache();
 CProg::updateCache();
 CProgTime::updateCache();

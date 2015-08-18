@@ -44,6 +44,8 @@ class CEpg
         $epgUrl = CXmlEx::getAttr($xml, "generator-info-url");
         $epgName = CXmlEx::getAttr($xml, "generator-info-name");
         
+        $arScheduleIdsNotDelete = array();
+        
         //Расписание, которое нужно удалить
         $arProgTimeDelete = array();
         
@@ -86,7 +88,6 @@ class CEpg
         $arProgs = CProg::getList(false, array("ID", "NAME", "PREVIEW_TEXT", "PROPERTY_CHANNEL", "PROPERTY_SUB_TITLE"));
         $arProgTimes = CProgTime::getList(false, array("ID", "PROPERTY_CHANNEL", "PROPERTY_DATE_START"));
         
-        //die();
         foreach($xml->programme as $arProg)
         {
             $json = json_encode($arProg);
@@ -184,7 +185,6 @@ class CEpg
                     );
                 }
             }else{
-                
                 $progID = $arProgs[$unique]["ID"];
             }
             
@@ -231,8 +231,35 @@ class CEpg
                     );
                     echo "Added prog schedule ".$progTimeID."<br />";
                 }
+            }else{
+                $progTimeID = $arProgTimes[$uniqueTimeID]["ID"];
+            }
+            
+            $arScheduleIdsNotDelete[] = $progTimeID;
+        }
+        
+        unset($arProgTimes);
+        
+        //Найдем все расписание на ближайшие 10 дней и удалим лишние
+        echo "<h1>delete</h1>";
+        //CDev::pre($arScheduleIdsNotDelete);
+        CProgTime::updateCache();
+        $filterDateStart = date("Y-m-d 00:00:00", strtotime(date("d.m.Y")));
+        $arProgTimes = CProgTime::getList(array(
+            ">=PROPERTY_DATE" => $filterDateStart,
+        ), array("ID", "PROPERTY_CHANNEL", "PROPERTY_DATE_START"));
+        foreach($arProgTimes as $arProgTime)
+        {
+            if(!in_array($arProgTime["ID"], $arScheduleIdsNotDelete))
+            {
+                echo "delete=".$arProgTime["ID"]."<br />";
+                CIBlockElement::Delete($arProgTime["ID"]);
             }
         }
+        
+        unset($arProgTimes);
+        unset($arScheduleIdsNotDelete);
+        
         CProg::updateCache();
         CProgTime::updateCache();
     }
