@@ -247,11 +247,11 @@ class CProgTime
                     <?=$arProg["NAME"]?>
                     <?if(!empty($arProg["PROPERTY_SUB_TITLE_VALUE"])):?>.<br><?=$arProg["PROPERTY_SUB_TITLE_VALUE"]?><?endif;?> 
                 </a>
-                <?if($arParams["NOT_SHOW_CHANNEL"]!="Y"):?>
+                <?/*if($arParams["NOT_SHOW_CHANNEL"]!="Y"):?>
     				<div class="channel-icon">
     					<span data-icon="<?=$arProg["CHANNEL"]["PROPERTY_ICON_VALUE"]?>" data-size="small"></span>
     				</div>
-                <?endif;?>
+                <?endif;*/?>
 			</div>
         </div>
         <?

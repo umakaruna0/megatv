@@ -164,7 +164,6 @@ $arRecommendFilter["PROPERTY_CHANNEL"] = $ids;
 		"PAGER_BASE_LINK_ENABLE" => "N",	// Включить обработку ссылок
 		"SHOW_404" => "N",	// Показ специальной страницы
 		"MESSAGE_404" => "",	// Сообщение для показа (по умолчанию из компонента)
-        "CURRENT_DATETIME" => $arTime,
         "DATETIME" => CTimeEx::getDatetime(),
         "CITY" => CCityEx::getGeoCity(),
 	),

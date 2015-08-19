@@ -244,9 +244,9 @@ class CEpg
         echo "<h1>delete</h1>";
         //CDev::pre($arScheduleIdsNotDelete);
         CProgTime::updateCache();
-        $filterDateStart = date("Y-m-d 00:00:00", strtotime(date("d.m.Y")));
+        $filterDateStart = CTimeEx::datetimeForFilter(date("Y-m-d 00:00:00"));
         $arProgTimes = CProgTime::getList(array(
-            ">=PROPERTY_DATE" => $filterDateStart,
+            ">=PROPERTY_DATE_START" => $filterDateStart,
         ), array("ID", "PROPERTY_CHANNEL", "PROPERTY_DATE_START"));
         foreach($arProgTimes as $arProgTime)
         {

@@ -119,13 +119,18 @@ IncludeTemplateLangFile(__FILE__);
                             <?
                             if($USER->IsAuthorized())
                             {
-                                $rsUser = CUser::GetByID($USER->GetID());
-                                $arUser = $rsUser->Fetch();
+                                //$rsUser = CUser::GetByID($USER->GetID());
+                                //$arUser = $rsUser->Fetch();
+                                $arUser = CUserEx::OnAfterUserUpdateHandler($USER->GetID());
                                 ?>
                                 <div class="user-card">
         							<a href="#" class="user-avatar">
-        								<img src="<?=SITE_TEMPLATE_PATH?>/img/temp/user-avatar-01.jpg" alt="Александр Пушкин" width="50" height="50">
-        							</a>
+                                        <?if($arUser["PERSONAL_PHOTO"]):?>
+                                            <img src="<?=CFile::GetPath($arUser["PERSONAL_PHOTO"])?>" alt="<?=$USER->GetFullName()?>" width="50" height="50">
+                                        <?else:?>
+        								    <img src="<?=SITE_TEMPLATE_PATH?>/img/temp/user-avatar-01.jpg" alt="<?=$USER->GetFullName()?>" width="50" height="50">
+                                        <?endif;?>
+                                    </a>
         							<div class="info-panel">
         								<a class="username" href="#"><?=$USER->GetFullName()?></a><br>
         								<a href="<?=$APPLICATION->GetCurDir()?>?logout=yes" class="signout-link">Выйти</a>
