@@ -60,13 +60,13 @@ $arResult["CHANNELS"] = array();
 foreach($activeChannels as $activeChannel)
 {
     $ids[] = $activeChannel["ID"];
-    $arResult["CHANNELS"][$arItem["ID"]] = $activeChannel;
+    $arResult["CHANNELS"][$activeChannel["ID"]] = $activeChannel;
 }
 
 
 $arProgTimes = CProgTime::getList(array(
     "PROPERTY_DATE" => date("Y-m-d", strtotime($arTime["SELECTED_DATE"])),
-), array("ID", "PROPERTY_DATE_START", "PROPERTY_DATE_END", "PROPERTY_PROG", "PROPERTY_CHANNEL"));
+), array("ID", "CODE", "PROPERTY_DATE_START", "PROPERTY_DATE_END", "PROPERTY_PROG", "PROPERTY_CHANNEL"));
 
 foreach($arResult["TOPICS"] as &$arTopic)
 {

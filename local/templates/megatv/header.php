@@ -37,7 +37,7 @@ IncludeTemplateLangFile(__FILE__);
         <?$APPLICATION->IncludeComponent("bitrix:main.include", "", array("AREA_FILE_SHOW" => "file", "PATH" => SITE_DIR."include/header-signin.php"), false);?>
         
 		<div class="site-wrapper" data-module="page">
-			<script type="text/x-config">{ "bannersHideTime": 0 }</script> <!-- конфиг для модуля page -->
+			<script type="text/x-config">{ "bannersHideTime": 1 }</script> <!-- конфиг для модуля page -->
 			<div id="drop-area" class="drop-area">
 				<div>
 					<div class="dropzone">
@@ -119,12 +119,10 @@ IncludeTemplateLangFile(__FILE__);
                             <?
                             if($USER->IsAuthorized())
                             {
-                                //$rsUser = CUser::GetByID($USER->GetID());
-                                //$arUser = $rsUser->Fetch();
                                 $arUser = CUserEx::OnAfterUserUpdateHandler($USER->GetID());
                                 ?>
                                 <div class="user-card">
-        							<a href="#" class="user-avatar">
+        							<a href="/personal/" class="user-avatar">
                                         <?if($arUser["PERSONAL_PHOTO"]):?>
                                             <img src="<?=CFile::GetPath($arUser["PERSONAL_PHOTO"])?>" alt="<?=$USER->GetFullName()?>" width="50" height="50">
                                         <?else:?>
@@ -132,7 +130,7 @@ IncludeTemplateLangFile(__FILE__);
                                         <?endif;?>
                                     </a>
         							<div class="info-panel">
-        								<a class="username" href="#"><?=$USER->GetFullName()?></a><br>
+        								<a class="username" href="/personal/"><?=$USER->GetFullName()?></a><br>
         								<a href="<?=$APPLICATION->GetCurDir()?>?logout=yes" class="signout-link">Выйти</a>
         							</div>
         						</div>
@@ -186,14 +184,8 @@ IncludeTemplateLangFile(__FILE__);
                             "MENU_CACHE_GET_VARS" => "" 
                         )
                     );?>
-
-					<form action="#" class="search-form" data-module="search-form">
-						<div class="form-group has-feedback">
-							<label for="" class="sr-only">Поиск</label>
-							<input type="text" data-type="search-field" name="" id="" class="form-control" placeholder="Поиск">
-							<span class="form-control-feedback"><span data-icon="icon-search"></span></span>
-						</div>
-					</form>
+                    
+                    <?$APPLICATION->IncludeComponent("hawkart:search", "", Array(), false);?>
 				</div>
 			</header>
 			<main class="site-content">

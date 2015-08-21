@@ -34,7 +34,6 @@ $(document).on('ready', function(){
             },
             dataType: "json",
             success: function(data) {
-                console.log(data);
                 if(!data.status)
                 {
                     errors = data.errors;
@@ -55,6 +54,85 @@ $(document).on('ready', function(){
 
         return false;
     });
+    
+    $('form#change-password-form').on('submit', function(){
+        var $form = $(this);
+        
+        $form.find("div").removeClass("has-error");
+        $form.find(".form-control-message").remove();
+
+        $.ajax({
+            type: "POST",
+            url: $(this).attr('action'),
+            data: $(this).serialize(),
+            error: function(request,error) {
+                alert('Error! Please try again!');
+            },
+            dataType: "json",
+            success: function(data) {
+                
+                if(!data.status)
+                {
+                    errors = data.errors;
+                    $.each(errors, function(i, val) {
+       
+                        $( '<span class="form-control-message">'+val+'</span>' ).insertAfter($form.find("input[name='"+i+"']").closest("div").addClass("has-error").find("input"));
+                        
+                    });
+                }else{
+                    $( '<div class="form-group recovery-success">'+data.message+'</div>' ).insertBefore($("#change-password-form"));
+          
+                    $(':input','#change-password-form')
+                      .not(':button, :submit, :reset, :hidden')
+                      .val('')
+                      .removeAttr('checked')
+                      .removeAttr('selected');
+                    
+                    setTimeout(function(){ $(".recovery-success").remove(); }, 2000);
+                }
+            }
+        });
+
+        return false;
+    });
+    
+    $('form.user-profile-form, form.user-passport-form').on('submit', function(e){
+        e.preventDefault();
+        var $form = $(this);
+        
+        $form.find("div").removeClass("has-error");
+        $form.find(".form-control-message").remove();
+
+        $.ajax({
+            type: "POST",
+            url: $(this).attr('action'),
+            data: $(this).serialize(),
+            error: function(request,error) {
+                alert('Error! Please try again!');
+            },
+            dataType: "json",
+            success: function(data) {
+                console.log(data);
+                if(!data.status)
+                {
+                    errors = data.errors;
+                    $.each(errors, function(i, val) {
+       
+                        $( '<span class="form-control-message">'+val+'</span>' ).insertAfter($form.find("input[name='"+i+"'], textarea[name='"+i+"']").closest("div").addClass("has-error").find("input, textarea"));
+                    });
+                }else{
+                    $( '<div class="form-group recovery-success">'+data.message+'</div>' ).insertBefore($form);
+          
+                    setTimeout(function(){ $(".recovery-success").remove(); }, 2000);
+                }
+            }
+        });
+
+        return false;
+    });
+    
+    
+    
     
     $('form#recovery-form').submit(function(){
         var $this = $(this);

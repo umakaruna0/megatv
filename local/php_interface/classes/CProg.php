@@ -63,13 +63,7 @@ class CProg
                 "ACTOR" => $arTmpProg["PROPERTY_ACTOR_VALUE"],
                 "PRESENTER" => $arTmpProg["PROPERTY_PRESENTER_VALUE"],
             ));
-            
-            //Для множественного свойства
-            /*if(isset($arProgs[$unique]))
-            {
-                $arTmpProg = array_merge_recursive($arProgs[$unique], $arTmpProg);
-            }*/
-            
+        
 			$arProgs[$unique] = $arTmpProg;
 		}
         

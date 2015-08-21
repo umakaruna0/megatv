@@ -9,30 +9,36 @@
 //	HybridAuth Config file: http://hybridauth.sourceforge.net/userguide/Configuration.html
 // ----------------------------------------------------------------------------------------
 
+CModule::IncludeModule("iblock");
+$arSocialConfig = array();
+$arrFilter = array(
+    "IBLOCK_ID" => SOCIAL_CONFIG_IB,
+    "ACTIVE" => "Y",
+    "!PROPERTY_SECRET" => false,
+    "!PROPERTY_PROVIDER" => false,
+    "!PROPERTY_ID" => false,
+);
+$arSelect = array("PROPERTY_PROVIDER", "PROPERTY_ID", "PROPERTY_SECRET");
+$rsRes = CIBlockElement::GetList( $arOrder, $arrFilter, false, false, $arSelect );
+while( $arItem = $rsRes->GetNext() )
+{
+    $arSocialConfig[$arItem["PROPERTY_PROVIDER_VALUE"]] = array(
+        "enabled" => true,
+		"keys"    => array ( 
+            "id" => $arItem["PROPERTY_ID_VALUE"], 
+            "secret" => $arItem["PROPERTY_SECRET_VALUE"], 
+        ),
+		'scope'   => "email, user_about_me, user_birthday",
+        'trustForwarded' => false,
+        //"display" => "popup"
+    );
+}
+
+
 return
 	array(
 		"base_url" => "http://".$_SERVER["SERVER_NAME"]."/social/hybridauth/",
-
-		"providers" => array (
-        
-			"Facebook" => array (
-				"enabled" => true,
-				"keys"    => array ( "id" => "430553963782834", "secret" => "a76b9d30649b3b8cb94abdf76a192c48" ),
-				'scope'   => "email, user_about_me, user_birthday",
-                'trustForwarded' => false,
-                //"display" => "popup" 
-			),
-            "Vkontakte" => array (
-				"enabled" => true,
-				"keys"    => array ( "id" => "5038690", "secret" => "23rp2VzurZaMHoRks2Ak" ),
-                'trustForwarded' => false,
-                //"display" => "popup" 
-			),
-            
-		),
-
+		"providers" => $arSocialConfig,
 		"debug_mode" => false,
-
-		// Path to file writable by the web server. Required if 'debug_mode' is not false
 		"debug_file" => "",
 	);
