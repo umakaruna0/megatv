@@ -10,7 +10,12 @@
 			<span class="user-name"><?=trim($arResult["USER"]["NAME"]." ".$arResult["USER"]["LAST_NAME"])?></span>
 			<span class="user-city">Санкт-Петербург</span>
 		</div>
-		<form action="<?= $templateFolder ?>/ajax.php" class="user-profile-form">
+        <form action="<?= $templateFolder ?>/ajax.php" class="user-profile-form" data-module="user-profile-form">
+            <script type="text/x-config">
+				{
+					"dateMask": "99.99.9999"
+				}
+			</script>
             <input type="hidden" name="ajax_key" value="<?=md5('ajax_'.LICENSE_KEY)?>" />
             <input type="hidden" name="action" value="profile"/>
             <?=bitrix_sessid_post()?>
@@ -28,7 +33,7 @@
 			</div>
 			<div class="form-group has-feedback">
 				<label for="" class="sr-only">Дата рождения</label>
-				<input type="text" name="USER[PERSONAL_BIRTHDAY]" id="" class="form-control" value="<?=$arResult["USER"]["PERSONAL_BIRTHDAY"]?>" placeholder="Дата рождения">
+				<input type="text" name="USER[PERSONAL_BIRTHDAY]" id="" class="form-control" value="<?=$arResult["USER"]["PERSONAL_BIRTHDAY"]?>" placeholder="Дата рождения" data-type="masked-input">
 				<span class="form-control-feedback"><span data-icon="icon-calendar"></span></span>
 			</div>
 			<div class="form-group">
@@ -39,7 +44,7 @@
 				<label for="" class="sr-only">Телефон</label>
 				<input type="text" name="USER[PERSONAL_PHONE]" id="" class="form-control" value="<?=$arResult["USER"]["PERSONAL_PHONE"]?>" placeholder="Телефон">
 			</div>
-			<button type="submit" class="btn btn-primary btn-block">Сохранить изменения</button>
+            <button type="submit" class="btn btn-primary btn-block btn-multistate" data-type="multistates-button"><span class="default-state init-state">Сохранить изменения</span><span class="done-state"><span data-icon="icon-msbutton-checkmark"></span>Изменения сохранены</span></button>
 		</form>
 	</div>
 </section>
@@ -48,7 +53,12 @@
 		<h3 class="block-title">Паспортные данные</h3>
 	</div>
 	<div class="block-body">
-		<form action="<?= $templateFolder ?>/ajax.php" class="user-passport-form">
+        <form action="<?= $templateFolder ?>/ajax.php" class="user-passport-form" data-module="user-passport-form">
+            <script type="text/x-config">
+				{
+					"dateMask": "99.99.9999"
+				}
+			</script>
             <input type="hidden" name="ajax_key" value="<?=md5('ajax_'.LICENSE_KEY)?>" />
             <input type="hidden" name="action" value="passport"/>
             <?=bitrix_sessid_post()?>
@@ -69,7 +79,7 @@
 			<div class="flex-row passport-additional-data-row">
 				<div class="form-group has-feedback">
 					<label for="" class="sr-only">Дата выдачи</label>
-					<input type="text" name="USER[PASSPORT][WHEN_ISSUED]" id="" class="form-control" placeholder="Когда выдан" value="<?=$arResult["USER"]["PASSPORT"]["PROPERTY_WHEN_ISSUED_VALUE"]?>">
+					<input type="text" name="USER[PASSPORT][WHEN_ISSUED]" id="" class="form-control" placeholder="Когда выдан" value="<?=$arResult["USER"]["PASSPORT"]["PROPERTY_WHEN_ISSUED_VALUE"]?>" data-type="masked-input">
 					<span class="form-control-feedback"><span data-icon="icon-calendar"></span></span>
 				</div>
 				<div class="form-group">
@@ -81,7 +91,7 @@
 				<label for="" class="sr-only">Адрес прописки</label>
 				<textarea name="USER[PASSPORT][ADDRESS]" id="" rows="4" class="form-control" placeholder="Адрес прописки"><?=$arResult["USER"]["PASSPORT"]["DETAIL_TEXT"]?></textarea>
 			</div>
-			<button type="submit" class="btn btn-primary btn-block">Сохранить данные</button>
+			<button type="submit" class="btn btn-primary btn-block btn-multistate" data-type="multistates-button"><span class="default-state init-state">Сохранить данные</span><span class="done-state"><span data-icon="icon-msbutton-checkmark"></span>Данные сохранены</span></button>
 		</form>
 	</div>
 </section>

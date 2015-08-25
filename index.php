@@ -3,9 +3,9 @@ require($_SERVER["DOCUMENT_ROOT"]."/bitrix/header.php");
 $APPLICATION->SetTitle("MegaTV");
 global $USER;
 
-CChannel::updateCache();
-CProg::updateCache();
-CProgTime::updateCache();
+//CChannel::updateCache();
+//CProg::updateCache();
+//CProgTime::updateCache();
 //$USER->Authorize(1);
 ?>
 <?$APPLICATION->IncludeComponent("bitrix:news.list", "channels_index", Array(

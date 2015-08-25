@@ -1,0 +1,77 @@
+.asd-prepaid-form {}
+.asd-prepaid-form select,
+.asd-prepaid-form input[type=text] {
+	background: #fff;
+	border: 1px solid #c1c5c8;
+	border-radius: 2px;
+	color: #000;
+	box-shadow: inset 2px 2px 2px -1px rgba(180,188,191,0.5);
+	display: inline-block;
+	outline: none;
+	vertical-align: middle;
+	font-size: 14px;
+	padding: 6px 8px;
+}
+.asd-prepaid-form input[type=submit] {
+	position: relative;
+	top: -9px;
+	display: inline-block;
+	padding: 0 18px;
+	border-radius: 3px;
+	border: none;
+	background: #00a2df;
+	background: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiA/Pgo8c3ZnIHhtbG5zPSJod…EiIGhlaWdodD0iMSIgZmlsbD0idXJsKCNncmFkLXVjZ2ctZ2VuZXJhdGVkKSIgLz4KPC9zdmc+);
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#00a2df), color-stop(100%,#006fcb));
+	background: -webkit-linear-gradient(top, #00a2df 0%,#006fcb 100%);
+	background: -moz-linear-gradient(top, #00a2df 0%,#006fcb 100%);
+	background: -ms-linear-gradient(top, #00a2df 0%,#006fcb 100%);
+	background: -o-linear-gradient(top, #00a2df 0%,#006fcb 100%);
+	background: linear-gradient(to bottom, #00a2df 0%,#006fcb 100%);
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#00a2df', endColorstr='#006fcb',GradientType=0 );
+	color: #fff;
+	vertical-align: bottom;
+	text-decoration: none;
+	text-shadow: 0 1px 0 #0075b6;
+	font-weight: bold;
+	line-height: 36px;
+	outline: none;
+	cursor: pointer;
+}
+.sys_methods {
+	 position: relative;
+	 margin: 10px 0;
+ }
+.sys_methods .logo {
+	display: inline-block;
+	margin: 0 5px 10px;
+	vertical-align: top;
+}
+.sys_methods .logo input[type=radio] {
+	display: none;
+}
+.sys_methods .logo label {
+	width: 100px;
+	display: block;
+}
+.sys_methods .logo label img {
+	border-radius: 2px;
+	border: 1px solid #d1d1d1;
+	box-shadow: 2px 2px 2px rgba(180,188,191,0.5);
+	padding: 1px;
+}
+.sys_methods .logo img:hover,
+.sys_methods .logo input[type=radio]:checked + label img {
+	border: 2px solid #2d739d;
+	cursor: pointer;
+	padding: 0;
+}
+.sys_methods .logo label .paysystem_name {
+	font-size: 11px;
+	color: #a3a3a3;
+	line-height: 11px;
+	margin-top: 3px;
+	text-align: center;
+}
+.clearfix {
+	clear: both;
+}

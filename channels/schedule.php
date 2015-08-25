@@ -61,14 +61,21 @@ $arProgTime = CProgTime::getList(array("CODE"=>htmlspecialcharsbx($_REQUEST["SCH
 $arProgTime = array_shift($arProgTime);
 
 //Темы программы
-$arProg = CProg::getByID($arProgTime["PROPERTY_PROG_VALUE"], array("PROPERTY_TOPIC"));
+$arProg = CProg::getByID($arProgTime["PROPERTY_PROG_VALUE"], array("PROPERTY_TOPIC", "PROPERTY_CATEGORY"));
 $arTopicsExp = explode(",", $arProg["PROPERTY_TOPIC_VALUE"]);
 foreach($arTopicsExp as $key=>$topic)
 {
     if(!empty($topic))
         $arTopics[] = $topic;
 }
-unset($arTopicsExp);
+
+$arCatsExp = explode(",", $arProg["PROPERTY_CATEGORY_VALUE"]);
+foreach($arCatsExp as $key=>$topic)
+{
+    if(!empty($topic))
+        $arCats[] = $topic;
+}
+unset($arProg);
 
 $arTime = CTimeEx::getDateTimeOffset();
 
@@ -84,7 +91,9 @@ foreach($activeChannels as $activeChannel)
 $progIds = array();
 $arProgs = CProg::getList(
     array(
-        "?PROPERTY_TOPIC"=>$arTopics, "!ID"=>$arProgTime["PROPERTY_PROG_VALUE"]
+        "?PROPERTY_TOPIC"=>$arTopics, 
+        "?PROPERTY_CATEGORY" => $arCats,
+        "!ID"=>$arProgTime["PROPERTY_PROG_VALUE"]
     ), 
     array(
         "ID", "NAME", "PROPERTY_CHANNEL", "PROPERTY_SUB_TITLE"

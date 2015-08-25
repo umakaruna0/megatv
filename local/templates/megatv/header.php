@@ -109,42 +109,14 @@ IncludeTemplateLangFile(__FILE__);
                     		"AJAX_OPTION_JUMP" => "N",
                     		"AJAX_OPTION_STYLE" => "Y",
                     		"AJAX_OPTION_HISTORY" => "N",
-                            "CITY_GEO" => CCityEx::getGeoCity()
+                            "CITY_GEO" => CCityEx::getGeoCity(),
+                            "CUR_DIR" => $APPLICATION->GetCurDir()
                     	),
                     false
                     );?>
                     
-					<nav class="header-nav">
-						<ul class="user-actions">
-                            <?
-                            if($USER->IsAuthorized())
-                            {
-                                $arUser = CUserEx::OnAfterUserUpdateHandler($USER->GetID());
-                                ?>
-                                <div class="user-card">
-        							<a href="/personal/" class="user-avatar">
-                                        <?if($arUser["PERSONAL_PHOTO"]):?>
-                                            <img src="<?=CFile::GetPath($arUser["PERSONAL_PHOTO"])?>" alt="<?=$USER->GetFullName()?>" width="50" height="50">
-                                        <?else:?>
-        								    <img src="<?=SITE_TEMPLATE_PATH?>/img/temp/user-avatar-01.jpg" alt="<?=$USER->GetFullName()?>" width="50" height="50">
-                                        <?endif;?>
-                                    </a>
-        							<div class="info-panel">
-        								<a class="username" href="/personal/"><?=$USER->GetFullName()?></a><br>
-        								<a href="<?=$APPLICATION->GetCurDir()?>?logout=yes" class="signout-link">Выйти</a>
-        							</div>
-        						</div>
-                                <?
-                            }else{
-                                ?>
-                                <li><a href="#" class="signin-link" data-type="auth-screens-trigger" data-target="#singin-form">Войти</a></li>
-                                <li><a href="#" class="signup-link" data-type="auth-screens-trigger" data-target="#singup-form">Зарегистрироваться</a></li>
-                                <?
-                            }
-                            ?>
-							
-						</ul>
-					</nav>
+                    <?require($_SERVER["DOCUMENT_ROOT"].SITE_TEMPLATE_PATH."/include/header-user-card.php");?>
+
 				</div>
 				<div class="bottom-panel">
 					<div class="calendar" data-module="calendar">

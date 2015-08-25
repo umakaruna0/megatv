@@ -34,6 +34,84 @@ class CEpg
         ftp_close($conn);
     }
     
+    public static function resizeImage(/*$url,*/ $icons, $type)
+    {
+        switch($type)
+        {
+            case "preview":  //large
+                $width = 600;
+                $height = 600;
+            break;
+            case "horizontal":  //medium
+                $width = 288;
+                $height = 144;
+            break;
+            case "horizontal_double":  //small
+                $width = 576;
+                $height = 288;
+            break;
+            case "vertical":  //large
+                $width = 300;
+                $height = 500;
+            break;
+            case "vertical_double":  //medium
+                $width = 600;
+                $height = 550;
+            break;
+        }
+        
+        $max = 0;
+        $url = false;
+        if(count($icons)>1)
+        {
+            foreach($icons as $icon)
+            {
+                $width = intval($icon["@attributes"]["width"]);
+                $height = intval($icon["@attributes"]["height"]);
+                if(intval($icon["@attributes"]["width"])>$max)
+                {
+                    $max = intval($icon["@attributes"]["width"]);
+                    $url = $icon["@attributes"]["src"];
+                }
+            }
+        }else{
+            $url = $icons["@attributes"]["src"];
+        }
+        
+        
+        if($url)
+        {
+            $path_parts = pathinfo($url);
+            $file_name = $path_parts["filename"];
+            $path = FULL_PATH_DOCUMENT_ROOT."/upload/tmp/".$file_name.".jpg";
+            $path_cut = FULL_PATH_DOCUMENT_ROOT."/upload/tmp/".$file_name."_cut_".$width."_".$height.".jpg";
+        }else{
+            $path = $default = FULL_PATH_DOCUMENT_ROOT."/upload/default.jpg";
+            $path_cut = FULL_PATH_DOCUMENT_ROOT."/upload/tmp/default_cut_".$width."_".$height.".jpg";
+            
+            return false;
+        }
+        
+        file_put_contents($path, file_get_contents($url));
+        
+        $resizeRez = CFile::ResizeImageFile( // уменьшение картинки для превью
+            $path,
+            $dest = $path_cut,
+            array(
+                'width' => $width,
+                'height' => $height,
+            ),
+            $resizeType = BX_RESIZE_IMAGE_EXACT,//BX_RESIZE_IMAGE_PROPORTIONAL, // метод ресайза
+            $waterMark = array(), // водяной знак (пустой)
+            $jpgQuality = 100 // качество уменьшенной картинки в процентах
+        );
+        
+        if($path != $default)
+            unlink($path);
+        
+    	return $path_cut;
+    }
+    
     public function import()
     {
         if (file_exists($this->file))
@@ -85,7 +163,10 @@ class CEpg
         //список программ и время вещания из кэша
         CProg::updateCache();
         CProgTime::updateCache();        
-        $arProgs = CProg::getList(false, array("ID", "NAME", "PREVIEW_TEXT", "PROPERTY_CHANNEL", "PROPERTY_SUB_TITLE"));
+        $arProgs = CProg::getList(false, array(
+            "ID", "NAME", "PREVIEW_TEXT", "PROPERTY_CHANNEL", "PROPERTY_SUB_TITLE", "PREVIEW_PICTURE",
+            "PROPERTY_PICTURE_DOUBLE", "PROPERTY_PICTURE_HALF", "PROPERTY_PICTURE_VERTICAL", "PROPERTY_PICTURE_VERTICAL_DOUBLE"
+        ));
         $arProgTimes = CProgTime::getList(false, array("ID", "PROPERTY_CHANNEL", "PROPERTY_DATE_START"));
         
         foreach($xml->programme as $arProg)
@@ -188,6 +269,115 @@ class CEpg
                 $progID = $arProgs[$unique]["ID"];
             }
             
+            //echo "<pre>"; print_r($arProg); echo "</pre>";
+            
+            //continue;
+            if(empty($arProgs[$unique]["PREVIEW_PICTURE"]))
+            {
+                $icons = array();
+                //$stop = false;
+                
+                if(!is_array($arProg["icon"]))
+                    $arProg["icon"] = array($arProg["icon"]);
+                
+                $icons = $arProg["icon"];
+                
+                print_r($icons);
+                
+                /*foreach($arProg["icon"] as $icon)
+                {
+                    $icons[$icon["@attributes"]["TargetBKey"]] = $icon["@attributes"]["src"];
+                    
+                    if(!empty($icon["@attributes"]["src"]))
+                    {
+                        $stop = true;
+                    }
+                }*/
+                
+                
+                if(!empty($arProgs[$unique]["PROPERTY_PICTURE_DOUBLE_VALUE"]))
+                {
+                    $arProps = array("PICTURE_DOUBLE", "PICTURE_HALF", "PICTURE_VERTICAL", "PICTURE_VERTICAL_DOUBLE");
+                    foreach($arProps as $code)
+                    {
+                        $value = $arProgs[$unique]["PROPERTY_".$code."_VALUE_ID"];
+                        CIBlockElement::SetPropertyValueCode($arProgs[$unique]["ID"], $code, Array (
+                            $value =>  array('del' => 'Y', 'tmp_name' => '') 
+                        ));
+                        CFile::Delete($arProgs[$unique]["PROPERTY_".$code."_VALUE"]);
+                    } 
+                }
+                
+                
+                //die();
+                
+                //CDev::pre($icons);
+                
+                //$file = self::resizeImage($icons["large"], "preview");
+                $file = self::resizeImage($icons, "preview");
+                
+                echo $file;
+                
+                if(!empty($file))
+                {
+                    $arFile = CFile::MakeFileArray($file);   
+                    $arFile["MODULE_ID"] = "iblock";
+                    $arFile["del"] = "Y";                 
+                    $el = new CIBlockElement;
+                    $el->Update($progID, array(
+                        "PREVIEW_PICTURE" => $arFile,
+                        "DETAIL_PICTURE" => $arFile,
+                    ));
+                }
+                
+                //$file = self::resizeImage($icons["small"], "horizontal_double");
+                $file = self::resizeImage($icons, "horizontal_double");
+                if(!empty($file))
+                {
+                    $arFile = CFile::MakeFileArray($file);
+                    $arFile["MODULE_ID"] = "iblock";
+                    $arFile["del"] = "Y";
+                    CIBlockElement::SetPropertyValueCode($progID, "PICTURE_DOUBLE", $arFile);
+                }
+                
+                
+                //$file = self::resizeImage($icons["medium"], "horizontal");
+                $file = self::resizeImage($icons, "horizontal");
+                if(!empty($file))
+                {
+                    $arFile = CFile::MakeFileArray($file);
+                    $arFile["MODULE_ID"] = "iblock";
+                    $arFile["del"] = "Y";
+                    CIBlockElement::SetPropertyValueCode($progID, "PICTURE_HALF", $arFile);
+                }
+                
+                //$file = self::resizeImage($icons["large"], "vertical");
+                $file = self::resizeImage($icons, "vertical");
+                if(!empty($file))
+                {
+                    $arFile = CFile::MakeFileArray($file);
+                    $arFile["MODULE_ID"] = "iblock";
+                    $arFile["del"] = "Y";
+                    CIBlockElement::SetPropertyValueCode($progID, "PICTURE_VERTICAL", $arFile);
+                }
+                
+                //$file = self::resizeImage($icons["medium"], "vertical_double");
+                $file = self::resizeImage($icons, "vertical_double");
+                if(!empty($file))
+                {
+                    $arFile = CFile::MakeFileArray($file);
+                    $arFile["MODULE_ID"] = "iblock";
+                    $arFile["del"] = "Y";
+                    CIBlockElement::SetPropertyValueCode($progID, "PICTURE_VERTICAL_DOUBLE", $arFile);
+                }
+                
+                //die();
+                
+                //break;
+            }
+            
+            //continue;
+            
             //Добавление расписания для программы
             $dateStart = $arProg["@attributes"]["start"];
             
@@ -239,6 +429,8 @@ class CEpg
         }
         
         unset($arProgTimes);
+        
+        die();
         
         //Найдем все расписание на ближайшие 10 дней и удалим лишние
         echo "<h1>delete</h1>";

@@ -32,7 +32,7 @@ $this->setFrameMode(true);
             </option>
          <?endforeach;?>
     </select>
-    <form action="<?=$APPLICATION->GetCurDir()?>" method="POST" id="city-select-form">
+    <form action="<?=$arParams["CUR_DIR"]?>" method="POST" id="city-select-form">
         <input type="hidden" name="city-id" value="<?=$arParams["CITY_GEO"]["ID"]?>" id="city-select-value" />
         <?=bitrix_sessid_post()?>
     </form>

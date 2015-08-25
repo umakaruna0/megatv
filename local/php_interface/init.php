@@ -10,6 +10,11 @@ define("BROADCAT_COLS", 24);
 define("USER_SOCIAL_IB", 9);
 define("PASSPORT_IB", 10);
 define("SOCIAL_CONFIG_IB", 11);
+define("SUBSCRIBE_HL", 4);
+
+use \Bitrix\Highloadblock as HL;
+use \Bitrix\Main\Entity;
+use \Bitrix\Main\Type\DateTime;
 
 \Bitrix\Main\Loader::includeModule('olegpro.ipgeobase');
 
@@ -30,6 +35,8 @@ CModule::AddAutoloadClasses(
         '\CScheduleTable' => $sClassesPath.'CScheduleTable.php',
         '\CSocialAuth' => $sClassesPath.'CSocialAuth.php',
         '\CUserEx' => $sClassesPath.'CUserEx.php',
+        '\CSubscribeEx' => $sClassesPath.'CSubscribeEx.php',
+        '\CSotal' => $sClassesPath.'CSotal.php',
 	)
 );
 

@@ -55,7 +55,7 @@ $(document).on('ready', function(){
         return false;
     });
     
-    $('form#change-password-form').on('submit', function(){
+    /*$('form#change-password-form').on('submit', function(){
         var $form = $(this);
         
         $form.find("div").removeClass("has-error");
@@ -129,7 +129,7 @@ $(document).on('ready', function(){
         });
 
         return false;
-    });
+    });*/
     
     
     

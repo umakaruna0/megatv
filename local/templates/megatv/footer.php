@@ -28,7 +28,13 @@
             <script src="<?=SITE_TEMPLATE_PATH?>/megatv/dist/js/broadcast-card.js"></script>
         <?elseif(strpos($APPLICATION->GetCurDir(), "/channels/")!==false):?>
             <script src="<?=SITE_TEMPLATE_PATH?>/megatv/dist/js/channel-card.js"></script>
-        <?else:?>
+        <?elseif($APPLICATION->GetCurDir() == "/personal/"):?>
+            <script src="<?=SITE_TEMPLATE_PATH?>/megatv/dist/js/user-profile.js"></script>
+        <?elseif($APPLICATION->GetCurDir() == "/personal/services/"):?>
+            <script src="<?=SITE_TEMPLATE_PATH?>/megatv/dist/js/user-services.js"></script>
+        <?elseif($APPLICATION->GetCurDir() == "/personal/records/"):?>
+            <script src="<?=SITE_TEMPLATE_PATH?>/megatv/dist/js/user-records.js"></script>
+        <?else:?> 
             <script src="<?=SITE_TEMPLATE_PATH?>/megatv/dist/js/main.js"></script>
         <?endif;?>
         <script src="<?=SITE_TEMPLATE_PATH?>/project.js"></script>

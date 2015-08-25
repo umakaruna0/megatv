@@ -147,7 +147,7 @@ class CProgTime
         ob_start();
         ?>
         <div class="item status-recordable<?if(empty($arProg["PICTURE"]["SRC"])):?> is-noimage<?endif;?><?if($arProg["CLASS"]=="double"):?> double-item<?endif;?>">
-            <div class="item-image-holder" style="background-image: url(<?=$arProg["PICTURE"]["SRC"]?>"></div>
+            <div class="item-image-holder" style="background-image: url(<?=$arProg["PICTURE"]["SRC"]?>)"></div>
         	<a class="item-status-icon">
 				<span data-icon="icon-recordit"></span>
 				<span class="status-desc">Записать</span>
@@ -220,7 +220,12 @@ class CProgTime
                     <?if(!empty($arProg["PROPERTY_YEAR_VALUE"])):?>.(<?=$arProg["PROPERTY_YEAR_VALUE"]?>)<?endif;?>
                 </a>
 				<div class="item-descr">
-					<p><?=strip_tags($arProg["PREVIEW_TEXT"])?></p>
+                    <?
+                    $arProg["PREVIEW_TEXT"] = strip_tags($arProg["PREVIEW_TEXT"]);
+                    if(strlen($arProg["PREVIEW_TEXT"]) > 600)
+                        $arProg["PREVIEW_TEXT"] = substr($arProg["PREVIEW_TEXT"], 0, 600)."...";
+                    ?>
+					<p><?=$arProg["PREVIEW_TEXT"]?></p>
 				</div>
 			</div>
 		</div>
@@ -237,7 +242,7 @@ class CProgTime
         ob_start();
         ?>
         <div class="item status-recordable<?if(empty($arProg["PICTURE"]["SRC"])):?> is-noimage<?endif;?>">
-            <div class="item-image-holder" style="background-image: url(<?=$arProg["PICTURE"]["SRC"]?>"></div>
+            <div class="item-image-holder" style="background-image: url(<?=$arProg["PICTURE"]["SRC"]?>)"></div>
         	<span class="item-status-icon">
         		<span data-icon="icon-recordit"></span>
         	</span>
