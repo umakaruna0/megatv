@@ -37,7 +37,16 @@ IncludeTemplateLangFile(__FILE__);
         <?$APPLICATION->IncludeComponent("bitrix:main.include", "", array("AREA_FILE_SHOW" => "file", "PATH" => SITE_DIR."include/header-signin.php"), false);?>
         
 		<div class="site-wrapper" data-module="page">
-			<script type="text/x-config">{ "bannersHideTime": 1 }</script> <!-- конфиг для модуля page -->
+
+            <script type="text/x-config">
+				{
+					"bannersHideTime": 1,
+					"pathToSVGSprite": "<?=SITE_TEMPLATE_PATH?>/megatv/dist/img/sprites/svg_sprite.svg",
+					"playerURL": "modals/player.html",
+					"shareURL": "/server/"
+				}
+			</script>
+            
 			<div id="drop-area" class="drop-area">
 				<div>
 					<div class="dropzone">

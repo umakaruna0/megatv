@@ -19,22 +19,30 @@ $arResult["TOPICS"] = array(
     array(
         "ICON" => "popular-among-users",
         "TITLE" => "Популярное <br>у пользователей",
-        "FILTER" => $arFilter,
+        "FILTER" => array(
+            "?PROPERTY_TOPIC" => array("популярное")
+        ),
     ),
     array(
         "ICON" => "best-sport",
         "TITLE" => "Спорт",
-        "FILTER" => $arFilter,
+        "FILTER" => array(
+            "?PROPERTY_TOPIC" => array("спорт", "экстрим")
+        ),
     ),
     array(
         "ICON" => "best-cartoons",
         "TITLE" => "Популярные<br>мультики",
-        "FILTER" => $arFilter,
+        "FILTER" => array(
+            "?PROPERTY_TOPIC" => array("мультики", "мультфильмы")
+        ),
     ),
     array(
         "ICON" => "premieres",
         "TITLE" => "Премьеры",
-        "FILTER" => $arFilter,
+        "FILTER" => array(
+            "?PROPERTY_TOPIC" => array("Кино")
+        ),
     ),
 );
 

@@ -101,4 +101,27 @@ class CUserEx
         
         return $arUser;
     }
+    
+    public static function getBudget($USER_ID=false)
+    {
+        CModule::IncludeModule("sale");
+        global $USER;
+        if(!$USER_ID)
+            $USER_ID = $USER->GetID();
+            
+        $dbAccount = CSaleUserAccount::GetList(
+                array(),
+                array("USER_ID" => $USER_ID),
+                false,
+                false,
+                array("CURRENT_BUDGET", "CURRENCY")
+            );
+        if ($arAccount = $dbAccount->Fetch())
+        {
+            return $arAccount["CURRENT_BUDGET"];
+        }else{
+            return false;
+        }
+    }
+        
 }

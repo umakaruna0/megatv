@@ -1,4 +1,8 @@
 .broadcast-card .block-body .image-col
 {
     overflow: hidden;
+}
+.broadcast-results .categories-items
+{
+    bottom: 0px;
 }    

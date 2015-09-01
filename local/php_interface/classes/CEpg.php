@@ -66,8 +66,8 @@ class CEpg
         {
             foreach($icons as $icon)
             {
-                $width = intval($icon["@attributes"]["width"]);
-                $height = intval($icon["@attributes"]["height"]);
+                //$width_icon = intval($icon["@attributes"]["width"]);
+                //$height_icon = intval($icon["@attributes"]["height"]);
                 if(intval($icon["@attributes"]["width"])>$max)
                 {
                     $max = intval($icon["@attributes"]["width"]);
@@ -272,28 +272,13 @@ class CEpg
             //echo "<pre>"; print_r($arProg); echo "</pre>";
             
             //continue;
-            if(empty($arProgs[$unique]["PREVIEW_PICTURE"]))
-            {
+            //if(empty($arProgs[$unique]["PREVIEW_PICTURE"]))
+            //{
                 $icons = array();
-                //$stop = false;
-                
                 if(!is_array($arProg["icon"]))
                     $arProg["icon"] = array($arProg["icon"]);
                 
                 $icons = $arProg["icon"];
-                
-                print_r($icons);
-                
-                /*foreach($arProg["icon"] as $icon)
-                {
-                    $icons[$icon["@attributes"]["TargetBKey"]] = $icon["@attributes"]["src"];
-                    
-                    if(!empty($icon["@attributes"]["src"]))
-                    {
-                        $stop = true;
-                    }
-                }*/
-                
                 
                 if(!empty($arProgs[$unique]["PROPERTY_PICTURE_DOUBLE_VALUE"]))
                 {
@@ -313,11 +298,7 @@ class CEpg
                 
                 //CDev::pre($icons);
                 
-                //$file = self::resizeImage($icons["large"], "preview");
                 $file = self::resizeImage($icons, "preview");
-                
-                echo $file;
-                
                 if(!empty($file))
                 {
                     $arFile = CFile::MakeFileArray($file);   
@@ -374,7 +355,7 @@ class CEpg
                 //die();
                 
                 //break;
-            }
+            //}
             
             //continue;
             

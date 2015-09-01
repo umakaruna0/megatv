@@ -1,7 +1,7 @@
 <section class="broadcast-results" data-module="broadcast-results">
     <div class="categories-logos">
         <?
-        foreach($arResult["TOPICS"] as &$arTopic)
+        foreach($arResult["TOPICS"] as $arTopic)
         {
             ?>
             <a class="category-logo" href="#">

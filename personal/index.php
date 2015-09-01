@@ -14,7 +14,7 @@ global $USER;
 
 <div class="flex-row user-profile-top-row">
 
-    <?$APPLICATION->IncludeComponent("hawkart:user.profile", "", Array(), false);?>
+    <?$APPLICATION->IncludeComponent("hawkart:user.profile", "", Array("CITY_GEO"=>CCityEx::getGeoCity()), false);?>
     
 	<section class="user-info-subscriptions">
 		<div class="block-header">

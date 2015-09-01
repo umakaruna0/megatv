@@ -17,7 +17,9 @@
             $recorded = CRecordEx::getList($arFilter, array("UF_SOTAL_ID"));
             $countRecorded = intval(count($recorded));
             
+            $budget = floatval(CUserEx::getBudget());
             $arUser = CUserEx::OnAfterUserUpdateHandler($USER->GetID());
+            $APPLICATION->AddViewContent('user_budget', number_format($budget, 0, "", " "));
             ?>
             <div class="user-card">
 				<a href="/personal/" class="user-avatar<?if($arUser["PERSONAL_PHOTO"]):?> is-empty<?endif;?>" data-type="avatar-holder">
@@ -35,7 +37,7 @@
 				<li><a href="/personal/records/"><span data-icon="icon-film-collection"></span> Мои записи</a></li>
 				<li><a href="#"><span data-icon="icon-recording-small"></span> В записи <span class="badge" data-type="recording-count"><?=$countInRec?></span></a></li>
 				<li><a href="#"><span data-icon="icon-recorded-small"></span> Записанных <span class="badge"><?=$countRecorded?></span></a></li>
-				<li><a href="/personal/services/"><span data-icon="icon-balance" data-size="small"></span> На счету: 1 200 Р</a></li>
+				<li><a href="/personal/services/"><span data-icon="icon-balance" data-size="small"></span> На счету: <?=number_format($budget, 0, "", " ")?> Р</a></li>
 			</ul>
             <?
         }else{

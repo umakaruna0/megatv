@@ -81,8 +81,6 @@ while( $arItem = $rsRes->GetNext() )
     
 }
 
-//CDev::pre($arResult["TOPICS"]);
-
 $arTime = CTimeEx::getDatetime();
 
 //активные каналы
@@ -97,7 +95,7 @@ foreach($activeChannels as $activeChannel)
 
 
 $arProgTimes = CProgTime::getList(array(
-    "PROPERTY_DATE" => date("Y-m-d", strtotime($arTime["SELECTED_DATE"])),
+    ">=PROPERTY_DATE" => date("Y-m-d", strtotime($arTime["SELECTED_DATE"])),
 ), array("ID", "CODE", "PROPERTY_DATE_START", "PROPERTY_DATE_END", "PROPERTY_PROG", "PROPERTY_CHANNEL"));
 
 foreach($arResult["TOPICS"] as &$arTopic)
@@ -110,9 +108,11 @@ foreach($arResult["TOPICS"] as &$arTopic)
             "PROPERTY_CHANNEL" => $ids
         ), 
         array(
-            "ID", "NAME", "PROPERTY_CHANNEL", "PROPERTY_SUB_TITLE", "PREVIEW_PICTURE", "PROPERTY_PICTURE_DOUBLE", "PROPERTY_PICTURE_HALF"
+            "ID", "NAME", "PROPERTY_CHANNEL", "PROPERTY_SUB_TITLE", "PREVIEW_PICTURE", "PROPERTY_PICTURE_DOUBLE", "PROPERTY_PICTURE_HALF", "PROPERTY_TOPIC"
         )
     );
+    
+    //CDev::pre($arProgs);
     
     $arProgsSorted = array();
     foreach($arProgs as $arProg)
@@ -144,8 +144,10 @@ foreach($arResult["TOPICS"] as &$arTopic)
         "PROGS" => $arTopic["PROGS"],
     ));
     
+    
     $arTopic["PROGS"] = $arProgs; 
 }
+//CDev::pre($arResult["TOPICS"]);
 
 
 //******************************************************************
