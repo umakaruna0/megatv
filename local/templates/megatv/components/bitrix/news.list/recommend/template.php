@@ -15,7 +15,7 @@
                     <?
                 }
                 
-                echo CProgTime::getProgInfoRecommendIndex($arProg, $arParams);
+                echo CProgTime::getProgInfoRecommendIndex($arProg, $arParams, $key);
                 
                 if($key==3)
                 {

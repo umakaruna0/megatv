@@ -15,6 +15,27 @@ class CUserEx
         $arFields["PERSONAL_BIRTHDAY"] = $arFields["USER_PERSONAL_BIRTHDAY"];
     }
     
+    public static function generateDataSotal()
+    {
+        global $USER;
+        $USER_ID = $USER->GetID();
+        $rsUser = CUser::GetByID($USER_ID);
+        $arUser = $rsUser->Fetch();
+
+        $password = mb_substr(md5(uniqid(rand(),true)), 0, 12);
+        
+        $cUser = new CUser;
+        $cUser->Update($USER_ID, array(
+            "UF_SOTAL_LOGIN" => "email_".$USER_ID."@"."megatv.ru",
+            "UF_SOTAL_PASS" => $password
+        ));
+        
+        $arUser["UF_SOTAL_LOGIN"] = "email_".$USER_ID."@"."megatv.ru";
+        $arUser["UF_SOTAL_PASS"] = $password;
+        
+        return $arUser;
+    }
+    
     /**
      * При загрузке аватара уменьшаем его размер до 150х150px
      */
@@ -69,7 +90,8 @@ class CUserEx
                     $user = new CUser;
                     $user->Update($arUser["ID"], $fields);
                     
-                    $arUser["PERSONAL_PHOTO"] = $arNewFile;
+                    $rsUser = CUser::GetByID($USER_ID);
+                    $arUser = $rsUser->Fetch();
                     
                     // Удалим временный файл
                     unlink($tmpFilePath);

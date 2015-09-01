@@ -3,9 +3,14 @@ require($_SERVER["DOCUMENT_ROOT"]."/bitrix/header.php");
 $APPLICATION->SetTitle("MegaTV");
 global $USER;
 ?>
-
 <div class="flex-row user-services-top-row">
-					<section class="subscribtion-services" data-module="subscribtion-services">
+					<section class="subscription-services" data-module="subscription-services">
+						<script type="text/x-config">
+							{
+								"filledDiskSpace" : "0.7916",
+								"url": "/server/"
+							}
+						</script>
 						<div class="block-header">
 							<h3 class="block-title">Ваши услуги</h3>
 						</div>
@@ -13,28 +18,28 @@ global $USER;
 							<div class="storage-statistic">
 								<span class="total-space">Всего <strong>24 ГБ</strong></span>
 								<span class="used-space">Занято <strong>19 ГБ</strong></span>
-								<div class="progressbar-holder" data-progress="0.7916"></div><!-- 79.16%-->
+								<div class="progressbar-holder"></div>
 							</div>
-							<ul class="available-subscribtions">
-								<li class="item">
-									<a href="#" class="handler-link"></a>
-									<div class="subscribtion-text-logo">+5 ГБ</div>
+							<ul class="available-subscriptions">
+								<li class="item" data-service-id="01" data-type="service-item">
+									<div class="decor"><span class="decor-title">Добавить</span><span data-icon="icon-round-checkbox-mark"></span></div>
+									<div class="subscription-text-logo">+5 ГБ</div>
 									<div class="item-header">
 										<span class="price">1 Р <small>сутки</small></span>
 										<span class="item-title">Добавить<br> + 5 ГБ памяти</span>
 									</div>
 								</li>
-								<li class="item">
-									<a href="#" class="handler-link"></a>
-									<div class="subscribtion-text-logo">+10 ГБ</div>
+								<li class="item" data-service-id="02" data-type="service-item">
+									<div class="decor"><span class="decor-title">Добавить</span><span data-icon="icon-round-checkbox-mark"></span></div>
+									<div class="subscription-text-logo">+10 ГБ</div>
 									<div class="item-header">
 										<span class="price">2 Р <small>сутки</small></span>
 										<span class="item-title">Добавить<br> + 10 ГБ памяти</span>
 									</div>
 								</li>
-								<li class="item">
-									<a href="#" class="handler-link"></a>
-									<div class="subscribtion-logo">
+								<li class="item" data-service-id="03" data-type="service-item">
+									<div class="decor"><span class="decor-title">Добавить</span><span data-icon="icon-round-checkbox-mark"></span></div>
+									<div class="subscription-logo">
 										<span data-icon="icon-gdisk-service"></span>
 									</div>
 									<div class="item-header">
@@ -42,9 +47,10 @@ global $USER;
 										<span class="item-title">Сохранение <br>на Гугл.Драйв</span>
 									</div>
 								</li>
-								<li class="item status-active">
+								<li class="item status-active" data-service-id="04" data-type="service-item">
+									<div class="decor"><span class="decor-title">Добавить</span><span data-icon="icon-round-checkbox-mark"></span></div>
 									<a href="#" class="handler-link"></a>
-									<div class="subscribtion-logo">
+									<div class="subscription-logo">
 										<span data-icon="icon-yadisk-service"></span>
 									</div>
 									<div class="item-header">
@@ -88,223 +94,7 @@ global $USER;
 						</div>
 					</section>
 				</div>
-				<section class="subscribtion-channels">
-					<div class="block-header">
-						<h3 class="block-title">Подписки на каналы</h3>
-					</div>
-					<div class="block-body">
-						<ul class="channels-list">
-							<li class="item status-active">
-								<a href="#" class="handler-link"></a>
-								<div class="subscribtion-logo">
-									<span data-icon="icon-1st-channel"></span>
-								</div>
-								<div class="item-header">
-									<span class="price">0 Р <small>сутки</small></span>
-									<span class="item-title">Первый канал</span>
-								</div>
-							</li>
-							<li class="item status-active">
-								<a href="#" class="handler-link"></a>
-								<div class="subscribtion-logo">
-									<span data-icon="icon-russia-1-channel"></span>
-								</div>
-								<div class="item-header">
-									<span class="price">0 Р <small>сутки</small></span>
-									<span class="item-title">Россия 1</span>
-								</div>
-							</li>
-							<li class="item status-active">
-								<a href="#" class="handler-link"></a>
-								<div class="subscribtion-logo">
-									<span data-icon="icon-russia-2-channel"></span>
-								</div>
-								<div class="item-header">
-									<span class="price">0 Р <small>сутки</small></span>
-									<span class="item-title">Россия 2</span>
-								</div>
-							</li>
-							<li class="item">
-								<a href="#" class="handler-link"></a>
-								<div class="subscribtion-logo">
-									<span data-icon="icon-ntv-channel"></span>
-								</div>
-								<div class="item-header">
-									<span class="price">0 Р <small>сутки</small></span>
-									<span class="item-title">НТВ</span>
-								</div>
-							</li>
-							<li class="item">
-								<a href="#" class="handler-link"></a>
-								<div class="subscribtion-logo">
-									<span data-icon="icon-5th-channel"></span>
-								</div>
-								<div class="item-header">
-									<span class="price">0 Р <small>сутки</small></span>
-									<span class="item-title">Пятый канал</span>
-								</div>
-							</li>
-							<li class="item">
-								<a href="#" class="handler-link"></a>
-								<div class="subscribtion-logo">
-									<span data-icon="icon-domashnii-channel"></span>
-								</div>
-								<div class="item-header">
-									<span class="price">0 Р <small>сутки</small></span>
-									<span class="item-title">Домашний</span>
-								</div>
-							</li>
-							<li class="item">
-								<a href="#" class="handler-link"></a>
-								<div class="subscribtion-logo">
-									<span data-icon="icon-zvezda-channel"></span>
-								</div>
-								<div class="item-header">
-									<span class="price">0 Р <small>сутки</small></span>
-									<span class="item-title">Звезда</span>
-								</div>
-							</li>
-							<li class="item">
-								<a href="#" class="handler-link"></a>
-								<div class="subscribtion-logo">
-									<span data-icon="icon-karusel-channel"></span>
-								</div>
-								<div class="item-header">
-									<span class="price">0 Р <small>сутки</small></span>
-									<span class="item-title">Карусель</span>
-								</div>
-							</li>
-							<li class="item">
-								<a href="#" class="handler-link"></a>
-								<div class="subscribtion-logo">
-									<span data-icon="icon-mirtv-channel"></span>
-								</div>
-								<div class="item-header">
-									<span class="price">1 Р <small>сутки</small></span>
-									<span class="item-title">МИР</span>
-								</div>
-							</li>
-							<li class="item">
-								<a href="#" class="handler-link"></a>
-								<div class="subscribtion-logo">
-									<span data-icon="icon-muz-channel"></span>
-								</div>
-								<div class="item-header">
-									<span class="price">1 Р <small>сутки</small></span>
-									<span class="item-title">МУЗ ТВ</span>
-								</div>
-							</li>
-							<li class="item status-active">
-								<a href="#" class="handler-link"></a>
-								<div class="subscribtion-logo">
-									<span data-icon="icon-otr-channel"></span>
-								</div>
-								<div class="item-header">
-									<span class="price">1 Р <small>сутки</small></span>
-									<span class="item-title">Общественное телевидение России</span>
-								</div>
-							</li>
-							<li class="item">
-								<a href="#" class="handler-link"></a>
-								<div class="subscribtion-logo">
-									<span data-icon="icon-ren-channel"></span>
-								</div>
-								<div class="item-header">
-									<span class="price">1 Р <small>сутки</small></span>
-									<span class="item-title">РЕН ТВ</span>
-								</div>
-							</li>
-							<li class="item">
-								<a href="#" class="handler-link"></a>
-								<div class="subscribtion-logo">
-									<span data-icon="icon-rtr-kultura-eng-channel"></span>
-								</div>
-								<div class="item-header">
-									<span class="price">1 Р <small>сутки</small></span>
-									<span class="item-title">Культура</span>
-								</div>
-							</li>
-							<li class="item">
-								<a href="#" class="handler-link"></a>
-								<div class="subscribtion-logo">
-									<span data-icon="icon-spas-channel"></span>
-								</div>
-								<div class="item-header">
-									<span class="price">1 Р <small>сутки</small></span>
-									<span class="item-title">СПАС</span>
-								</div>
-							</li>
-							<li class="item">
-								<a href="#" class="handler-link"></a>
-								<div class="subscribtion-logo">
-									<span data-icon="icon-ntv-plus-sportplus-channel"></span>
-								</div>
-								<div class="item-header">
-									<span class="price">1 Р <small>сутки</small></span>
-									<span class="item-title">Спорт +</span>
-								</div>
-							</li>
-							<li class="item">
-								<a href="#" class="handler-link"></a>
-								<div class="subscribtion-logo">
-									<span data-icon="icon-ctc-channel"></span>
-								</div>
-								<div class="item-header">
-									<span class="price">1 Р <small>сутки</small></span>
-									<span class="item-title">СТС</span>
-								</div>
-							</li>
-							<li class="item status-active">
-								<a href="#" class="handler-link"></a>
-								<div class="subscribtion-logo">
-									<span data-icon="icon-tvc-channel"></span>
-								</div>
-								<div class="item-header">
-									<span class="price">1 Р <small>сутки</small></span>
-									<span class="item-title">ТВ ЦЕНТР</span>
-								</div>
-							</li>
-							<li class="item">
-								<a href="#" class="handler-link"></a>
-								<div class="subscribtion-logo">
-									<span data-icon="icon-discovery-channel"></span>
-								</div>
-								<div class="item-header">
-									<span class="price">1 Р <small>сутки</small></span>
-									<span class="item-title">Discovery</span>
-								</div>
-							</li>
-							<li class="item">
-								<a href="#" class="handler-link"></a>
-								<div class="subscribtion-logo">
-									<span data-icon="icon-discovery-animalplanet-channel"></span>
-								</div>
-								<div class="item-header">
-									<span class="price">1 Р <small>сутки</small></span>
-									<span class="item-title">Animal Planet</span>
-								</div>
-							</li>
-							<li class="item">
-								<a href="#" class="handler-link"></a>
-								<div class="subscribtion-logo">
-									<span data-icon="icon-mtv-channel"></span>
-								</div>
-								<div class="item-header">
-									<span class="price">1 Р <small>сутки</small></span>
-									<span class="item-title">MTV</span>
-								</div>
-							</li>
-							<li class="item">
-								<a href="#" class="handler-link"></a>
-								<div class="subscribtion-logo">
-									<span data-icon="icon-peretz-channel"></span>
-								</div>
-								<div class="item-header">
-									<span class="price">1 Р <small>сутки</small></span>
-									<span class="item-title">Перец ТВ</span>
-								</div>
-							</li>
-						</ul>
-					</div>
-				</section>
+                
+                <?$APPLICATION->IncludeComponent("hawkart:subscription.channels", "", Array(), false);?>
+                
                 <?require($_SERVER["DOCUMENT_ROOT"]."/bitrix/footer.php");?>

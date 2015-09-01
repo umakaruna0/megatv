@@ -5,6 +5,24 @@ class CChannel
 {
     public static $cacheDir = "channels";
         
+    public static function getByID($ID, $arSelect = false)
+    {
+        CModule::IncludeModule("iblock");
+        
+        if(!$ID)
+            return false;
+        
+        if(empty($arSelect))
+            $arSelect = Array("ID", "NAME");
+        
+        $arFilter = array("IBLOCK_ID" => CHANNEL_IB, "ACTIVE" => "Y", "=ID" => $ID);
+        
+        $CacheEx = new CCacheEx(60*60*24*365, self::$cacheDir);
+        $arChannels = $CacheEx->cacheElement( array( "SORT" => "ASC", "ID" => "DESC" ), $arFilter, "getlist", false, $arSelect);
+        
+        return $arChannels[0];
+    }
+        
     public static function getList($arrFilter=false, $arSelect = array())
     {
         CModule::IncludeModule("iblock");

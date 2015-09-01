@@ -7,7 +7,10 @@ if ($arParams["CACHE_TYPE"] == "Y" || ($arParams["CACHE_TYPE"] == "A" && COption
 	$arParams["CACHE_TIME"] = intval($arParams["CACHE_TIME"]);
 else
 	$arParams["CACHE_TIME"] = 0;
-    
+ 
+ CModule::IncludeModule("iblock");
+ 
+ /*   
 $arResult["TOPICS"] = array(
     array(
         "ICON" => "documental",
@@ -49,7 +52,36 @@ $arResult["TOPICS"] = array(
             "VALUE" => array("Новости", "События")
         ),
     ),
-);
+);*/
+
+$arResult["TOPICS"] = array();
+$arrFilter = array("IBLOCK_ID" => 12, "ACTIVE" => "Y");
+$arSelect = array("NAME", "PROPERTY_ICON", 'PREVIEW_TEXT');
+$rsRes = CIBlockElement::GetList( $arOrder, $arrFilter, false, false, $arSelect );
+while( $arItem = $rsRes->GetNext() )
+{
+    $topics = array();
+    $arTopicsExp = explode(",", $arItem["PREVIEW_TEXT"]);
+    foreach($arTopicsExp as $key=>$topic)
+    {
+        if(!empty($topic) && !in_array($topic, $cats))
+            $topics[] = trim($topic);
+    }
+    
+    $topics = array_unique($topics);
+    
+    $arResult["TOPICS"][] = array(
+        "ICON" => $arItem["PROPERTY_ICON_VALUE"],
+        "TITLE" => $arItem["NAME"],
+        "PROPERTY" => array(
+            "CODE" => "TOPIC", 
+            "VALUE" => $topics
+        )
+    );
+    
+}
+
+//CDev::pre($arResult["TOPICS"]);
 
 $arTime = CTimeEx::getDatetime();
 
@@ -78,7 +110,7 @@ foreach($arResult["TOPICS"] as &$arTopic)
             "PROPERTY_CHANNEL" => $ids
         ), 
         array(
-            "ID", "NAME", "PROPERTY_CHANNEL", "PROPERTY_SUB_TITLE",
+            "ID", "NAME", "PROPERTY_CHANNEL", "PROPERTY_SUB_TITLE", "PREVIEW_PICTURE", "PROPERTY_PICTURE_DOUBLE", "PROPERTY_PICTURE_HALF"
         )
     );
     
@@ -117,7 +149,7 @@ foreach($arResult["TOPICS"] as &$arTopic)
 
 
 //******************************************************************
-$arProgs = CProg::getList(false, 
+/*$arProgs = CProg::getList(false, 
     array(
         "ID", "NAME", "PROPERTY_CHANNEL", "PROPERTY_SUB_TITLE", "PROPERTY_TOPIC", "PROPERTY_CATEGORY"
     )
@@ -150,7 +182,7 @@ $themes = array_unique($themes);
 sort($themes);
 
 //CDev::pre($cats);
-//CDev::pre($themes);
+//CDev::pre($themes);*/
 
 $this->IncludeComponentTemplate();
 ?>

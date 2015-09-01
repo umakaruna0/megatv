@@ -11,6 +11,7 @@ define("USER_SOCIAL_IB", 9);
 define("PASSPORT_IB", 10);
 define("SOCIAL_CONFIG_IB", 11);
 define("SUBSCRIBE_HL", 4);
+define("RECORD_HL", 5);
 
 use \Bitrix\Highloadblock as HL;
 use \Bitrix\Main\Entity;
@@ -37,6 +38,8 @@ CModule::AddAutoloadClasses(
         '\CUserEx' => $sClassesPath.'CUserEx.php',
         '\CSubscribeEx' => $sClassesPath.'CSubscribeEx.php',
         '\CSotal' => $sClassesPath.'CSotal.php',
+        '\UploadHandler' => $sClassesPath.'UploadHandler.php',
+        '\CRecordEx' => $sClassesPath.'CRecordEx.php',
 	)
 );
 

@@ -62,7 +62,7 @@ foreach($arResult["TOPICS"] as &$arTopic)
     $arFilter = $arTopic["FILTER"];
     $arFilter["PROPERTY_CHANNEL"] = $ids;
     
-    $arSelect = array("ID", "NAME", "PROPERTY_CHANNEL", "PROPERTY_SUB_TITLE");
+    $arSelect = array("ID", "NAME", "PROPERTY_CHANNEL", "PROPERTY_SUB_TITLE", "PREVIEW_PICTURE", "PROPERTY_PICTURE_DOUBLE", "PROPERTY_PICTURE_HALF");
     
     //получим все программы
     $arProgs = CProg::getList($arFilter, $arSelect);

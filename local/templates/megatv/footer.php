@@ -26,7 +26,7 @@
 		<script src="<?=SITE_TEMPLATE_PATH?>/megatv/dist/js/plugins.js"></script>
         <?if(strpos($APPLICATION->GetCurDir(), "/channels/")!==false && isset($_REQUEST["SCHEDULE_CODE"])):?>
             <script src="<?=SITE_TEMPLATE_PATH?>/megatv/dist/js/broadcast-card.js"></script>
-        <?elseif(strpos($APPLICATION->GetCurDir(), "/channels/")!==false):?>
+        <?elseif(strpos($APPLICATION->GetCurDir(), "/channels/")!==false && isset($_REQUEST["CHANNEL_CODE"])):?>
             <script src="<?=SITE_TEMPLATE_PATH?>/megatv/dist/js/channel-card.js"></script>
         <?elseif($APPLICATION->GetCurDir() == "/personal/"):?>
             <script src="<?=SITE_TEMPLATE_PATH?>/megatv/dist/js/user-profile.js"></script>

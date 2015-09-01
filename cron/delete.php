@@ -41,11 +41,5 @@ foreach($arProgs as $arProg)
     } 
 }
 
-/*$ELEMENT_ID = 392;
-$arFile["MODULE_ID"] = "iblock";
-$arFile["del"] = "Y";
-
-CIBlockElement::SetPropertyValueCode($ELEMENT_ID, "FILES", Array ("2033" => Array("VALUE"=>$arFile) ) );*/
-
 die();
 ?>

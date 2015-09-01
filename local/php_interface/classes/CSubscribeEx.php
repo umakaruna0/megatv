@@ -17,7 +17,6 @@ class CSubscribeEx
         
         //BRANDS
         $arFilter = array(
-            "UF_ACTIVE" => "Y",
             "UF_USER" => $USER_ID
         );
         
@@ -47,7 +46,6 @@ class CSubscribeEx
     {
         global $USER;
         CModule::IncludeModule('highloadblock');
-        CModule::IncludeModule('iblock');
         
         if(!$USER_ID)
             $USER_ID = $USER->GetID();
@@ -56,12 +54,15 @@ class CSubscribeEx
         $entity = Bitrix\Highloadblock\HighloadBlockTable::compileEntity( $hlblock );
         $entity_data_class = $entity->getDataClass();
         
-        $dt = new DateTime();                     
-        $result = $entity_data_class::add(array(
+        $dt = new Bitrix\Main\Type\DateTime(date('Y-m-d H:i:s',time()),'Y-m-d H:i:s');
+        $data = array(
            'UF_CHANNEL' => $CHANNEL_ID,
            'UF_USER' => $USER_ID,
            'UF_DATE_FROM' => $dt,
-        ));
+           'UF_ACTIVE' => 'Y'
+        );
+                          
+        $result = $entity_data_class::add($data);
         if ($result->isSuccess()) 
         {         
             return true;        
@@ -70,5 +71,24 @@ class CSubscribeEx
         { 
             return implode(', ', $result->getErrors());
         } 
+    }
+    
+    public static function updateUserSubscribe($ID, $arFields)
+    {
+        CModule::IncludeModule('highloadblock');
+        
+        $hlblock = Bitrix\Highloadblock\HighloadBlockTable::getById(SUBSCRIBE_HL)->fetch();
+        $entity = Bitrix\Highloadblock\HighloadBlockTable::compileEntity( $hlblock );
+        $entity_data_class = $entity->getDataClass();
+                   
+        $result = $entity_data_class::update($ID, $arFields);    
+        if ($result->isSuccess()) 
+        {         
+            return true;        
+        }
+        else
+        { 
+            return implode(', ', $result->getErrors());
+        }        
     }
 }

@@ -3,13 +3,26 @@
 		<h3 class="block-title">Ваш профиль</h3>
 	</div>
 	<div class="block-body">
-		<div class="avatar-col">
-			<div class="user-avatar-holder is-empty">
-				<a href="#" class="load-avatar-link"><span>Загрузить аватар</span></a>
+        <div class="avatar-col">
+			<div class="user-avatar-holder<?if(!$arResult["USER"]["PERSONAL_PHOTO"]):?> is-empty<?endif;?>" data-module="avatar-loader">
+				<script type="text/x-config">
+					{
+						"url": "<?= $templateFolder ?>/upload.php"
+					}
+				</script>
+                
+				<div class="progressbar-holder">
+					<input type="file" name="files[]" id="_id-avatar-loader--file" data-type="file-input">
+                    <?if($arResult["USER"]["PERSONAL_PHOTO"]):?>
+                        <img src="<?=CFile::GetPath($arResult["USER"]["PERSONAL_PHOTO"])?>" alt="<?=$USER->GetFullName()?>">
+                    <?endif;?>
+				</div>
+				<span class="load-avatar-text-holder"><span><?if($arResult["USER"]["PERSONAL_PHOTO"]):?>Обновить аватар<?else:?>Загрузить аватар<?endif;?></span></span>
 			</div>
 			<span class="user-name"><?=trim($arResult["USER"]["NAME"]." ".$arResult["USER"]["LAST_NAME"])?></span>
 			<span class="user-city">Санкт-Петербург</span>
 		</div>
+        
         <form action="<?= $templateFolder ?>/ajax.php" class="user-profile-form" data-module="user-profile-form">
             <script type="text/x-config">
 				{

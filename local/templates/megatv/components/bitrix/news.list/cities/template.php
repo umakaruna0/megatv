@@ -11,9 +11,19 @@
 /** @var string $componentPath */
 /** @var CBitrixComponent $component */
 $this->setFrameMode(true);
-?>
-              
+?>     
 <div class="city-select" data-module="city-select">
+    <script type="text/x-config">
+		{
+			"url": "<?=$arParams["CUR_DIR"]?>",
+			"cities": [
+                <?foreach($arResult["ITEMS"] as $key=>$arItem):?>
+				    { "id": <?=$arItem["ID"]?>, "text": "<?=$arItem["NAME"]?>" }<?if($key<count($arResult["ITEMS"])-1):?>,<?endif;?>
+                <?endforeach;?>
+			],
+			"showCityRequestPopover": true
+		}
+    </script>
     <select name="city-select" id="_id-city-select">
         <?foreach($arResult["ITEMS"] as $arItem):?>
         	<?
@@ -26,11 +36,15 @@ $this->setFrameMode(true);
             }else{
                 $is_selected = '';
             }
-            ?>
-        	<option value="<?=$arItem["ID"]?>" id="<?=$this->GetEditAreaId($arItem['ID']);?>" <?=$is_selected?>>
-                <?=$arItem["NAME"]?>
-            </option>
-         <?endforeach;?>
+            if($arParams["CITY_GEO"]["ID"]==$arItem["ID"])
+            {
+                ?>
+            	<option value="<?=$arItem["ID"]?>" id="<?=$this->GetEditAreaId($arItem['ID']);?>" <?=$is_selected?>>
+                    <?=$arItem["NAME"]?>
+                </option>
+                <?
+            }
+         endforeach;?>
     </select>
     <form action="<?=$arParams["CUR_DIR"]?>" method="POST" id="city-select-form">
         <input type="hidden" name="city-id" value="<?=$arParams["CITY_GEO"]["ID"]?>" id="city-select-value" />

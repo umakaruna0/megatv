@@ -81,6 +81,6 @@ $curPage++;
         </div>
     </div><!-- /.categories-items -->
     <?if($arParams["DISPLAY_BOTTOM_PAGER"] == "Y" && $totalPages>1):?>
-        <a href="#" class="more-link" id="channels-show-ajax-link" data-load="<?=$arParams["LIST_URL"]?>" data-page="<?=$curPage?>" data-ajax-type="CHANNELS" data-type="fetch-results-link"><span data-icon="icon-show-more-arrow"></span> Показать еще каналы</a>
+        <a href="#" class="more-link" id="channels-show-ajax-link" data-load="<?=$arParams["LIST_URL"]?>" data-page="<?=$curPage?>" data-ajax-type="CHANNELS" data-type="fetch-results-link">Показать еще каналы <span data-icon="icon-show-more-arrow"></span></a>
     <?endif;?>
 </section>

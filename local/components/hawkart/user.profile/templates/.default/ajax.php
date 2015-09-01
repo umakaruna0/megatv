@@ -172,6 +172,12 @@ if($USER->IsAuthorized())
             $result['message'] = "<font style='color:green'>Данные успешно изменены.</font>";
         }
     }
+    
+    if($action=="avatar-upload")
+    {
+        require('UploadHandler.php');
+        $upload_handler = new UploadHandler();
+    }
 }
         
 exit(json_encode($result));

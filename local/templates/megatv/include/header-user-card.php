@@ -1,16 +1,28 @@
-<nav class="header-nav">
+<nav class="header-nav" data-module="user-navigation">
 	<ul class="user-actions">
         <?
         if($USER->IsAuthorized())
         {
+            $arFilter = array(
+                "UF_URL" => false,
+                "UF_USER" => $USER->GetID()
+            );
+            $records_in = CRecordEx::getList($arFilter, array("UF_SOTAL_ID"));
+            $countInRec = intval(count($records_in));
+            
+            $arFilter = array(
+                "!UF_URL" => false,
+                "UF_USER" => $USER->GetID()
+            );
+            $recorded = CRecordEx::getList($arFilter, array("UF_SOTAL_ID"));
+            $countRecorded = intval(count($recorded));
+            
             $arUser = CUserEx::OnAfterUserUpdateHandler($USER->GetID());
             ?>
             <div class="user-card">
-				<a href="/personal/" class="user-avatar">
+				<a href="/personal/" class="user-avatar<?if($arUser["PERSONAL_PHOTO"]):?> is-empty<?endif;?>" data-type="avatar-holder">
                     <?if($arUser["PERSONAL_PHOTO"]):?>
                         <img src="<?=CFile::GetPath($arUser["PERSONAL_PHOTO"])?>" alt="<?=$USER->GetFullName()?>" width="50" height="50">
-                    <?else:?>
-					    <img src="<?=SITE_TEMPLATE_PATH?>/img/temp/user-avatar-01.jpg" alt="<?=$USER->GetFullName()?>" width="50" height="50">
                     <?endif;?>
                 </a>
 				<div class="info-panel">
@@ -21,8 +33,8 @@
             
             <ul class="top-menu">
 				<li><a href="/personal/records/"><span data-icon="icon-film-collection"></span> Мои записи</a></li>
-				<li><a href="#"><span data-icon="icon-recording-small"></span> В записи <span class="badge">12</span></a></li>
-				<li><a href="#"><span data-icon="icon-recorded-small"></span> Записанных <span class="badge">92</span></a></li>
+				<li><a href="#"><span data-icon="icon-recording-small"></span> В записи <span class="badge" data-type="recording-count"><?=$countInRec?></span></a></li>
+				<li><a href="#"><span data-icon="icon-recorded-small"></span> Записанных <span class="badge"><?=$countRecorded?></span></a></li>
 				<li><a href="/personal/services/"><span data-icon="icon-balance" data-size="small"></span> На счету: 1 200 Р</a></li>
 			</ul>
             <?
@@ -33,6 +45,5 @@
             <?
         }
         ?>
-		
 	</ul>
 </nav>

@@ -136,12 +136,14 @@ class CProgTime
         
         if($arProg["CLASS"]=="one")
         {
-            $arProg["PICTURE"]["SRC"] = CFile::GetPath($arProg["PREVIEW_PICTURE"]);
+            $arProg["PICTURE"] = CDev::resizeImage($arProg["PREVIEW_PICTURE"], 288, 288);
+            //$arProg["PICTURE"]["SRC"] = CFile::GetPath($arProg["PREVIEW_PICTURE"]);
         }
         
         if($arProg["CLASS"]=="half")
         {
-            $arProg["PICTURE"]["SRC"] = CFile::GetPath($arProg["PROPERTY_PICTURE_HALF_VALUE"]);
+            //$arProg["PICTURE"]["SRC"] = CFile::GetPath($arProg["PROPERTY_PICTURE_HALF_VALUE"]);
+            $arProg["PICTURE"] = CDev::resizeImage($arProg["PROPERTY_PICTURE_HALF_VALUE"], 288, 144);
         }
         
         ob_start();
@@ -170,12 +172,14 @@ class CProgTime
     {        
         if($arProg["CLASS"]=="one")
         {
-            $arProg["PICTURE"]["SRC"] = CFile::GetPath($arProg["PROPERTY_PICTURE_VERTICAL_DOUBLE_VALUE"]);
+            //$arProg["PICTURE"]["SRC"] = CFile::GetPath($arProg["PROPERTY_PICTURE_VERTICAL_DOUBLE_VALUE"]);
+            $arProg["PICTURE"] = CDev::resizeImage($arProg["PROPERTY_PICTURE_VERTICAL_DOUBLE_VALUE"], 600, 550);
         }
         
         if($arProg["CLASS"]=="half")
         {
-            $arProg["PICTURE"]["SRC"] = CFile::GetPath($arProg["PROPERTY_PICTURE_VERTICAL_VALUE"]);
+            //$arProg["PICTURE"]["SRC"] = CFile::GetPath($arProg["PROPERTY_PICTURE_VERTICAL_VALUE"]);
+            $arProg["PICTURE"] = CDev::resizeImage($arProg["PROPERTY_PICTURE_VERTICAL_VALUE"], 300, 550);
         }
         
         ob_start();
@@ -236,9 +240,14 @@ class CProgTime
         return $content;
     }
     
-    public static function getProgInfoRecommendIndex($arProg, $arParams)
+    public static function getProgInfoRecommendIndex($arProg, $arParams, $key=false)
     {
-        $arProg["PICTURE"]["SRC"] = CFile::GetPath($arProg["PREVIEW_PICTURE"]);
+        if($key<4)
+        {
+            $arProg["PICTURE"] = CDev::resizeImage($arProg["PREVIEW_PICTURE"], 300, 300);
+        }else{
+            $arProg["PICTURE"] = CDev::resizeImage($arProg["PREVIEW_PICTURE"], 600, 600);
+        }
         ob_start();
         ?>
         <div class="item status-recordable<?if(empty($arProg["PICTURE"]["SRC"])):?> is-noimage<?endif;?>">
@@ -268,7 +277,8 @@ class CProgTime
     
     public static function getProgSimilar($arProg, $arParams)
     {
-        $arProg["PICTURE"]["SRC"] = CFile::GetPath($arProg["PREVIEW_PICTURE"]);
+        //$arProg["PICTURE"]["SRC"] = CFile::GetPath($arProg["PREVIEW_PICTURE"]);
+        $arProg["PICTURE"] = CDev::resizeImage($arProg["PREVIEW_PICTURE"], 300, 300);
         ob_start();
         ?>
         <li class="item status-recordable<?if(empty($arProg["PICTURE"]["SRC"])):?> is-noimage<?endif;?>">

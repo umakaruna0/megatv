@@ -321,4 +321,40 @@ class CDev
         
         return $array[$age];
     }
+    
+    public static function resizeImage($picture, $width, $height)
+    {
+        if(!is_array($picture))
+        {
+            $rsFile = CFile::GetByID($picture);
+            $arFile = $rsFile->Fetch();
+        }else{
+            $arFile = $picture;
+        }
+        
+        if($arFile["HEIGHT"]==$height || $arFile["WIDTH"]==$width)
+        {
+            $arFile["SRC"] = CFile::GetPath($arFile["ID"]);
+            return $arFile;
+        }
+        
+        $arFileTmp = CFile::ResizeImageGet(
+            $arFile,
+            array(
+               "width" => $width, 
+               "height" => $height
+            ),
+            BX_RESIZE_IMAGE_PROPORTIONAL_ALT,
+            true,
+            array() //убираем черный фон у прозрачных изображений
+        );
+        
+        $arSize = getimagesize($_SERVER["DOCUMENT_ROOT"].$arFileTmp["src"]);
+    
+        return array(
+            "SRC" => $arFileTmp["src"],
+            "WIDTH" => IntVal($arSize[0]),
+            "HEIGHT" => IntVal($arSize[1]),
+        );
+    }
 }
