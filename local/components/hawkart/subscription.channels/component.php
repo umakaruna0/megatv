@@ -7,13 +7,12 @@ CModule::IncludeModule("iblock");
 $arResult["CHANNELS"] = array();
 
 $selectedChannels = array();
-$arChannels = CSubscribeEx::getUserList($USER->GetID(), array("UF_ACTIVE"=>"Y"), array("UF_CHANNEL"));
+$CSubscribeEx = new CSubscribeEx("CHANNEL");
+$arChannels = $CSubscribeEx->getList(array("UF_ACTIVE"=>"Y", "UF_USER"=>$USER->GetID()), array("UF_CHANNEL"));
 foreach($arChannels as $arChannel)
 {
     $selectedChannels[] = $arChannel["UF_CHANNEL"];
 }
-
-//CDev::pre($arChannels);
 
 $arChannels = CChannel::getList(array("ACTIVE"=>"Y"), array("ID", "NAME", "PROPERTY_ICON", "PROPERTY_PRICE"));
 foreach($arChannels as &$arChannel)

@@ -36,4 +36,6 @@ $MESS["ABTEST_STOP_DATE"] = "Stopped on";
 $MESS["ABTEST_STARTED_BY"] = "Started by";
 $MESS["ABTEST_STOPPED_BY"] = "Stopped by";
 $MESS["ABTEST_DURATION"] = "Duration";
+$MESS["ABTEST_STOP_DATE2"] = "Expected to complete on";
+$MESS["ABTEST_DURATION_NA"] = "n/a";
 ?>

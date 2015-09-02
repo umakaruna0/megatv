@@ -11,4 +11,5 @@ $MESS["abtest_entity_portion_field"] = "Bandwidth";
 $MESS["abtest_entity_userid_field"] = "User";
 $MESS["abtest_entity_sort_field"] = "Sort";
 $MESS["abtest_entity_site_field"] = "Site";
+$MESS["abtest_entity_min_amount_field"] = "Minimum sample size";
 ?>

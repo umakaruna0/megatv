@@ -18,7 +18,7 @@
             $countRecorded = intval(count($recorded));
             
             $budget = floatval(CUserEx::getBudget());
-            $arUser = CUserEx::OnAfterUserUpdateHandler($USER->GetID());
+            $arUser = CUserEx::updateAvatar($USER->GetID());
             $APPLICATION->AddViewContent('user_budget', number_format($budget, 0, "", " "));
             ?>
             <div class="user-card">

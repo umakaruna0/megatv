@@ -34,8 +34,6 @@ if(substr($arParams["DATETIME"]["SERVER_DATETIME"], 0, 10)!=substr($arParams["DA
 //echo $filterDateStart."<br />";
 //echo $filterDateEnd."<br />";
 
-//CDev::pre($arFilter);
-
 $arSelect = array(
     "ID", "NAME", "CODE", "PROPERTY_DATE_START", "PROPERTY_DATE_END", "PROPERTY_PROG", "PROPERTY_DATE"
 );

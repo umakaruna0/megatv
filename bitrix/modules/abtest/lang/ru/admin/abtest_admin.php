@@ -33,7 +33,9 @@ $MESS["ABTEST_DURATION_HOURS_0"] = "менее 1 часа";
 $MESS["ABTEST_DURATION_OF"] = "из";
 $MESS["ABTEST_START_DATE"] = "Дата запуска";
 $MESS["ABTEST_STOP_DATE"] = "Дата завершения";
+$MESS["ABTEST_STOP_DATE2"] = "Ожидаемая дата завершения";
 $MESS["ABTEST_STARTED_BY"] = "Запустил";
 $MESS["ABTEST_STOPPED_BY"] = "Остановил";
 $MESS["ABTEST_DURATION"] = "Длительность";
+$MESS['ABTEST_DURATION_NA'] = "н/д";
 ?>

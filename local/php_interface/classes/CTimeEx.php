@@ -20,13 +20,13 @@ class CTimeEx
     
     public static function datetimeForFilter($datetime, $add = false)
     {
-        /*if($add)
+        if($add)
         {
             return date("Y-m-d H:i:s", strtotime($add, strtotime($datetime)));
         }else{
             return date("Y-m-d H:i:s", strtotime($datetime));
-        }*/
-        return date("Y-m-d H:i:s", strtotime("-3 hour ".$add, strtotime($datetime))); 
+        }
+        //return date("Y-m-d H:i:s", strtotime("-3 hour ".$add, strtotime($datetime))); 
     }
     
     public static function getCalendarDays()

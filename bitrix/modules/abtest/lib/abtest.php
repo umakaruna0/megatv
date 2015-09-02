@@ -85,6 +85,11 @@ class ABTestTable extends Entity\DataManager
 				'required'  => true
 			),
 
+			'MIN_AMOUNT' => array(
+				'data_type' => 'integer',
+				'title'     => Localization\Loc::getMessage('abtest_entity_min_amount_field')
+			),
+
 			'USER_ID' => array(
 				'data_type' => 'integer',
 				'title'     => Localization\Loc::getMessage('abtest_entity_userid_field')

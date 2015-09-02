@@ -12,7 +12,8 @@ $channelID = intval($_REQUEST["channelID"]);
 $status = htmlspecialcharsbx($_REQUEST["status"]);
 
 $selectedChannels = array();
-$arChannels = CSubscribeEx::getUserList($USER->GetID(), false, array("UF_CHANNEL", "ID"));
+$CSubscribeEx = new CSubscribeEx("CHANNEL");
+$arChannels = $CSubscribeEx->getList(array("UF_USER"=>$USER->GetID()), array("UF_CHANNEL", "ID"));
 foreach($arChannels as $arChannel)
 {
     $selectedChannels[$arChannel["UF_CHANNEL"]] = $arChannel["ID"];
@@ -20,7 +21,7 @@ foreach($arChannels as $arChannel)
 
 if(!isset($selectedChannels[$channelID]))
 {
-    $result = CSubscribeEx::setUserSubscribe($channelID);
+    $result = $CSubscribeEx->setUserSubscribe($channelID);
     
 }else{
     if($status=="enable")
@@ -31,7 +32,7 @@ if(!isset($selectedChannels[$channelID]))
     }
     
     $subscribeID = $selectedChannels[$channelID];
-    $result = CSubscribeEx::updateUserSubscribe($subscribeID, array("UF_ACTIVE"=>$active));
+    $result = $CSubscribeEx->updateUserSubscribe($subscribeID, array("UF_ACTIVE"=>$active));
 }
 
 //вычет из счет денег 

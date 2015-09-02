@@ -8,9 +8,12 @@
     	<div class="block-body">
     		<ul class="events-list">
                 <?foreach ($arResult["ITEMS"] as $arItem):?>
+                    <?
+                    $arr = ParseDateTime($arItem["TRANSACT_DATE"], FORMAT_DATETIME);
+                    ?>
                     <li class="event">
         				<span data-icon="icon-<?= $arItem["DEBIT"]=="Y" ? "incoming"  :"outcoming"?>-arrow"></span>
-        				<span class="event-date"><?= $arItem["TRANSACT_DATE"]?></span>
+        				<span class="event-date"><?= $arr["DD"]." ".ToLower(GetMessage("MONTH_".intval($arr["MM"])."_S"))." ".$arr["YYYY"];?></span>
         				<span class="event-title"><?= $arItem["DEBIT"]=="Y" ? "Пополнение счета"  :"Списание со счета"?></span>
         				<span class="event-cost"><?= $arItem["DEBIT"]=="Y" ? "+"  :"—"?> <?=number_format($arItem["AMOUNT"], 0, "", " ")?> Р</span>
         			</li>

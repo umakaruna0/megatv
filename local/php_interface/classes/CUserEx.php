@@ -39,12 +39,12 @@ class CUserEx
     /**
      * При загрузке аватара уменьшаем его размер до 150х150px
      */
-    public static function OnAfterUserUpdateHandler($USER_ID/*&$arFields*/)
+    public static function updateAvatar($USER_ID)
     {
         $imageMaxWidth = 216; // Максимальная ширина уменьшенной картинки 
         $imageMaxHeight = 216; // Максимальная высота уменьшенной картинки
         
-        $rsUser = CUser::GetByID($USER_ID/*$arFields["ID"]*/);
+        $rsUser = CUser::GetByID($USER_ID);
         $arUser = $rsUser->Fetch();
         
         if(intval($arUser["PERSONAL_PHOTO"])>0)
@@ -102,26 +102,40 @@ class CUserEx
         return $arUser;
     }
     
+    //Добавляем подписку на бесплатные каналы по умолчанию
+    public function OnAfterUserUpdateHandler(&$arFields)
+    {
+        if($arFields["ID"]>0)
+        {
+            $activeFreeChannels = CChannel::getList(array("ACTIVE"=>"Y", "PROPERTY_PRICE"=>false), array("ID"));
+            foreach($activeFreeChannels as $activeFreeChannel)
+            {
+                $CSubscribeEx = new CSubscribeEx("CHANNEL");
+                $CSubscribeEx->setUserSubscribe($activeFreeChannel["ID"], $arFields["ID"]);
+            }
+        }
+    }
+    
     public static function getBudget($USER_ID=false)
     {
-        CModule::IncludeModule("sale");
+        return CSaleAccountEx::budget($USER_ID);
+    }
+    
+    public static function capacityAdd($USER_ID, $gb)
+    {
         global $USER;
         if(!$USER_ID)
             $USER_ID = $USER->GetID();
             
-        $dbAccount = CSaleUserAccount::GetList(
-                array(),
-                array("USER_ID" => $USER_ID),
-                false,
-                false,
-                array("CURRENT_BUDGET", "CURRENCY")
-            );
-        if ($arAccount = $dbAccount->Fetch())
-        {
-            return $arAccount["CURRENT_BUDGET"];
-        }else{
-            return false;
-        }
+        $rsUser = CUser::GetByID($USER_ID);
+        $arUser = $rsUser->Fetch();
+        
+        $capacity = $arUser["UF_CAPACITY"] + $gb;
+        
+        $cuser = new CUser;
+        $cuser->Update($arUser["ID"], array(
+            "UF_CAPACITY" => $capacity
+        ));
     }
         
 }

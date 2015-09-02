@@ -21,7 +21,6 @@ class CSocialAuth
             $userID = intval($arItem["PROPERTY_USER_ID_VALUE"]);
 		}
         
-        
         $email = "";
         if(!empty($userProfile["email"]))
         {
@@ -66,6 +65,8 @@ class CSocialAuth
         );
         
         $el->Add($arLoadProductArray);
+        
+        CUserEx::capacityAdd($userID, 1);
     }
     
     public static function createUser($providerName, $userProfile)

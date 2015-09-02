@@ -49,4 +49,8 @@ $MESS["ABTEST_EMPTY_SITE"] = "No site specified.";
 $MESS["ABTEST_UNKNOWN_SITE"] = "Unknown site: #VALUE#";
 $MESS["ABTEST_SITE_FIELD"] = "Site";
 $MESS["ABTEST_UNKNOWN_PAGE"] = "The page does not exist.";
+$MESS["ABTEST_DURATION_OPTION_A"] = "Auto (approx. days: #NUM#)";
+$MESS["ABTEST_DURATION_OPTION_NA"] = "n/a";
+$MESS["ABTEST_DURATION_AUTO_HINT"] = "Auto test duration is forecasted based on current website traffic and sample size required to achieve the statistical power of 80%. The test will be finished automatically after a required sample size is reached in both groups.";
+$MESS["ABTEST_MATH_POWER_HINT"] = "Statistical power is the likelihood that the test will detect a difference between the two options if there is a discernible difference to be detected. Statistical power increases proportionally to sample size. Test result cannot be trusted if statistical power is lower than 80%.";
 ?>

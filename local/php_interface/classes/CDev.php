@@ -332,7 +332,34 @@ class CDev
             $arFile = $picture;
         }
         
-        if($arFile["HEIGHT"]==$height || $arFile["WIDTH"]==$width)
+        //CDev::pre($arFile);
+        
+        if($arFile["HEIGHT"]>$height || $arFile["WIDTH"]>$width)
+        {
+            $arFileTmp = CFile::ResizeImageGet(
+                $arFile,
+                array(
+                   "width" => $width, 
+                   "height" => $height
+                ),
+                BX_RESIZE_IMAGE_PROPORTIONAL_ALT,
+                true,
+                array() //убираем черный фон у прозрачных изображений
+            );
+            
+            $arSize = getimagesize($_SERVER["DOCUMENT_ROOT"].$arFileTmp["src"]);
+        
+            return array(
+                "SRC" => $arFileTmp["src"],
+                "WIDTH" => IntVal($arSize[0]),
+                "HEIGHT" => IntVal($arSize[1]),
+            );
+        }else{
+            $arFile["SRC"] = CFile::GetPath($arFile["ID"]);
+            return $arFile;
+        }
+        
+        /*if($arFile["HEIGHT"]==$height || $arFile["WIDTH"]==$width)
         {
             $arFile["SRC"] = CFile::GetPath($arFile["ID"]);
             return $arFile;
@@ -355,6 +382,6 @@ class CDev
             "SRC" => $arFileTmp["src"],
             "WIDTH" => IntVal($arSize[0]),
             "HEIGHT" => IntVal($arSize[1]),
-        );
+        );*/
     }
 }

@@ -122,38 +122,6 @@ while ($abtest = $result->fetch())
 	}
 }
 
-function get_plural_messages($prefix)
-{
-	global $MESS;
-
-	$result = array();
-
-	$k = 0;
-	while ($form = getMessage($prefix.'PLURAL_'.++$k))
-		$result[] = $form;
-
-	return $result;
-}
-
-// http://localization-guide.readthedocs.org/en/latest/l10n/pluralforms.html
-function plural_form($n, $forms)
-{
-	switch (LANG)
-	{
-		case 'ru':
-		case 'ua':
-			$p = $n%10 == 1 && $n%100 != 11 ? 0 : ($n%10 >= 2 && $n%10 <= 4 && ($n%100 < 10 || $n%100 >= 20) ? 1 : 2);
-			break;
-		case 'en':
-		case 'de':
-		case 'es':
-			$p = $n == 1 ? 0 : 1;
-			break;
-	}
-
-	return isset($forms[$p]) ? $forms[$p] : end($forms);
-}
-
 foreach ($arRows as &$abtest)
 {
 	$row =& $lAdmin->addRow($abtest['ID'], $abtest);
@@ -169,23 +137,37 @@ foreach ($arRows as &$abtest)
 		if ($abtest['ACTIVE'] == 'Y')
 		{
 			$start_date = $abtest['START_DATE']->format(Bitrix\Main\Type\Date::convertFormatToPhp($arLang['FORMAT_DATE']));
+			$end_date   = null;
 
-			$running_tmp   = date_diff(date_create($abtest['START_DATE']->format('c')), date_create());
-			$running_days  = $running_tmp->format('%a');
-			$running_hours = $running_tmp->format('%h');
-
-			$running = '';
-			if ($running_days)
-				$running .= $running_days . ' ' . plural_form($running_days, get_plural_messages('ABTEST_DURATION_DAYS1_'));
-			if ($running_hours)
-				$running .= ' ' . $running_hours . ' ' . plural_form($running_hours, get_plural_messages('ABTEST_DURATION_HOURS_'));
-			else if (!$running_days)
-				$running .= getMessage('ABTEST_DURATION_HOURS_0');
-			if ($abtest['DURATION'])
+			if ($abtest['DURATION'] != 0)
 			{
-				$running .= ' ' . getMessage('ABTEST_DURATION_OF') . ' ' . $abtest['DURATION'];
-				if ($running_hours || !$running_days)
-					$running .= ' ' . plural_form($abtest['DURATION'], get_plural_messages('ABTEST_DURATION_DAYS2_'));
+				if ($abtest['DURATION'] > 0)
+				{
+					$end = clone $abtest['START_DATE'];
+					$end->add(intval($abtest['DURATION']).' days');
+
+					$end_date = $end->format(Bitrix\Main\Type\Date::convertFormatToPhp($arLang['FORMAT_DATE']));
+				}
+				else
+				{
+					$siteCapacity = Bitrix\ABTest\AdminHelper::getSiteCapacity($abtest['SITE_ID']);
+					$testCapacity = Bitrix\ABTest\AdminHelper::getTestCapacity($abtest['ID']);
+
+					if ($abtest['MIN_AMOUNT'] > 0 && $abtest['PORTION'] > 0 && $siteCapacity['daily'] > 0)
+					{
+						$rem = $abtest['MIN_AMOUNT'] - min($testCapacity);
+						$est = $rem > 0 ? $rem / ($siteCapacity['daily'] / 2) : 0;
+
+						$end = new Bitrix\Main\Type\DateTime();
+						$end->add(ceil(100 * $est / $abtest['PORTION']).' days');
+
+						$end_date = $end->format(Bitrix\Main\Type\Date::convertFormatToPhp($arLang['FORMAT_DATE']));
+					}
+					else
+					{
+						$end_date = getMessage('ABTEST_DURATION_NA');
+					}
+				}
 			}
 
 			$user_name = CUser::formatName(
@@ -206,7 +188,9 @@ foreach ($arRows as &$abtest)
 
 			$status .= '<td style="padding: 0px 10px; vertical-align: top; ">';
 			$status .= '<span style="white-space: nowrap; color: #729e00; font-weight: bold; ">'.getMessage('ABTEST_STATE_STARTED').'</span><br>';
-			$status .= '<span style="white-space: nowrap; ">'.getMessage('ABTEST_START_DATE').': '.$start_date.' / '.getMessage('ABTEST_DURATION').': '.$running.'</span><br>';
+			$status .= '<span style="white-space: nowrap; ">'.getMessage('ABTEST_START_DATE').': '.$start_date.'</span><br>';
+			if ($end_date)
+				$status .= '<span style="white-space: nowrap; ">'.getMessage('ABTEST_STOP_DATE2').': '.$end_date.'</span><br>';
 			$status .= '<span style="white-space: nowrap; ">'.getMessage('ABTEST_STARTED_BY').': <a href="/bitrix/admin/user_edit.php?ID='.$abtest['USER_ID'].'&lang='.LANG.'">'.$user_name.'</a></span>';
 			$status .= '</td>';
 
@@ -218,7 +202,6 @@ foreach ($arRows as &$abtest)
 		else
 		{
 			$stop_date = $abtest['STOP_DATE'] ? $abtest['STOP_DATE']->format(Bitrix\Main\Type\Date::convertFormatToPhp($arLang['FORMAT_DATE'])) : false;
-			$duration  = $abtest['DURATION'] ? $abtest['DURATION'] . ' ' . plural_form($abtest['DURATION'], get_plural_messages('ABTEST_DURATION_DAYS1_')) : false;
 
 			$user_name = $abtest['USER_ID'] ? CUser::formatName(
 				CSite::getNameFormat(),
@@ -238,8 +221,8 @@ foreach ($arRows as &$abtest)
 
 			$status .= '<td style="padding: 0px 10px; vertical-align: top; ">';
 			$status .= '<span style="white-space: nowrap; font-weight: bold; ">'.getMessage('ABTEST_STATE_STOPPED').'</span><br>';
-			if ($stop_date || $duration)
-				$status .= '<span style="white-space: nowrap; ">'.($stop_date ? getMessage('ABTEST_STOP_DATE').': '.$stop_date : '').($stop_date && $duration ? ' / ' : '').($duration ? getMessage('ABTEST_DURATION').': '.$duration : '').'</span><br>';
+			if ($stop_date)
+				$status .= '<span style="white-space: nowrap; ">'.getMessage('ABTEST_STOP_DATE').': '.$stop_date.'</span><br>';
 			if ($user_name)
 				$status .= '<span style="white-space: nowrap; ">'.getMessage('ABTEST_STOPPED_BY').': <a href="/bitrix/admin/user_edit.php?ID='.$abtest['USER_ID'].'&lang='.LANG.'">'.$user_name.'</a></span>';
 			$status .= '</td>';

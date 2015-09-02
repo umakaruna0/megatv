@@ -4,63 +4,9 @@ $APPLICATION->SetTitle("MegaTV");
 global $USER;
 ?>
 <div class="flex-row user-services-top-row">
-	<section class="subscription-services" data-module="subscription-services">
-		<script type="text/x-config">
-			{
-				"filledDiskSpace" : "0.7916",
-				"url": "/server/"
-			}
-		</script>
-		<div class="block-header">
-			<h3 class="block-title">Ваши услуги</h3>
-		</div>
-		<div class="block-body">
-			<div class="storage-statistic">
-				<span class="total-space">Всего <strong>24 ГБ</strong></span>
-				<span class="used-space">Занято <strong>19 ГБ</strong></span>
-				<div class="progressbar-holder"></div>
-			</div>
-			<ul class="available-subscriptions">
-				<li class="item" data-service-id="01" data-type="service-item">
-					<div class="decor"><span class="decor-title">Добавить</span><span data-icon="icon-round-checkbox-mark"></span></div>
-					<div class="subscription-text-logo">+5 ГБ</div>
-					<div class="item-header">
-						<span class="price">1 Р <small>сутки</small></span>
-						<span class="item-title">Добавить<br> + 5 ГБ памяти</span>
-					</div>
-				</li>
-				<li class="item" data-service-id="02" data-type="service-item">
-					<div class="decor"><span class="decor-title">Добавить</span><span data-icon="icon-round-checkbox-mark"></span></div>
-					<div class="subscription-text-logo">+10 ГБ</div>
-					<div class="item-header">
-						<span class="price">2 Р <small>сутки</small></span>
-						<span class="item-title">Добавить<br> + 10 ГБ памяти</span>
-					</div>
-				</li>
-				<li class="item" data-service-id="03" data-type="service-item">
-					<div class="decor"><span class="decor-title">Добавить</span><span data-icon="icon-round-checkbox-mark"></span></div>
-					<div class="subscription-logo">
-						<span data-icon="icon-gdisk-service"></span>
-					</div>
-					<div class="item-header">
-						<span class="price">1 Р <small>сутки</small></span>
-						<span class="item-title">Сохранение <br>на Гугл.Драйв</span>
-					</div>
-				</li>
-				<li class="item status-active" data-service-id="04" data-type="service-item">
-					<div class="decor"><span class="decor-title">Добавить</span><span data-icon="icon-round-checkbox-mark"></span></div>
-					<a href="#" class="handler-link"></a>
-					<div class="subscription-logo">
-						<span data-icon="icon-yadisk-service"></span>
-					</div>
-					<div class="item-header">
-						<span class="price">1 Р <small>сутки</small></span>
-						<span class="item-title">Сохранение <br>на Яндекс.Диск</span>
-					</div>
-				</li>
-			</ul>
-		</div>
-	</section>
+
+    <?$APPLICATION->IncludeComponent("hawkart:subscription.services", "", Array(), false);?>
+
 	<section class="user-balance">
     
         <?/*$APPLICATION->IncludeComponent(

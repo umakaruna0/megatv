@@ -10,5 +10,6 @@ $MESS["abtest_entity_start_date_field"] = "Дата запуска";
 $MESS["abtest_entity_stop_date_field"] = "Дата завершения";
 $MESS["abtest_entity_duration_field"] = "Длительность";
 $MESS["abtest_entity_portion_field"] = "Доля трафика";
+$MESS["abtest_entity_min_amount_field"] = "Минимальная выборка";
 $MESS["abtest_entity_userid_field"] = "Пользователь";
 $MESS["abtest_entity_sort_field"] = "Сортировка";

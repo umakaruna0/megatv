@@ -1,30 +1,24 @@
 <?
 class CSubscribeEx
 {
-    public static function getUserList($USER_ID = false, $arrFilter = false, $arSelect = false)
+    function __construct($type)
+    {
+        $this->type = $type;
+    }
+    
+    public static function getList($arFilter = false, $arSelect = false)
     {
         global $USER;
         CModule::IncludeModule('highloadblock');
         CModule::IncludeModule('iblock');
         $arSubs = array();
         
-        if(!$USER_ID)
-            $USER_ID = $USER->GetID();
-        
         $hlblock = Bitrix\Highloadblock\HighloadBlockTable::getById(SUBSCRIBE_HL)->fetch();
         $entity = Bitrix\Highloadblock\HighloadBlockTable::compileEntity( $hlblock );
         $entity_data_class = $entity->getDataClass();
         
-        //BRANDS
-        $arFilter = array(
-            "UF_USER" => $USER_ID
-        );
-        
-        if($arrFilter)
-            $arFilter = array_merge($arFilter, $arrFilter);
-        
         if(empty($arSelect))
-            $arSelect = array("UF_CHANNEL", "UF_DATE_FROM");
+            $arSelect = array("UF_".$this->type, "UF_DATE_FROM");
         
         $arOrder = array("UF_DATE_FROM" => "ASC");
         
@@ -42,7 +36,7 @@ class CSubscribeEx
         return $arSubs;
     }
     
-    public static function setUserSubscribe($CHANNEL_ID, $USER_ID = false )
+    public function setUserSubscribe($SUBSCRIBE_TO, $USER_ID = false )
     {
         global $USER;
         CModule::IncludeModule('highloadblock');
@@ -54,17 +48,31 @@ class CSubscribeEx
         $entity = Bitrix\Highloadblock\HighloadBlockTable::compileEntity( $hlblock );
         $entity_data_class = $entity->getDataClass();
         
-        $dt = new Bitrix\Main\Type\DateTime(date('Y-m-d H:i:s',time()),'Y-m-d H:i:s');
+        $dt = new Bitrix\Main\Type\DateTime(date('Y-m-d H:i:s', time()),'Y-m-d H:i:s');
         $data = array(
-           'UF_CHANNEL' => $CHANNEL_ID,
            'UF_USER' => $USER_ID,
            'UF_DATE_FROM' => $dt,
            'UF_ACTIVE' => 'Y'
         );
-                          
+        
+        if($this->type=="CHANNEL")
+        {
+            $data['UF_CHANNEL'] = $SUBSCRIBE_TO;
+        }else{
+            $data['UF_SERVICE'] = $SUBSCRIBE_TO;
+        }
+        
+        //снимаемм деньги
+        if(!$this->pay($SUBSCRIBE_TO, $USER_ID))
+            return false;
+        
+        //добавляем ГБ
+        if($this->type!="CHANNEL")
+            $this->capacityAdd($SUBSCRIBE_TO, $USER_ID); 
+          
         $result = $entity_data_class::add($data);
         if ($result->isSuccess()) 
-        {         
+        {
             return true;        
         }
         else
@@ -73,7 +81,7 @@ class CSubscribeEx
         } 
     }
     
-    public static function updateUserSubscribe($ID, $arFields)
+    public function updateUserSubscribe($ID, $arFields)
     {
         CModule::IncludeModule('highloadblock');
         
@@ -90,5 +98,60 @@ class CSubscribeEx
         { 
             return implode(', ', $result->getErrors());
         }        
+    }
+    
+    //Оплата подписки
+    public function pay($SUBSCRIBE_TO, $USER_ID=false)
+    {
+        global $USER;
+        CModule::IncludeModule('iblock');
+        
+        if(!$USER_ID)
+            $USER_ID = $USER->GetID();
+            
+        $IB = $this->type=="CHANNEL" ? CHANNEL_IB : SERVICE_IB;
+        
+        $db_props = CIBlockElement::GetProperty($IB, $SUBSCRIBE_TO, array("sort" => "asc"), Array("CODE"=>"PRICE"));
+        if($ar_props = $db_props->Fetch())
+        {
+            $price = IntVal($ar_props["VALUE"]);
+        }
+        
+        $res = CIBlockElement::GetByID($SUBSCRIBE_TO);
+        $ar_res = $res->GetNext();
+        
+        if($price==0)
+            return true; 
+        
+        if($price>0 && CSaleAccountEx::budget($USER_ID)<$price)
+        {
+            $comment = "Оплата подписки на ".$ar_res["NAME"];
+            if(!CSaleAccountEx::transaction((-1)*$price, $USER_ID, $comment))
+            {
+                return false;
+            }
+        }else{
+            return false;
+        }   
+        
+        return true;     
+    }
+    
+    public function capacityAdd($SUBSCRIBE_TO, $USER_ID)
+    {
+        CModule::IncludeModule('iblock');
+        
+        $db_props = CIBlockElement::GetProperty(SERVICE_IB, $SUBSCRIBE_TO, array("sort" => "asc"), Array("CODE"=>"TEXT"));
+        if($ar_props = $db_props->Fetch())
+        {
+            $gb = $ar_props["VALUE"];
+        }
+        
+        $gb = preg_replace("/[^0-9]/", '', $gb);
+        
+        if(intval($gb)>0)
+        {
+            CUserEx::capacityAdd($USER_ID, $gb);
+        }
     }
 }

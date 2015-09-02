@@ -2,9 +2,7 @@
 
 namespace Bitrix\ABTest;
 
-//use Bitrix\Main\Localization;
-
-//Localization\Loc::loadMessages(__FILE__);
+use Bitrix\Main\Type;
 
 class Helper
 {
@@ -36,7 +34,7 @@ class Helper
 					'filter' => array(
 						'SITE_ID'      => SITE_ID,
 						'ACTIVE'       => 'Y',
-						'<=START_DATE' => new \Bitrix\Main\Type\DateTime()
+						'<=START_DATE' => new Type\DateTime()
 					)
 				))->fetch() ?: null;
 
@@ -44,15 +42,44 @@ class Helper
 				$cache->endDataCache($abtest);
 			}
 
-			if (!empty($abtest) && intval($abtest['DURATION']) > 0)
+			if (!empty($abtest))
 			{
-				$end = clone $abtest['START_DATE'];
-				$end->add(intval($abtest['DURATION']).' days');
-
-				if (time() > $end->format('U'))
+				if (!$abtest['MIN_AMOUNT'])
 				{
-					Helper::stopTest($abtest['ID'], true);
-					$abtest = null;
+					$capacity = AdminHelper::getSiteCapacity($abtest['SITE_ID']);
+					if ($capacity['min'] > 0)
+					{
+						$result = ABTestTable::update($abtest['ID'], array('MIN_AMOUNT' => $capacity['min']));
+						if ($result->isSuccess())
+						{
+							$cache->clean('abtest_active_'.SITE_ID, '/abtest');
+							$abtest['MIN_AMOUNT'] = $capacity['min'];
+						}
+					}
+				}
+
+				if (intval($abtest['DURATION']) == -1)
+				{
+					if (intval($abtest['MIN_AMOUNT']) > 0)
+					{
+						$capacity = AdminHelper::getTestCapacity($abtest['ID']);
+						if ($capacity['A'] >= $abtest['MIN_AMOUNT'] && $capacity['B'] >= $abtest['MIN_AMOUNT'])
+						{
+							Helper::stopTest($abtest['ID'], true);
+							$abtest = null;
+						}
+					}
+				}
+				else if (intval($abtest['DURATION']) > 0)
+				{
+					$end = clone $abtest['START_DATE'];
+					$end->add(intval($abtest['DURATION']).' days');
+
+					if (time() > $end->format('U'))
+					{
+						Helper::stopTest($abtest['ID'], true);
+						$abtest = null;
+					}
 				}
 			}
 		}
@@ -195,12 +222,21 @@ class Helper
 
 		if ($abtest = ABTestTable::getById($id)->fetch())
 		{
-			$result = ABTestTable::update(intval($id), array(
-				'START_DATE' => new \Bitrix\Main\Type\DateTime(),
+			$fields = array(
+				'START_DATE' => new Type\DateTime(),
 				'STOP_DATE'  => null,
 				'ACTIVE'     => 'Y',
 				'USER_ID'    => $USER->getID()
-			));
+			);
+
+			if (!$abtest['MIN_AMOUNT'])
+			{
+				$capacity = AdminHelper::getSiteCapacity($abtest['SITE_ID']);
+				if ($capacity['min'] > 0)
+					$fields['MIN_AMOUNT'] = $capacity['min'];
+			}
+
+			$result = ABTestTable::update(intval($id), $fields);
 
 			if ($result->isSuccess())
 			{
@@ -227,7 +263,7 @@ class Helper
 		if ($abtest = ABTestTable::getById($id)->fetch())
 		{
 			$fields = array(
-				'STOP_DATE' => new \Bitrix\Main\Type\DateTime(),
+				'STOP_DATE' => new Type\DateTime(),
 				'ACTIVE'    => 'N',
 			);
 

@@ -51,4 +51,14 @@ $MESS["ABTEST_CONVERSION_FUNNEL_TITLE"] = "Main conversion index";
 $MESS["ABTEST_CONVERSION_COUNTERS_TITLE"] = "All conversion values";
 $MESS["ABTEST_CONVERSION_SUM_UNIT"] = "USD";
 $MESS["ABTEST_CONVRATES_UNAVAILABLE"] = "No data to create the conversion report.";
+$MESS["ABTEST_DURATION_NA"] = "no data";
+$MESS["ABTEST_START_DATE2"] = "Last run on";
+$MESS["ABTEST_STOP_DATE2"] = "Expected to complete on";
+$MESS["ABTEST_MATH_POWER_YES"] = "Sufficient statistical power reached";
+$MESS["ABTEST_MATH_POWER_NO"] = "Sufficient statistical power not reached";
+$MESS["ABTEST_MATH_SIGNIFICANCE_YES"] = "The test result is statistically significant.";
+$MESS["ABTEST_MATH_SIGNIFICANCE_NO"] = "The test result is not statistically significant.";
+$MESS["ABTEST_MATH_POWER_HINT"] = "Statistical power is the likelihood that the test will detect a difference between the two options if there is a discernible difference to be detected. Statistical power increases proportionally to sample size. Test result cannot be trusted if statistical power is lower than 80%.";
+$MESS["ABTEST_MATH_SIGNIFICANCE_HINT"] = "Statistical significance is the likelihood that the test result is not accidental. The result of A/B test is considered to be statistically significant if the probability that an observed difference does not really exist is low (or the probability of observing this effect while doing an A/A test is low). Statistical significance should not be lower than 95%.";
+$MESS["ABTEST_DURATION_EST"] = "in: #NUM# #UNIT#";
 ?>

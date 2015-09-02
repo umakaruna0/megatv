@@ -6,6 +6,7 @@ define("CHANNEL_IB", 6);    //ид каналов
 define("PROG_IB", 7);   //ид программ
 define("PROG_TIME_IB", 8);   //ид показа программ
 define("CITY_IB", 5);
+define("SERVICE_IB", 13);
 define("BROADCAT_COLS", 24);
 define("USER_SOCIAL_IB", 9);
 define("PASSPORT_IB", 10);
@@ -28,6 +29,7 @@ CModule::AddAutoloadClasses(
         '\CXmlEx' => $sClassesPath.'CXmlEx.php',
 		'\CDev' => $sClassesPath.'CDev.php',
         '\CCityEx' => $sClassesPath.'CCity.php',
+        '\CSaleAccountEx' => $sClassesPath.'CSaleAccountEx.php',
         '\CChannel' => $sClassesPath.'CChannel.php',
         '\CProg' => $sClassesPath.'CProg.php',
         '\CProgTime' => $sClassesPath.'CProgTime.php',
@@ -35,20 +37,19 @@ CModule::AddAutoloadClasses(
         '\CTimeEx' => $sClassesPath.'CTimeEx.php',
         '\CScheduleTable' => $sClassesPath.'CScheduleTable.php',
         '\CSocialAuth' => $sClassesPath.'CSocialAuth.php',
-        '\CUserEx' => $sClassesPath.'CUserEx.php',
         '\CSubscribeEx' => $sClassesPath.'CSubscribeEx.php',
         '\CSotal' => $sClassesPath.'CSotal.php',
         '\UploadHandler' => $sClassesPath.'UploadHandler.php',
         '\CRecordEx' => $sClassesPath.'CRecordEx.php',
+        '\CServiceEx' => $sClassesPath.'CServiceEx.php',
+        '\CUserEx' => $sClassesPath.'CUserEx.php',
 	)
 );
 
-AddEventHandler("main", 'OnProlog', 'setCurrentSectioCodeBySectionCodePath');
 AddEventHandler('main', 'OnEpilog', '_Check404Error', 1);
 AddEventHandler("main", "OnBeforeUserLogin", Array("CUserEx", "OnBeforeUserLogin"));
 AddEventHandler("main", "OnBeforeUserRegister", Array("CUserEx", "OnBeforeUserRegister"));
-//AddEventHandler("main", "OnAfterUserAdd", Array("CUserEx", "OnAfterUserUpdateHandler"));
-//AddEventHandler("main", "OnAfterUserUpdate", Array("CUserEx", "OnAfterUserUpdateHandler"));
+AddEventHandler("main", "OnAfterUserAdd", Array("CUserEx", "OnAfterUserUpdateHandler"));
 
 // обработка опенграфовских мета-тегов
 AddEventHandler('main', 'OnEpilog', array('CMyEpilogHooks', 'OpenGraph'));

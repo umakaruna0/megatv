@@ -15,9 +15,12 @@ $MESS['ABTEST_STARTED_BY'] = "Запустил";
 $MESS['ABTEST_STOPPED_BY'] = "Остановил";
 $MESS['ABTEST_DURATION'] = "Работает";
 $MESS['ABTEST_DURATION2'] = "Работал";
+$MESS['ABTEST_DURATION_NA'] = "нет данных";
 
 $MESS['ABTEST_START_DATE'] = 'Тест запущен';
 $MESS['ABTEST_STOP_DATE'] = 'Тест завершен';
+$MESS['ABTEST_START_DATE2'] = 'Дата последнего запуска';
+$MESS['ABTEST_STOP_DATE2'] = 'Ожидаемая дата завершения';
 $MESS['ABTEST_NEVER_LAUNCHED'] = 'Никогда не запускался';
 
 $MESS['ABTEST_BTN_START'] = "Запустить";
@@ -31,7 +34,7 @@ $MESS['ABTEST_DURATION_DAYS1_PLURAL_1'] = 'день';
 $MESS['ABTEST_DURATION_DAYS1_PLURAL_2'] = 'дня';
 $MESS['ABTEST_DURATION_DAYS1_PLURAL_3'] = 'дней';
 
-$MESS['ABTEST_DURATION_DAYS2_PLURAL_1'] = 'день';
+$MESS['ABTEST_DURATION_DAYS2_PLURAL_1'] = 'дня';
 $MESS['ABTEST_DURATION_DAYS2_PLURAL_2'] = 'дней';
 $MESS['ABTEST_DURATION_DAYS2_PLURAL_3'] = 'дней';
 
@@ -75,3 +78,13 @@ $MESS['ABTEST_CONVERSION_DETAILS'] = 'Смотреть сводные данны
 
 $MESS['ABTEST_CONVERSION_FUNNEL_TITLE'] = 'Основной показатель конверсии';
 $MESS['ABTEST_CONVERSION_COUNTERS_TITLE'] = 'Все показатели конверсии';
+
+$MESS['ABTEST_MATH_POWER_YES'] = 'Достигнута достаточная статистическая мощность';
+$MESS['ABTEST_MATH_POWER_NO'] = 'Не достигнута достаточная статистическая мощность';
+$MESS['ABTEST_MATH_SIGNIFICANCE_YES'] = 'Результат теста является статистически значимым';
+$MESS['ABTEST_MATH_SIGNIFICANCE_NO'] = 'Результат теста не является статистически значимым';
+
+$MESS['ABTEST_MATH_POWER_HINT'] = 'Статистическая мощность &mdash; вероятность того, что тест определит разницу между двумя вариантами, если эта разница действительно существует. Статистическая мощность увеличивается при увеличении размера выборки. Если статистическая мощность меньше 80%, то доверять результатам теста нельзя.';
+$MESS['ABTEST_MATH_SIGNIFICANCE_HINT'] = 'Статистическая значимость &mdash; вероятность того, что результат теста не является случайным. Результат A/B-теста считается статистически значимым, если мала вероятность увидеть разницу там, где ее на самом деле нет (или мала вероятность получить подобный результат при проведении A/A-теста). Уровень статистической значимости не должен быть меньше 95%.';
+
+$MESS['ABTEST_DURATION_EST'] = 'осталось примерно: #NUM# #UNIT#';

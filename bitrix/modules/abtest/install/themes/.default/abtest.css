@@ -1088,3 +1088,7 @@
 	white-space: nowrap;
 	width: 315px;
 }
+
+.abtest-report-container.stat-item-block-container {
+	min-width: 850px;
+}
