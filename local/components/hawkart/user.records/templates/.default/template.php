@@ -1,6 +1,6 @@
 <section class="user-recorded-broadcasts" data-module="user-recorded-broadcasts">
 	<div class="block-header">
-		<h3 class="block-title">Мои записи <small>| <?=count($arResult["RECORDS"])?> <?=CDev::number_ending(count($arResult["RECORDS"]), "передач", "передача", "передачи")?></small></h3>
+		<h3 class="block-title"><?=$arParams["WATCHED"]=="Y" ? "Просмотренные" : "Мои записи" ?> <small>| <?=count($arResult["RECORDS"])?> <?=CDev::number_ending(count($arResult["RECORDS"]), "передач", "передача", "передачи")?></small></h3>
 	</div>
 	<div class="block-body">
 		<div class="broadcasts-list">
@@ -25,7 +25,7 @@
 						<div class="actions-panel">
 							<ul class="actions-list">
 								<li><a href="#" data-type="delete-trigger"><span data-icon="icon-trash-action"></span></a></li>
-								<li><a href="#" data-type="share-trigger"><span data-icon="icon-network-action"></span></a></li>
+								<?/*<li><a href="#" data-type="share-trigger"><span data-icon="icon-network-action"></span></a></li>*/?>
 								<?if(!empty($arRecord["UF_URL"])):?>
                                     <li><a href="#" data-type="player-trigger"><span data-icon="icon-play-action"></span></a></li>
                                 <?endif;?>

@@ -229,7 +229,6 @@ class CProgTime
         <div class="item<?if($status):?> status-<?=$status?><?endif;?><?if(empty($arProg["PICTURE"]["SRC"])):?> is-noimage<?endif;?><?if($arProg["CLASS"]=="double"):?> double-item<?endif;?>"
             data-type="broadcast" data-broadcast-id="<?=$arProg["SCHEDULE_ID"]?>"
         >
-            
             <div class="item-image-holder" style="background-image: url(<?=$arProg["PICTURE"]["SRC"]?>)"></div>
         	
             <?=$status_icon?>

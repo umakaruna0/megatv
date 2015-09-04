@@ -79,8 +79,8 @@
             
             <ul class="top-menu">
 				<li><a href="/personal/records/"><span data-icon="icon-film-collection"></span> Мои записи</a></li>
-				<li><a href="#"><span data-icon="icon-recording-small"></span> В записи <span class="badge" data-type="recording-count"><?=$countInRec?></span></a></li>
-				<li><a href="#"><span data-icon="icon-recorded-small"></span> Записанных <span class="badge"><?=$countRecorded?></span></a></li>
+				<li><a href="/personal/records/?type=recording"><span data-icon="icon-recording-small"></span> В записи <span class="badge" data-type="recording-count"><?=$countInRec?></span></a></li>
+				<li><a href="/personal/records/?type=recorded"><span data-icon="icon-recorded-small"></span> Записанных <span class="badge"><?=$countRecorded?></span></a></li>
 				<li><a href="/personal/services/"><span data-icon="icon-balance" data-size="small"></span> На счету: <?=number_format($budget, 0, "", " ")?> Р</a></li>
 			</ul>
             <?

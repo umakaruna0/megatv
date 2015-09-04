@@ -27,11 +27,9 @@
 		<div class="progress-holder" data-progress="<?=$APPLICATION->ShowViewContent('user_filled_space_percent');?>"></div>
 		<span class="label">Занято <strong><?=$APPLICATION->ShowViewContent('user_filled_space');?> ГБ</strong></span>
 	</div>
-    
     <?
     $CSubscribeEx = new CSubscribeEx("CHANNEL");
-    $arChannels = $CSubscribeEx->getList(array("UF_ACTIVE"=>"Y", "UF_USER"=>$USER->GetID()), array("UF_CHANNEL"));
+    $arChannels = $CSubscribeEx->getList(array("UF_ACTIVE"=>"Y", "UF_USER"=>$USER->GetID(), "!UF_CHANNEL"=>false), array("UF_CHANNEL"));
     ?>
-    
-    <a class="channels-menu-item" href="#"><span>Каналов</span> <span class="badge"><?=count($arChannels)?></span></a>
+    <a class="channels-menu-item" href="/personal/services/"><span>Каналов</span> <span class="badge"><?=count($arChannels)?></span></a>
 <?endif;?>
