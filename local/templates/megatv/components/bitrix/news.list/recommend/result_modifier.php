@@ -16,11 +16,11 @@ foreach($arResult["ITEMS"] as $arProgTime)
     
     $arProg["DATE_START"] = CTimeEx::dateOffset($arParams["DATETIME"]["OFFSET"], $arProgTime["PROPERTIES"]["DATE_START"]["VALUE"]);
     $arProg["DATE_END"] = CTimeEx::dateOffset($arParams["DATETIME"]["OFFSET"], $arProgTime["PROPERTIES"]["DATE_END"]["VALUE"]);
-    //$arProg["DATE_START"] = $arProgTime["PROPERTIES"]["DATE_START"]["VALUE"];
-    //$arProg["DATE_END"] = $arProgTime["PROPERTIES"]["DATE_END"]["VALUE"];
     $arProg["DATE"] = $arProgTime["PROPERTIES"]["DATE"]["VALUE"];
-
+    $arProg["SCHEDULE_ID"] = $arProgTime["ID"];
+    $arProg["CHANNEL_ID"] = $channel;
     $arProg["DETAIL_PAGE_URL"] = $arProg["CHANNEL"]["DETAIL_PAGE_URL"].$arProgTime["CODE"]."/";
+    
     $arResult["PROGS"][] = $arProg;
 }
 

@@ -99,8 +99,8 @@ class CSotal
         $rsUser = CUser::GetByID($this->user_id);
         $arUser = $rsUser->Fetch();
         
-        echo "user=".$this->user_id;
-        print_r($arUser);
+        //echo "user=".$this->user_id;
+        //print_r($arUser);
         
         $response = self::sendRequest(
             array(
@@ -305,8 +305,8 @@ class CSotal
 
 		$response = json_decode($response, true);
         
-        echo $method."<br />";
-        echo "<pre>"; print_r($response); echo "</pre>";
+        //echo $method."<br />";
+        //echo "<pre>"; print_r($response); echo "</pre>";
         
 		if($response["result"])
 		{

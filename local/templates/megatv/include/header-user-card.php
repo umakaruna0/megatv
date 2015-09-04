@@ -2,24 +2,68 @@
 	<ul class="user-actions">
         <?
         if($USER->IsAuthorized())
-        {
+        {           
+            $countRecorded = 0;
+            $countInRec = 0;
+            $arStatusRecording = array();   //записывается
+            $arStatusRecorded = array();    //записана, можно просмотреть
+            $arStatusViewed = array();    //просмотренна
             $arFilter = array(
-                "UF_URL" => false,
-                "UF_USER" => $USER->GetID()
+                "UF_USER" => $USER->GetID(),
+                //возможно нужно добавить фильтр по дате между -2д и +11д по дате окончания
             );
-            $records_in = CRecordEx::getList($arFilter, array("UF_SOTAL_ID"));
-            $countInRec = intval(count($records_in));
+            $arRecords = CRecordEx::getList($arFilter, array("UF_URL", "UF_SCHEDULE", "UF_WATCHED", "ID"));
+            foreach($arRecords as $arRecord)
+            {
+                $shedule_id = $arRecord["UF_SCHEDULE"];
+                
+                if($arRecord["UF_WATCHED"]==1)
+                {
+                    $countRecorded++;
+                    $arStatusRecorded[$shedule_id] = $arRecord;
+                }
+                else if(empty($arRecord["UF_URL"]))
+                {
+                    $countInRec++;
+                    $arStatusRecording[$shedule_id] = $arRecord;
+                }
+                else if(!empty($arRecord["UF_URL"]))
+                {
+                    $countRecorded++;
+                    $arStatusViewed[$shedule_id] = $arRecord;
+                }
+            }
+            $arRecordStatus = array(
+                "RECORDING" => $arStatusRecording,
+                "RECORDED"  => $arStatusRecorded,
+                "VIEWED"    => $arStatusViewed
+            );
+            $APPLICATION->SetPageProperty("ar_record_status", json_encode($arRecordStatus));
             
-            $arFilter = array(
-                "!UF_URL" => false,
-                "UF_USER" => $USER->GetID()
-            );
-            $recorded = CRecordEx::getList($arFilter, array("UF_SOTAL_ID"));
-            $countRecorded = intval(count($recorded));
+            
+            $selectedChannels = array();
+            $CSubscribeEx = new CSubscribeEx("CHANNEL");
+            $arChannels = $CSubscribeEx->getList(array("UF_ACTIVE"=>"Y", "UF_USER"=>$USER->GetID()), array("UF_CHANNEL"));
+            foreach($arChannels as $arChannel)
+            {
+                $selectedChannels[] = $arChannel["UF_CHANNEL"];
+            }
+            $APPLICATION->SetPageProperty("ar_subs_channels", json_encode($selectedChannels));
+            
             
             $budget = floatval(CUserEx::getBudget());
             $arUser = CUserEx::updateAvatar($USER->GetID());
+            
+            if(intval($arUser["UF_CAPACITY_BUSY"])==0 || intval($arUser["UF_CAPACITY"])==0)
+            {
+                $filledPercent = 0;
+            }else{
+                $filledPercent = 1-intval($arUser["UF_CAPACITY_BUSY"])/intval($arUser["UF_CAPACITY"]);
+            }
+            
             $APPLICATION->AddViewContent('user_budget', number_format($budget, 0, "", " "));
+            $APPLICATION->AddViewContent('user_filled_space', intval($arUser["UF_CAPACITY_BUSY"]));
+            $APPLICATION->AddViewContent('user_filled_space_percent', number_format($filledPercent, 4, ".", ""));  
             ?>
             <div class="user-card">
 				<a href="/personal/" class="user-avatar<?if($arUser["PERSONAL_PHOTO"]):?> is-empty<?endif;?>" data-type="avatar-holder">

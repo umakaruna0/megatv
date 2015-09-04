@@ -127,6 +127,83 @@ class CProgTime
         self::updateCache();
 	}
     
+    
+    /**
+     * "RECORDING"
+       "RECORDED"
+       "VIEWED"
+     */
+    public static function status($arProg)
+    {
+        global $APPLICATION;
+        $arRecordsStatuses = $APPLICATION->GetPageProperty("ar_record_status");
+        $arRecordsStatuses = json_decode($arRecordsStatuses, true);
+        
+        $arSubscriptionChannels = $APPLICATION->GetPageProperty("ar_subs_channels");
+        $arSubscriptionChannels = json_decode($arSubscriptionChannels, true);
+        
+        $schedule = $arProg["SCHEDULE_ID"];
+
+        $arDatetime = CTimeEx::getDatetime();
+        $date_now = CTimeEx::dateOffset($arDatetime["OFFSET"], date("d.m.Y H:i:s")); 
+
+        $status = "";
+        if(isset($arRecordsStatuses["VIEWED"][$schedule]))
+        {
+            $status = "viewed";
+        }
+        else if(isset($arRecordsStatuses["RECORDING"][$schedule]))
+        {
+            $status = "recording";
+        }
+        else if(isset($arRecordsStatuses["RECORDED"][$schedule]))
+        {
+            $status = "recorded";
+        }
+        else if(in_array($arProg["CHANNEL_ID"], $arSubscriptionChannels) && CTimeEx::dateDiff($date_now, $arProg["DATE_START"]))
+        {
+            $status = "recordable";
+        }
+        
+        ob_start();
+        if($status == "recording"):?>
+            <div class="item-status-icon">
+				<span data-icon="icon-recording"></span>
+			</div>
+        <?endif;?>
+        <?if($status == "recorded"):?>
+            <span class="item-status-icon" href="#">
+				<span data-icon="icon-recorded"></span>
+				<span class="status-desc">Смотреть</span>
+			</span>
+        <?endif;?>
+        <?if($status == "viewed"):?>
+            <span class="item-status-icon">
+				<span data-icon="icon-viewed"></span>
+				<span class="status-desc">Просмотрено</span>
+			</span>
+        <?endif;?>
+        <?if($status == "recordable"):?>
+            <span class="item-status-icon">
+				<span data-icon="icon-recordit"></span>
+			</span>
+			<div class="recording-notify">
+				<div class="recording-notify-text-wrap">
+					<span data-icon="icon-recording-progress"></span>
+					<p>Ваша любимая передача<br> поставлена на запись</p>
+				</div>
+			</div>
+        <?endif;
+        
+        $content = ob_get_contents();  
+        ob_end_clean();
+        
+        return array(
+            "status" => $status,
+            "status-icon" => $content
+        );
+    }
+    
     public static function getProgInfoIndex($arProg)
     {
         if($arProg["CLASS"]=="double")
@@ -137,23 +214,26 @@ class CProgTime
         if($arProg["CLASS"]=="one")
         {
             $arProg["PICTURE"] = CDev::resizeImage($arProg["PREVIEW_PICTURE"], 288, 288);
-            //$arProg["PICTURE"]["SRC"] = CFile::GetPath($arProg["PREVIEW_PICTURE"]);
         }
         
         if($arProg["CLASS"]=="half")
         {
-            //$arProg["PICTURE"]["SRC"] = CFile::GetPath($arProg["PROPERTY_PICTURE_HALF_VALUE"]);
             $arProg["PICTURE"] = CDev::resizeImage($arProg["PROPERTY_PICTURE_HALF_VALUE"], 288, 144);
         }
         
+        $arStatus = self::status($arProg);
+        $status = $arStatus["status"];
+        $status_icon = $arStatus["status-icon"];
         ob_start();
         ?>
-        <div class="item status-recordable<?if(empty($arProg["PICTURE"]["SRC"])):?> is-noimage<?endif;?><?if($arProg["CLASS"]=="double"):?> double-item<?endif;?>">
+        <div class="item<?if($status):?> status-<?=$status?><?endif;?><?if(empty($arProg["PICTURE"]["SRC"])):?> is-noimage<?endif;?><?if($arProg["CLASS"]=="double"):?> double-item<?endif;?>"
+            data-type="broadcast" data-broadcast-id="<?=$arProg["SCHEDULE_ID"]?>"
+        >
+            
             <div class="item-image-holder" style="background-image: url(<?=$arProg["PICTURE"]["SRC"]?>)"></div>
-        	<a class="item-status-icon">
-				<span data-icon="icon-recordit"></span>
-				<span class="status-desc">Записать</span>
-			</a>
+        	
+            <?=$status_icon?>
+            
         	<div class="item-header">
         		<time><?=substr($arProg["DATE_START"], 11, 5)?></time>
         		<a href="<?=$arProg["DETAIL_PAGE_URL"]?>">
@@ -172,22 +252,26 @@ class CProgTime
     {        
         if($arProg["CLASS"]=="one")
         {
-            //$arProg["PICTURE"]["SRC"] = CFile::GetPath($arProg["PROPERTY_PICTURE_VERTICAL_DOUBLE_VALUE"]);
             $arProg["PICTURE"] = CDev::resizeImage($arProg["PROPERTY_PICTURE_VERTICAL_DOUBLE_VALUE"], 600, 550);
         }
         
         if($arProg["CLASS"]=="half")
         {
-            //$arProg["PICTURE"]["SRC"] = CFile::GetPath($arProg["PROPERTY_PICTURE_VERTICAL_VALUE"]);
             $arProg["PICTURE"] = CDev::resizeImage($arProg["PROPERTY_PICTURE_VERTICAL_VALUE"], 300, 550);
         }
         
-        ob_start();
+        $arStatus = self::status($arProg);
+        $status = $arStatus["status"];
+        $status_icon = $arStatus["status-icon"];
+        
         $start = $arProg["DATE_START"];
         $end = $arProg["DATE_END"];
-        $datetime = $arParams["DATETIME"]["SERVER_DATETIME_WITH_OFFSET"];
+        $datetime = $arParams["DATETIME"]["SERVER_DATETIME_WITH_OFFSET"];        
+        ob_start();
         ?>
-        <div class="item status-recordable<?if($arProg["CLASS"]=="half"):?> half-item<?endif;?>" data-type="draggable" data-target="drop-area">
+        <div class="item<?if($status):?> status-<?=$status?><?endif;?><?if($arProg["CLASS"]=="half"):?> half-item<?endif;?>"
+            data-type="broadcast" data-broadcast-id="<?=$arProg["SCHEDULE_ID"]?>"
+        >
 			<div class="item-image-holder" style="background-image: url(<?=$arProg["PICTURE"]["SRC"]?>)"></div>
 			
             <?if(CTimeEx::dateDiff($start, $datetime) && CTimeEx::dateDiff($datetime, $end)):?>
@@ -198,10 +282,8 @@ class CProgTime
                 <span class="badge">HD</span>
             <?endif;?>
             
-			<span class="item-status-icon">
-				<span data-icon="icon-recordit"></span>
-				<span class="status-desc">Записать</span>
-			</span>
+			<?=$status_icon?>
+            
 			<div class="item-header">
                 <?if(CTimeEx::dateDiff($start, $datetime) && CTimeEx::dateDiff($datetime, $end)):?>
                     <?
@@ -248,13 +330,19 @@ class CProgTime
         }else{
             $arProg["PICTURE"] = CDev::resizeImage($arProg["PREVIEW_PICTURE"], 600, 600);
         }
+        
+        $arStatus = self::status($arProg);
+        $status = $arStatus["status"];
+        $status_icon = $arStatus["status-icon"];
         ob_start();
         ?>
-        <div class="item status-recordable<?if(empty($arProg["PICTURE"]["SRC"])):?> is-noimage<?endif;?>">
+        <div class="item<?if($status):?> status-<?=$status?><?endif;?><?if(empty($arProg["PICTURE"]["SRC"])):?> is-noimage<?endif;?>"
+            data-type="broadcast" data-broadcast-id="<?=$arProg["SCHEDULE_ID"]?>"
+        >
             <div class="item-image-holder" style="background-image: url(<?=$arProg["PICTURE"]["SRC"]?>)"></div>
-        	<span class="item-status-icon">
-        		<span data-icon="icon-recordit"></span>
-        	</span>
+        	
+            <?=$status_icon?>
+            
             <div class="item-header">
 				<time><?=substr($arProg["DATE_START"], 11, 5)?> <span class="date">| <?=substr($arProg["DATE_START"], 0, 10)?></span></time>
 				<a href="<?=$arProg["DETAIL_PAGE_URL"]?>">
@@ -277,16 +365,20 @@ class CProgTime
     
     public static function getProgSimilar($arProg, $arParams)
     {
-        //$arProg["PICTURE"]["SRC"] = CFile::GetPath($arProg["PREVIEW_PICTURE"]);
         $arProg["PICTURE"] = CDev::resizeImage($arProg["PREVIEW_PICTURE"], 300, 300);
+        
+        $arStatus = self::status($arProg);
+        $status = $arStatus["status"];
+        $status_icon = $arStatus["status-icon"];
         ob_start();
         ?>
-        <li class="item status-recordable<?if(empty($arProg["PICTURE"]["SRC"])):?> is-noimage<?endif;?>">
+        <div class="item<?if($status):?> status-<?=$status?><?endif;?><?if(empty($arProg["PICTURE"]["SRC"])):?> is-noimage<?endif;?>"
+            data-type="broadcast" data-broadcast-id="<?=$arProg["SCHEDULE_ID"]?>"
+        >
 			<div class="item-image-holder" style="background-image: url(<?=$arProg["PICTURE"]["SRC"]?>)"></div>
-			<a class="item-status-icon">
-				<span data-icon="icon-recordit"></span>
-				<span class="status-desc">Записать</span>
-			</a>
+            
+			<?=$status_icon?>
+            
 			<div class="item-header">
 				<time><?=substr($arProg["DATE_START"], 11, 5)?> | <?=substr($arProg["DATE_START"], 0, 10)?></time>
 				<a href="<?=$arProg["DETAIL_PAGE_URL"]?>">

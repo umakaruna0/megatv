@@ -42,14 +42,12 @@ foreach($arProgTimes as &$arProgTime)
     
     $arProg["DATE_START"] = CTimeEx::dateOffset($arParams["DATETIME"]["OFFSET"], $arProgTime["PROPERTY_DATE_START_VALUE"]);
     $arProg["DATE_END"] = CTimeEx::dateOffset($arParams["DATETIME"]["OFFSET"], $arProgTime["PROPERTY_DATE_END_VALUE"]);
-    
-    //$arProg["DATE_START"] = $arProgTime["PROPERTY_DATE_START_VALUE"];
-    //$arProg["DATE_END"] = $arProgTime["PROPERTY_DATE_END_VALUE"];
     $arProg["DATE"] = $arProgTime["PROPERTY_DATE_VALUE"];
-
+    $arProg["SCHEDULE_ID"] = $arProgTime["ID"];
+    $arProg["CHANNEL_ID"] = $channel;
     $arProg["DETAIL_PAGE_URL"] = $arResult["CHANNELS"][$channel]["DETAIL_PAGE_URL"].$arProgTime["CODE"]."/";
+    
     $arResult["CHANNELS"][$channel]["PROGS"][] = $arProg;
-    $arResult["CHANNELS"][$channel]["TIME"][] = $arProgTime;
 }
 
 unset($arProgTimes);

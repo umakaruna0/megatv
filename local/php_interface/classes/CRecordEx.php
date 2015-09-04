@@ -43,7 +43,24 @@ class CRecordEx
             return $arRecords[0];
         
         return false;
-    }    
+    } 
+    
+    public static function getByID($id)
+    {
+        CModule::IncludeModule('highloadblock');
+        global $USER;
+        
+        if(!$USER_ID)
+            $USER_ID = $USER->GetID();
+        
+        $hlblock = Bitrix\Highloadblock\HighloadBlockTable::getById(RECORD_HL)->fetch();
+        $entity = Bitrix\Highloadblock\HighloadBlockTable::compileEntity( $hlblock );
+        $entity_data_class = $entity->getDataClass();
+        
+        $arRecord = $entity_data_class::getById($id)->fetch();
+        
+        return $arRecord;
+    }   
     
     public static function create($arFields)
     {

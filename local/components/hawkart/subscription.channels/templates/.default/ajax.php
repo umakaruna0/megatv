@@ -34,8 +34,17 @@ if(!isset($selectedChannels[$channelID]))
     $subscribeID = $selectedChannels[$channelID];
     $result = $CSubscribeEx->updateUserSubscribe($subscribeID, array("UF_ACTIVE"=>$active));
 }
-
-//вычет из счет денег 
+ 
+if(!$result)
+{
+    $error = "Ошибка";
+    if($status=="enable")
+    {
+        $status = "disable";
+    }else{
+        $status = "enable";
+    }
+} 
  
 exit(json_encode(array("status"=>$status, "error"=>$selectedChannels)));
 ?>

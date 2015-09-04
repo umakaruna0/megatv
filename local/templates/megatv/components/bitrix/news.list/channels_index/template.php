@@ -29,6 +29,11 @@ $curPage++;
 ?>
 
 <section class="broadcast-results" data-module="broadcast-results">
+    <script type="text/x-config">
+    {
+        "recordingURL": "<?=SITE_TEMPLATE_PATH?>/ajax/to_record.php"
+    }
+    </script>
 	<div class="categories-logos">
         <?foreach($arResult["CHANNELS"] as $arItem):?>
         	<?
@@ -37,7 +42,6 @@ $curPage++;
         	?>
     		<a class="category-logo" href="<?=$arItem["DETAIL_PAGE_URL"]?>" id="<?=$this->GetEditAreaId($arItem['ID']);?>">
     			<span data-icon="<?=$arItem["PROPERTIES"]["ICON"]["VALUE"]?>"></span>
-                <?/*<img src="<?=$arItem["PREVIEW_PICTURE"]["SRC"]?>" />*/?>
     		</a>
         <?endforeach?>
 	</div>

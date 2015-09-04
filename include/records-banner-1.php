@@ -1,0 +1,1 @@
+<a href="#"><img src="<?=SITE_TEMPLATE_PATH?>/img/temp/advertizing-04.jpg" alt="" width="728" height="90"></a>

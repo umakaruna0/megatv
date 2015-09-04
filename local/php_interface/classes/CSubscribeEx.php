@@ -123,7 +123,7 @@ class CSubscribeEx
         if($price==0)
             return true; 
         
-        if($price>0 && CSaleAccountEx::budget($USER_ID)<$price)
+        if($price>0 && CSaleAccountEx::budget($USER_ID)>$price)
         {
             $comment = "Оплата подписки на ".$ar_res["NAME"];
             if(!CSaleAccountEx::transaction((-1)*$price, $USER_ID, $comment))

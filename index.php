@@ -46,7 +46,7 @@ global $USER;
 		"PARENT_SECTION" => "",	// ID раздела
 		"PARENT_SECTION_CODE" => "",	// Код раздела
 		"INCLUDE_SUBSECTIONS" => "Y",	// Показывать элементы подразделов раздела
-		"CACHE_TYPE" => "A",	// Тип кеширования
+		"CACHE_TYPE" => "N",	// Тип кеширования
 		"CACHE_TIME" => "36000000",	// Время кеширования (сек.)
 		"CACHE_FILTER" => "N",	// Кешировать при установленном фильтре
 		"CACHE_GROUPS" => "Y",	// Учитывать права доступа
@@ -145,7 +145,7 @@ $arRecommendFilter["PROPERTY_CHANNEL"] = $ids;
 		"PARENT_SECTION" => "",	// ID раздела
 		"PARENT_SECTION_CODE" => "",	// Код раздела
 		"INCLUDE_SUBSECTIONS" => "Y",	// Показывать элементы подразделов раздела
-		"CACHE_TYPE" => "A",	// Тип кеширования
+		"CACHE_TYPE" => "N",	// Тип кеширования
 		"CACHE_TIME" => "36000000",	// Время кеширования (сек.)
 		"CACHE_FILTER" => "N",	// Кешировать при установленном фильтре
 		"CACHE_GROUPS" => "Y",	// Учитывать права доступа

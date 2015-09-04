@@ -90,6 +90,8 @@ foreach($arResult["TOPICS"] as &$arTopic)
         {
             $channel = $arSchedule["PROPERTY_CHANNEL_VALUE"];
             $arProg = $arProgsSorted[$progID];
+            $arProg["SCHEDULE_ID"] = $arSchedule["ID"];
+            $arProg["CHANNEL_ID"] = $channel;
             $arProg["DATE_START"] = CTimeEx::dateOffset($arTime["OFFSET"], $arSchedule["PROPERTY_DATE_START_VALUE"]);
             $arProg["DATE_END"] = CTimeEx::dateOffset($arTime["OFFSET"], $arSchedule["PROPERTY_DATE_END_VALUE"]);
             $arProg["DETAIL_PAGE_URL"] = $arResult["CHANNELS"][$channel]["DETAIL_PAGE_URL"].$arSchedule["CODE"]."/";

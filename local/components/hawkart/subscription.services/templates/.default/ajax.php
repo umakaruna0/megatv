@@ -12,6 +12,7 @@ $error = false;
 $ServiceID = intval($_REQUEST["serviceID"]);
 $status = htmlspecialcharsbx($_REQUEST["status"]);
 $selectedServices = array();
+
 $CSubscribeEx = new CSubscribeEx("SERVICE");
 $arServices = $CSubscribeEx->getList(array("UF_USER"=>$USER->GetID()), array("UF_SERVICE", "ID"));
 foreach($arServices as $arService)

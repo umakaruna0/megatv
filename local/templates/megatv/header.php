@@ -7,8 +7,8 @@ IncludeTemplateLangFile(__FILE__);
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 		<meta name="format-detection" content="telephone=no">
-		<link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
-		<link rel="icon" href="/favicon.ico" type="image/x-icon">
+		<link rel="shortcut icon" href="/favicon.ico">
+		<link rel="icon" href="/favicon.ico">
         <?
         //$APPLICATION->ShowHead();
         echo '<meta http-equiv="Content-Type" content="text/html; charset='.LANG_CHARSET.'"'.(true ? ' /':'').'>'."\n";
@@ -42,8 +42,9 @@ IncludeTemplateLangFile(__FILE__);
 				{
 					"bannersHideTime": 1,
 					"pathToSVGSprite": "<?=SITE_TEMPLATE_PATH?>/megatv/dist/img/sprites/svg_sprite.svg",
-					"playerURL": "modals/player.html",
-					"shareURL": "/server/"
+					"playerURL": "<?=SITE_TEMPLATE_PATH?>/ajax/modals/player.php",
+                    "playerLastPositionURL": "<?=SITE_TEMPLATE_PATH?>/ajax/player_last_position.php",
+					"shareURL": "<?=SITE_TEMPLATE_PATH?>/ajax/share.php"
 				}
 			</script>
             
@@ -128,30 +129,11 @@ IncludeTemplateLangFile(__FILE__);
 
 				</div>
 				<div class="bottom-panel">
-					<div class="calendar" data-module="calendar">
-						<script type="text/x-config">
-							{
-								"currentDate": "<?=CTimeEx::getCurDate()?>",
-								"minDate": 1,
-								"maxDate":<?=CTimeEx::getCalendarDays()?>
-							}
-						</script>
-                        <a href="#" data-type="calendar-trigger" class="calendar-trigger"><span><?=CTimeEx::dateToStr()?></span></a>
-						<div class="datepicker-holder"></div>
-					</div>
-					<div class="calendar-carousel" data-module="calendar-carousel">
-						<script type="text/x-config">
-							{
-								"currentDate": "<?=CTimeEx::getCurDate()?>",
-								"minDate": 1,
-								"maxDate":<?=CTimeEx::getCalendarDays()?>
-							}
-						</script>
-						<a href="#" class="prev-trigger disabled" data-type="prev-trigger"><span data-icon="icon-left-arrow-days"></span></a>
-						<div class="dates-holder" data-type="dates-carousel"></div>
-						<a href="#" class="next-trigger" data-type="next-trigger"><span data-icon="icon-right-arrow-days"></span></a>
-					</div>
                     
+                    <?require($_SERVER["DOCUMENT_ROOT"].SITE_TEMPLATE_PATH."/include/header-calendar.php");?>
+                      
+                    <?$APPLICATION->IncludeComponent("hawkart:search", "", Array(), false);?>  
+                                      
                     <?$APPLICATION->IncludeComponent("bitrix:menu","top",Array(
                             "ROOT_MENU_TYPE" => "top", 
                             "MAX_LEVEL" => "1", 
@@ -165,8 +147,7 @@ IncludeTemplateLangFile(__FILE__);
                             "MENU_CACHE_GET_VARS" => "" 
                         )
                     );?>
-                    
-                    <?$APPLICATION->IncludeComponent("hawkart:search", "", Array(), false);?>
+
 				</div>
 			</header>
 			<main class="site-content">
