@@ -102,9 +102,15 @@ foreach($arProgTimes as $arSchedule)
         $arJson["date"] = substr($date, 11, 5)." | ".substr($date, 0, 10);
         $arJson["title"] = $name;
         if($arProg["PREVIEW_PICTURE"])
-            $arJson["thumbnail"] = CFile::GetPath($arProg["PREVIEW_PICTURE"]);
+        {
+            $arPic = CDev::resizeImage($arProg["PREVIEW_PICTURE"], 60, 60);
+            $arJson["thumbnail"] = $arPic["SRC"];
+        }
         else
+        {
             $arJson["thumbnail"] = "null";
+        }
+            
         $arJson["tokens"] = array();
         $arJson["link"] = $arChannels[$channel]["DETAIL_PAGE_URL"].$arSchedule["CODE"]."/";
         

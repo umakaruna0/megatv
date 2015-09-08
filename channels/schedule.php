@@ -173,7 +173,8 @@ $arRecommendFilter["PROPERTY_PROG"] = $progIds;
 	"SHOW_404" => "N",	// Показ специальной страницы
 	"MESSAGE_404" => "",	// Сообщение для показа (по умолчанию из компонента)
     "DATETIME" => CTimeEx::getDatetime(),
-    "CITY" => CCityEx::getGeoCity()
+    "CITY" => CCityEx::getGeoCity(),
+    "TITLE" => "Похожие передачи"
 	),
 	false
 );?>

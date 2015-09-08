@@ -166,6 +166,35 @@ $(document).on('ready', function(){
         $("#city-select-form").submit();
     });
     
+    
+    $('#comment-form .submit-btn').on('click', function(e){
+        e.preventDefault();
+        
+        var $form = $('#comment-form');
+        
+        $.ajax({
+            type: "POST",
+            url: $form.attr('action'),
+            data: $form.serialize(),
+            error: function(request,error) {
+                alert('Error! Please try again!');
+            },
+            dataType: "json",
+            success: function(data) {
+                
+                if(!data.status)
+                {
+                    errors = data.errors;
+                    console.log(errors);
+                }else{
+                    
+                }
+            }
+        });
+
+        return false;
+    });
+    
     $('a#channels-show-ajax-link').on('click', function (e) {
 		e.preventDefault();
         var _this = this;

@@ -12,149 +12,135 @@ global $USER;
 	</div>
 </div>
 
-<?/*
-<section class="recomended-broadcasts is-single-items" data-module="recomended-broadcasts">
-	<div class="block-header">
-		<h3 class="block-title">Рекомендованные Передачи</h3>
-	</div>
-	<div class="block-body">
-		<div class="broadcasts-list">
-			<div class="item status-recordable" data-type="draggable" data-target="drop-area">
-				<div class="item-image-holder" style="background-image: url(img/temp/image-34.jpg)"></div>
-				<span class="item-status-icon">
-					<span data-icon="icon-recordit"></span>
-					<span class="status-desc">Записать</span>
-				</span>
-				<div class="item-header">
-					<time>12:00 <span class="date">| 12.12.2015</span></time>
-					<a href="#">Властелин колец: <br>Возвращение Короля</a>
-				</div>
-			</div>
-			<div class="item status-recordable" data-type="draggable" data-target="drop-area">
-				<div class="item-image-holder" style="background-image: url(img/temp/image-35.jpg)"></div>
-				<span class="item-status-icon">
-					<span data-icon="icon-recordit"></span>
-					<span class="status-desc">Записать</span>
-				</span>
-				<div class="item-header">
-					<time>12:00 <span class="date">| 12.12.2015</span></time>
-					<a href="#">Рим</a>
-				</div>
-			</div>
-			<div class="item status-recordable" data-type="draggable" data-target="drop-area">
-				<div class="item-image-holder" style="background-image: url(img/temp/image-36.jpg)"></div>
-				<span class="item-status-icon">
-					<span data-icon="icon-recordit"></span>
-					<span class="status-desc">Записать</span>
-				</span>
-				<div class="item-header">
-					<time>12:00 <span class="date">| 12.12.2015</span></time>
-					<a href="#">Гладиатор</a>
-				</div>
-			</div>
-			<div class="item status-recordable" data-type="draggable" data-target="drop-area">
-				<div class="item-image-holder" style="background-image: url(img/temp/image-37.jpg)"></div>
-				<span class="item-status-icon">
-					<span data-icon="icon-recordit"></span>
-					<span class="status-desc">Записать</span>
-				</span>
-				<div class="item-header">
-					<time>12:00 <span class="date">| 12.12.2015</span></time>
-					<a href="#">Тюдоры</a>
-				</div>
-			</div>
-			<div class="item status-recordable" data-type="draggable" data-target="drop-area">
-				<div class="item-image-holder" style="background-image: url(img/temp/image-38.jpg)"></div>
-				<span class="item-status-icon">
-					<span data-icon="icon-recordit"></span>
-					<span class="status-desc">Записать</span>
-				</span>
-				<div class="item-header">
-					<time>12:00 <span class="date">| 12.12.2015</span></time>
-					<a href="#">Борджиа</a>
-				</div>
-			</div>
-			<div class="item status-recordable" data-type="draggable" data-target="drop-area">
-				<div class="item-image-holder" style="background-image: url(img/temp/image-39.jpg)"></div>
-				<span class="item-status-icon">
-					<span data-icon="icon-recordit"></span>
-					<span class="status-desc">Записать</span>
-				</span>
-				<div class="item-header">
-					<time>12:00 <span class="date">| 12.12.2015</span></time>
-					<a href="#">Демоны Да Винчи.<br>2 серия 4 сезона.</a>
-				</div>
-			</div>
-			<div class="item status-recordable" data-type="draggable" data-target="drop-area">
-				<div class="item-image-holder" style="background-image: url(img/temp/image-34.jpg)"></div>
-				<span class="item-status-icon">
-					<span data-icon="icon-recordit"></span>
-					<span class="status-desc">Записать</span>
-				</span>
-				<div class="item-header">
-					<time>12:00 <span class="date">| 12.12.2015</span></time>
-					<a href="#">Властелин колец: <br>Возвращение Короля</a>
-				</div>
-			</div>
-			<div class="item status-recordable" data-type="draggable" data-target="drop-area">
-				<div class="item-image-holder" style="background-image: url(img/temp/image-35.jpg)"></div>
-				<span class="item-status-icon">
-					<span data-icon="icon-recordit"></span>
-					<span class="status-desc">Записать</span>
-				</span>
-				<div class="item-header">
-					<time>12:00 <span class="date">| 12.12.2015</span></time>
-					<a href="#">Рим</a>
-				</div>
-			</div>
-			<div class="item status-recordable" data-type="draggable" data-target="drop-area">
-				<div class="item-image-holder" style="background-image: url(img/temp/image-36.jpg)"></div>
-				<span class="item-status-icon">
-					<span data-icon="icon-recordit"></span>
-					<span class="status-desc">Записать</span>
-				</span>
-				<div class="item-header">
-					<time>12:00 <span class="date">| 12.12.2015</span></time>
-					<a href="#">Гладиатор</a>
-				</div>
-			</div>
-			<div class="item status-recordable" data-type="draggable" data-target="drop-area">
-				<div class="item-image-holder" style="background-image: url(img/temp/image-37.jpg)"></div>
-				<span class="item-status-icon">
-					<span data-icon="icon-recordit"></span>
-					<span class="status-desc">Записать</span>
-				</span>
-				<div class="item-header">
-					<time>12:00 <span class="date">| 12.12.2015</span></time>
-					<a href="#">Тюдоры</a>
-				</div>
-			</div>
-			<div class="item status-recordable" data-type="draggable" data-target="drop-area">
-				<div class="item-image-holder" style="background-image: url(img/temp/image-38.jpg)"></div>
-				<span class="item-status-icon">
-					<span data-icon="icon-recordit"></span>
-					<span class="status-desc">Записать</span>
-				</span>
-				<div class="item-header">
-					<time>12:00 <span class="date">| 12.12.2015</span></time>
-					<a href="#">Борджиа</a>
-				</div>
-			</div>
-			<div class="item status-recordable" data-type="draggable" data-target="drop-area">
-				<div class="item-image-holder" style="background-image: url(img/temp/image-39.jpg)"></div>
-				<span class="item-status-icon">
-					<span data-icon="icon-recordit"></span>
-					<span class="status-desc">Записать</span>
-				</span>
-				<div class="item-header">
-					<time>12:00 <span class="date">| 12.12.2015</span></time>
-					<a href="#">Демоны Да Винчи.<br>2 серия 4 сезона.</a>
-				</div>
-			</div>
-		</div>
-	</div><!-- /.block-body -->
-</section><!-- /.recomended-broadcasts -->
-*/?>
+<?
+$arRecords = CRecordEx::getList($arFilter, array("UF_PROG"));
+if(count($arRecords)>0)
+{
+    foreach($arRecords as $arRecord)
+    {
+        $progIds[] = $arRecord["UF_PROG"];
+    }
+}
+$progIds = array_unique($progIds);
+
+//активные каналы
+$ids = array();
+$activeChannels = CChannel::getList(array("ACTIVE"=>"Y"), array("ID"));
+foreach($activeChannels as $activeChannel)
+{
+    $ids[] = $activeChannel["ID"];
+}
+
+//Темы программы
+$arProgs = CProg::getList(array("ID"=>$progIds, "PROPERTY_CHANNEL"=>$ids), array("PROPERTY_TOPIC", "PROPERTY_CATEGORY", "PROPERTY_CHANNEL", "NAME"));
+foreach($arProgs as $arProg)
+{
+    $arTopicsExp = explode(",", $arProg["PROPERTY_TOPIC_VALUE"]);
+    foreach($arTopicsExp as $key=>$topic)
+    {
+        if(!empty($topic))
+            $arTopics[] = trim($topic);
+    }
+    
+    $arCatsExp = explode(",", $arProg["PROPERTY_CATEGORY_VALUE"]);
+    foreach($arCatsExp as $key=>$topic)
+    {
+        if(!empty($topic))
+            $arCats[] = trim($topic);
+    }
+}
+
+unset($arProg);
+
+$arTime = CTimeEx::getDateTimeOffset();
+
+//Выберем все программы с такими же темами
+$progIds = array();
+$arProgs = CProg::getList(
+    array(
+        "?PROPERTY_TOPIC"=>$arTopics, 
+        "?PROPERTY_CATEGORY" => $arCats
+    ), 
+    array("ID", "PROPERTY_CHANNEL", "NAME")
+);
+foreach($arProgs as $arProg)
+{
+    $progIds[] = $arProg["ID"];
+}
+$progIds = array_unique($progIds);
+
+$filterDateStart = CTimeEx::datetimeForFilter(date("Y-m-d H:i:s"));
+$arRecommendFilter[">=PROPERTY_DATE_START"] = $filterDateStart;
+$arRecommendFilter["PROPERTY_PROG"] = $progIds;
+?>
+
+<?$APPLICATION->IncludeComponent("bitrix:news.list", "similar", Array(
+    "DISPLAY_DATE" => "Y",	// Выводить дату элемента
+	"DISPLAY_NAME" => "Y",	// Выводить название элемента
+	"DISPLAY_PICTURE" => "Y",	// Выводить изображение для анонса
+	"DISPLAY_PREVIEW_TEXT" => "Y",	// Выводить текст анонса
+	"AJAX_MODE" => "N",	// Включить режим AJAX
+	"IBLOCK_TYPE" => "directories",	// Тип информационного блока (используется только для проверки)
+	"IBLOCK_ID" => "8",	// Код информационного блока
+	"NEWS_COUNT" => "20",	// Количество новостей на странице
+	"SORT_BY1" => "PROPERTY_DATE_START",	// Поле для первой сортировки новостей
+	"SORT_ORDER1" => "ASC",	// Направление для первой сортировки новостей
+	"SORT_BY2" => "NAME",	// Поле для второй сортировки новостей
+	"SORT_ORDER2" => "ASC",	// Направление для второй сортировки новостей
+	"FILTER_NAME" => "arRecommendFilter",	// Фильтр
+	"FIELD_CODE" => array(	// Поля
+		0 => "NAME",
+		1 => "ID",
+        2 => "CODE"
+	),
+	"PROPERTY_CODE" => array(	// Свойства
+		0 => "DATE_START",
+		1 => "DATE_END",
+		2 => "CHANNEL",
+        3 => "PROG"
+	),
+	"CHECK_DATES" => "Y",	// Показывать только активные на данный момент элементы
+	"DETAIL_URL" => "",	// URL страницы детального просмотра (по умолчанию - из настроек инфоблока)
+	"PREVIEW_TRUNCATE_LEN" => "",	// Максимальная длина анонса для вывода (только для типа текст)
+	"ACTIVE_DATE_FORMAT" => "d.m.Y",	// Формат показа даты
+	"SET_TITLE" => "N",	// Устанавливать заголовок страницы
+	"SET_BROWSER_TITLE" => "N",	// Устанавливать заголовок окна браузера
+	"SET_META_KEYWORDS" => "N",	// Устанавливать ключевые слова страницы
+	"SET_META_DESCRIPTION" => "N",	// Устанавливать описание страницы
+	"SET_STATUS_404" => "N",	// Устанавливать статус 404
+	"INCLUDE_IBLOCK_INTO_CHAIN" => "N",	// Включать инфоблок в цепочку навигации
+	"ADD_SECTIONS_CHAIN" => "N",	// Включать раздел в цепочку навигации
+	"HIDE_LINK_WHEN_NO_DETAIL" => "N",	// Скрывать ссылку, если нет детального описания
+	"PARENT_SECTION" => "",	// ID раздела
+	"PARENT_SECTION_CODE" => "",	// Код раздела
+	"INCLUDE_SUBSECTIONS" => "Y",	// Показывать элементы подразделов раздела
+	"CACHE_TYPE" => "A",	// Тип кеширования
+	"CACHE_TIME" => "36000000",	// Время кеширования (сек.)
+	"CACHE_FILTER" => "N",	// Кешировать при установленном фильтре
+	"CACHE_GROUPS" => "Y",	// Учитывать права доступа
+	"PAGER_TEMPLATE" => "",	// Шаблон постраничной навигации
+	"DISPLAY_TOP_PAGER" => "N",	// Выводить над списком
+	"DISPLAY_BOTTOM_PAGER" => "N",                                    //
+	"PAGER_TITLE" => "Новости",	// Название категорий
+	"PAGER_SHOW_ALWAYS" => "N",	// Выводить всегда
+	"PAGER_DESC_NUMBERING" => "N",	// Использовать обратную навигацию
+	"PAGER_DESC_NUMBERING_CACHE_TIME" => "36000",	// Время кеширования страниц для обратной навигации
+	"PAGER_SHOW_ALL" => "N",	// Показывать ссылку "Все"
+	"AJAX_OPTION_JUMP" => "N",	// Включить прокрутку к началу компонента
+	"AJAX_OPTION_STYLE" => "Y",	// Включить подгрузку стилей
+	"AJAX_OPTION_HISTORY" => "N",	// Включить эмуляцию навигации браузера
+	"COMPONENT_TEMPLATE" => ".default",
+	"AJAX_OPTION_ADDITIONAL" => "",	// Дополнительный идентификатор
+	"SET_LAST_MODIFIED" => "N",	// Устанавливать в заголовках ответа время модификации страницы
+	"PAGER_BASE_LINK_ENABLE" => "N",	// Включить обработку ссылок
+	"SHOW_404" => "N",	// Показ специальной страницы
+	"MESSAGE_404" => "",	// Сообщение для показа (по умолчанию из компонента)
+    "DATETIME" => CTimeEx::getDatetime(),
+    "CITY" => CCityEx::getGeoCity(),
+    "TITLE" => "Рекомендованные Передачи"
+	),
+	false
+);?>
 
 <?$APPLICATION->IncludeComponent("bitrix:main.include", "", array("AREA_FILE_SHOW" => "file", "PATH" => SITE_DIR."include/records-banner-2.php"), false);?>
 

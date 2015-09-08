@@ -13,7 +13,7 @@ $prog_time = intval($_REQUEST["broadcastID"]);
 if($USER->IsAuthorized() && $prog_time>0)
 {
     //Получим список всех каналов, на которые подписан пользователь
-    /*$selectedChannels = array();
+    $selectedChannels = array();
     $CSubscribeEx = new CSubscribeEx("CHANNEL");
     $arChannels = $CSubscribeEx->getList(array("UF_ACTIVE"=>"Y", "UF_USER"=>$USER->GetID()), array("UF_CHANNEL"));
     foreach($arChannels as $arChannel)
@@ -41,7 +41,7 @@ if($USER->IsAuthorized() && $prog_time>0)
             
             $status = "success";
         } 
-    }*/  
+    }
 }
 
 exit(json_encode(array("status"=>$status)));

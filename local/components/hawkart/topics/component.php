@@ -8,58 +8,21 @@ if ($arParams["CACHE_TYPE"] == "Y" || ($arParams["CACHE_TYPE"] == "A" && COption
 else
 	$arParams["CACHE_TIME"] = 0;
  
- CModule::IncludeModule("iblock");
+CModule::IncludeModule("iblock");
  
- /*   
-$arResult["TOPICS"] = array(
-    array(
-        "ICON" => "documental",
-        "TITLE" => "Документальные",
-        "PROPERTY" => array(
-            "CODE" => "TOPIC", 
-            "VALUE" => array("документалистика")
-        ),
-    ),
-    array(
-        "ICON" => "films",
-        "TITLE" => "Фильмы",
-        "PROPERTY" => array(
-            "CODE" => "TOPIC", 
-            "VALUE" => array("Зарубежные фильмы", "Популярные фильмы", "Русские фильмы", "Советские фильмы", "кино")
-        ),
-    ),
-    array(
-        "ICON" => "sport",
-        "TITLE" => "Спорт",
-        "PROPERTY" => array(
-            "CODE" => "TOPIC", 
-            "VALUE" => array("Спорт", "Здоровье", "Экстрим")
-        ),
-    ),
-    array(
-        "ICON" => "cartoons",
-        "TITLE" => "Мультики",
-        "PROPERTY" => array(
-            "CODE" => "TOPIC", 
-            "VALUE" => array("мультфильмы", "Мультики")
-        ),
-    ),
-    array(
-        "ICON" => "news",
-        "TITLE" => "Новости",
-        "PROPERTY" => array(
-            "CODE" => "TOPIC", 
-            "VALUE" => array("Новости", "События")
-        ),
-    ),
-);*/
-
 $arResult["TOPICS"] = array();
 $arrFilter = array("IBLOCK_ID" => 12, "ACTIVE" => "Y");
-$arSelect = array("NAME", "PROPERTY_ICON", 'PREVIEW_TEXT');
+$arSelect = array("NAME", "PROPERTY_ICON", 'PREVIEW_TEXT', "PROPERTY_FILTER_BY");
 $rsRes = CIBlockElement::GetList( $arOrder, $arrFilter, false, false, $arSelect );
 while( $arItem = $rsRes->GetNext() )
 {
+    if($arItem["PROPERTY_FILTER_BY_VALUE"]=="Категории")
+    {
+        $code = "CATEGORY";
+    }else{
+        $code = "TOPIC";
+    }
+    
     $topics = array();
     $arTopicsExp = explode(",", $arItem["PREVIEW_TEXT"]);
     foreach($arTopicsExp as $key=>$topic)
@@ -74,7 +37,7 @@ while( $arItem = $rsRes->GetNext() )
         "ICON" => $arItem["PROPERTY_ICON_VALUE"],
         "TITLE" => $arItem["NAME"],
         "PROPERTY" => array(
-            "CODE" => "TOPIC", 
+            "CODE" => $code, 
             "VALUE" => $topics
         )
     );
@@ -111,8 +74,6 @@ foreach($arResult["TOPICS"] as &$arTopic)
             "ID", "NAME", "PROPERTY_CHANNEL", "PROPERTY_SUB_TITLE", "PREVIEW_PICTURE", "PROPERTY_PICTURE_DOUBLE", "PROPERTY_PICTURE_HALF", "PROPERTY_TOPIC"
         )
     );
-    
-    //CDev::pre($arProgs);
     
     $arProgsSorted = array();
     foreach($arProgs as $arProg)

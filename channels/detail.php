@@ -136,7 +136,8 @@ $arRecommendFilter["PROPERTY_CHANNEL"] = $CHANNEL_ID;
 		"MESSAGE_404" => "",	// Сообщение для показа (по умолчанию из компонента)
         "DATETIME" => CTimeEx::getDatetime(),
         "CITY" => CCityEx::getGeoCity(),
-        "NOT_SHOW_CHANNEL" => "Y"
+        "NOT_SHOW_CHANNEL" => "Y",
+        "TITLE" => "Похожие передачи"
 	),
 	false
 );?>

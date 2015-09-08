@@ -43,6 +43,7 @@ CModule::AddAutoloadClasses(
         '\CRecordEx' => $sClassesPath.'CRecordEx.php',
         '\CServiceEx' => $sClassesPath.'CServiceEx.php',
         '\CUserEx' => $sClassesPath.'CUserEx.php',
+        '\CCommentEx' => $sClassesPath.'CCommentEx.php',
 	)
 );
 

@@ -160,7 +160,7 @@ class CProgTime
         {
             $status = "recorded";
         }
-        else if(in_array($arProg["CHANNEL_ID"], $arSubscriptionChannels) && CTimeEx::dateDiff($date_now, $arProg["DATE_START"]))
+        else if(in_array($arProg["CHANNEL_ID"], $arSubscriptionChannels)/* && CTimeEx::dateDiff($date_now, $arProg["DATE_START"])*/)
         {
             $status = "recordable";
         }
@@ -385,7 +385,7 @@ class CProgTime
                     <?if(!empty($arProg["PROPERTY_SUB_TITLE_VALUE"])):?>.<br><?=$arProg["PROPERTY_SUB_TITLE_VALUE"]?><?endif;?> 
                 </a>
 			</div>
-		</li>
+		</div>
         <?
         $content = ob_get_contents();  
         ob_end_clean();

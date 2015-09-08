@@ -13,6 +13,11 @@
 $this->setFrameMode(true);
 ?>
 <section class="channel-card" data-module="channel-card">
+    <script type="text/x-config">
+    {
+        "recordingURL": "<?=SITE_TEMPLATE_PATH?>/ajax/to_record.php"
+    }
+    </script>
 	<div class="channel-info">
 		<div class="channel-logo">
 			<span data-icon="<?=$arResult["PROPERTIES"]["ICON"]["VALUE"]?>" data-size="small"></span>
