@@ -76,9 +76,13 @@ global $USER;
 	false
 );?>
 
+<?$APPLICATION->IncludeComponent("hawkart:recommendations", "index", Array("NOT_SHOW_CHANNEL"=>"Y", "TEMPLATE" => "MAIN_PAGE"),
+	false
+);?>
+
 
 <?
-$activeChannels = CChannel::getList(array("ACTIVE"=>"Y"), array("ID"));
+/*$activeChannels = CChannel::getList(array("ACTIVE"=>"Y"), array("ID"));
 $ids = array();
 foreach($activeChannels as $activeChannel)
 {
@@ -170,6 +174,6 @@ $arRecommendFilter["PROPERTY_CHANNEL"] = $ids;
         "CITY" => CCityEx::getGeoCity(),
 	),
 	false
-);?>
+);*/?>
 
 <?require($_SERVER["DOCUMENT_ROOT"]."/bitrix/footer.php");?>

@@ -48,6 +48,7 @@ IncludeTemplateLangFile(__FILE__);
 				}
 			</script>
             
+            <?/*
 			<div id="drop-area" class="drop-area">
 				<div>
 					<div class="dropzone">
@@ -56,6 +57,8 @@ IncludeTemplateLangFile(__FILE__);
 					</div>
 				</div>
 			</div>
+            */?>
+            
 			<header class="site-header">
 				<div class="fullsize-banner adv-styling-01<?if(strpos($_COOKIE['advertizing_hidden_banners'], "header-adv")!==false):?> hide<?endif;?>" data-type="advertizing" id="header-adv">
 					<div class="banner-content">

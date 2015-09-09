@@ -2,50 +2,7 @@
 if(!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED!==true)
 	die();
 
-//Params
-if ($arParams["CACHE_TYPE"] == "Y" || ($arParams["CACHE_TYPE"] == "A" && COption::GetOptionString("main", "component_cache_on", "Y") == "Y"))
-	$arParams["CACHE_TIME"] = intval($arParams["CACHE_TIME"]);
-else
-	$arParams["CACHE_TIME"] = 0;
-    
-$arResult["TOPICS"] = array(
-    array(
-        "ICON" => "megatv",
-        "TITLE" => "Мега ТВ рекомендует",
-        "FILTER" => array(
-            "!PROPERTY_RECOMMEND_VALUE" => false
-        ),
-    ),
-    array(
-        "ICON" => "popular-among-users",
-        "TITLE" => "Популярное <br>у пользователей",
-        "FILTER" => array(
-            "?PROPERTY_TOPIC" => array("популярное")
-        ),
-    ),
-    array(
-        "ICON" => "best-sport",
-        "TITLE" => "Спорт",
-        "FILTER" => array(
-            "?PROPERTY_TOPIC" => array("спорт", "экстрим")
-        ),
-    ),
-    array(
-        "ICON" => "best-cartoons",
-        "TITLE" => "Популярные<br>мультики",
-        "FILTER" => array(
-            "?PROPERTY_TOPIC" => array("мультики", "мультфильмы")
-        ),
-    ),
-    array(
-        "ICON" => "premieres",
-        "TITLE" => "Премьеры",
-        "FILTER" => array(
-            "?PROPERTY_TOPIC" => array("Кино")
-        ),
-    ),
-);
-
+$arResult["PROGS"] = array();
 $arTime = CTimeEx::getDatetime();
 
 //активные каналы
@@ -58,56 +15,71 @@ foreach($activeChannels as $activeChannel)
     $arResult["CHANNELS"][$activeChannel["ID"]] = $activeChannel;
 }
 
+$arrFilter = array(
+    "IBLOCK_ID" => PROG_IB,
+    "ACTIVE" => "Y",
+    "!PROPERTY_RATING"  => false,
+    "PROPERTY_CHANNEL" => CIBlockElement::SubQuery(
+        "ID",
+        array(
+            "IBLOCK_ID" => CHANNEL_IB,
+            "ACTIVE" => "Y",
+        )
+    ));
 
-$arProgTimes = CProgTime::getList(array(
-    "PROPERTY_DATE" => date("Y-m-d", strtotime($arTime["SELECTED_DATE"])),
-), array("ID", "CODE", "PROPERTY_DATE_START", "PROPERTY_DATE_END", "PROPERTY_PROG", "PROPERTY_CHANNEL"));
-
-foreach($arResult["TOPICS"] as &$arTopic)
+$arSelect = array("ID", "NAME", "PROPERTY_CHANNEL", "PROPERTY_SUB_TITLE", "PREVIEW_PICTURE", "PROPERTY_PICTURE_DOUBLE", "PROPERTY_PICTURE_HALF");
+$rsRes = CIBlockElement::GetList( array("PROPERTY_RATING" => "DESC"), $arrFilter, false, false, $arSelect );
+while( $arItem = $rsRes->GetNext() )
 {
-    $arPoperty = $arTopic["PROPERTY"];
-    
-    $arFilter = $arTopic["FILTER"];
-    $arFilter["PROPERTY_CHANNEL"] = $ids;
-    
-    $arSelect = array("ID", "NAME", "PROPERTY_CHANNEL", "PROPERTY_SUB_TITLE", "PREVIEW_PICTURE", "PROPERTY_PICTURE_DOUBLE", "PROPERTY_PICTURE_HALF");
-    
-    //получим все программы
-    $arProgs = CProg::getList($arFilter, $arSelect);
-    
-    $arProgsSorted = array();
+    $arProgs[] = $arItem;
+}
+
+//CDev::pre($arProgs);
+
+if(count($arProgs)>0)
+{
+    $progIds = array();
     foreach($arProgs as $arProg)
     {
-        $arProgsSorted[$arProg["ID"]] = $arProg;
+        $progIds[] = $arProg["ID"];
     }
-    unset($arProgs);
+    
+    $arProgTimes = CProgTime::getList(array(
+        ">=PROPERTY_DATE_START" => CTimeEx::datetimeForFilter(date("Y-m-d H:i:s")),
+        "PROPERTY_PROG" => $progIds,
+    ), array("ID", "CODE", "PROPERTY_DATE_START", "PROPERTY_DATE_END", "PROPERTY_PROG", "PROPERTY_CHANNEL"));
+    foreach($arProgTimes as $arProgTime)
+    {
+        if(!isset($arResult["PROGTIMES"][$arProgTime["PROPERTY_PROG_VALUE"]]))
+            $arResult["PROGTIMES"][$arProgTime["PROPERTY_PROG_VALUE"]] = $arProgTime;
+    }
     
     $key = 0;
-    foreach($arProgTimes as $arSchedule)
+    foreach($arProgs as $arProg)
     {
-        $progID = $arSchedule["PROPERTY_PROG_VALUE"];
-        if(isset($arProgsSorted[$progID]))
+        if(isset($arResult["PROGTIMES"][$arProg["ID"]]))
         {
-            $channel = $arSchedule["PROPERTY_CHANNEL_VALUE"];
-            $arProg = $arProgsSorted[$progID];
+            $channel = $arProg["PROPERTY_CHANNEL_VALUE"];
+            $arSchedule = $arResult["PROGTIMES"][$arProg["ID"]];
             $arProg["SCHEDULE_ID"] = $arSchedule["ID"];
             $arProg["CHANNEL_ID"] = $channel;
             $arProg["DATE_START"] = CTimeEx::dateOffset($arTime["OFFSET"], $arSchedule["PROPERTY_DATE_START_VALUE"]);
             $arProg["DATE_END"] = CTimeEx::dateOffset($arTime["OFFSET"], $arSchedule["PROPERTY_DATE_END_VALUE"]);
             $arProg["DETAIL_PAGE_URL"] = $arResult["CHANNELS"][$channel]["DETAIL_PAGE_URL"].$arSchedule["CODE"]."/";
-            $arTopic["PROGS"][] = $arProg;
+            
+            $arResult["PROGS"][] = $arProg;
             
             $key++;
-            if($key>48)
-                break;
+            if($key>48) break;
         }
-    }   
+    }
     
-    $arProgs = CScheduleTable::setIndex(array(
-        "PROGS" => $arTopic["PROGS"],
-    ));
-    
-    $arTopic["PROGS"] = $arProgs; 
+    if($arParams=="MAIN_PAGE")
+    {
+        $arResult["PROGS"] = CScheduleTable::setRecommendIndex(array(
+            "PROGS" => $arResult["PROGS"],
+        ));
+    }
 }
 
 $this->IncludeComponentTemplate();

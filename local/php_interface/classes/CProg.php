@@ -33,7 +33,7 @@ class CProg
         return $arProg[0];
     }
     
-    public static function getList($arrFilter=false, $arSelect = array())
+    public static function getList($arrFilter=false, $arSelect = array(), $arSort=false )
     {
         CModule::IncludeModule("iblock");
         $arProgs = array();
@@ -46,7 +46,11 @@ class CProg
             $arFilter = array_merge($arFilter, $arrFilter);
         
         $CacheEx = new CCacheEx(60*60*24*365, self::$cacheDir);
-        $arTmpProgs = $CacheEx->cacheElement( array( "SORT" => "ASC", "ID" => "DESC" ), $arFilter, "getlist", false, $arSelect);
+        
+        if(!$arSort)
+            $arSort = array( "SORT" => "ASC", "ID" => "DESC" );
+        
+        $arTmpProgs = $CacheEx->cacheElement($arSort , $arFilter, "getlist", false, $arSelect);
         foreach( $arTmpProgs as $arTmpProg )
         {
             if(!empty($arTmpProg["PROPERTY_SUB_TITLE_VALUE"]))

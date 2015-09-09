@@ -7,11 +7,11 @@ global $USER;
 
     <?$APPLICATION->IncludeComponent("hawkart:subscription.services", "", Array(), false);?>
 
-	<section class="user-balance">
+	<section class="user-balance" data-module="user-balance">
     
-        <?/*$APPLICATION->IncludeComponent(
+        <?$APPLICATION->IncludeComponent(
         	"bitrix:asd.money.prepaid", 
-        	"visual", 
+        	"pay", 
         	array(
         		"COMPONENT_TEMPLATE" => "visual",
         		"ALLOWED_CURRENCY" => array(
@@ -25,7 +25,7 @@ global $USER;
         		"PERSON_TYPE" => "1"
         	),
         	false
-        );*/?>
+        );?>
     
 		<div class="block-header">
 			<h3 class="block-title">Баланс</h3>
@@ -33,9 +33,9 @@ global $USER;
 		<div class="block-body">
 			<div class="account-balance">
 				<span data-icon="icon-balance"></span><small>На счету:</small> <?=$APPLICATION->ShowViewContent('user_budget');?> Р
-				<a href="#" class="btn btn-primary btn-block">Пополнить счет</a>
+				<a href="#" class="btn btn-primary btn-block" data-type="paymethod-modal-handler">Пополнить счет</a>
 			</div>
-            
+                        
             <?$APPLICATION->IncludeComponent(
             	"bitrix:asd.money.transacts",
             	"transactions",

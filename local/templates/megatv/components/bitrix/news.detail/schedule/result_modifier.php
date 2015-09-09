@@ -13,7 +13,6 @@ $arProg = CProg::getByID($prog, array(
 ));
 
 $arResult = array_merge($arResult, $arProg);
-$arResult["DETAIL_PICTURE"] = $arProg["PREVIEW_PICTURE"];
 
 $arResult["DATE_START"] = CTimeEx::dateOffset($arParams["DATETIME"]["OFFSET"], $arResult["PROPERTIES"]["DATE_START"]["VALUE"]);
 $arResult["DATE_END"] = CTimeEx::dateOffset($arParams["DATETIME"]["OFFSET"], $arResult["PROPERTIES"]["DATE_END"]["VALUE"]);
@@ -23,3 +22,5 @@ $arResult["DATE_END"] = CTimeEx::dateOffset($arParams["DATETIME"]["OFFSET"], $ar
 
 $sec = strtotime($arResult["DATE_END"]) - strtotime($arResult["DATE_START"]);
 $arResult["DURATION"] = CTimeEx::secToStr($sec);
+
+$arResult["PICTURE"] = CDev::resizeImage($arProg["PREVIEW_PICTURE"], 480, 480);

@@ -1,10 +1,27 @@
 <section class="broadcast-card">
+    <script type="text/x-config">
+    {
+        "recordingURL": "<?=SITE_TEMPLATE_PATH?>/ajax/to_record.php"
+    }
+    </script>
 	<div class="block-header">
 		<a class="back-link" href="<?=$arResult["CHANNEL"]["DETAIL_PAGE_URL"]?>"><span data-icon="icon-backlink-arrow"></span><span>Вернуться в канал</span></a>
 	</div>
 	<div class="block-body">
-		<div class="image-col">
-			<img src="<?=CFile::GetPath($arResult["DETAIL_PICTURE"])?>" alt="" width="480">
+    
+        <?
+        $arStatus = CProgTime::status(array(
+            "SCHEDULE_ID" => $arResult["ID"],
+            "CHANNEL_ID" => $arResult["PROPERTIES"]["CHANNEL"]["VALUE"]
+        ));
+        $status = $arStatus["status"];
+        $status_icon = $arStatus["status-icon"];
+        ?>
+		<div class="image-col<?if($status):?> status-<?=$status?><?endif;?>" data-type="broadcast" data-broadcast-id="<?=$arResult["ID"]?>"> 
+            
+            <?//=$status_icon?>
+            <img src="<?=$arResult["PICTURE"]["SRC"]?>" alt="" width="480">
+            
 			<?/*<a class="item-status-icon" href="broadcast-card-player.html">
 				<span data-icon="icon-recorded"></span>
 				<span class="status-desc">Смотреть</span>

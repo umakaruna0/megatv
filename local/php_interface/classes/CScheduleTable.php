@@ -51,9 +51,7 @@ class CScheduleTable
                     $arParts["DOUBLE"] = $double;
                     $arParts["ONE"] = $arParams["COUNT"]-$double;
                 }
-            }
-            
-            
+            }            
             
             //Удаляем каждый 3-й
             /*if($needDelete)

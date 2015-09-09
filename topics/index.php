@@ -9,9 +9,12 @@ $APPLICATION->SetTitle("Тематики");
 	false
 );?>
 
+<?$APPLICATION->IncludeComponent("hawkart:recommendations", "index", Array("NOT_SHOW_CHANNEL"=>"Y", "TEMPLATE" => "MAIN_PAGE"),
+	false
+);?>
 
 <?
-//Выберем все программы с такими же темами
+/*//Выберем все программы с такими же темами
 $progIds = array(0);
 $arProgs = CProg::getList(array(
     "!PROPERTY_RECOMMEND_VALUE" => false, 
@@ -96,6 +99,6 @@ $arRecommendFilter["PROPERTY_CHANNEL"] = $ids;
         "CITY" => CCityEx::getGeoCity()
 	),
 	false
-);?>
+);*/?>
 
 <?require($_SERVER["DOCUMENT_ROOT"]."/bitrix/footer.php");?>

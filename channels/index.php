@@ -75,8 +75,12 @@ CProgTime::updateCache();
 	false
 );?>
 
+<?$APPLICATION->IncludeComponent("hawkart:recommendations", "index", Array("NOT_SHOW_CHANNEL"=>"Y", "TEMPLATE" => "MAIN_PAGE"),
+	false
+);?>
 
 <?
+/*
 global $arRecommendFilter;
 $activeChannels = CChannel::getList(array("ACTIVE"=>"Y"), array("ID"));
 $ids = array();
@@ -168,6 +172,6 @@ $arRecommendFilter["PROPERTY_CHANNEL"] = $ids;
         "CITY" => CCityEx::getGeoCity(),
 	),
 	false
-);?>
+);*/?>
 
 <?require($_SERVER["DOCUMENT_ROOT"]."/bitrix/footer.php");?>

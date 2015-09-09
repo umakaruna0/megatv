@@ -54,6 +54,11 @@ false
 	</div>
 </div>
 
+
+<?$APPLICATION->IncludeComponent("hawkart:recommendations", "index", Array("NOT_SHOW_CHANNEL"=>"Y", "TEMPLATE" => "MAIN_PAGE"),
+	false
+);?>
+
 <?
 //Выберем все программы с такими же темами
 /*$progIds = array(0);
@@ -66,7 +71,7 @@ foreach($arProgs as $arProg)
     $progIds[] = $arProg["ID"];
 }
 $progIds = array_unique($progIds);*/
-
+/*
 $filterDateStart = CTimeEx::datetimeForFilter(date("Y-m-d H:i:s"));
 global $arRecommendFilter;
 $arRecommendFilter[">=PROPERTY_DATE_START"] = $filterDateStart;
@@ -149,5 +154,5 @@ $arRecommendFilter["PROPERTY_PROG"] = CIBlockElement::SubQuery(
         "TITLE" => "Похожие передачи"
 	),
 	false
-);?>
+);*/?>
 <?require($_SERVER["DOCUMENT_ROOT"]."/bitrix/footer.php");?>
