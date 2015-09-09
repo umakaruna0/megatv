@@ -12,12 +12,13 @@ if(!is_object($USER))
 
 $broadcastID = intval($_GET["broadcastID"]);
 
-if(!$_GET["record"])
+if($_GET["record"]=="false")
 {
     $arRecords = CRecordEx::getList(array("UF_USER"=> $USER->GetID(), "UF_SCHEDULE"=>$broadcastID), array("ID"));
     $arRecord = $arRecords[0];
     $broadcastID = $arRecord["ID"];
 }
+
 CRecordEx::update($broadcastID, array(
     "UF_PROGRESS_SECS" => intval($_GET["progressInSeconds"]),
     "UF_PROGRESS_PERS" => intval($_GET["progressPosition"]),

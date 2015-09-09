@@ -20,7 +20,8 @@
                 if($arRecord["UF_WATCHED"]==1)
                 {
                     $countRecorded++;
-                    $arStatusRecorded[$shedule_id] = $arRecord;
+                    $arStatusViewed[$shedule_id] = $arRecord;
+                    
                 }
                 else if(empty($arRecord["UF_URL"]))
                 {
@@ -30,9 +31,10 @@
                 else if(!empty($arRecord["UF_URL"]))
                 {
                     $countRecorded++;
-                    $arStatusViewed[$shedule_id] = $arRecord;
+                    $arStatusRecorded[$shedule_id] = $arRecord;
                 }
             }
+            //CDev::pre($arRecords);
             $arRecordStatus = array(
                 "RECORDING" => $arStatusRecording,
                 "RECORDED"  => $arStatusRecorded,
@@ -54,16 +56,16 @@
             $budget = floatval(CUserEx::getBudget());
             $arUser = CUserEx::updateAvatar($USER->GetID());
             
-            if(intval($arUser["UF_CAPACITY_BUSY"])==0 || intval($arUser["UF_CAPACITY"])==0)
+            if(floatval($arUser["UF_CAPACITY_BUSY"])==0 || floatval($arUser["UF_CAPACITY"])==0)
             {
                 $filledPercent = 0;
             }else{
-                $filledPercent = 1-intval($arUser["UF_CAPACITY_BUSY"])/intval($arUser["UF_CAPACITY"]);
+                $filledPercent = round(floatval($arUser["UF_CAPACITY_BUSY"])/floatval($arUser["UF_CAPACITY"]), 4);
             }
             
             $APPLICATION->AddViewContent('user_budget', number_format($budget, 0, "", " "));
-            $APPLICATION->AddViewContent('user_filled_space', intval($arUser["UF_CAPACITY_BUSY"]));
-            $APPLICATION->AddViewContent('user_filled_space_percent', number_format($filledPercent, 4, ".", ""));  
+            $APPLICATION->AddViewContent('user_filled_space', round($arUser["UF_CAPACITY_BUSY"], 2));
+            $APPLICATION->AddViewContent('user_filled_space_percent', $filledPercent);  
             ?>
             <div class="user-card">
 				<a href="/personal/" class="user-avatar<?if($arUser["PERSONAL_PHOTO"]):?> is-empty<?endif;?>" data-type="avatar-holder">

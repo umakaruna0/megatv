@@ -11,7 +11,7 @@ $result = array();
 $result['status'] = false;
 $result['errors'] = array();
 
-if (strlen($_POST['ajax_key']) && $_POST['ajax_key']!=md5('ajax_'.LICENSE_KEY) ||  !check_bitrix_sessid()) 
+if (strlen($_POST['ajax_key']) && $_POST['ajax_key']!=md5('ajax_'.LICENSE_KEY) || !check_bitrix_sessid()) 
 {
     $result['errors']['text'] = "Сессия не действительна!";
 }
@@ -21,7 +21,6 @@ if($USER->IsAuthorized())
     $text = htmlspecialcharsbx($_REQUEST["text"]);
     $prog_id = intval($_REQUEST["prog_id"]);
     $USER_ID = $USER->GetID();
-    
     
     $result = CCommentEx::create(array(
         "TEXT" => $text,

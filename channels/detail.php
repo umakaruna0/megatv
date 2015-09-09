@@ -1,6 +1,7 @@
 <?
 require($_SERVER["DOCUMENT_ROOT"]."/bitrix/header.php");
 $APPLICATION->SetTitle("MegaTV");
+CModule::IncludeModule("iblock");
 ?>
 <?$CHANNEL_ID = $APPLICATION->IncludeComponent(
 	"bitrix:news.detail",
@@ -55,7 +56,7 @@ false
 
 <?
 //Выберем все программы с такими же темами
-$progIds = array(0);
+/*$progIds = array(0);
 $arProgs = CProg::getList(array(
     "!PROPERTY_RECOMMEND_VALUE" => false, 
     ), array("ID", "NAME", "PROPERTY_CHANNEL", "PROPERTY_SUB_TITLE")
@@ -64,17 +65,25 @@ foreach($arProgs as $arProg)
 {
     $progIds[] = $arProg["ID"];
 }
-$progIds = array_unique($progIds);
+$progIds = array_unique($progIds);*/
 
 $filterDateStart = CTimeEx::datetimeForFilter(date("Y-m-d H:i:s"));
-
 global $arRecommendFilter;
 $arRecommendFilter[">=PROPERTY_DATE_START"] = $filterDateStart;
 $arRecommendFilter["PROPERTY_CHANNEL"] = $CHANNEL_ID;
 //$arRecommendFilter["PROPERTY_PROG"] = $progIds;
+
+$arRecommendFilter["PROPERTY_PROG"] = CIBlockElement::SubQuery(
+    "ID",
+    array(
+        "IBLOCK_ID" => PROG_IB,
+        "ACTIVE" => "Y",
+        //"!PROPERTY_RECOMMEND" => false
+    )
+);
 ?>
 <?$APPLICATION->IncludeComponent("bitrix:news.list", "recommend", Array(
-	"DISPLAY_DATE" => "Y",	// Выводить дату элемента
+        "DISPLAY_DATE" => "Y",	// Выводить дату элемента
 		"DISPLAY_NAME" => "Y",	// Выводить название элемента
 		"DISPLAY_PICTURE" => "Y",	// Выводить изображение для анонса
 		"DISPLAY_PREVIEW_TEXT" => "Y",	// Выводить текст анонса

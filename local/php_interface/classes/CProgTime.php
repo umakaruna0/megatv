@@ -51,12 +51,16 @@ class CProgTime
         $arTmpProgTimes = $CacheEx->cacheElement( array( "PROPERTY_DATE_START" => "ASC"), $arFilter, "getlist", false, $arSelect);
         foreach( $arTmpProgTimes as $arTmpProgTime )
         {
-            $unique = self::generateUnique(array(
-                "CHANNEL" => $arTmpProgTime["PROPERTY_CHANNEL_VALUE"],
-                "DATE_START" => $arTmpProgTime["PROPERTY_DATE_START_VALUE"],
-            ));
-            
-			$arProgTimes[$unique] = $arTmpProgTime;
+            if($arTmpProgTime["PROPERTY_CHANNEL_VALUE"] && $arTmpProgTime["PROPERTY_DATE_START_VALUE"])
+            {
+                $unique = self::generateUnique(array(
+                    "CHANNEL" => $arTmpProgTime["PROPERTY_CHANNEL_VALUE"],
+                    "DATE_START" => $arTmpProgTime["PROPERTY_DATE_START_VALUE"],
+                ));
+                $arProgTimes[$unique] = $arTmpProgTime;
+            }else{
+                $arProgTimes[] = $arTmpProgTime;
+            }
 		}
         
         return $arProgTimes;
@@ -135,7 +139,7 @@ class CProgTime
      */
     public static function status($arProg)
     {
-        global $APPLICATION;
+        global $APPLICATION, $USER;
         $arRecordsStatuses = $APPLICATION->GetPageProperty("ar_record_status");
         $arRecordsStatuses = json_decode($arRecordsStatuses, true);
         
@@ -160,7 +164,7 @@ class CProgTime
         {
             $status = "recorded";
         }
-        else if(in_array($arProg["CHANNEL_ID"], $arSubscriptionChannels)/* && CTimeEx::dateDiff($date_now, $arProg["DATE_START"])*/)
+        else if(in_array($arProg["CHANNEL_ID"], $arSubscriptionChannels) && $USER->IsAuthorized()/* && CTimeEx::dateDiff($date_now, $arProg["DATE_START"])*/)
         {
             $status = "recordable";
         }
@@ -169,6 +173,7 @@ class CProgTime
         if($status == "recording"):?>
             <div class="item-status-icon">
 				<span data-icon="icon-recording"></span>
+                <span class="status-desc">В записи</span>
 			</div>
         <?endif;?>
         <?if($status == "recorded"):?>

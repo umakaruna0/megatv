@@ -144,8 +144,12 @@ class CSocialAuth
         
             if(!empty($email))
             {
+                CUserEx::capacityAdd($USER_ID, 1);   // за мэйл +1ГБ
                 $USER->Login($email, $password, 'Y');
             }
+            
+            //Бонус за регистрацию
+            CUserEx::capacityAdd($USER_ID, BONUS_FOR_REGISTRATION);
             
             self::connectToUser($USER_ID, $providerName, $userProfile);
         }else{

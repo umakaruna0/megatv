@@ -30,7 +30,7 @@ while( $arItem = $rsRes->GetNext() )
         ),
 		'scope'   => "email, user_about_me, user_birthday",
         'trustForwarded' => false,
-        //"display" => "popup"
+        "display" => "popup"
     );
 }
 
@@ -40,5 +40,5 @@ return
 		"base_url" => "http://".$_SERVER["SERVER_NAME"]."/social/hybridauth/",
 		"providers" => $arSocialConfig,
 		"debug_mode" => false,
-		"debug_file" => "",
+		"debug_file" => "/temp/hybridauth.log",
 	);

@@ -66,46 +66,49 @@ foreach($arResult["TOPICS"] as &$arTopic)
     $arPoperty = $arTopic["PROPERTY"];
     
     //получим все программы
-    $arProgs = CProg::getList(array(
-            "?PROPERTY_".$arPoperty["CODE"]=> $arPoperty["VALUE"],
-            "PROPERTY_CHANNEL" => $ids
-        ), 
-        array(
-            "ID", "NAME", "PROPERTY_CHANNEL", "PROPERTY_SUB_TITLE", "PREVIEW_PICTURE", "PROPERTY_PICTURE_DOUBLE", "PROPERTY_PICTURE_HALF", "PROPERTY_TOPIC"
-        )
-    );
-    
-    $arProgsSorted = array();
-    foreach($arProgs as $arProg)
+    if(!empty($arPoperty["VALUE"]))
     {
-        $arProgsSorted[$arProg["ID"]] = $arProg;
-    }
-    unset($arProgs);
-    
-    $key = 0;
-    foreach($arProgTimes as $arSchedule)
-    {
-        $progID = $arSchedule["PROPERTY_PROG_VALUE"];
-        if(isset($arProgsSorted[$progID]))
+        $arProgs = CProg::getList(array(
+                "?PROPERTY_".$arPoperty["CODE"]=> $arPoperty["VALUE"],
+                "PROPERTY_CHANNEL" => $ids
+            ), 
+            array(
+                "ID", "NAME", "PROPERTY_CHANNEL", "PROPERTY_SUB_TITLE", "PREVIEW_PICTURE", "PROPERTY_PICTURE_DOUBLE", "PROPERTY_PICTURE_HALF", "PROPERTY_TOPIC"
+            )
+        );
+        
+        $arProgsSorted = array();
+        foreach($arProgs as $arProg)
         {
-            $channel = $arSchedule["PROPERTY_CHANNEL_VALUE"];
-            $arProg = $arProgsSorted[$progID];
-            $arProg["SCHEDULE_ID"] = $arSchedule["ID"];
-            $arProg["CHANNEL_ID"] = $channel;
-            $arProg["DATE_START"] = CTimeEx::dateOffset($arTime["OFFSET"], $arSchedule["PROPERTY_DATE_START_VALUE"]);
-            $arProg["DATE_END"] = CTimeEx::dateOffset($arTime["OFFSET"], $arSchedule["PROPERTY_DATE_END_VALUE"]);
-            $arProg["DETAIL_PAGE_URL"] = $arResult["CHANNELS"][$channel]["DETAIL_PAGE_URL"].$arSchedule["CODE"]."/";
-            $arTopic["PROGS"][] = $arProg;
-            
-            $key++;
-            if($key>48)
-                break;
+            $arProgsSorted[$arProg["ID"]] = $arProg;
         }
-    }   
-    
-    $arProgs = CScheduleTable::setIndex(array(
-        "PROGS" => $arTopic["PROGS"],
-    ));
+        unset($arProgs);
+        
+        $key = 0;
+        foreach($arProgTimes as $arSchedule)
+        {
+            $progID = $arSchedule["PROPERTY_PROG_VALUE"];
+            if(isset($arProgsSorted[$progID]))
+            {
+                $channel = $arSchedule["PROPERTY_CHANNEL_VALUE"];
+                $arProg = $arProgsSorted[$progID];
+                $arProg["SCHEDULE_ID"] = $arSchedule["ID"];
+                $arProg["CHANNEL_ID"] = $channel;
+                $arProg["DATE_START"] = CTimeEx::dateOffset($arTime["OFFSET"], $arSchedule["PROPERTY_DATE_START_VALUE"]);
+                $arProg["DATE_END"] = CTimeEx::dateOffset($arTime["OFFSET"], $arSchedule["PROPERTY_DATE_END_VALUE"]);
+                $arProg["DETAIL_PAGE_URL"] = $arResult["CHANNELS"][$channel]["DETAIL_PAGE_URL"].$arSchedule["CODE"]."/";
+                $arTopic["PROGS"][] = $arProg;
+                
+                $key++;
+                if($key>48)
+                    break;
+            }
+        }   
+        
+        $arProgs = CScheduleTable::setIndex(array(
+            "PROGS" => $arTopic["PROGS"],
+        ));
+    }
     
     
     $arTopic["PROGS"] = $arProgs; 

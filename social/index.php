@@ -17,6 +17,8 @@ try{
 }
 catch( Exception $e )
 {
+    echo $e->getMessage();
+    die();
     LocalRedirect("/?login=Y&social-error=".$e->getMessage());
 }
 

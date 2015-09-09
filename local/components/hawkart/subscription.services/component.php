@@ -30,11 +30,11 @@ $arUser = $rsUser->Fetch();
 
 $arResult["USER"] = $arUser;
 
-if(intval($arResult["USER"]["UF_CAPACITY_BUSY"])==0 || intval($arResult["USER"]["UF_CAPACITY"])==0)
+if(floatval($arResult["USER"]["UF_CAPACITY_BUSY"])==0 || floatval($arResult["USER"]["UF_CAPACITY"])==0)
 {
     $arResult["DISK_SPACE_FILLED"] = 0;
 }else{
-    $arResult["DISK_SPACE_FILLED"] = 1-intval($arResult["USER"]["UF_CAPACITY_BUSY"])/intval($arResult["USER"]["UF_CAPACITY"]);
+    $arResult["DISK_SPACE_FILLED"] = round(floatval($arResult["USER"]["UF_CAPACITY_BUSY"])/floatval($arResult["USER"]["UF_CAPACITY"]), 4);
 }
 
 $this->IncludeComponentTemplate();

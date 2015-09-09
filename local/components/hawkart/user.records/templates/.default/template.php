@@ -1,4 +1,9 @@
-<section class="user-recorded-broadcasts" data-module="user-recorded-broadcasts">
+<section class="user-recorded-broadcasts<?if(count($arResult["RECORDS"])<=10):?> is-single-line<?endif;?>" data-module="user-recorded-broadcasts">
+    <script type="text/x-config">
+		{
+			"url": "<?=SITE_TEMPLATE_PATH?>/ajax/delete_record.php"
+		}
+	</script>
 	<div class="block-header">
 		<h3 class="block-title"><?=$arParams["WATCHED"]=="Y" ? "Просмотренные" : "Мои записи" ?> <small>| <?=count($arResult["RECORDS"])?> <?=CDev::number_ending(count($arResult["RECORDS"]), "передач", "передача", "передачи")?></small></h3>
 	</div>
@@ -7,8 +12,13 @@
 			<div class="row-wrap">
                 <div class="items-row">
                 <?
+                $count = 0;
                 foreach($arResult["RECORDS"] as $arRecord)
                 {
+                    if(count($arResult["RECORDS"])>10 && $count%10==0 && $count!=0)
+                    {
+                        ?></div><div class="items-row"><?
+                    }
                     ?>
                     <div class="item" data-broadcast-id="<?=$arRecord["ID"]?>">
                         <?
@@ -44,6 +54,7 @@
 						</div>
 					</div>
                     <?
+                    $count++;
                 }
                 ?>
 				</div><!-- /.items-row -->

@@ -13,6 +13,7 @@ define("PASSPORT_IB", 10);
 define("SOCIAL_CONFIG_IB", 11);
 define("SUBSCRIBE_HL", 4);
 define("RECORD_HL", 5);
+define("BONUS_FOR_REGISTRATION", 20);   //бонус за регистрацию +20 ГБ пространства
 
 use \Bitrix\Highloadblock as HL;
 use \Bitrix\Main\Entity;
@@ -43,7 +44,7 @@ CModule::AddAutoloadClasses(
         '\CRecordEx' => $sClassesPath.'CRecordEx.php',
         '\CServiceEx' => $sClassesPath.'CServiceEx.php',
         '\CUserEx' => $sClassesPath.'CUserEx.php',
-        '\CCommentEx' => $sClassesPath.'CCommentEx.php',
+        '\CCommentEx' => $sClassesPath.'CCommentEx.php'
 	)
 );
 

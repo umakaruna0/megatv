@@ -95,11 +95,16 @@ if(!$USER->IsAuthorized() && count($result['errors'])==0)
             "GROUP_ID"              => $arrGroups,
             "PERSONAL_BIRTHDAY"     => $BIRTHDAY
         );
-        $ID = $user->Add($arFields);
+        $USER_ID = $user->Add($arFields);
 
         $result['status'] = true;
         $result['message'] = "<font style='color:green'>На ваш email высланы регистрационные данные!!!</font><br />";
+        
         $USER->Login($EMAIL, $PASS_1, 'Y');
+        CUserEx::capacityAdd($USER_ID, 1);   // за мэйл +1ГБ
+        
+        //Бонус за регистрацию
+        CUserEx::capacityAdd($USER_ID, BONUS_FOR_REGISTRATION);
 
         COption::SetOptionString("main", "captcha_registration", "Y");
     }else{

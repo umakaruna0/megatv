@@ -33,7 +33,7 @@ foreach($arRecordsWait as $arRecord)
 }
 
 $filter = Array("ACTIVE" =>"Y", "!UF_SOTAL_LOGIN" => false);
-$rsUsers = CUser::GetList(($by="LAST_NAME"), ($order="asc"), $filter);
+$rsUsers = CUser::GetList(($by="LAST_NAME"), ($order="asc"), $filter, array("SELECT"=>array("UF_CAPACITY_BUSY", "UF_CAPACITY"), "FIELDS" => array("ID")) );
 while($arUser = $rsUsers->GetNext())
 {
     //Если у пользователя есть программы, ожидающие записи
@@ -44,6 +44,8 @@ while($arUser = $rsUsers->GetNext())
         $Sotal = new CSotal($arUser["ID"]);
         $Sotal->getSubscriberToken();
         $arSchedules = $Sotal->getScheduleList();
+        
+        //CDev::pre($arUser);
         
         foreach($arSchedules["schedule"] as $arSchedule)
         {
@@ -58,7 +60,22 @@ while($arUser = $rsUsers->GetNext())
                 if(!empty($url))
                 {
                     $user_record = CRecordEx::getBySotalID($record_id);
-                    CRecordEx::update($user_record["ID"], array("UF_URL" => $url));
+                    
+                    $duration = $arSchedule["duration"];
+                    $minutes = ceil($duration/60);
+                    $gb = $minutes*(18.5/1024);
+                    
+                    //Если достаточно пространства:
+                    if(intval($arUser["UF_CAPACITY_BUSY"])<intval($arUser["UF_CAPACITY"]))
+                    {
+                        $busy = intval($arUser["UF_CAPACITY_BUSY"])+$gb;
+                    
+                        $user = new CUser;
+                        $user->Update($arUser["ID"], array("UF_CAPACITY_BUSY"=>$busy));
+                        
+                        CRecordEx::update($user_record["ID"], array("UF_URL" => $url));
+                    }
+                    
                 }        
             }
         }

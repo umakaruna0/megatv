@@ -12,7 +12,6 @@ class CRecordEx
         $entity = Bitrix\Highloadblock\HighloadBlockTable::compileEntity( $hlblock );
         $entity_data_class = $entity->getDataClass();
         
-        //BRANDS
         $arFilter = array();
         
         if($arrFilter)
@@ -48,11 +47,6 @@ class CRecordEx
     public static function getByID($id)
     {
         CModule::IncludeModule('highloadblock');
-        global $USER;
-        
-        if(!$USER_ID)
-            $USER_ID = $USER->GetID();
-        
         $hlblock = Bitrix\Highloadblock\HighloadBlockTable::getById(RECORD_HL)->fetch();
         $entity = Bitrix\Highloadblock\HighloadBlockTable::compileEntity( $hlblock );
         $entity_data_class = $entity->getDataClass();
@@ -113,5 +107,16 @@ class CRecordEx
         { 
             return implode(', ', $result->getErrors());
         }        
+    }
+    
+    public static function delete($ID)
+    {
+        CModule::IncludeModule('highloadblock');
+        
+        $hlblock = Bitrix\Highloadblock\HighloadBlockTable::getById(RECORD_HL)->fetch();
+        $entity = Bitrix\Highloadblock\HighloadBlockTable::compileEntity( $hlblock );
+        $entity_data_class = $entity->getDataClass();
+                   
+        $result = $entity_data_class::delete($ID);       
     }
 }

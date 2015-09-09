@@ -12,7 +12,7 @@ if(!is_object($USER))
     
 $broadcastID = intval($_GET["broadcastID"]);
 
-if($_GET["record"])
+if($_GET["record"]!="false")
 {
     $arRecord = CRecordEx::getByID($broadcastID);
 }else{

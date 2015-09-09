@@ -56,15 +56,19 @@ class CProg
                 $name = $arTmpProg["NAME"];
             }
             
-            $unique = self::generateUnique(array(
-                "CHANNEL" => $arTmpProg["PROPERTY_CHANNEL_VALUE"],
-                "NAME" => $name,
-                "DESC" => $arTmpProg["PREVIEW_TEXT"],
-                "ACTOR" => $arTmpProg["PROPERTY_ACTOR_VALUE"],
-                "PRESENTER" => $arTmpProg["PROPERTY_PRESENTER_VALUE"],
-            ));
-        
-			$arProgs[$unique] = $arTmpProg;
+            if($arTmpProg["PROPERTY_CHANNEL_VALUE"] && $name)
+            {
+                $unique = self::generateUnique(array(
+                    "CHANNEL" => $arTmpProg["PROPERTY_CHANNEL_VALUE"],
+                    "NAME" => $name,
+                    "DESC" => $arTmpProg["PREVIEW_TEXT"],
+                    "ACTOR" => $arTmpProg["PROPERTY_ACTOR_VALUE"],
+                    "PRESENTER" => $arTmpProg["PROPERTY_PRESENTER_VALUE"],
+                ));
+                $arProgs[$unique] = $arTmpProg;
+            }else{
+                $arProgs[] = $arTmpProg;
+            }
 		}
         
         return $arProgs;
@@ -99,6 +103,14 @@ class CProg
         }else{
             return $el->LAST_ERROR;
         }
+    }
+    
+    public static function addRating($ID, $addRating)
+    {
+        $arProg = self::getByID($ID, array("PROPERTY_RATING"));
+        $rating = intval($arProg["PROPERTY_RATING_VALUE"]) + intval($addRating);
+        
+        CIBlockElement::SetPropertyValueCode($ID, "RATING", $rating);
     }
     
     public static function updateCache() 

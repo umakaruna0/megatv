@@ -22,7 +22,7 @@ if($USER->IsAuthorized() && $prog_time>0)
     }
     
     //Проверим, принадлежит ли запись этому каналу
-    $arProgTime = CProgTime::getByID($prog_time, array("ID", "PROPERTY_CHANNEL"));
+    $arProgTime = CProgTime::getByID($prog_time, array("ID", "PROPERTY_CHANNEL", "PROPERTY_PROG"));
     if(in_array($arProgTime["PROPERTY_CHANNEL_VALUE"], $selectedChannels))
     {
         $USER_ID = $USER->GetID();
@@ -38,6 +38,9 @@ if($USER->IsAuthorized() && $prog_time>0)
                 "UF_SOTAL_ID" => $record_id,
                 "UF_SCHEDULE" => $prog_time
             ));
+            
+            //Увеличиваем рейтинг программы
+            CProg::addRating($arProgTime["PROPERTY_PROG_VALUE"], 1);
             
             $status = "success";
         } 

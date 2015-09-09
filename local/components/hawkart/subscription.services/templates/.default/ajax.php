@@ -7,11 +7,15 @@ global $USER;
 if(!is_object($USER))
     $USER = new CUser;
 
+$arResult = array();
 $result = array();
 $error = false;
 $ServiceID = intval($_REQUEST["serviceID"]);
 $status = htmlspecialcharsbx($_REQUEST["status"]);
 $selectedServices = array();
+
+//Получим инфу о сервисе
+$arService = CServiceEx::getByID($ServiceID, array("PROPERTY_DISK_VALUE", "PROPERTY_PRICE"));
 
 $CSubscribeEx = new CSubscribeEx("SERVICE");
 $arServices = $CSubscribeEx->getList(array("UF_USER"=>$USER->GetID()), array("UF_SERVICE", "ID"));
@@ -20,7 +24,14 @@ foreach($arServices as $arService)
     $selectedServices[$arService["UF_SERVICE"]] = $arService["ID"];
 }
 
-if(!isset($selectedServices[$ServiceID]))
+//Если гугл или яндекс-диск и включен, то ничего не делаем
+if(isset($selectedServices[$ServiceID]) && $arService["PROPERTY_DISK_VALUE"])
+{
+    exit(json_encode(array("status"=>"enable")));
+}
+
+//Если нет подписки или есть и + 5 или +10 ГБ
+if(!isset($selectedServices[$ServiceID]) || !$arService["PROPERTY_DISK_VALUE"])
 {
     $result = $CSubscribeEx->setUserSubscribe($ServiceID);
 }else{
@@ -31,10 +42,17 @@ if(!isset($selectedServices[$ServiceID]))
         $active = "N";
     }
     
-    $subscribeID = $selectedServices[$ServiceID];
-    $result = $CSubscribeEx->updateUserSubscribe($subscribeID, array("UF_ACTIVE"=>$active));
+    //Если стоит больше 0 руб, то не выключаем подписку
+    if(intval($arService["PROPERTY_PRICE_VALUE"])>0)
+    {
+        $status=="enable";
+    }else{
+        $subscribeID = $selectedServices[$ServiceID];
+        $result = $CSubscribeEx->updateUserSubscribe($subscribeID, array("UF_ACTIVE"=>$active));
+    }
 }
 
+//Если не вышло добавить/обновить подписку
 if(!$result)
 {
     $error = "Ошибка";
@@ -45,6 +63,17 @@ if(!$result)
         $status = "enable";
     }
 }
+
+$arResult = array("status"=>$status, "error"=>$error);
+
+//если + 5 или +10 ГБ
+if($result && !$arService["PROPERTY_DISK_VALUE"])
+{
+    $arResult["status"] = "temporal";
+    $rsUser = CUser::GetByID($USER->GetID());
+    $arUser = $rsUser->Fetch();
+    $arResult["updatedSpace"] = intval($arUser["UF_CAPACITY"]);
+}
  
-exit(json_encode(array("status"=>$status, "error"=>$error)));
+exit(json_encode($arResult));
 ?>

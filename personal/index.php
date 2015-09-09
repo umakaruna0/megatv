@@ -16,31 +16,36 @@ global $USER;
 
     <?$APPLICATION->IncludeComponent("hawkart:user.profile", "", Array("CITY_GEO"=>CCityEx::getGeoCity()), false);?>
     
-	<section class="user-info-subscriptions">
+	<section class="user-info-subscriptions" data-module="user-info-subscriptions">
+		<script type="text/x-config">
+			{
+				"url": "/server/"
+			}
+		</script>
 		<div class="block-header">
 			<h3 class="block-title">УПРАВЛЕНИЕ АНОНСАМИ И РЕКОМЕНДАЦИЯМИ</h3>
 		</div>
 		<div class="block-body">
-			<form action="#" class="user-info-subscriptions-form">
-				<div class="checkbox">
-					<label for="_id-user-info-subscriptions-form-checkbox-01"><span>Рекомендации МЕГА ТВ</span><input type="checkbox" name="user-info-subscriptions-form-checkbox-01" id="_id-user-info-subscriptions-form-checkbox-01" checked><span class="checkbox-replace"><span data-icon="icon-round-checkbox-mark"></span></span></label>
-				</div>
-				<div class="checkbox">
-					<label for="_id-user-info-subscriptions-form-checkbox-02"><span>Рекомендации Ваших друзей</span><input type="checkbox" name="user-info-subscriptions-form-checkbox-02" id="_id-user-info-subscriptions-form-checkbox-02" checked><span class="checkbox-replace"><span data-icon="icon-round-checkbox-mark"></span></span></label>
-				</div>
-				<div class="checkbox">
-					<label for="_id-user-info-subscriptions-form-checkbox-03"><span>Анонсы передач по СМС</span><input type="checkbox" name="user-info-subscriptions-form-checkbox-03" id="_id-user-info-subscriptions-form-checkbox-03"><span class="checkbox-replace"><span data-icon="icon-round-checkbox-mark"></span></span></label>
-				</div>
-				<div class="checkbox">
-					<label for="_id-user-info-subscriptions-form-checkbox-04"><span>Анонсы передач по е-mail</span><input type="checkbox" name="user-info-subscriptions-form-checkbox-04" id="_id-user-info-subscriptions-form-checkbox-04" checked><span class="checkbox-replace"><span data-icon="icon-round-checkbox-mark"></span></span></label>
-				</div>
-				<div class="checkbox">
-					<label for="_id-user-info-subscriptions-form-checkbox-05"><span>Уведомление о записанной передаче</span><input type="checkbox" name="user-info-subscriptions-form-checkbox-05" id="_id-user-info-subscriptions-form-checkbox-05" checked><span class="checkbox-replace"><span data-icon="icon-round-checkbox-mark"></span></span></label>
-				</div>
-				<div class="checkbox">
-					<label for="_id-user-info-subscriptions-form-checkbox-06"><span>Новости МЕГА ТВ</span><input type="checkbox" name="user-info-subscriptions-form-checkbox-06" id="_id-user-info-subscriptions-form-checkbox-06" checked><span class="checkbox-replace"><span data-icon="icon-round-checkbox-mark"></span></span></label>
-				</div>
-			</form>
+			<ul class="user-info-subscriptions-list">
+				<li class="status-active" data-type="info-subscription-item" data-subscription-id="01">
+					<a href="#">Рекомендации МЕГА ТВ <span data-icon="icon-round-checkbox-mark"></span></a>
+				</li>
+				<li class="status-active" data-type="info-subscription-item" data-subscription-id="02">
+					<a href="#">Рекомендации Ваших друзей <span data-icon="icon-round-checkbox-mark"></span></a>
+				</li>
+				<li data-type="info-subscription-item" data-subscription-id="03">
+					<a href="#">Анонсы передач по СМС <span data-icon="icon-round-checkbox-mark"></span></a>
+				</li>
+				<li class="status-active" data-type="info-subscription-item" data-subscription-id="04">
+					<a href="#">Анонсы передач по е-mail <span data-icon="icon-round-checkbox-mark"></span></a>
+				</li>
+				<li class="status-active" data-type="info-subscription-item" data-subscription-id="05">
+					<a href="#">Уведомление о записанной передаче <span data-icon="icon-round-checkbox-mark"></span></a>
+				</li>
+				<li class="status-active" data-type="info-subscription-item" data-subscription-id="06">
+					<a href="#">Новости МЕГА ТВ <span data-icon="icon-round-checkbox-mark"></span></a>
+				</li>
+			</ul>
 		</div>
 	</section>
     

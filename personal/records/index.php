@@ -2,6 +2,7 @@
 require($_SERVER["DOCUMENT_ROOT"]."/bitrix/header.php");
 $APPLICATION->SetTitle("MegaTV");
 global $USER;
+CModule::IncludeModule("iblock");
 ?>
 
 <?$APPLICATION->IncludeComponent("hawkart:user.records", "", Array("WATCHED"=>"N"), false);?>
@@ -20,9 +21,9 @@ if(count($arRecords)>0)
     {
         $progIds[] = $arRecord["UF_PROG"];
     }
+    $progIds = array_unique($progIds);
 }
-$progIds = array_unique($progIds);
-
+/*
 //активные каналы
 $ids = array();
 $activeChannels = CChannel::getList(array("ACTIVE"=>"Y"), array("ID"));
@@ -49,10 +50,8 @@ foreach($arProgs as $arProg)
             $arCats[] = trim($topic);
     }
 }
-
+CDev::pre($arProgs);
 unset($arProg);
-
-$arTime = CTimeEx::getDateTimeOffset();
 
 //Выберем все программы с такими же темами
 $progIds = array();
@@ -69,9 +68,49 @@ foreach($arProgs as $arProg)
 }
 $progIds = array_unique($progIds);
 
-$filterDateStart = CTimeEx::datetimeForFilter(date("Y-m-d H:i:s"));
-$arRecommendFilter[">=PROPERTY_DATE_START"] = $filterDateStart;
+$arRecommendFilter[">=PROPERTY_DATE_START"] = date("Y-m-d H:i:s");
 $arRecommendFilter["PROPERTY_PROG"] = $progIds;
+*/
+
+//Темы программы
+$arProgs = CProg::getList(array(
+    "ID"=>$progIds, 
+    "PROPERTY_CHANNEL"=> CIBlockElement::SubQuery(
+        "ID",
+        array(
+            "IBLOCK_ID" => CHANNEL_IB,
+            "ACTIVE" => "Y"
+        )
+	)
+), array("PROPERTY_TOPIC", "PROPERTY_CATEGORY"));
+foreach($arProgs as $arProg)
+{
+    $arTopicsExp = explode(",", $arProg["PROPERTY_TOPIC_VALUE"]);
+    foreach($arTopicsExp as $key=>$topic)
+    {
+        if(!empty($topic))
+            $arTopics[] = trim($topic);
+    }
+    
+    $arCatsExp = explode(",", $arProg["PROPERTY_CATEGORY_VALUE"]);
+    foreach($arCatsExp as $key=>$topic)
+    {
+        if(!empty($topic))
+            $arCats[] = trim($topic);
+    }
+}
+
+global $arRecommendFilter;
+$arRecommendFilter[">=PROPERTY_DATE_START"] = date("Y-m-d H:i:s");
+$arRecommendFilter["PROPERTY_PROG"] = CIBlockElement::SubQuery(
+    "ID",
+    array(
+        "IBLOCK_ID" => PROG_IB,
+        "ACTIVE" => "Y",
+        "?PROPERTY_TOPIC" => $arTopics, 
+        "?PROPERTY_CATEGORY" => $arCats
+    )
+);
 ?>
 
 <?$APPLICATION->IncludeComponent("bitrix:news.list", "similar", Array(

@@ -10,8 +10,8 @@
 	</div>
 	<div class="block-body">
 		<div class="storage-statistic">
-			<span class="total-space">Всего <strong><?=intval($arResult["USER"]["UF_CAPACITY"])?> ГБ</strong></span>
-			<span class="used-space">Занято <strong><?=intval($arResult["USER"]["UF_CAPACITY_BUSY"])?> ГБ</strong></span>
+			<span class="total-space">Всего <strong><?=round($arResult["USER"]["UF_CAPACITY"], 2)?> ГБ</strong></span>
+			<span class="used-space">Занято <strong><?=round($arResult["USER"]["UF_CAPACITY_BUSY"], 2)?> ГБ</strong></span>
 			<div class="progressbar-holder"></div>
 		</div>
 		<ul class="available-subscriptions">
@@ -19,7 +19,7 @@
             foreach($arResult["SERVICES"] as $arService)
             {
                 ?>
-                <li class="item<?if($arService["SELECTED"]):?> status-active<?endif;?>" data-service-id="<?=$arService["ID"]?>" data-type="service-item">
+                <li class="item<?if($arService["SELECTED"] && $arService["PROPERTY_DISK_VALUE"]):?> status-active<?endif;?>" data-service-id="<?=$arService["ID"]?>" data-type="service-item">
     				<div class="decor"><span class="decor-title">Добавить</span><span data-icon="icon-round-checkbox-mark"></span></div>
                     <?if($arService["PROPERTY_DISK_VALUE"]):?>
                         <div class="subscription-logo">
@@ -34,7 +34,6 @@
     					<span class="item-title"><?=$arService["PREVIEW_TEXT"]?></span>
     				</div>
     			</li>
-                
                 <?
             }
             ?>

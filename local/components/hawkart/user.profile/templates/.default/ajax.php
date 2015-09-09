@@ -76,7 +76,7 @@ if($USER->IsAuthorized())
         
         if(count($result['errors'])==0)
         {
-            $user = new CUser;
+            $сuser = new CUser;
             $fields = Array(
                 "NAME"              => $arPost["NAME"],
                 "LAST_NAME"         => $arPost["LAST_NAME"],
@@ -86,8 +86,20 @@ if($USER->IsAuthorized())
                 "PERSONAL_PHONE"    => $arPost["PERSONAL_PHONE"]
             );
 
-            $user->Update($arUser["ID"], $fields);
-            $strError = $user->LAST_ERROR;
+
+            if(empty($arUser["EMAIL"]) && !empty($arPost["EMAIL"]))
+            {
+                CUserEx::capacityAdd($arUser["ID"], 1);   // за мэйл +1ГБ
+            }
+            
+            if(empty($arUser["PERSONAL_PHONE"]) && !empty($arPost["PERSONAL_PHONE"]))
+            {
+                CUserEx::capacityAdd($arUser["ID"], 1);   // за ттееллееффоонн +1ГБ
+            }
+            
+
+            $сuser->Update($arUser["ID"], $fields);
+            $strError = $сuser->LAST_ERROR;
                      
             $result['status'] = true;
             $result['message'] = "<font style='color:green'>Данные успешно изменены.</font>";
