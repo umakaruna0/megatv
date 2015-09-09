@@ -8,7 +8,25 @@ global $USER;
     <?$APPLICATION->IncludeComponent("hawkart:subscription.services", "", Array(), false);?>
 
 	<section class="user-balance" data-module="user-balance">
-    
+        
+        <?if(isset($_GET["pay-status"]) && $_GET["pay-status"]=="success"):?>
+            <script type="text/x-config">
+            	{
+            		"showSuccessModal": true
+            	}
+            </script>
+            <div class="modal fade paysuccess-modal" id="paysuccess-modal">
+            	<div class="modal-dialog">
+            		<div class="modal-content">
+            			<a href="#" class="close-link" data-dismiss="modal"><span data-icon="icon-times"></span></a>
+            			<span data-icon="icon-round-checkbox-mark" data-size="large"></span>
+            			<h2>Сумма зачислена<strong><?=number_format($_GET["sum"], 0, "", " ")?> <span data-icon="icon-ruble"></span></strong></h2>
+            			<a href="/personal/services/" data-dismiss="modal">Вернуться в панель управления</a>
+            		</div>
+            	</div>
+            </div>
+        <?endif;?>
+        
         <?$APPLICATION->IncludeComponent(
         	"bitrix:asd.money.prepaid", 
         	"pay", 

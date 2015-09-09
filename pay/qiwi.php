@@ -28,7 +28,8 @@ if (CSaleUserAccount::UpdateAccount(
     ?>
     <p>На ваш счет внесены средства в размере <?=$_POST["Sum"]?> руб.<br />
     <a href="/personal/">Перейти в личный кабинет</a>.</p>
-    <?  
+    <?
+    LocalRedirect("/personal/services/?pay-status=success&sum=".intval($_POST["Sum"]));
 }
 ?>
 <?require($_SERVER["DOCUMENT_ROOT"]."/bitrix/footer.php");?>

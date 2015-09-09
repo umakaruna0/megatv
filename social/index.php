@@ -14,6 +14,8 @@ try{
 	$userProfile = $adapter->getUserProfile();
     $userProfile = (array)$userProfile;
     //echo "<pre>"; print_r($userProfile); echo "</pre>";
+    
+    //die();
 }
 catch( Exception $e )
 {

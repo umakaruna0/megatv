@@ -56,7 +56,7 @@ else
 			<li><a href="#"><span data-icon="icon-vk-social"></span></a></li>
 			<li><a href="#"><span data-icon="icon-tw-social"></span></a></li>
 			<li><a href="#"><span data-icon="icon-im-social"></span></a></li>*/?>
-            
+            <li><a href="/social/?provider=yandex"><span data-icon="icon-ya-social"></span></a></li>
             
             <li><a href="/social/?provider=vkontakte"><span data-icon="icon-vk-social"></span></a></li>
 			<li><a href="/social/?provider=facebook"><span data-icon="icon-fb-social"></span></a></li>

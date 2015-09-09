@@ -16,10 +16,11 @@ if (strlen($_POST['ajax_key']) && $_POST['ajax_key']!=md5('ajax_'.LICENSE_KEY) |
     $result['errors']['text'] = "Сессия не действительна!";
 }
 
-if($USER->IsAuthorized())
+$text = htmlspecialcharsbx($_REQUEST["text"]);
+$prog_id = intval($_REQUEST["prog_id"]);
+
+if($USER->IsAuthorized() && !empty($text))
 {
-    $text = htmlspecialcharsbx($_REQUEST["text"]);
-    $prog_id = intval($_REQUEST["prog_id"]);
     $USER_ID = $USER->GetID();
     
     $result = CCommentEx::create(array(
@@ -28,7 +29,7 @@ if($USER->IsAuthorized())
     ));
     
     if($result)
-        $result['status'] = true; 
+        $result['status'] = "success"; 
 }
         
 exit(json_encode($result));

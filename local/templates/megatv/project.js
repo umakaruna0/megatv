@@ -55,6 +55,28 @@ $(document).on('ready', function(){
         return false;
     });
     
+    $('form.asd-prepaid-form').on('submit', function(){
+        var $form = $(this);
+
+        $.ajax({
+            type: "POST",
+            url: $(this).attr('action'),
+            data: $(this).serialize(),
+            error: function(request,error) {
+                alert('Error! Please try again!');
+            },
+            success: function(data) 
+            {
+                $("#form-pay-request").html(data);
+                $("#form-pay-request form").submit();
+            }
+        });
+
+        return false;
+    });
+    
+    
+    
     /*$('form#change-password-form').on('submit', function(){
         var $form = $(this);
         
@@ -167,7 +189,7 @@ $(document).on('ready', function(){
     });
     
     
-    $('#comment-form .submit-btn').on('click', function(e){
+    /*$('#comment-form .submit-btn').on('click', function(e){
         e.preventDefault();
         
         var $form = $('#comment-form');
@@ -193,7 +215,7 @@ $(document).on('ready', function(){
         });
 
         return false;
-    });
+    });*/
     
     $('a#channels-show-ajax-link').on('click', function (e) {
 		e.preventDefault();

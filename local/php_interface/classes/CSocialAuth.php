@@ -128,7 +128,14 @@ class CSocialAuth
                 $img = file_get_contents('https://graph.facebook.com/'.$userProfile["identifier"].'/picture?type=large');
                 $file = $_SERVER["DOCUMENT_ROOT"].'/upload/avatar/'.$userProfile["identifier"].'.jpg';
                 file_put_contents($file, $img);
-            }else{
+            }
+            else if($providerName=="yandex")
+            {
+                $img = file_get_contents('https://avatars.yandex.net/get-yapic/'.$userProfile["identifier"].'/islands-200');
+                $file = $_SERVER["DOCUMENT_ROOT"].'/upload/avatar/'.$userProfile["identifier"].'.jpg';
+                file_put_contents($file, $img);
+            }
+            else{
                 $file = $userProfile["photoURL"];
             }
             
