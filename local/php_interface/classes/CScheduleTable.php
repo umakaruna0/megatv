@@ -47,9 +47,15 @@ class CScheduleTable
                     $arParts["ONE"] = $ostatok;
                     $arParts["HALF"] = ($arParams["COUNT"]-$ostatok)/2;
                 }else{
-                    $double = BROADCAT_COLS - $arParams["COUNT"];
-                    $arParts["DOUBLE"] = $double;
-                    $arParts["ONE"] = $arParams["COUNT"]-$double;
+                    if(BROADCAT_COLS>$arParams["COUNT"]*2)
+                    {
+                        $arParts["DOUBLE"] = floor($arParams["COUNT"]/2);
+                        $arParts["ONE"] = $arParams["COUNT"]%2;
+                    }else{
+                        $double = BROADCAT_COLS - $arParams["COUNT"];
+                        $arParts["DOUBLE"] = $double;
+                        $arParts["ONE"] = $arParams["COUNT"]-$double;
+                    }
                 }
             }            
             

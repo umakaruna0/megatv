@@ -22,16 +22,27 @@ $arSelect = array("PROPERTY_PROVIDER", "PROPERTY_ID", "PROPERTY_SECRET");
 $rsRes = CIBlockElement::GetList( $arOrder, $arrFilter, false, false, $arSelect );
 while( $arItem = $rsRes->GetNext() )
 {
+    if(in_array(strtolower($arItem["PROPERTY_PROVIDER_VALUE"]), array("twitter", "linkedin")))
+    {
+        $key = "key";
+    }else{
+        $key = "id";
+    }
+    
     $arSocialConfig[$arItem["PROPERTY_PROVIDER_VALUE"]] = array(
         "enabled" => true,
 		"keys"    => array ( 
-            "id" => $arItem["PROPERTY_ID_VALUE"], 
+            $key => $arItem["PROPERTY_ID_VALUE"], 
             "secret" => $arItem["PROPERTY_SECRET_VALUE"], 
         ),
-		'scope'   => "email, user_about_me, user_birthday",
         'trustForwarded' => false,
         "display" => "popup"
     );
+    
+    if(strtolower($arItem["PROPERTY_PROVIDER_VALUE"])!="instagram")
+    {
+        $arSocialConfig[$arItem["PROPERTY_PROVIDER_VALUE"]]["scope"] = "email, user_about_me, user_birthday";
+    }
 }
 
 

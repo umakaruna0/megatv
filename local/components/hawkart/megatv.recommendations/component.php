@@ -32,7 +32,7 @@ $arSelect = array("ID", "NAME", "PROPERTY_CHANNEL", "PROPERTY_SUB_TITLE", "PREVI
 $rsRes = CIBlockElement::GetList( array("PROPERTY_RATING" => "DESC"), $arrFilter, false, false, $arSelect );
 while( $arItem = $rsRes->GetNext() )
 {
-    $arProgs[] = $arItem;
+    $arProgs[$arItem["ID"]] = $arItem;
 }
 
 
@@ -45,37 +45,37 @@ if(count($arProgs)>0)
         $progIds[] = $arProg["ID"];
     }
     
+    $key = 0;
+    $exist = array();
     $arProgTimes = CProgTime::getList(array(
         ">=PROPERTY_DATE_START" => CTimeEx::datetimeForFilter(date("Y-m-d H:i:s")),
         "PROPERTY_PROG" => $progIds,
     ), array("ID", "CODE", "PROPERTY_DATE_START", "PROPERTY_DATE_END", "PROPERTY_PROG", "PROPERTY_CHANNEL"));
     foreach($arProgTimes as $arProgTime)
     {
-        if(!isset($arResult["PROGTIMES"][$arProgTime["PROPERTY_PROG_VALUE"]]))
-            $arResult["PROGTIMES"][$arProgTime["PROPERTY_PROG_VALUE"]] = $arProgTime;
+        $arProg = $arProgs[$arProgTime["PROPERTY_PROG_VALUE"]];
+        
+        if(in_array($arProg["ID"], $exist))
+            continue;
+            
+        $channel = $arProg["PROPERTY_CHANNEL_VALUE"];
+        $arSchedule = $arProgTime;
+        $arProg["SCHEDULE_ID"] = $arSchedule["ID"];
+        $arProg["CHANNEL_ID"] = $channel;
+        $arProg["DATE_START"] = CTimeEx::dateOffset($arTime["OFFSET"], $arSchedule["PROPERTY_DATE_START_VALUE"]);
+        $arProg["DATE_END"] = CTimeEx::dateOffset($arTime["OFFSET"], $arSchedule["PROPERTY_DATE_END_VALUE"]);
+        $arProg["DETAIL_PAGE_URL"] = $arResult["CHANNELS"][$channel]["DETAIL_PAGE_URL"].$arSchedule["CODE"]."/";
+        
+        $arResult["PROGS"][] = $arProg;
+        $exist[] = $arProg["ID"];
+        
+        $key++;
+        if($key>48) break;
     }
     
-    $key = 0;
-    foreach($arProgs as $arProg)
-    {
-        if(isset($arResult["PROGTIMES"][$arProg["ID"]]))
-        {
-            $channel = $arProg["PROPERTY_CHANNEL_VALUE"];
-            $arSchedule = $arResult["PROGTIMES"][$arProg["ID"]];
-            $arProg["SCHEDULE_ID"] = $arSchedule["ID"];
-            $arProg["CHANNEL_ID"] = $channel;
-            $arProg["DATE_START"] = CTimeEx::dateOffset($arTime["OFFSET"], $arSchedule["PROPERTY_DATE_START_VALUE"]);
-            $arProg["DATE_END"] = CTimeEx::dateOffset($arTime["OFFSET"], $arSchedule["PROPERTY_DATE_END_VALUE"]);
-            $arProg["DETAIL_PAGE_URL"] = $arResult["CHANNELS"][$channel]["DETAIL_PAGE_URL"].$arSchedule["CODE"]."/";
-            
-            $arResult["PROGS"][] = $arProg;
-            
-            $key++;
-            if($key>48) break;
-        }
-    }
-
-    $arResult = CScheduleTable::setIndex(array(
+    
+    
+    $arResult["PROGS"] = CScheduleTable::setIndex(array(
         "PROGS" => $arResult["PROGS"],
     ));
 }

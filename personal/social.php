@@ -16,6 +16,9 @@ try{
 }
 catch( Exception $e )
 {
+    $userProfile = NULL;
+    $adapter->logout();
+    
     LocalRedirect("/?login=Y&social-error=".$e->getMessage());
 }
 

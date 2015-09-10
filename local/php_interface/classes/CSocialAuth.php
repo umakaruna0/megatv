@@ -135,6 +135,12 @@ class CSocialAuth
                 $file = $_SERVER["DOCUMENT_ROOT"].'/upload/avatar/'.$userProfile["identifier"].'.jpg';
                 file_put_contents($file, $img);
             }
+            else if($providerName=="linkedin")
+            {
+                $img = file_get_contents($userProfile["photoURL"]);
+                $file = $_SERVER["DOCUMENT_ROOT"].'/upload/avatar/'.$userProfile["identifier"].'.jpg';
+                file_put_contents($file, $img);
+            }
             else{
                 $file = $userProfile["photoURL"];
             }

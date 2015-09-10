@@ -56,9 +56,14 @@ else
 			<li><a href="#"><span data-icon="icon-vk-social"></span></a></li>
 			<li><a href="#"><span data-icon="icon-tw-social"></span></a></li>
 			<li><a href="#"><span data-icon="icon-im-social"></span></a></li>*/?>
+            
             <li><a href="/social/?provider=yandex"><span data-icon="icon-ya-social"></span></a></li>
             
+            <li><a href="/social/?provider=linkedin"><span data-icon="icon-in-social"></span></a></li>
+            
             <li><a href="/social/?provider=vkontakte"><span data-icon="icon-vk-social"></span></a></li>
+            <li><a href="/social/?provider=twitter"><span data-icon="icon-tw-social"></span></a></li>
+            <li><a href="/social/?provider=instagram"><span data-icon="icon-im-social"></span></a></li>
 			<li><a href="/social/?provider=facebook"><span data-icon="icon-fb-social"></span></a></li>
 		</ul>
 		<button type="submit" name="Login" class="btn btn-primary btn-block">Войти</button>

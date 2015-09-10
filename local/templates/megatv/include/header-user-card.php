@@ -68,7 +68,7 @@
             $APPLICATION->AddViewContent('user_filled_space_percent', $filledPercent);  
             ?>
             <div class="user-card">
-				<a href="/personal/" class="user-avatar<?if($arUser["PERSONAL_PHOTO"]):?> is-empty<?endif;?>" data-type="avatar-holder">
+				<a href="/personal/" class="user-avatar<?if(!$arUser["PERSONAL_PHOTO"]):?> is-empty<?endif;?>" data-type="avatar-holder">
                     <?if($arUser["PERSONAL_PHOTO"]):?>
                         <img src="<?=CFile::GetPath($arUser["PERSONAL_PHOTO"])?>" alt="<?=$USER->GetFullName()?>" width="50" height="50">
                     <?endif;?>

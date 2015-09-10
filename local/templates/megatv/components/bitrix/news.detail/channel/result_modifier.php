@@ -1,6 +1,6 @@
 <?
 ini_set('max_execution_time', 30);
-$countCols = 5; 
+$countCols = 20; 
 $channel = $arResult["ID"];
 
 //Если день выбрали другой, то показываем с самого начала дня
