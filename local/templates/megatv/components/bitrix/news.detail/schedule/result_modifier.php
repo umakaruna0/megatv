@@ -12,7 +12,8 @@ $arProg = CProg::getByID($prog, array(
     "PROPERTY_YEAR_LIMIT", "PROPERTY_PRESENTER", "PROPERTY_RATING"
 ));
 
-$arResult = array_merge($arResult, $arProg);
+//$arResult = array_merge($arResult, $arProg);
+$arResult["PROG"] = $arProg;
 
 $arResult["DATE_START"] = CTimeEx::dateOffset($arParams["DATETIME"]["OFFSET"], $arResult["PROPERTIES"]["DATE_START"]["VALUE"]);
 $arResult["DATE_END"] = CTimeEx::dateOffset($arParams["DATETIME"]["OFFSET"], $arResult["PROPERTIES"]["DATE_END"]["VALUE"]);

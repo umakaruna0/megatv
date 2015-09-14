@@ -73,9 +73,17 @@
                         <img src="<?=CFile::GetPath($arUser["PERSONAL_PHOTO"])?>" alt="<?=$USER->GetFullName()?>" width="50" height="50">
                     <?endif;?>
                 </a>
+                <?
+                if(strpos($APPLICATION->GetCurDir(), "personal")===false)
+                {
+                    $urlExit = $APPLICATION->GetCurPageParam("logout=yes", array("logout"));
+                }else{
+                    $urlExit = "/?logout=yes";
+                }
+                ?>
 				<div class="info-panel">
 					<a class="username" href="/personal/"><?=$USER->GetFullName()?></a><br>
-					<a href="<?=$APPLICATION->GetCurDir()?>?logout=yes" class="signout-link">Выйти</a>
+					<a href="<?=$urlExit?>" class="signout-link">Выйти</a>
 				</div>
 			</div>
             

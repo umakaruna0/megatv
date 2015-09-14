@@ -162,8 +162,14 @@ $(document).on('ready', function(){
         $this.find(".email-container").removeClass("has-error");
         $this.find(".email-container .form-control-message").remove();
         
+        if($this.find(".recovery-success").length>0)
+        {
+            $this.find(".recovery-success").remove();
+        }
+        
         $.post($this.attr('action'), $this.serialize(), function(data){
             $('input', $this).removeAttr('disabled');
+            console.log(data);
             if (!data.status)
             {
                 $( '<span class="form-control-message">'+data.message+'</span>' ).insertAfter($this.find(".email-container").addClass("has-error").find("input"));

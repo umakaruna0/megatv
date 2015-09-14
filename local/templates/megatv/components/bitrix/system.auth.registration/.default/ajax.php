@@ -35,7 +35,7 @@ if(!$USER->IsAuthorized() && count($result['errors'])==0)
     
     if(!check_email($EMAIL))
     {
-        $result['errors']["USER_EMAIL"] = "Не верный формат данных";
+        $result['errors']["USER_EMAIL"] = "Неверный формат данных";
     }else{
         $rsUsers = CUser::GetList(($by="EMAIL"), ($order="desc"), Array("=EMAIL" =>$EMAIL));
         while($rsUsers->NavNext(true, "f_"))
@@ -49,9 +49,11 @@ if(!$USER->IsAuthorized() && count($result['errors'])==0)
         $result['errors']["USER_NAME"] = "Введите имя";
     }
     
-    if(!empty($BIRTHDAY) && !preg_match("/^([0-9]{2})+([\.]{1})+([0-9]{2})+([\.]{1})+([0-9]{4})$/", $BIRTHDAY))
+    if(!empty($BIRTHDAY) && !preg_match("/^([0-9]{2})+([\/]{1})+([0-9]{2})+([\/]{1})+([0-9]{4})$/", $BIRTHDAY))
     {
-        $result['errors']["USER_PERSONAL_BIRTHDAY"] = "Не верный формат данных";
+        $result['errors']["USER_PERSONAL_BIRTHDAY"] = "Неверный формат данных";
+    }else{
+        $BIRTHDAY = str_replace("/", ".", $BIRTHDAY);
     }
 
     /*if(strlen($PASS_1)<6 || strlen($PASS_2)<6)

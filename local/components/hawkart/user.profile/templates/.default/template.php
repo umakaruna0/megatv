@@ -26,7 +26,7 @@
         <form action="<?= $templateFolder ?>/ajax.php" class="user-profile-form" data-module="user-profile-form">
             <script type="text/x-config">
 				{
-					"dateMask": "99.99.9999"
+					"dateMask": "99/99/9999"
 				}
 			</script>
             <input type="hidden" name="ajax_key" value="<?=md5('ajax_'.LICENSE_KEY)?>" />
@@ -47,7 +47,6 @@
 			<div class="form-group has-feedback">
 				<label for="" class="sr-only">Дата рождения</label>
 				<input type="text" name="USER[PERSONAL_BIRTHDAY]" id="" class="form-control" value="<?=$arResult["USER"]["PERSONAL_BIRTHDAY"]?>" placeholder="Дата рождения" data-type="masked-input">
-				<span class="form-control-feedback"><span data-icon="icon-calendar"></span></span>
 			</div>
 			<div class="form-group">
 				<label for="" class="sr-only">E-mail</label>
@@ -69,7 +68,7 @@
         <form action="<?= $templateFolder ?>/ajax.php" class="user-passport-form" data-module="user-passport-form">
             <script type="text/x-config">
 				{
-					"dateMask": "99.99.9999"
+					"dateMask": "99/99/9999"
 				}
 			</script>
             <input type="hidden" name="ajax_key" value="<?=md5('ajax_'.LICENSE_KEY)?>" />
@@ -93,7 +92,6 @@
 				<div class="form-group has-feedback">
 					<label for="" class="sr-only">Дата выдачи</label>
 					<input type="text" name="USER[PASSPORT][WHEN_ISSUED]" id="" class="form-control" placeholder="Когда выдан" value="<?=$arResult["USER"]["PASSPORT"]["PROPERTY_WHEN_ISSUED_VALUE"]?>" data-type="masked-input">
-					<span class="form-control-feedback"><span data-icon="icon-calendar"></span></span>
 				</div>
 				<div class="form-group">
 					<label for="" class="sr-only">Код подразделения</label>

@@ -43,7 +43,8 @@ $APPLICATION->SetTitle("MegaTV");
 		"AJAX_OPTION_STYLE" => "Y",
 		"AJAX_OPTION_HISTORY" => "N",
         "DATETIME" => CTimeEx::getDatetime(),
-        "CITY" => CCityEx::getGeoCity()
+        "CITY" => CCityEx::getGeoCity(),
+        "BACK_URL" => $_SERVER['HTTP_REFERER']
 	),
 false
 );?>

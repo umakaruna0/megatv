@@ -31,10 +31,7 @@ if(!$USER->IsAuthorized())
         $user = CUser::GetList(($by="timestamp_x"), ($order="desc"), $filter)->Fetch();
         if(intval($user["ID"]) > 0 && !empty($emailTo))
         {
-            //$password = mb_substr(md5(uniqid(rand(),true)), 0, 50);
-            //$USER->Update($user['ID'], Array("CHECKWORD" => $password));
-            
-            $arResult = $USER->SendPassword($emailTo, $emailTo);
+            $arResult = $USER->SendPassword($user["LOGIN"], $user["EMAIL"]);
             if($arResult["TYPE"] == "OK")
                 $result['message'] = "<font style='color:green'>На ваш email придет сообщение с необходимыми данными.</font>";
                 
@@ -49,6 +46,8 @@ if(!$USER->IsAuthorized())
 }else{
     $result['message'] = 'Вы уже авторизованны.';
 }
+
+$result["mail"] = $emailTo;
 
 exit(json_encode($result));
 

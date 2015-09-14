@@ -3,9 +3,9 @@ require($_SERVER["DOCUMENT_ROOT"]."/bitrix/header.php");
 $APPLICATION->SetTitle("Каналы");
 global $USER;
 
-CChannel::updateCache();
-CProg::updateCache();
-CProgTime::updateCache();
+//CChannel::updateCache();
+//CProg::updateCache();
+//CProgTime::updateCache();
 ?>
 <?$APPLICATION->IncludeComponent("bitrix:news.list", "channels_index", Array(
 	   "DISPLAY_DATE" => "Y",	// Выводить дату элемента

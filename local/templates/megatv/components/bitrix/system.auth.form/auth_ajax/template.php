@@ -23,10 +23,16 @@ if (strlen($_POST['ajax_key']) && $_POST['ajax_key']==md5('ajax_'.LICENSE_KEY) &
 
 if ($arResult["FORM_TYPE"] != "login") 
 {
+    if(strpos($GLOBALS["APPLICATION"]->GetCurDir(), "personal")===false)
+    {
+        $url = $GLOBALS["APPLICATION"]->GetCurPageParam("logout=yes", array("logout"));
+    }else{
+        $url = "/?logout=yes";
+    }
     ?>
     <a href="<?=$arResult["urlToOwnProfile"]?>" class="view_form u_name"><?=$arResult["FULL_NAME"]?></a>
     <span class="separator">|</span>
-    <a href="<?=$GLOBALS["APPLICATION"]->GetCurPageParam("logout=yes", array("logout"))?>" class="view_form exit">Выйти</a>
+    <a href="<?=$url?>" class="view_form exit">Выйти</a>
     <? 
 } 
 else 
@@ -58,7 +64,8 @@ else
 			<li><a href="#"><span data-icon="icon-im-social"></span></a></li>*/?>
             
             <li><a href="/social/?provider=yandex"><span data-icon="icon-ya-social"></span></a></li>
-            
+            <li><a href="/social/?provider=odnoklassniki"><span data-icon="icon-ok-social"></span></a></li>
+            <li><a href="/social/?provider=google"><span data-icon="icon-gp-social"></span></a></li>
             <li><a href="/social/?provider=linkedin"><span data-icon="icon-in-social"></span></a></li>
             
             <li><a href="/social/?provider=vkontakte"><span data-icon="icon-vk-social"></span></a></li>
@@ -68,52 +75,6 @@ else
 		</ul>
 		<button type="submit" name="Login" class="btn btn-primary btn-block">Войти</button>
 	</form>
-
-    <?/*
-    <span class="view_form open_form">Личный кабинет</span>
-    <div class="form_holder">
-        <img src="<?=SITE_TEMPLATE_PATH?>/img/close.png" class="closed_form" />
-    	<p>Вход</p>
-        <p class="error" style="display: none;"></p>
-        <form action="<?=$arResult["AUTH_URL"]?>" METHOD="POST" target="_top" id="login-form">
-        	<input type="hidden" name="AUTH_FORM" value="Y" />
-        	<input type="hidden" name="TYPE" value="AUTH" />
-            
-            <input type="email" name="USER_LOGIN" value="<?=$arResult["USER_LOGIN"]?>" placeholder="Эл.почта"/>
-        	<input type="password" name="USER_PASSWORD" placeholder="Пароль" />
-            <input type="submit" name="Login" value="Войти в кабинет"/>
-        </form>
-        
-        <a href="#" onclick="$('a.facebook-button').click();" href="javascript:void(0)">
-        	<img src="<?=SITE_TEMPLATE_PATH?>/img/fb.png" class='soc_img'/>
-        	<img src="<?=SITE_TEMPLATE_PATH?>/img/fb_act.png" class='active_soc_img'/>
-        </a><a href="#" onclick="$('a.vkontakte-button').click();" href="javascript:void(0)">
-        	<img src="<?=SITE_TEMPLATE_PATH?>/img/vk.png" class='soc_img' />
-        	<img src="<?=SITE_TEMPLATE_PATH?>/img/vk_act.png"  class='active_soc_img'/>
-        </a><a href="#" onclick="$('a.twitter-button').click();" href="javascript:void(0)">
-        	<img src="<?=SITE_TEMPLATE_PATH?>/img/tw.png" class='soc_img'/>
-        	<img src="<?=SITE_TEMPLATE_PATH?>/img/tw_act.png"  class='active_soc_img'/>
-        </a>
-        
-        <div style="display: none;">
-        <?if($arResult["AUTH_SERVICES"]):?>
-        <?
-        $APPLICATION->IncludeComponent("bitrix:socserv.auth.form", "", 
-           array(
-              "AUTH_SERVICES"=>$arResult["AUTH_SERVICES"],
-              "AUTH_URL"=>$arResult["AUTH_URL"],
-              "POST"=>$arResult["POST"],
-              "POPUP"=>"N",
-              "SUFFIX"=>"form",
-           ), 
-           $component, 
-           array("HIDE_ICONS"=>"Y")
-        );
-        ?>
-        <?endif?>
-        </div>
-    </div>
-    */?>
     <?
 }
 ?>

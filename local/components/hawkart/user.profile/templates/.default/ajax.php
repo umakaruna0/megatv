@@ -64,14 +64,16 @@ if($USER->IsAuthorized())
             $result['errors']['USER[SECOND_NAME]'] = "Введите отчество.";
         }
         
-        if(!empty($arPost["PERSONAL_BIRTHDAY"]) && !preg_match("/^([0-9]{2})+([\.]{1})+([0-9]{2})+([\.]{1})+([0-9]{4})$/", $arPost["PERSONAL_BIRTHDAY"]))
+        if(!empty($arPost["PERSONAL_BIRTHDAY"]) && !preg_match("/^([0-9]{2})+([\/]{1})+([0-9]{2})+([\/]{1})+([0-9]{4})$/", $arPost["PERSONAL_BIRTHDAY"]))
         {
-            $result['errors']["USER[PERSONAL_BIRTHDAY]"] = "Не верный формат.";
+            $result['errors']["USER[PERSONAL_BIRTHDAY]"] = "Неверный формат.";
+        }else{
+            $arPost["PERSONAL_BIRTHDAY"] = str_replace("/", ".", $arPost["PERSONAL_BIRTHDAY"]);
         }
         
         if(!empty($arPost["PERSONAL_PHONE"]) && !preg_match("/^([0-9]{11})$/", $arPost["PERSONAL_PHONE"]))
         {
-            $result['errors']["USER[PERSONAL_PHONE]"] = "Не верный формат.";
+            $result['errors']["USER[PERSONAL_PHONE]"] = "Неверный формат.";
         }
         
         if(count($result['errors'])==0)
@@ -117,12 +119,12 @@ if($USER->IsAuthorized())
 
         if(!preg_match("/^([0-9]{4})$/", $arPost["SERIA"]))
         {
-            $result['errors']["USER[PASSPORT][SERIA]"] = "Не верный формат.";
+            $result['errors']["USER[PASSPORT][SERIA]"] = "Неверный формат.";
         }
         
         if(!preg_match("/^([0-9]{6})$/", $arPost["NUMBER"]))
         {
-            $result['errors']["USER[PASSPORT][NUMBER]"] = "Не верный формат.";
+            $result['errors']["USER[PASSPORT][NUMBER]"] = "Неверный формат.";
         }
         
         if(empty($arPost["WHO_ISSUED"]))
@@ -130,9 +132,11 @@ if($USER->IsAuthorized())
             $result['errors']['USER[PASSPORT][WHO_ISSUED]'] = "Заполните поле.";
         }
         
-        if(!preg_match("/^([0-9]{2})+([\.]{1})+([0-9]{2})+([\.]{1})+([0-9]{4})$/", $arPost["WHEN_ISSUED"]))
+        if(!preg_match("/^([0-9]{2})+([\/]{1})+([0-9]{2})+([\/]{1})+([0-9]{4})$/", $arPost["WHEN_ISSUED"]))
         {
-            $result['errors']["USER[PASSPORT][WHEN_ISSUED]"] = "Не верный формат.";
+            $result['errors']["USER[PASSPORT][WHEN_ISSUED]"] = "Неверный формат.";
+        }else{
+            $arPost["WHEN_ISSUED"] = str_replace("/", ".", $arPost["WHEN_ISSUED"]);
         }
         
         if(empty($arPost["CODE_DIVISION"]))

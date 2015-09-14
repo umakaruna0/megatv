@@ -10,7 +10,6 @@ IncludeTemplateLangFile(__FILE__);
 		<link rel="shortcut icon" href="/favicon.ico">
 		<link rel="icon" href="/favicon.ico">
         <?
-        //$APPLICATION->ShowHead();
         echo '<meta http-equiv="Content-Type" content="text/html; charset='.LANG_CHARSET.'"'.(true ? ' /':'').'>'."\n";
         $APPLICATION->ShowMeta("robots", false, true);
         $APPLICATION->ShowMeta("keywords", false, true);
@@ -44,21 +43,11 @@ IncludeTemplateLangFile(__FILE__);
 					"pathToSVGSprite": "<?=SITE_TEMPLATE_PATH?>/megatv/dist/img/sprites/svg_sprite.svg",
 					"playerURL": "<?=SITE_TEMPLATE_PATH?>/ajax/modals/player.php",
                     "playerLastPositionURL": "<?=SITE_TEMPLATE_PATH?>/ajax/player_last_position.php",
-					"shareURL": "<?=SITE_TEMPLATE_PATH?>/ajax/share.php"
+					"shareURL": "<?=SITE_TEMPLATE_PATH?>/ajax/share.php",
+                    "authentication" : <?=($USER->IsAuthorized()) ? "true" : "false"?>
 				}
 			</script>
-            
-            <?/*
-			<div id="drop-area" class="drop-area">
-				<div>
-					<div class="dropzone">
-						<span class="checkmark-holder"></span>
-						<span class="dropzone-text">Чтобы добавить, тащи сюда</span>
-					</div>
-				</div>
-			</div>
-            */?>
-            
+                        
 			<header class="site-header">
 				<div class="fullsize-banner adv-styling-01<?if(strpos($_COOKIE['advertizing_hidden_banners'], "header-adv")!==false):?> hide<?endif;?>" data-type="advertizing" id="header-adv">
 					<div class="banner-content">

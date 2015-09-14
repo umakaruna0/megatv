@@ -31,7 +31,7 @@ if($USER->IsAuthorized())
 
     if($old_password!=$realPassword)
     {
-        $result['errors']["old-password"]="Старый пароль введен не правильно!";
+        $result['errors']["old-password"]="Старый пароль введен неправильно!";
     }
 
     $password=htmlspecialcharsbx($_POST['new-password']);

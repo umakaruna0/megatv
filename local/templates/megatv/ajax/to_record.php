@@ -21,11 +21,26 @@ if($USER->IsAuthorized() && $prog_time>0)
         $selectedChannels[] = $arChannel["UF_CHANNEL"];
     }
     
+    $USER_ID = $USER->GetID();
+    $rsUser = CUser::GetByID($USER_ID);
+    $arUser = $rsUser->Fetch();
+    
     //Проверим, принадлежит ли запись этому каналу
-    $arProgTime = CProgTime::getByID($prog_time, array("ID", "PROPERTY_CHANNEL", "PROPERTY_PROG"));
+    $arProgTime = CProgTime::getByID($prog_time, array("ID", "PROPERTY_CHANNEL", "PROPERTY_PROG", "PROPERTY_DATE_END", "PROPERTY_DATE_START"));
+    
+    //Провеим, хватит ли пространства!
+    $duration = strtotime($arProgTime["PROPERTY_DATE_END_VALUE"])<strtotime($arProgTime["PROPERTY_DATE_START_VALUE"]);
+    $minutes = ceil($duration/60);
+    $gb = $minutes*(18.5/1024);
+    
+    if(intval($arUser["UF_CAPACITY_BUSY"])+$gb>intval($arUser["UF_CAPACITY"]))
+    {
+        exit(json_encode(array("status"=>false, "error"=> "Не достаточно места на диске для записи")));
+    }
+    
     if(in_array($arProgTime["PROPERTY_CHANNEL_VALUE"], $selectedChannels))
     {
-        $USER_ID = $USER->GetID();
+        
         $Sotal = new CSotal($USER_ID);
         $Sotal->register();     //регистрируем пользователя, если нужно
         $Sotal->getSubscriberToken();   //получим ключ для использования в запросах

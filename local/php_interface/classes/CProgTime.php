@@ -164,7 +164,7 @@ class CProgTime
         {
             $status = "recorded";
         }
-        else if(in_array($arProg["CHANNEL_ID"], $arSubscriptionChannels) && $USER->IsAuthorized()/* && CTimeEx::dateDiff($date_now, $arProg["DATE_START"])*/)
+        else if(in_array($arProg["CHANNEL_ID"], $arSubscriptionChannels) && $USER->IsAuthorized() || !$USER->IsAuthorized()/* && CTimeEx::dateDiff($date_now, $arProg["DATE_START"])*/)
         {
             $status = "recordable";
         }
@@ -191,6 +191,7 @@ class CProgTime
         <?if($status == "recordable"):?>
             <span class="item-status-icon">
 				<span data-icon="icon-recordit"></span>
+                <span class="status-desc">Записать</span>
 			</span>
 			<div class="recording-notify">
 				<div class="recording-notify-text-wrap">
