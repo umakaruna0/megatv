@@ -4,14 +4,6 @@ $APPLICATION->SetTitle("MegaTV");
 global $USER;
 ?>
 
-<style>
-.form-group.has-error .form-control
-{
-    padding-top: 0;
-    padding-bottom: 20px;
-}
-</style>
-
 <div class="flex-row user-profile-top-row">
 
     <?$APPLICATION->IncludeComponent("hawkart:user.profile", "", Array("CITY_GEO"=>CCityEx::getGeoCity()), false);?>

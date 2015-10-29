@@ -172,10 +172,11 @@ class Subscription
 	 */
 	public static function subscribe($data)
 	{
-		$sub = array('MAILING_ID' => $data['SUBSCRIBE_LIST'], 'EMAIL' => $data['EMAIL']);
-		$subExists = PostingUnsubTable::getRowById($sub);
-		if(!$subExists)
-			MailingSubscriptionTable::add($sub);
+		$id = static::add($data['EMAIL'], $data['SUBSCRIBE_LIST']);
+		if($id)
+		{
+			return true;
+		}
 
 		return false;
 	}

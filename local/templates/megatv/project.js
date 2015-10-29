@@ -24,6 +24,7 @@ $(document).on('ready', function(){
 
         $form.find("div").removeClass("has-error");
         $form.find(".form-control-message").remove();
+        $form.find(".recovery-success").remove();
 
         $.ajax({
             type: "POST",
@@ -46,8 +47,8 @@ $(document).on('ready', function(){
                         }
                     });
                 }else{
-                    //setTimeout(function(){alert("Boom!");}, 2000);
-                    window.location.href = form_backurl;
+                    //window.location.href = form_backurl;
+                    $( '<br /><div class="form-group recovery-success">'+data.message+'</div>' ).insertAfter($form.find(".btn.btn-primary"));
                 }
             }
         });
@@ -189,11 +190,10 @@ $(document).on('ready', function(){
         $(str).addClass("in active");
     });
     
-    $("#_id-city-select").change(function(){
+    /*$("#_id-city-select").change(function(){
         $("#city-select-value").val($(this).val());
         $("#city-select-form").submit();
-    });
-    
+    });*/
     
     /*$('#comment-form .submit-btn').on('click', function(e){
         e.preventDefault();
@@ -261,6 +261,8 @@ $(document).on('ready', function(){
 
                     $(".categories-logos").append($response.find(".categories-logos").html());
                     $(".categories-items .row-wrap").append($response.find(".categories-items .row-wrap").html());
+
+                    $('.categories-items [data-type="broadcast"]').data('status-flag', false).data('play-flag', false);
                     
                     renderIcons();
                     

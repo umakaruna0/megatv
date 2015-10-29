@@ -72,8 +72,13 @@ class MailingTriggerTable extends Entity\DataManager
 		$data = $event->getParameters();
 
 		if(is_string($data['fields']['ENDPOINT']))
+		{
 			$data['fields']['ENDPOINT'] = unserialize($data['fields']['ENDPOINT']);
-
+		}
+		if(!is_array($data['fields']['ENDPOINT']))
+		{
+			$data['fields']['ENDPOINT'] = null;
+		}
 		static::actualizeHandlers($data['primary']['MAILING_CHAIN_ID'], $data['fields']['ENDPOINT'], null);
 
 		return $result;
@@ -90,6 +95,15 @@ class MailingTriggerTable extends Entity\DataManager
 
 		$itemDb = static::getByPrimary($data['primary']);
 		$item = $itemDb->fetch();
+
+		if(!is_array($data['fields']['ENDPOINT']))
+		{
+			$data['fields']['ENDPOINT'] = null;
+		}
+		if(!$item || !is_array($item['ENDPOINT']))
+		{
+			$item['ENDPOINT'] = null;
+		}
 		static::actualizeHandlers($data['primary']['MAILING_CHAIN_ID'], $data['fields']['ENDPOINT'], $item['ENDPOINT']);
 
 		return $result;
@@ -107,6 +121,11 @@ class MailingTriggerTable extends Entity\DataManager
 		$itemDb = static::getByPrimary($data['primary']);
 		while($item = $itemDb->fetch())
 		{
+			if(!is_array($item['ENDPOINT']))
+			{
+				$item['ENDPOINT'] = null;
+			}
+
 			static::actualizeHandlers($item['MAILING_CHAIN_ID'], null, $item['ENDPOINT']);
 		}
 

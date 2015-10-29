@@ -58,16 +58,16 @@ $curPage++;
                             
                         if($arProg["CLASS"]=="one" || $arProg["CLASS"]=="double")
                         {
-                            echo CProgTime::getProgInfoIndex($arProg);
+                            echo CProgTime::getProgInfoIndex($arProg, $arParams);
                         }
-                        
+
                         if($arProg["CLASS"]=="half")
                         {
                             $arProgNext = $arItem["PROGS"][$key+1];
                             ?>
                             <div class="pair-container">
-                                <?=CProgTime::getProgInfoIndex($arProg)?>
-                                <?=CProgTime::getProgInfoIndex($arProgNext)?>
+                                <?=CProgTime::getProgInfoIndex($arProg, $arParams)?>
+                                <?=CProgTime::getProgInfoIndex($arProgNext, $arParams)?>
             				</div>
                             <?
                             $notShow[]=$key+1;

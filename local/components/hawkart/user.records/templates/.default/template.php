@@ -1,4 +1,9 @@
-<section class="user-recorded-broadcasts<?if(count($arResult["RECORDS"])<=10):?> is-single-line<?endif;?>" data-module="user-recorded-broadcasts">
+<?
+if(count($arResult["RECORDS"])==0)
+    return false;
+?>
+
+<section class="user-recorded-broadcasts<?if(count($arResult["RECORDS"])<20):?> is-single-line<?endif;?>" data-module="user-recorded-broadcasts">
     <script type="text/x-config">
 		{
 			"url": "<?=SITE_TEMPLATE_PATH?>/ajax/delete_record.php"
@@ -13,9 +18,10 @@
                 <div class="items-row">
                 <?
                 $count = 0;
+                $half = ceil(count($arResult["RECORDS"])/2);    //10
                 foreach($arResult["RECORDS"] as $arRecord)
                 {
-                    if(count($arResult["RECORDS"])>10 && $count%10==0 && $count!=0)
+                    if(count($arResult["RECORDS"])>=20 && $count%$half==0 && $count!=0)
                     {
                         ?></div><div class="items-row"><?
                     }
@@ -50,7 +56,7 @@
 						</div>
 						<div class="item-header">
 							<div class="view-progress" data-progress="<?=intval($arRecord["UF_PROGRESS_PERS"])?>"></div>
-							<a href="#"><?=$arRecord["PROG"]["NAME"]?></a>
+							<span><?=$arRecord["PROG"]["NAME"]?></span>
 						</div>
 					</div>
                     <?

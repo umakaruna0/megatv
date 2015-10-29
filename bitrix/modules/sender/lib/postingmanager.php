@@ -221,6 +221,7 @@ class PostingManager
 			static::$currentMailingChainFields['SITE'] = array($mailingChain['SITE_ID']);
 			static::$currentMailingChainFields['CHARSET'] = $charset;
 			static::$currentMailingChainFields['SERVER_NAME'] = $serverName;
+			static::$currentMailingChainFields['LINK_PROTOCOL'] = \Bitrix\Main\Config\Option::get("sender", "link_protocol", 'http');
 		}
 
 
@@ -232,24 +233,31 @@ class PostingManager
 			'CHARSET' => static::$currentMailingChainFields['CHARSET'],
 		);
 
+		if(!empty($params['FIELDS']['UNSUBSCRIBE_LINK']))
+		{
+			if(substr($params['FIELDS']['UNSUBSCRIBE_LINK'], 0, 4) !== 'http')
+			{
+				if(!empty(static::$currentMailingChainFields['SERVER_NAME']))
+				{
+					$serverName = static::$currentMailingChainFields['SERVER_NAME'];
+				}
+				else
+				{
+					$serverName = \Bitrix\Main\Config\Option::get("main", "server_name", $GLOBALS["SERVER_NAME"]);
+				}
+
+				$linkProtocol = static::$currentMailingChainFields['LINK_PROTOCOL'];
+				$params['FIELDS']['UNSUBSCRIBE_LINK'] = $linkProtocol . '://' . $serverName . $params['FIELDS']['UNSUBSCRIBE_LINK'];
+			}
+		}
+
 		$message = Mail\EventMessageCompiler::createInstance($messageParams);
 		$message->compile();
 
 		$mailHeaders = $message->getMailHeaders();
 		if(!empty($params['FIELDS']['UNSUBSCRIBE_LINK']))
 		{
-			if(substr($params['FIELDS']['UNSUBSCRIBE_LINK'], 0, 4) !== 'http')
-			{
-				if(!empty(static::$currentMailingChainFields['SERVER_NAME']))
-					$serverName = static::$currentMailingChainFields['SERVER_NAME'];
-				else
-					$serverName = \Bitrix\Main\Config\Option::get("main", "server_name", $GLOBALS["SERVER_NAME"]);
-
-				$unsubUrl = 'http://' . $serverName . $params['FIELDS']['UNSUBSCRIBE_LINK'];
-			}
-			else
-				$unsubUrl = $params['FIELDS']['UNSUBSCRIBE_LINK'];
-
+			$unsubUrl = $params['FIELDS']['UNSUBSCRIBE_LINK'];
 			$mailHeaders['List-Unsubscribe'] = '<'.$unsubUrl.'>';
 		}
 
@@ -263,6 +271,8 @@ class PostingManager
 			'CONTENT_TYPE' => $message->getMailContentType(),
 			'MESSAGE_ID' => '',
 			'ATTACHMENT' => $message->getMailAttachment(),
+			'LINK_PROTOCOL' => static::$currentMailingChainFields['LINK_PROTOCOL'],
+			'LINK_DOMAIN' => static::$currentMailingChainFields['SERVER_NAME'],
 			'TRACK_READ' => (isset($params['TRACK_READ']) ? $params['TRACK_READ'] : null),
 			'TRACK_CLICK' => (isset($params['TRACK_CLICK']) ? $params['TRACK_CLICK'] : null)
 		));

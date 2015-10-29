@@ -1,3 +1,8 @@
+<?
+if(count($arResult["PROGS"])==0)
+    return false;
+?>
+
 <section class="recomended-broadcasts is-single-items" data-module="recomended-broadcasts">
     <script type="text/x-config">
     {

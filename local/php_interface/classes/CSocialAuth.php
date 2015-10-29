@@ -158,7 +158,22 @@ class CSocialAuth
             if(!empty($email))
             {
                 CUserEx::capacityAdd($USER_ID, 1);   // за мэйл +1ГБ
-                $USER->Login($email, $password, 'Y');
+                
+                $fields = array();
+                $fields["EXTERNAL_AUTH_ID"] = "";
+                $fields["PASSWORD"] = $password;
+                $fields["CONFIRM_PASSWORD"] = $password;
+                $сuser = new CUser;
+                $сuser->Update($USER_ID, $fields);
+                
+                $arEventFields = array(
+                    "USER_NAME"             => trim($userProfile["firstName"]." ".$userProfile["lastName"]),
+                    "PASSWORD"          	=> $password,
+                    "EMAIL"			        => $email,
+                );
+                CEvent::Send("USER_PASS_CHANGED_PROFILE", SITE_ID, $arEventFields);
+
+                $USER->Login($email, $password, 'N');
             }
             
             //Бонус за регистрацию

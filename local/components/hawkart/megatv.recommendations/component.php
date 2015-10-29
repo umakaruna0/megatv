@@ -35,8 +35,6 @@ while( $arItem = $rsRes->GetNext() )
     $arProgs[$arItem["ID"]] = $arItem;
 }
 
-
-
 if(count($arProgs)>0)
 {
     $progIds = array();
@@ -73,11 +71,13 @@ if(count($arProgs)>0)
         if($key>48) break;
     }
     
-    
+    //CDev::pre($arResult["PROGS"]);
     
     $arResult["PROGS"] = CScheduleTable::setIndex(array(
         "PROGS" => $arResult["PROGS"],
     ));
+    
+    //CDev::pre($arResult["PROGS"]);
 }
    
  /*   

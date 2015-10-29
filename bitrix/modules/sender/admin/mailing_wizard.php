@@ -589,6 +589,7 @@ if($step=='chain_send_type')
 					if($arMailingChainOld['STATUS'] == \Bitrix\Sender\MailingChainTable::STATUS_NEW)
 						$arFields["STATUS"] = \Bitrix\Sender\MailingChainTable::STATUS_SEND;
 				}
+				$arFields["STATUS"] = \Bitrix\Sender\MailingChainTable::STATUS_WAIT;
 				break;
 			default:
 				$arError[] = GetMessage("sender_chain_edit_error_send_type");

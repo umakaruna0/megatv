@@ -14,4 +14,5 @@ $MESS["opt_sender_cron_support"] = "Cron cannot be currently used. It is support
 $MESS["opt_unsub_link"] = "Custom unsubscription page:";
 $MESS["opt_auto_agent_interval"] = "Delay between subsequent sending jobs (sec., 0 - don't wait):";
 $MESS["opt_sub_link"] = "Custom subscription page:";
+$MESS["opt_link_protocol"] = "Message URL log:";
 ?>

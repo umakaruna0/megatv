@@ -18,13 +18,19 @@ $this->setFrameMode(true);
         "recordingURL": "<?=SITE_TEMPLATE_PATH?>/ajax/to_record.php"
     }
     </script>
-	<div class="channel-info">
+    <div class="channel-info">
 		<div class="channel-logo">
-			<span data-icon="<?=$arResult["PROPERTIES"]["ICON"]["VALUE"]?>" data-size="small"></span>
+			<span data-icon="<?=$arResult["PROPERTIES"]["ICON"]["VALUE"]?>"></span>
 		</div>
-		<div class="channel-descr">
-			<?=htmlspecialchars_decode($arResult["DETAIL_TEXT"])?>
-			<p><a href="<?=$arResult["PROPERTIES"]["SITE"]["VALUE"]?>">Официальный сайт</a></p>
+		<div class="channel-broadcast-shots">
+			<?
+            if($arResult["PROPERTIES"]["FRAME_URL"]["VALUE"])
+            {
+                ?>
+                <img src="<?=$arResult["PROPERTIES"]["FRAME_URL"]["VALUE"]?>" />
+                <?
+            }
+            ?>
 		</div>
 	</div>
 	<div class="channel-broadcasts">

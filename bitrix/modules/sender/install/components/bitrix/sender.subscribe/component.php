@@ -57,6 +57,7 @@ if($_SERVER['REQUEST_METHOD'] == 'GET')
 				\Bitrix\Sender\Subscription::add($arTag['FIELDS']['EMAIL'], $arTag['FIELDS']['MAILING_LIST'], $arTag['FIELDS']['SITE_ID']);
 				$APPLICATION->set_cookie("SENDER_SUBSCR_EMAIL", $arTag['FIELDS']['EMAIL'], $cookieLifeTime);
 				$subscr_EMAIL = $arTag['FIELDS']['EMAIL'];
+				unset($_SESSION['SENDER_SUBSCRIBE_LIST']);
 				$arResult['MESSAGE'] = array('TYPE' => 'NOTE', 'CODE' => 'message_success');
 
 				if($arParams['AJAX_MODE'] <> 'Y')
@@ -147,6 +148,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST' && check_bitrix_sessid() && isset($_POST
 			$APPLICATION->set_cookie("SENDER_SUBSCR_EMAIL", $_POST["SENDER_SUBSCRIBE_EMAIL"], $cookieLifeTime);
 			$arResult['MESSAGE'] = array('TYPE' => 'NOTE', 'CODE' => 'message_success');
 			$subscr_EMAIL = $_POST["SENDER_SUBSCRIBE_EMAIL"];
+			unset($_SESSION['SENDER_SUBSCRIBE_LIST']);
 		}
 	}
 	else
@@ -178,32 +180,46 @@ $arSubscription = array("ID"=>0, "EMAIL"=>"");
 if($arParams["USE_PERSONALIZATION"])
 {
 	global $USER;
-	if(!CModule::IncludeModule("sender"))
-	{
-		$obCache->AbortDataCache();
-		ShowError(GetMessage("SENDER_SUBSCR_MODULE_NOT_INSTALLED"));
-		return;
-	}
 
 	//get current user subscription from cookies
 	if(empty($subscr_EMAIL))
-		$subscr_EMAIL = $APPLICATION->get_cookie('SENDER_SUBSCR_EMAIL');
-
-	$subscr_EMAIL = strtolower(strlen($subscr_EMAIL) > 0? $subscr_EMAIL : $USER->GetParam("EMAIL"));
-	if($subscr_EMAIL <> "")
 	{
-		$subscriptionDb = \Bitrix\Sender\MailingSubscriptionTable::getList(array(
-			'select' => array('ID' => 'CONTACT_ID', 'EMAIL' => 'CONTACT.EMAIL', 'EXISTED_MAILING_ID' => 'MAILING.ID'),
-			'filter' => array('=CONTACT.EMAIL' => $subscr_EMAIL, '!MAILING.ID' => null),
-		));
-		while(($subscription = $subscriptionDb->fetch()))
-		{
-			$arSubscription = $subscription;
+		$subscr_EMAIL = $APPLICATION->get_cookie('SENDER_SUBSCR_EMAIL');
+	}
+	$subscr_EMAIL = strtolower(strlen($subscr_EMAIL) > 0? $subscr_EMAIL : $USER->GetParam("EMAIL"));
 
-			//get user's newsletter categories
-			if(intval($subscription['EXISTED_MAILING_ID'])>0)
-				$arSubscriptionRubrics[] = $subscription['EXISTED_MAILING_ID'];
+	if(isset($_SESSION['SENDER_SUBSCRIBE_LIST']) && is_array($_SESSION['SENDER_SUBSCRIBE_LIST']))
+	{
+		$arSubscription = $_SESSION['SENDER_SUBSCRIBE_LIST']['SUBSCRIPTION'];
+		$arSubscriptionRubrics = $_SESSION['SENDER_SUBSCRIBE_LIST']['RUBRIC'];
+	}
+	else
+	{
+		if(!CModule::IncludeModule("sender"))
+		{
+			$obCache->AbortDataCache();
+			ShowError(GetMessage("SENDER_SUBSCR_MODULE_NOT_INSTALLED"));
+			return;
 		}
+
+		if($subscr_EMAIL <> "")
+		{
+			$subscriptionDb = \Bitrix\Sender\MailingSubscriptionTable::getList(array(
+				'select' => array('ID' => 'CONTACT_ID', 'EMAIL' => 'CONTACT.EMAIL', 'EXISTED_MAILING_ID' => 'MAILING.ID'),
+				'filter' => array('=CONTACT.EMAIL' => $subscr_EMAIL, '!MAILING.ID' => null),
+			));
+			while(($subscription = $subscriptionDb->fetch()))
+			{
+				$arSubscription = $subscription;
+
+				//get user's newsletter categories
+				if(intval($subscription['EXISTED_MAILING_ID'])>0)
+					$arSubscriptionRubrics[] = $subscription['EXISTED_MAILING_ID'];
+			}
+		}
+
+		$_SESSION['SENDER_SUBSCRIBE_LIST']['SUBSCRIPTION'] = $arSubscription;
+		$_SESSION['SENDER_SUBSCRIBE_LIST']['RUBRIC'] = $arSubscriptionRubrics;
 	}
 }
 

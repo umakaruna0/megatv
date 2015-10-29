@@ -13,4 +13,24 @@
     width: auto;
     height: auto;
 }
-*/    
+    
+.broadcast-results .categories-items .category-row .item .badge {
+    position: absolute;
+    top: 14px;
+    right: 15px;
+    z-index: 2;
+    display: inline-block;
+    height: 14px;
+    padding: 0 4px;
+    font-size: .9rem;
+    line-height: 1.4rem;
+    color: #fff;
+    text-transform: uppercase;
+    background-color: #1e6edc;
+    -webkit-font-smoothing: subpixel-antialiased;
+}
+.channel-card .channel-info .channel-broadcast-shots img
+{
+    border: 2px solid #fff;
+}
+*/

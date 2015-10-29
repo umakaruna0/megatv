@@ -49,8 +49,6 @@ class CTimeEx
         return $countDays;
     }
     
-    
-    
     public static function getCurDate()
     {
         global $APPLICATION;
@@ -59,8 +57,18 @@ class CTimeEx
         
         if(isset($_GET["cur_date"]) && !empty($_GET["cur_date"]))
         {
+            $count_days = self::getCalendarDays();
+            $max_date = date('d.m.Y', strtotime("+".$count_days." day", strtotime(date("d.m.Y"))));
+            $min_date = date('d.m.Y', strtotime("-1 day", strtotime(date("d.m.Y"))));
+            
             $date = substr($_GET["cur_date"], 0, 10);
             $date = date("d.m.Y", strtotime($date));
+            
+            if(strtotime($date)>strtotime($max_date) || strtotime($date)<strtotime($min_date))
+            {
+                $date = date("d.m.Y");
+            }           
+            
         }else{
             if(!isset($_SESSION["DATE_CURRENT_SHOW"]) || empty($_SESSION["DATE_CURRENT_SHOW"]))
             {

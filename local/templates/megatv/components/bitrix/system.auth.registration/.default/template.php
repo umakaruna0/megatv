@@ -4,7 +4,8 @@
 <form action="<?= $templateFolder ?>/ajax.php"  method="post" class="singup-userdata-form" id="register-form">
     <script type="text/x-config">
 		{
-			"dateMask": "99/99/9999"
+			"dateMask": "99/99/9999",
+			"phoneMask": "+7 (999) 999-99-99"
 		}
 	</script>
     <?if (strlen($arResult["BACKURL"]) > 0):?>
@@ -31,7 +32,7 @@
 	</div>
 	<div class="form-group has-feedback">
 		<label for="" class="sr-only">Дата рождения</label>
-		<input type="text" name="USER_PERSONAL_BIRTHDAY" id="" class="form-control" placeholder="Дата рождения"  value="<?=$arResult["USER_PERSONAL_BIRTHDAY"]?>" data-type="masked-input">
+		<input type="text" name="USER_PERSONAL_BIRTHDAY" id="" class="form-control" placeholder="Дата рождения"  value="<?=$arResult["USER_PERSONAL_BIRTHDAY"]?>" data-type="masked-birthdate-input">
 		<?/*<span class="form-control-feedback"><span data-icon="icon-calendar"></span></span>*/?>
 	</div>
 	<div class="form-group">

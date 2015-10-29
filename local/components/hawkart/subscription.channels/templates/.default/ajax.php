@@ -19,6 +19,14 @@ foreach($arChannels as $arChannel)
     $selectedChannels[$arChannel["UF_CHANNEL"]] = $arChannel["ID"];
 }
 
+
+$arChannel = CChannel::getByID($channelID, array("PROPERTY_RECORD_CANCEL"));
+if(!empty($arChannel["PROPERTY_RECORD_CANCEL_VALUE"]))
+{
+    exit(json_encode(array("status"=>"disable", "error"=>"Нельзя подписаться на канал")));
+}
+
+
 if(!isset($selectedChannels[$channelID]))
 {
     $result = $CSubscribeEx->setUserSubscribe($channelID);

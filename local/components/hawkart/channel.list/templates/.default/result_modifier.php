@@ -1,0 +1,1 @@
+<?if($_REQUEST['AJAX']=='Y' && $_REQUEST["AJAX_TYPE"]=="CHANNELS") $APPLICATION->RestartBuffer();?>

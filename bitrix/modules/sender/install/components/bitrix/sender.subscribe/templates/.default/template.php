@@ -81,7 +81,7 @@ $frame = $this->createFrame("sender-subscribe", false)->begin();
 		<input type="hidden" name="sender_subscription" value="add">
 
 		<div class="bx-input-group">
-			<input class="bx-form-control" type="email" name="SENDER_SUBSCRIBE_EMAIL" value="<?=$arResult["EMAIL"]?>" title="<?=GetMessage("subscr_form_email_title")?>">
+			<input class="bx-form-control" type="email" name="SENDER_SUBSCRIBE_EMAIL" value="<?=$arResult["EMAIL"]?>" title="<?=GetMessage("subscr_form_email_title")?>" placeholder="<?=htmlspecialcharsbx(GetMessage('subscr_form_email_title'))?>">
 		</div>
 		<?if(count($arResult["RUBRICS"])>0):?>
 			<div class="bx-subscribe-desc"><?=GetMessage("subscr_form_title_desc")?></div>
@@ -163,7 +163,7 @@ $frame->beginStub();
 		<input type="hidden" name="sender_subscription" value="add">
 
 		<div class="bx-input-group">
-			<input class="bx-form-control" type="email" name="SENDER_SUBSCRIBE_EMAIL" value="" title="<?=GetMessage("subscr_form_email_title")?>">
+			<input class="bx-form-control" type="email" name="SENDER_SUBSCRIBE_EMAIL" value="" title="<?=GetMessage("subscr_form_email_title")?>" placeholder="<?=htmlspecialcharsbx(GetMessage('subscr_form_email_title'))?>">
 		</div>
 		<?if(count($arResult["RUBRICS"])>0):?>
 			<div class="bx-subscribe-desc"><?=GetMessage("subscr_form_title_desc")?></div>

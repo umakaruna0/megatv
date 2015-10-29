@@ -178,7 +178,7 @@ function conversion_renderRate(array $rate, array $rateType)
 					?>
 					<span class="stat-item-block-title"><?=Loc::getMessage('CONVERSION_SALE_RATE_SUM')?></span>
 					<span class="stat-item-block-digit"><?=number_format($rate['SUM'])?>
-						<span><?=$rateType['UNITS']['SUM']?></span>
+						<span><?=isset($rateType['UNITS']['SUM']) ? $rateType['UNITS']['SUM'] : ''?></span>
 					</span>
 					<?
 				}
@@ -189,7 +189,7 @@ function conversion_renderRate(array $rate, array $rateType)
 		<div class="stat-item-block">
 			<span class="stat-item-block-inner">
 				<span class="stat-item-block-title"><?=Loc::getMessage('CONVERSION_SALE_RATE_QUANTITY')?></span>
-				<span class="stat-item-block-digit"><?=$rate['NUMERATOR']?></span>
+				<span class="stat-item-block-digit"><?=isset($rate['QUANTITY']) ? $rate['QUANTITY'] : $rate['NUMERATOR']?></span>
 			</span>
 		</div>
 	</div>

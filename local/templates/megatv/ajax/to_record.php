@@ -27,39 +27,77 @@ if($USER->IsAuthorized() && $prog_time>0)
     
     //Проверим, принадлежит ли запись этому каналу
     $arProgTime = CProgTime::getByID($prog_time, array("ID", "PROPERTY_CHANNEL", "PROPERTY_PROG", "PROPERTY_DATE_END", "PROPERTY_DATE_START"));
+    $arRecords = CRecordEx::getList(array("UF_USER"=>$USER_ID, "UF_SCHEDULE"=>$prog_time), array("ID"));
+    if(intval($arRecords[0]["ID"])>0 && count($arRecords)>0)
+    {
+        exit(json_encode(array("status"=>false, "error"=> "Такая запись уже есть.")));
+    }
     
     //Провеим, хватит ли пространства!
-    $duration = strtotime($arProgTime["PROPERTY_DATE_END_VALUE"])<strtotime($arProgTime["PROPERTY_DATE_START_VALUE"]);
+    $duration = strtotime($arProgTime["PROPERTY_DATE_END_VALUE"])-strtotime($arProgTime["PROPERTY_DATE_START_VALUE"]);
     $minutes = ceil($duration/60);
-    $gb = $minutes*(18.5/1024);
+    $gb = $minutes*18.5/1024;
+    $busy = floatval($arUser["UF_CAPACITY_BUSY"])+$gb;
     
-    if(intval($arUser["UF_CAPACITY_BUSY"])+$gb>intval($arUser["UF_CAPACITY"]))
+    if($busy>floatval($arUser["UF_CAPACITY"]))
     {
         exit(json_encode(array("status"=>false, "error"=> "Не достаточно места на диске для записи")));
-    }
-    
-    if(in_array($arProgTime["PROPERTY_CHANNEL_VALUE"], $selectedChannels))
-    {
-        
-        $Sotal = new CSotal($USER_ID);
-        $Sotal->register();     //регистрируем пользователя, если нужно
-        $Sotal->getSubscriberToken();   //получим ключ для использования в запросах
-        $record_id = $Sotal->putRecord($prog_time); //ставим на запись программу
-        
-        if($record_id>0)
+    }else{
+        if(in_array($arProgTime["PROPERTY_CHANNEL_VALUE"], $selectedChannels))
         {
-            //сохраняем инфу о записе
-            CRecordEx::create(array(
-                "UF_SOTAL_ID" => $record_id,
-                "UF_SCHEDULE" => $prog_time
-            ));
             
-            //Увеличиваем рейтинг программы
-            CProg::addRating($arProgTime["PROPERTY_PROG_VALUE"], 1);
+            $log_file = "/logs/sotal/sotal_".date("d_m_Y").".txt";
+            CDev::log(array(
+                "ACTION"  => "PUT_TO_RECORD",
+                "DATA"    => array(
+                    "PROG_ID"    => $prog_time,
+                    "DATE"       => date("d.m.Y H:i:s")
+                )
+            ), false, $log_file);
+                
+            $Sotal = new CSotal($USER_ID);
+            $Sotal->register();     //регистрируем пользователя, если нужно
+            $Sotal->getSubscriberToken();   //получим ключ для использования в запросах
+            $record_id = $Sotal->putRecord($prog_time); //ставим на запись программу
             
-            $status = "success";
-        } 
-    }
+            if($record_id>0)
+            {
+                //сохраняем инфу о записе
+                CRecordEx::create(array(
+                    "UF_SOTAL_ID" => $record_id,
+                    "UF_SCHEDULE" => $prog_time
+                ));
+                
+                //Увеличиваем рейтинг программы
+                CProg::addRating($arProgTime["PROPERTY_PROG_VALUE"], 1);
+                  
+                $cuser = new CUser;
+                $cuser->Update($arUser["ID"], array("UF_CAPACITY_BUSY"=>$busy));
+                
+                /**
+                 * Данные в статистику
+                 */
+                $arStat = CStatChannel::getList(array("UF_USER"=>$USER_ID, "UF_CHANNEL"=>$arProgTime["PROPERTY_CHANNEL_VALUE"]), array("ID", "UF_RATING"));
+                if(intval($arStat[0]["ID"])>0)
+                {
+                    $rating = $arStat[0]["UF_RATING"]+1;
+                    CStatChannel::update($arStat[0]["ID"], array("UF_RATING"=>$rating));
+                }else{
+                    CStatChannel::add(array(
+                        "UF_USER" => $USER_ID,
+                        "UF_CHANNEL" => $arProgTime["PROPERTY_CHANNEL_VALUE"]
+                    ));
+                }
+                //--------------------------------------------------                
+                
+                $status = "success";
+            }else{
+                exit(json_encode(array("status"=>false, "error"=> "Ошибка, программа на запись не поставлена. [sotal problem]")));
+            } 
+        }else{
+            exit(json_encode(array("status"=>false, "error"=> "Нельзя записать")));
+        }
+    }    
 }
 
 exit(json_encode(array("status"=>$status)));

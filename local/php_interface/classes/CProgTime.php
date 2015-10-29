@@ -4,6 +4,16 @@ class CProgTime
 {
     public static $cacheDir = "prog_time";
     
+    public static function cutName($title)
+    {
+        if(strlen($title)>40)
+        {
+            $title = substr($title, 0, 40)."...";
+        }
+        
+        return $title;
+    }
+    
     public static function generateUnique($arFields)
     {
         if(strlen($arFields["DATE_START"])==10)
@@ -210,7 +220,7 @@ class CProgTime
         );
     }
     
-    public static function getProgInfoIndex($arProg)
+    public static function getProgInfoIndex($arProg, $arParams=false)
     {
         if($arProg["CLASS"]=="double")
         {
@@ -227,22 +237,39 @@ class CProgTime
             $arProg["PICTURE"] = CDev::resizeImage($arProg["PROPERTY_PICTURE_HALF_VALUE"], 288, 144);
         }
         
+        $start = $arProg["DATE_START"];
+        $end = $arProg["DATE_END"];
+        
         $arStatus = self::status($arProg);
         $status = $arStatus["status"];
         $status_icon = $arStatus["status-icon"];
+        
+        $datetime = $arParams["DATETIME"]["SERVER_DATETIME_WITH_OFFSET"];
+        
+        $time_pointer = false;
+        if(CTimeEx::dateDiff($start, $datetime) && CTimeEx::dateDiff($datetime, $end))
+        {
+            $time_pointer = true;
+        }
+        
         ob_start();
         ?>
-        <div class="item<?if($status):?> status-<?=$status?><?endif;?><?if(empty($arProg["PICTURE"]["SRC"])):?> is-noimage<?endif;?><?if($arProg["CLASS"]=="double"):?> double-item<?endif;?>"
+        <div class="item<?if($status):?> status-<?=$status?><?endif;?><?if($time_pointer && $arParams["NEED_POINTER"]):?> js-time-pointer<?endif;?><?if(empty($arProg["PICTURE"]["SRC"])):?> is-noimage<?endif;?><?if($arProg["CLASS"]=="double"):?> double-item<?endif;?>"
             data-type="broadcast" data-broadcast-id="<?=$arProg["SCHEDULE_ID"]?>"
         >
             <div class="item-image-holder" style="background-image: url(<?=$arProg["PICTURE"]["SRC"]?>)"></div>
         	
+            <?if($time_pointer):?>
+                <span class="badge">в эфире</span>
+            <?endif;?>
+            
             <?=$status_icon?>
             
         	<div class="item-header">
         		<time><?=substr($arProg["DATE_START"], 11, 5)?></time>
         		<a href="<?=$arProg["DETAIL_PAGE_URL"]?>">
-                    <?=$arProg["NAME"]?><?if(!empty($arProg["PROPERTY_SUB_TITLE_VALUE"])):?>.<br><?=$arProg["PROPERTY_SUB_TITLE_VALUE"]?><?endif;?> 
+                    <?=self::cutName($arProg["NAME"])?>
+                    <?/*if(!empty($arProg["PROPERTY_SUB_TITLE_VALUE"])):?>.<br><?=$arProg["PROPERTY_SUB_TITLE_VALUE"]?><?endif;*/?> 
                 </a>
         	</div>
         </div>
@@ -306,8 +333,9 @@ class CProgTime
 				<span class="descr-trigger" data-type="descr-trigger"><span>&times;</span></span>
 				<time><?=substr($arProg["DATE_START"], 11, 5)?></time>
 				<a href="<?=$arProg["DETAIL_PAGE_URL"]?>">
-                    <?=$arProg["NAME"]?>
-                    <?if(!empty($arProg["PROPERTY_SUB_TITLE_VALUE"])):?>.<br><?=$arProg["PROPERTY_SUB_TITLE_VALUE"]?><?endif;?> 
+                    <?=self::cutName($arProg["NAME"])?>
+                    <?/*if(!empty($arProg["PROPERTY_SUB_TITLE_VALUE"])):?>.<br><?=$arProg["PROPERTY_SUB_TITLE_VALUE"]?><?endif;*/?>
+                    
                     <?if(!empty($arProg["PROPERTY_YEAR_VALUE"])):?>.(<?=$arProg["PROPERTY_YEAR_VALUE"]?>)<?endif;?>
                 </a>
 				<div class="item-descr">
@@ -351,8 +379,8 @@ class CProgTime
             <div class="item-header">
 				<time><?=substr($arProg["DATE_START"], 11, 5)?> <span class="date">| <?=substr($arProg["DATE_START"], 0, 10)?></span></time>
 				<a href="<?=$arProg["DETAIL_PAGE_URL"]?>">
-                    <?=$arProg["NAME"]?>
-                    <?if(!empty($arProg["PROPERTY_SUB_TITLE_VALUE"])):?>.<br><?=$arProg["PROPERTY_SUB_TITLE_VALUE"]?><?endif;?> 
+                    <?=self::cutName($arProg["NAME"])?>
+                    <?/*if(!empty($arProg["PROPERTY_SUB_TITLE_VALUE"])):?>.<br><?=$arProg["PROPERTY_SUB_TITLE_VALUE"]?><?endif;*/?>
                 </a>
                 <?/*if($arParams["NOT_SHOW_CHANNEL"]!="Y"):?>
     				<div class="channel-icon">
@@ -387,8 +415,8 @@ class CProgTime
 			<div class="item-header">
 				<time><?=substr($arProg["DATE_START"], 11, 5)?> | <?=substr($arProg["DATE_START"], 0, 10)?></time>
 				<a href="<?=$arProg["DETAIL_PAGE_URL"]?>">
-                    <?=$arProg["NAME"]?>
-                    <?if(!empty($arProg["PROPERTY_SUB_TITLE_VALUE"])):?>.<br><?=$arProg["PROPERTY_SUB_TITLE_VALUE"]?><?endif;?> 
+                    <?=self::cutName($arProg["NAME"])?>
+                    <?/*if(!empty($arProg["PROPERTY_SUB_TITLE_VALUE"])):?>.<br><?=$arProg["PROPERTY_SUB_TITLE_VALUE"]?><?endif;*/?>
                 </a>
 			</div>
 		</div>

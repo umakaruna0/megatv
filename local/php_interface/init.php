@@ -44,7 +44,8 @@ CModule::AddAutoloadClasses(
         '\CRecordEx' => $sClassesPath.'CRecordEx.php',
         '\CServiceEx' => $sClassesPath.'CServiceEx.php',
         '\CUserEx' => $sClassesPath.'CUserEx.php',
-        '\CCommentEx' => $sClassesPath.'CCommentEx.php'
+        '\CCommentEx' => $sClassesPath.'CCommentEx.php',
+        '\CStatChannel' => $sClassesPath.'CStatChannel.php'
 	)
 );
 
@@ -87,4 +88,70 @@ function _Check404Error()
        require ($_SERVER['DOCUMENT_ROOT'].'/404.php');
        include $_SERVER['DOCUMENT_ROOT'].'/bitrix/templates/'.SITE_TEMPLATE_ID.'/footer.php';
    }
+}
+
+AddEventHandler("iblock", "OnBeforeIBlockElementUpdate", Array("MyCIBlockElement", "OnBeforeIBlockElementUpdateHandler"));
+AddEventHandler("iblock", "OnAfterIBlockElementUpdate", Array("MyCIBlockElement", "OnAfterIBlockElementUpdateHandler"));
+
+class MyCIBlockElement
+{
+    function OnBeforeIBlockElementUpdateHandler(&$arFields)
+    {
+        //Если включили бесплатный канал, активируем для всех пользователей подписку.
+        if($arFields["IBLOCK_ID"]==CHANNEL_IB)
+        {
+            CModule::IncludeModule("iblock");
+            $res = CIBlockElement::GetByID($arFields["ID"]);
+            $arChannel = $res->GetNext();
+            
+            $price = intval($arFields["PROPERTY_VALUES"][41]["n0"]["VALUE"]);
+            
+            if($arFields["ACTIVE"]=="Y" && $arChannel["ACTIVE"]=="N" && $price==0)
+            {
+                //Найдем пользователей, для кого эта подписка была включена
+                $userIds = array();
+                $CSubscribeEx = new CSubscribeEx("CHANNEL");
+                $arSubscriptions = $CSubscribeEx->getList(array("UF_CHANNEL"=>$arFields["ID"]), array("ID", "UF_USER"));
+                if(count($arSubscriptions)>0)
+                {
+                    foreach($arSubscriptions as $arSub)
+                    {
+                        $userIds[$arSub["UF_USER"]] = $arSub["ID"];
+                    }
+                }
+                
+                $dbUsers = CUser::GetList(($by="EMAIL"), ($order="desc"), Array("ACTIVE" =>"Y"));
+                while($arUser = $dbUsers->Fetch())
+                {
+                    if(!array_key_exists($arUser["ID"], $userIds))
+                    {
+                        $CSubscribeEx->setUserSubscribe($arFields["ID"], $arUser["ID"]);
+                    }else{
+                        $sub_id = $userIds[$arUser["ID"]];
+                        $CSubscribeEx->updateUserSubscribe($sub_id, array("UF_ACTIVE"=>"Y"));
+                    }
+                }
+                
+                //Обновим кэш каналов
+                CChannel::updateCache();
+            }
+        }
+    }
+    
+    function OnAfterIBlockElementUpdateHandler(&$arFields)
+    {
+        //Обновление кэша
+        if($arFields["IBLOCK_ID"]==CHANNEL_IB)
+        {
+            CChannel::updateCache();
+        }
+        if($arFields["IBLOCK_ID"]==PROG_IB)
+        {
+            CProg::updateCache();
+        }
+        if($arFields["IBLOCK_ID"]==PROG_TIME_IB)
+        {
+            CProgTime::updateCache();
+        }
+    }
 }

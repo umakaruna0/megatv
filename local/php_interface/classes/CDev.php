@@ -401,4 +401,13 @@ class CDev
             "HEIGHT" => IntVal($arSize[1]),
         );*/
     }
+    
+    public static function check_email($email)
+    {
+        if (preg_match("/^[a-z0-9!#$%&'*+\/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+\/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+(?:ac|ae|aero|ag|am|asia|at|au|be|bg|biz|bj|br|ca|ch|ci|cl|cn|com|coop|cx|cz|de|dk|edu|ee|fi|fr|gd|gg|gi|gov|gs|gw|gy|hk|hn|ie|il|in|info|int|io|ir|is|it|je|jobs|jp|ke|kg|ki|kr|kza|la|li|lt|lu|lv|ly|ma|mg|me|mil|mn|mobi|ms|museum|mx|my|na|name|net|nl|no|nu|nz|org|pl|pm|pr|pro|re|ro|ru|sa|sb|sc|se|sg|sh|si|st|tc|tel|tf|tk|tl|tm|tr|travel|tv|tw|ua|ug|uk|us|uz|vc|ve|vg|wf|ws|yt)$/i", $email))
+        {
+            return true;
+        }
+        return false;
+    }
 }

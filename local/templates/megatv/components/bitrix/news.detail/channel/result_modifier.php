@@ -74,3 +74,21 @@ $arProgs = CScheduleTable::setChannel(array(
 ));
 
 $arResult["PROGS"] = $arProgs;
+
+/**
+ * Данные в статистику
+ */
+if($USER->IsAuthorized())
+{
+    $arStat = CStatChannel::getList(array("UF_USER"=>$USER->GetID(), "UF_CHANNEL"=>$channel), array("ID", "UF_RATING"));
+    if(intval($arStat[0]["ID"])>0)
+    {
+        $rating = $arStat[0]["UF_RATING"]+1;
+        CStatChannel::update($arStat[0]["ID"], array("UF_RATING"=>$rating));
+    }else{
+        CStatChannel::add(array(
+            "UF_USER" => $USER->GetID(),
+            "UF_CHANNEL" => $channel
+        ));
+    }
+}

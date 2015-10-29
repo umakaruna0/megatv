@@ -145,7 +145,7 @@ final class ReportContext extends Internals\BaseContext
 			}
 		}
 
-		$result['other'] = $otherCounters;
+		$result['other'] = $otherCounters > 0 ? $otherCounters : 0; // can be -0 or maybe -something
 		$result['total'] = $totalCounters;
 
 		return $result;

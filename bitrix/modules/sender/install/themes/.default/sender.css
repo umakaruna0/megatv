@@ -98,6 +98,17 @@
     color: #485b6d;
     text-shadow: 0px 1px 0px #fff;
 }
+.sender-box-list-item-caption-additional.loading{
+    position: relative;
+}
+.sender-box-list-item-caption-additional.loading .connector_form_counter{
+    background-image: url(images/wait.gif);
+    position: absolute;
+    width: 19px;
+    height: 19px;
+    top: 0;
+    right: 30px;
+}
 .sender-box-list-item-caption-name{
     vertical-align: sub;
 }
@@ -477,7 +488,7 @@ div.sender-group-address-counter .sender-group-address-counter-cnttext{
 .sender-stat-reiterate-cont{
     background-color: white;
     margin-top: 60px;
-    height: 500px;
+    min-height: 500px;
     padding-bottom: 80px;
     margin-left: 20px;
 }

@@ -61,17 +61,17 @@ while($arUser = $rsUsers->GetNext())
                 {
                     $user_record = CRecordEx::getBySotalID($record_id);
                     
-                    $duration = $arSchedule["duration"];
+                    /*$duration = $arSchedule["duration"];
                     $minutes = ceil($duration/60);
-                    $gb = $minutes*(18.5/1024);
+                    $gb = $minutes*(18.5/1024);*/
                     
                     //Если достаточно пространства:
                     if(intval($arUser["UF_CAPACITY_BUSY"])<intval($arUser["UF_CAPACITY"]))
                     {
-                        $busy = intval($arUser["UF_CAPACITY_BUSY"])+$gb;
+                        /*$busy = intval($arUser["UF_CAPACITY_BUSY"])+$gb;
                     
                         $user = new CUser;
-                        $user->Update($arUser["ID"], array("UF_CAPACITY_BUSY"=>$busy));
+                        $user->Update($arUser["ID"], array("UF_CAPACITY_BUSY"=>$busy));*/
                         
                         CRecordEx::update($user_record["ID"], array("UF_URL" => $url));
                     }

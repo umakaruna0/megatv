@@ -15,7 +15,33 @@ if($USER->IsAuthorized() && $record_id>0 && $_REQUEST["delete"])
     $arRecord = CRecordEx::getByID($record_id);
     if($arRecord["UF_USER"]==$USER->GetID())
     {
-        CRecordEx::delete($record_id);
+        $USER_ID = $USER->GetID();
+        $rsUser = CUser::GetByID($USER_ID);
+        $arUser = $rsUser->Fetch();
+        
+        $Sotal = new CSotal($arUser["ID"]);
+        $Sotal->getSubscriberToken();
+        $arSchedules = $Sotal->getScheduleList();
+        
+        foreach($arSchedules["schedule"] as $arSchedule)
+        {
+            if($arRecord["UF_SOTAL_ID"]==$arSchedule["id"])
+            {
+                $duration = $arSchedule["duration"];
+                $minutes = ceil($duration/60);
+                $gb = $minutes*(18.5/1024);
+                
+                $busy = floatval($arUser["UF_CAPACITY_BUSY"])-$gb; 
+                $user = new CUser;
+                $user->Update($arUser["ID"], array("UF_CAPACITY_BUSY"=>$busy));
+                
+                CRecordEx::delete($record_id);
+                
+                break;
+            }
+        }
+        
+        
         
         //Возможно нужно сделать апи для отмены в сотале + вернуть пространство свободное
         

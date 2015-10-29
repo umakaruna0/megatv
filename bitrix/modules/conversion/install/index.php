@@ -35,12 +35,32 @@ Class conversion extends CModule
 		$this->MODULE_DESCRIPTION = Loc::getMessage('CONVERSION_MODULE_DESC');
 	}
 
-	function InstallDB($arParams = array())
+	function InstallDB($params = array())
 	{
-		ModuleManager::registerModule('conversion');
-
 		global $DB;
-		$DB->RunSQLBatch($_SERVER['DOCUMENT_ROOT'].'/bitrix/modules/conversion/install/db/'.strtolower($DB->type).'/install.sql');
+
+		if (! $DB->Query("SELECT 'x' FROM b_conv_context", true))
+		{
+			Option::set('conversion', 'START_DATE_TIME', date('Y-m-d H:i:s'));
+
+			if (ModuleManager::isModuleInstalled('sale') && ($currency = Option::get('sale', 'default_currency')))
+			{
+				Option::set('conversion', 'BASE_CURRENCY', $currency);
+			}
+			elseif (Bitrix\Main\Loader::includeModule('currency'))
+			{
+				Option::set('conversion', 'BASE_CURRENCY', Bitrix\Currency\CurrencyManager::getBaseCurrency());
+			}
+
+			if ($params['GENERATE_INITIAL_DATA'] !== 'Y')
+			{
+				Option::set('conversion', 'GENERATE_INITIAL_DATA', 'generated');
+			}
+
+			$DB->RunSQLBatch($_SERVER['DOCUMENT_ROOT'].'/bitrix/modules/conversion/install/db/'.strtolower($DB->type).'/install.sql');
+		}
+
+		ModuleManager::registerModule('conversion');
 
 		RegisterModuleDependences('conversion', 'OnGetCounterTypes'        , 'conversion', '\Bitrix\Conversion\Internals\Handlers', 'onGetCounterTypes'        );
 		RegisterModuleDependences('conversion', 'OnGetAttributeTypes'      , 'conversion', '\Bitrix\Conversion\Internals\Handlers', 'onGetAttributeTypes'      );
@@ -48,24 +68,10 @@ Class conversion extends CModule
 		RegisterModuleDependences('conversion', 'OnSetDayContextAttributes', 'conversion', '\Bitrix\Conversion\Internals\Handlers', 'onSetDayContextAttributes');
 		RegisterModuleDependences('main'      , 'OnProlog'                 , 'conversion', '\Bitrix\Conversion\Internals\Handlers', 'onProlog'                 );
 
-		if (Option::get('conversion', 'START_DATE_TIME', 'undefined') == 'undefined')
-		{
-			Option::set('conversion', 'START_DATE_TIME', date('Y-m-d H:i:s'));
-		}
-
-		if (ModuleManager::isModuleInstalled('sale') && ($currency = Option::get('sale', 'default_currency')))
-		{
-			Option::set('conversion', 'BASE_CURRENCY', $currency);
-		}
-		elseif (Bitrix\Main\Loader::includeModule('currency'))
-		{
-			Option::set('conversion', 'BASE_CURRENCY', Bitrix\Currency\CurrencyManager::getBaseCurrency());
-		}
-
 		return true;
 	}
 
-	function UnInstallDB($arParams = array())
+	function UnInstallDB($params = array())
 	{
 		UnRegisterModuleDependences('conversion', 'OnGetCounterTypes'        , 'conversion', '\Bitrix\Conversion\Internals\Handlers', 'onGetCounterTypes'        );
 		UnRegisterModuleDependences('conversion', 'OnGetAttributeTypes'      , 'conversion', '\Bitrix\Conversion\Internals\Handlers', 'onGetAttributeTypes'      );
@@ -73,10 +79,17 @@ Class conversion extends CModule
 		UnRegisterModuleDependences('conversion', 'OnSetDayContextAttributes', 'conversion', '\Bitrix\Conversion\Internals\Handlers', 'onSetDayContextAttributes');
 		UnRegisterModuleDependences('main'      , 'OnProlog'                 , 'conversion', '\Bitrix\Conversion\Internals\Handlers', 'onProlog'                 );
 
-		global $DB;
-		$DB->RunSQLBatch($_SERVER['DOCUMENT_ROOT'].'/bitrix/modules/conversion/install/db/'.strtolower($DB->type).'/uninstall.sql');
-
 		ModuleManager::unRegisterModule('conversion');
+
+		if ($params['SAVE_TABLES'] !== 'Y')
+		{
+			global $DB;
+			$DB->RunSQLBatch($_SERVER['DOCUMENT_ROOT'].'/bitrix/modules/conversion/install/db/'.strtolower($DB->type).'/uninstall.sql');
+
+			Option::delete('conversion', array('name' => 'START_DATE_TIME'      ));
+			Option::delete('conversion', array('name' => 'BASE_CURRENCY'        ));
+			Option::delete('conversion', array('name' => 'GENERATE_INITIAL_DATA'));
+		}
 
 		return true;
 	}
@@ -123,22 +136,38 @@ Class conversion extends CModule
 
 	function DoInstall()
 	{
-		global $APPLICATION;
+		global $APPLICATION, $step;
 
-		$this->InstallDB();
-		$this->InstallFiles();
+		if ($step === '2')
+		{
+			global $GENERATE_INITIAL_DATA;
+			$this->InstallDB(array('GENERATE_INITIAL_DATA' => $GENERATE_INITIAL_DATA));
+			$this->InstallFiles();
 
-		$APPLICATION->IncludeAdminFile(Loc::getMessage('CONVERSION_INSTALL_TITLE'), $_SERVER['DOCUMENT_ROOT'].'/bitrix/modules/conversion/install/step.php');
+			$APPLICATION->IncludeAdminFile(Loc::getMessage('CONVERSION_INSTALL_TITLE'), $_SERVER['DOCUMENT_ROOT'].'/bitrix/modules/conversion/install/step2.php');
+		}
+		else // step 1
+		{
+			$APPLICATION->IncludeAdminFile(Loc::getMessage('CONVERSION_INSTALL_TITLE'), $_SERVER['DOCUMENT_ROOT'].'/bitrix/modules/conversion/install/step1.php');
+		}
 	}
 
 	function DoUninstall()
 	{
-		global $APPLICATION;
+		global $APPLICATION, $step;
 
-		$this->UnInstallDB();
-		$this->UnInstallFiles();
+		if ($step === '2')
+		{
+			global $SAVE_TABLES;
+			$this->UnInstallDB(array('SAVE_TABLES' => $SAVE_TABLES));
+			$this->UnInstallFiles();
 
-		$APPLICATION->IncludeAdminFile(Loc::getMessage('CONVERSION_UNINSTALL_TITLE'), $_SERVER['DOCUMENT_ROOT'].'/bitrix/modules/conversion/install/unstep.php');
+			$APPLICATION->IncludeAdminFile(Loc::getMessage('CONVERSION_UNINSTALL_TITLE'), $_SERVER['DOCUMENT_ROOT'].'/bitrix/modules/conversion/install/unstep2.php');
+		}
+		else // step 1
+		{
+			$APPLICATION->IncludeAdminFile(Loc::getMessage('CONVERSION_UNINSTALL_TITLE'), $_SERVER['DOCUMENT_ROOT'].'/bitrix/modules/conversion/install/unstep1.php');
+		}
 	}
 }
 

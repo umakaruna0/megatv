@@ -33,7 +33,7 @@ if(!$USER->IsAuthorized() && count($result['errors'])==0)
     //$PASS_2 = htmlspecialcharsbx(strip_tags($_POST["USER_CONFIRM_PASSWORD"]));
     $AGREE = htmlspecialcharsbx(strip_tags($_POST["AGREE"]));
     
-    if(!check_email($EMAIL))
+    if(!CDev::check_email($EMAIL))
     {
         $result['errors']["USER_EMAIL"] = "Неверный формат данных";
     }else{
@@ -75,7 +75,7 @@ if(!$USER->IsAuthorized() && count($result['errors'])==0)
     if(count($result['errors'])==0)
     {
         global $USER;
-        COption::SetOptionString("main","captcha_registration","N");
+        COption::SetOptionString("main","captcha_registration", "N");
         
         $default_group = COption::GetOptionString("main", "new_user_registration_def_group");
         if(!empty($default_group))
@@ -90,19 +90,33 @@ if(!$USER->IsAuthorized() && count($result['errors'])==0)
             "SECOND_NAME"           => $SECOND_NAME,
         	"LOGIN"             	=> $EMAIL,
         	"LID"               	=> SITE_ID,
-        	"ACTIVE"            	=> "Y",
+        	"ACTIVE"            	=> "N",       //"Y",
         	"PASSWORD"          	=> $PASS_1,
         	"CONFIRM_PASSWORD"  	=> $PASS_1,
         	"EMAIL"			        => $EMAIL,
             "GROUP_ID"              => $arrGroups,
-            "PERSONAL_BIRTHDAY"     => $BIRTHDAY
+            "PERSONAL_BIRTHDAY"     => $BIRTHDAY,
+            "CHECKWORD"             => md5(CMain::GetServerUniqID().uniqid()),
+            "CONFIRM_CODE"          => randString(8),
+            "USER_IP"               => $_SERVER["REMOTE_ADDR"],
+            "USER_HOST"             => @gethostbyaddr($_SERVER["REMOTE_ADDR"])
         );
         $USER_ID = $user->Add($arFields);
+        
+		if(intval($USER_ID)>0)
+        {
+            $arFields["USER_ID"] = $USER_ID;
+            $event = new CEvent;
+    		$event->SendImmediate("NEW_USER", SITE_ID, $arFields);
+            //unset($arFields["PASSWORD"]);
+    		//unset($arFields["CONFIRM_PASSWORD"]);
+    		$event->SendImmediate("NEW_USER_CONFIRM", SITE_ID, $arFields);
+        }
 
         $result['status'] = true;
-        $result['message'] = "<font style='color:green'>На ваш email высланы регистрационные данные!!!</font><br />";
+        $result['message'] = "<font style='color:green'>На ваш email высланы регистрационные данные для подтверждения!!!</font><br />";
         
-        $USER->Login($EMAIL, $PASS_1, 'Y');
+        //$USER->Login($EMAIL, $PASS_1, 'Y');
         CUserEx::capacityAdd($USER_ID, 1);   // за мэйл +1ГБ
         
         //Бонус за регистрацию

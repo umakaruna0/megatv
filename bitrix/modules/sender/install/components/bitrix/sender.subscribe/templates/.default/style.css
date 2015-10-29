@@ -1,7 +1,7 @@
 .bx-subscribe {
 	margin: 10px 0;
 }
-.bx-subscribe .bx-block-title {
+.bx-subscribe div.bx-block-title {
 	font-family: "Open Sans", Arial, "Helvetica Neue", Helvetica, sans-serif;
 	color: #343434;
 	text-transform: uppercase;
@@ -78,10 +78,6 @@
 }
 .btn-subscribe span {
 	display: block;
-	-webkit-animation-name: MeilSendSpan;
-	animation-name: MeilSendButton;
-	-webkit-animation-duration: 0.3s;
-	animation-duration: 0.3s;
 }
 .btn-subscribe.send {
 	padding: 5px 40px;
@@ -89,7 +85,10 @@
 	animation-name: MeilSend;
 	-webkit-animation-duration: .5s;
 	animation-duration: .5s;
+	outline: none;
+	color: #fff;
 }
+.btn-subscribe:hover, .btn-subscribe:active{color: #fff;}
 .btn-subscribe.send:before {
 	width: 0;
 	background-position: 100px 50%;

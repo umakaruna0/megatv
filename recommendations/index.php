@@ -9,9 +9,9 @@ $APPLICATION->SetTitle("Рекомендации");
 	false
 );?>
 
-<?$APPLICATION->IncludeComponent("hawkart:recommendations", "index", Array("NOT_SHOW_CHANNEL"=>"Y", "TEMPLATE" => "MAIN_PAGE"),
+<?/*$APPLICATION->IncludeComponent("hawkart:recommendations", "index", Array("NOT_SHOW_CHANNEL"=>"Y", "TEMPLATE" => "MAIN_PAGE"),
 	false
-);?>
+);*/?>
 
 <?
 /*//Выберем все программы с такими же темами

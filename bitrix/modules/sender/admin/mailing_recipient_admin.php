@@ -60,6 +60,9 @@ $FilterArr = Array(
 );
 
 $lAdmin->InitFilter($FilterArr);
+$arRuntime = array();
+$arGroup = array();
+$arSelect = array('NAME', 'EMAIL');
 
 if (CheckFilter() || $ID>0)
 {
@@ -73,59 +76,92 @@ if (CheckFilter() || $ID>0)
 	foreach($arFilter as $k => $v) if(empty($v)) unset($arFilter[$k]);
 
 
-	if($find_sent=='Y')
-		$arFilter["=STATUS"] = \Bitrix\Sender\PostingRecipientTable::SEND_RESULT_SUCCESS;
-	elseif($find_sent=='N')
-		$arFilter["=STATUS"] = \Bitrix\Sender\PostingRecipientTable::SEND_RESULT_NONE;
-	elseif($find_sent=='E')
-		$arFilter["=STATUS"] = \Bitrix\Sender\PostingRecipientTable::SEND_RESULT_ERROR;
+	if($find_sent && in_array($find_sent, array_keys(\Bitrix\Sender\PostingRecipientTable::getStatusList())))
+	{
+		$arFilter["=STATUS"] = $find_sent;
+	}
 
 	if($find_read=='Y')
-		$arFilter[">READ_CNT"] = 0;
-	elseif($find_read=='N')
-		$arFilter["=READ_CNT"] = 0;
+	{
+		$arRuntime[] = new \Bitrix\Main\Entity\ReferenceField(
+			'READ_TBL',
+			'Bitrix\Sender\PostingReadTable',
+			array('=this.ID' => 'ref.RECIPIENT_ID'),
+			array('join_type' => 'INNER')
+		);
 
-	if($find_click_show_url == 'Y')
-	{
-		if($find_click=='Y')
-			$arFilter["!CLICK_CNT"] = null;
-		elseif($find_click=='N')
-		{
-			$arFilter["=CLICK_CNT"] = 0;
-			$showClickUrl = 'N';
-		}
+		$arGroup = $arSelect;
 	}
-	else
+	elseif($find_read=='N')
 	{
-		if($find_click=='Y')
-			$arFilter[">CLICK_CNT"] = 0;
-		elseif($find_click=='N')
-			$arFilter["=CLICK_CNT"] = 0;
+		$arRuntime[] = new \Bitrix\Main\Entity\ReferenceField(
+			'READ_TBL',
+			'Bitrix\Sender\PostingReadTable',
+			array('=this.ID' => 'ref.RECIPIENT_ID'),
+			array('join_type' => 'LEFT')
+		);
+
+		$arFilter['READ_TBL.RECIPIENT_ID'] = null;
+		$arGroup = $arSelect;
+	}
+
+	if($find_click=='Y')
+	{
+		$arRuntime[] = new \Bitrix\Main\Entity\ReferenceField(
+			'CLICK_TBL',
+			'Bitrix\Sender\PostingClickTable',
+			array('=this.ID' => 'ref.RECIPIENT_ID'),
+			array('join_type' => 'INNER')
+		);
+
+		$arGroup = $arSelect;
+	}
+	elseif($find_click=='N')
+	{
+		$arRuntime[] = new \Bitrix\Main\Entity\ReferenceField(
+			'CLICK_TBL',
+			'Bitrix\Sender\PostingClickTable',
+			array('=this.ID' => 'ref.RECIPIENT_ID'),
+			array('join_type' => 'LEFT')
+		);
+
+		$arFilter['CLICK_TBL.RECIPIENT_ID'] = null;
+		$arGroup = $arSelect;
 	}
 
 	if($find_unsub=='Y')
-		$arFilter[">UNSUB_CNT"] = 0;
+	{
+		$arRuntime[] = new \Bitrix\Main\Entity\ReferenceField(
+			'UNSUB_TBL',
+			'Bitrix\Sender\PostingUnsubTable',
+			array('=this.ID' => 'ref.RECIPIENT_ID'),
+			array('join_type' => 'INNER')
+		);
+
+		$arGroup = $arSelect;
+	}
 	elseif($find_unsub=='N')
-		$arFilter["=UNSUB_CNT"] = 0;
+	{
+		$arRuntime[] = new \Bitrix\Main\Entity\ReferenceField(
+			'UNSUB_TBL',
+			'Bitrix\Sender\PostingUnsubTable',
+			array('=this.ID' => 'ref.RECIPIENT_ID'),
+			array('join_type' => 'LEFT')
+		);
+
+		$arFilter['UNSUB_TBL.RECIPIENT_ID'] = null;
+		$arGroup = $arSelect;
+	}
+
 }
 
 if(isset($order)) $order = ($order=='asc'?'ASC': 'DESC');
-
-$arSelect = array('NAME', 'EMAIL', 'READ_CNT', 'CLICK_CNT', 'UNSUB_CNT');
-$arRuntime = array(
-	new \Bitrix\Main\Entity\ExpressionField('READ_CNT', 'COUNT(%s)', 'POSTING_READ.ID'),
-	new \Bitrix\Main\Entity\ExpressionField('UNSUB_CNT', 'COUNT(%s)', 'POSTING_UNSUB.ID')
-);
-
-if($showClickUrl == 'Y')
-	$arRuntime[] = new \Bitrix\Main\Entity\ExpressionField('CLICK_CNT', '%s', 'POSTING_CLICK.URL');
-else
-	$arRuntime[] = new \Bitrix\Main\Entity\ExpressionField('CLICK_CNT', 'COUNT(%s)', 'POSTING_CLICK.ID');
 
 $groupListDb = \Bitrix\Sender\PostingRecipientTable::getList(array(
 	'select' => $arSelect,
 	'filter' => $arFilter,
 	'runtime' => $arRuntime,
+	'group' => $arGroup,
 	'order' => array($by=>$order)
 ));
 
@@ -135,29 +171,14 @@ $rsData->NavStart();
 $lAdmin->NavText($rsData->GetNavPrint(GetMessage("rub_nav")));
 
 $lAdmin->AddHeaders(array(
-	array(	"id"		=>"NAME",
-		"content"	=>GetMessage("rub_name"),
-		"sort"		=>"NAME",
-		"default"	=>true,
-	),
 	array(	"id"		=>"EMAIL",
 		"content"	=>GetMessage("rub_email"),
 		"sort"		=>"EMAIL",
 		"default"	=>true,
 	),
-	array(	"id"		=>"READ_CNT",
-		"content"	=>GetMessage("rub_f_read"),
-		"sort"		=>"READ_CNT",
-		"default"	=>true,
-	),
-	array(	"id"		=>"CLICK_CNT",
-		"content"	=>GetMessage("rub_f_click"),
-		"sort"		=>"CLICK_CNT",
-		"default"	=>true,
-	),
-	array(	"id"		=>"UNSUB_CNT",
-		"content"	=>GetMessage("rub_f_unsub"),
-		"sort"		=>"UNSUB_CNT",
+	array(	"id"		=>"NAME",
+		"content"	=>GetMessage("rub_name"),
+		"sort"		=>"NAME",
 		"default"	=>true,
 	),
 ));
@@ -166,13 +187,6 @@ while($arRes = $rsData->NavNext(true, "f_")):
 	$row =& $lAdmin->AddRow(false, $arRes);
 	$row->AddViewField("NAME", $f_NAME);
 	$row->AddViewField("EMAIL", $f_EMAIL);
-	$row->AddViewField("READ_CNT", ($f_READ_CNT>0?GetMessage('POST_U_YES').' ('.$f_READ_CNT.')':GetMessage('POST_U_NO')));
-	if($showClickUrl == 'Y')
-		$row->AddViewField("CLICK_CNT", $f_CLICK_CNT);
-	else
-		$row->AddViewField("CLICK_CNT", ($f_CLICK_CNT>0?GetMessage('POST_U_YES').' ('.$f_CLICK_CNT.')':GetMessage('POST_U_NO')));
-
-	$row->AddViewField("UNSUB_CNT", ($f_UNSUB_CNT>0?GetMessage('POST_U_YES'):GetMessage('POST_U_NO')));
 endwhile;
 
 $lAdmin->AddFooter(

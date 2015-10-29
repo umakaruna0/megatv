@@ -1,1 +1,1 @@
-<a href="#"><img src="<?=SITE_TEMPLATE_PATH?>/img/temp/advertizing-03.png" alt="" width="725" height="88"></a>
+<?/*<a href="#"><img src="<?=SITE_TEMPLATE_PATH?>/img/temp/advertizing-03.png" alt="" width="725" height="88"></a>*/?>

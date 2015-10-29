@@ -82,7 +82,7 @@
                 }
                 ?>
 				<div class="info-panel">
-					<a class="username" href="/personal/"><?=$USER->GetFullName()?></a><br>
+					<a class="username" href="/personal/"><?=$USER->GetFullName()?></a>
 					<a href="<?=$urlExit?>" class="signout-link">Выйти</a>
 				</div>
 			</div>

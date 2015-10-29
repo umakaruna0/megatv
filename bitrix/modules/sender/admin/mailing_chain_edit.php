@@ -196,22 +196,45 @@ if($_SERVER['REQUEST_METHOD'] == "POST" && ($save!="" || $apply!="") && $POST_RI
 		{
 			foreach($_POST["NEW_FILE"] as $index=>$value)
 			{
-				if (preg_match("/^https?:\\/\\//", $value))
+				if (is_string($value) && preg_match("/^https?:\\/\\//", $value))
 				{
 					$arFiles[$index] = CFile::MakeFileArray($value);
 				}
 				else
 				{
+					if(is_array($value))
+					{
+						$filePath = $value['tmp_name'];
+					}
+					else
+					{
+						$filePath = $value;
+					}
+
+					$isCheckedSuccess = false;
 					$io = CBXVirtualIo::GetInstance();
-					$normPath = $io->CombinePath("/", $value);
+					$normPath = $io->CombinePath("/", $filePath);
 					$absPath = $io->CombinePath($_SERVER["DOCUMENT_ROOT"], $normPath);
 					if ($io->ValidatePathString($absPath) && $io->FileExists($absPath))
 					{
 						$perm = $APPLICATION->GetFileAccessPermission($normPath);
 						if ($perm >= "W")
-							$arFiles[$index] = CFile::MakeFileArray($io->GetPhysicalName($absPath));
+						{
+							$isCheckedSuccess = true;
+						}
 					}
+
+					if($isCheckedSuccess)
+					{
+						$arFiles[$index] = CFile::MakeFileArray($io->GetPhysicalName($absPath));
+						if(is_array($value))
+						{
+							$arFiles[$index]['name'] = $value['name'];
+						}
+					}
+
 				}
+				
 			}
 		}
 

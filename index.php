@@ -8,7 +8,7 @@ global $USER;
 //CProgTime::updateCache();
 //$USER->Authorize(1);
 ?>
-<?$APPLICATION->IncludeComponent("bitrix:news.list", "channels_index", Array(
+<?/*$APPLICATION->IncludeComponent("bitrix:news.list", "channels_index", Array(
 	   "DISPLAY_DATE" => "Y",	// Выводить дату элемента
 		"DISPLAY_NAME" => "Y",	// Выводить название элемента
 		"DISPLAY_PICTURE" => "Y",	// Выводить изображение для анонса
@@ -74,11 +74,21 @@ global $USER;
         "AJAX_TYPE" => $_REQUEST["AJAX_TYPE"]
 	),
 	false
-);?>
+);*/?>
 
-<?$APPLICATION->IncludeComponent("hawkart:recommendations", "index", Array("NOT_SHOW_CHANNEL"=>"Y", "TEMPLATE" => "MAIN_PAGE"),
+<?$APPLICATION->IncludeComponent("hawkart:channel.list", "", 
+    Array(
+        "IBLOCK_TYPE" => "directories",
+		"IBLOCK_ID" => "6",
+		"NEWS_COUNT" => "10",
+        "DISPLAY_BOTTOM_PAGER" => "Y",
+    ),
 	false
 );?>
+
+<?/*$APPLICATION->IncludeComponent("hawkart:recommendations", "index", Array("NOT_SHOW_CHANNEL"=>"Y", "TEMPLATE" => "MAIN_PAGE"),
+	false
+);*/?>
 
 
 <?

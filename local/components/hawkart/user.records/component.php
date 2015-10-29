@@ -39,6 +39,7 @@ $arResult["RECORDS"] = array();
 foreach($arRecords as $arRecord)
 {
     $arRecord["PROG"] = $arProgsSorted[$arRecord["UF_PROG"]];
+    $arRecord["PROG"]["NAME"] = CProgTime::cutName($arRecord["PROG"]["NAME"]);
     $arRecord["PROG"]["PICTURE"] = CDev::resizeImage($arRecord["PROG"]["PREVIEW_PICTURE"], 300, 300);
     $arResult["RECORDS"][] = $arRecord;
 }

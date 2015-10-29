@@ -28,10 +28,11 @@ if(!$USER->IsAuthorized())
     if(empty($html))
     {
         $filter = Array("ACTIVE" => "Y", "=EMAIL"  => $emailTo);
-        $user = CUser::GetList(($by="timestamp_x"), ($order="desc"), $filter)->Fetch();
-        if(intval($user["ID"]) > 0 && !empty($emailTo))
+        $res = CUser::GetList(($by="timestamp_x"), ($order="desc"), $filter);
+        $arUser = $res->GetNext();
+        if(intval($arUser["ID"]) > 0 && !empty($emailTo))
         {
-            $arResult = $USER->SendPassword($user["LOGIN"], $user["EMAIL"]);
+            $arResult = $USER->SendPassword($arUser["LOGIN"], $arUser["EMAIL"]);
             if($arResult["TYPE"] == "OK")
                 $result['message'] = "<font style='color:green'>На ваш email придет сообщение с необходимыми данными.</font>";
                 

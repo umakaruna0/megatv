@@ -45,9 +45,12 @@ if($USER->IsAuthorized())
         if(!empty($arPost["EMAIL"]))
         {
             $rsUsers = CUser::GetList(($by="EMAIL"), ($order="desc"), Array("=EMAIL" =>$arPost["EMAIL"], "!ID"=>$arUser["ID"]));
-            while($rsUsers->NavNext(true, "f_"))
+            if($rsUsers->NavNext(true, "f_"))
             {
                 $result['errors']['USER[EMAIL]'] = "Такая электроная почта существует на сайте.";
+            }else if(!CDev::check_email($arPost["EMAIL"]))
+            {
+                $result['errors']["USER[EMAIL]"] = "Неверный формат данных";
             }
         }
         
@@ -87,11 +90,24 @@ if($USER->IsAuthorized())
                 "PERSONAL_BIRTHDAY" => $arPost["PERSONAL_BIRTHDAY"],  
                 "PERSONAL_PHONE"    => $arPost["PERSONAL_PHONE"]
             );
-
-
+            
+            $message = "Данные успешно изменены.";
             if(empty($arUser["EMAIL"]) && !empty($arPost["EMAIL"]))
             {
                 CUserEx::capacityAdd($arUser["ID"], 1);   // за мэйл +1ГБ
+                
+                //При занесении мэйла менять тип авторизации
+                $password = mb_substr(md5(uniqid(rand(),true)), 0, 8);
+                $fields["EXTERNAL_AUTH_ID"] = "";
+                $fields["PASSWORD"] = $password;
+                $fields["CONFIRM_PASSWORD"] = $password;
+                $arEventFields = array(
+                    "USER_NAME"             => trim($arPost["NAME"]." ".$arPost["LAST_NAME"]),
+                    "PASSWORD"          	=> $password,
+                    "EMAIL"			        => $arPost["EMAIL"],
+                );
+                CEvent::Send("USER_PASS_CHANGED_PROFILE", SITE_ID, $arEventFields);
+                $message.= "На ваш email отправлен новый пароль.";
             }
             
             if(empty($arUser["PERSONAL_PHONE"]) && !empty($arPost["PERSONAL_PHONE"]))
@@ -99,19 +115,18 @@ if($USER->IsAuthorized())
                 CUserEx::capacityAdd($arUser["ID"], 1);   // за ттееллееффоонн +1ГБ
             }
             
-
             $сuser->Update($arUser["ID"], $fields);
             $strError = $сuser->LAST_ERROR;
                      
             $result['status'] = true;
-            $result['message'] = "<font style='color:green'>Данные успешно изменены.</font>";
+            $result['message'] = "<font style='color:green'>".$message."</font>";
         }
     }
     
     if($action == "passport")
     {
         $arPost = $arPost["PASSPORT"];
-        
+        $arPost["SERIA"] = preg_replace("/[^0-9]/", '', $arPost["SERIA"]);
         foreach($arPost as &$value)
         {
             $value = htmlspecialcharsbx(trim($value));
@@ -119,7 +134,7 @@ if($USER->IsAuthorized())
 
         if(!preg_match("/^([0-9]{4})$/", $arPost["SERIA"]))
         {
-            $result['errors']["USER[PASSPORT][SERIA]"] = "Неверный формат.";
+            $result['errors']["USER[PASSPORT][SERIA]"] = "";
         }
         
         if(!preg_match("/^([0-9]{6})$/", $arPost["NUMBER"]))

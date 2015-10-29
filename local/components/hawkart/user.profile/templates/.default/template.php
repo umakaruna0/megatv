@@ -26,7 +26,8 @@
         <form action="<?= $templateFolder ?>/ajax.php" class="user-profile-form" data-module="user-profile-form">
             <script type="text/x-config">
 				{
-					"dateMask": "99/99/9999"
+					"dateMask": "99/99/9999",
+					"phoneMask": "+7 (999) 999-99-99"
 				}
 			</script>
             <input type="hidden" name="ajax_key" value="<?=md5('ajax_'.LICENSE_KEY)?>" />
@@ -46,7 +47,7 @@
 			</div>
 			<div class="form-group has-feedback">
 				<label for="" class="sr-only">Дата рождения</label>
-				<input type="text" name="USER[PERSONAL_BIRTHDAY]" id="" class="form-control" value="<?=$arResult["USER"]["PERSONAL_BIRTHDAY"]?>" placeholder="Дата рождения" data-type="masked-input">
+				<input type="text" name="USER[PERSONAL_BIRTHDAY]" id="" class="form-control" value="<?=$arResult["USER"]["PERSONAL_BIRTHDAY"]?>" placeholder="Дата рождения" data-type="masked-birthdate-input">
 			</div>
 			<div class="form-group">
 				<label for="" class="sr-only">E-mail</label>
@@ -54,7 +55,7 @@
 			</div>
 			<div class="form-group">
 				<label for="" class="sr-only">Телефон</label>
-				<input type="text" name="USER[PERSONAL_PHONE]" id="" class="form-control" value="<?=$arResult["USER"]["PERSONAL_PHONE"]?>" placeholder="Телефон">
+				<input type="text" name="USER[PERSONAL_PHONE]" id="" class="form-control" value="<?=$arResult["USER"]["PERSONAL_PHONE"]?>" placeholder="Телефон" data-type="masked-phone-input">
 			</div>
             <button type="submit" class="btn btn-primary btn-block btn-multistate" data-type="multistates-button"><span class="default-state init-state">Сохранить изменения</span><span class="done-state"><span data-icon="icon-msbutton-checkmark"></span>Изменения сохранены</span></button>
 		</form>
@@ -68,7 +69,10 @@
         <form action="<?= $templateFolder ?>/ajax.php" class="user-passport-form" data-module="user-passport-form">
             <script type="text/x-config">
 				{
-					"dateMask": "99/99/9999"
+					"dateMask": "99/99/9999",
+					"passportSerialMask": "99 99",
+					"passportNumberMask": "999999",
+					"passportCodeMask": "999-999"
 				}
 			</script>
             <input type="hidden" name="ajax_key" value="<?=md5('ajax_'.LICENSE_KEY)?>" />
@@ -77,11 +81,11 @@
 			<div class="flex-row passport-number-row">
 				<div class="form-group">
 					<label for="" class="sr-only">Серия паспорта</label>
-					<input type="text" name="USER[PASSPORT][SERIA]" id="" class="form-control" placeholder="Серия" value="<?=$arResult["USER"]["PASSPORT"]["SERIA"]?>">
+					<input type="text" name="USER[PASSPORT][SERIA]" id="" class="form-control" placeholder="Серия" value="<?=$arResult["USER"]["PASSPORT"]["SERIA"]?>" data-type="masked-passport-serial-input">
 				</div>
 				<div class="form-group">
 					<label for="" class="sr-only">Номер паспорта</label>
-					<input type="text" name="USER[PASSPORT][NUMBER]" id="" class="form-control" placeholder="Номер" value="<?=$arResult["USER"]["PASSPORT"]["NUMBER"]?>">
+					<input type="text" name="USER[PASSPORT][NUMBER]" id="" class="form-control" placeholder="Номер" value="<?=$arResult["USER"]["PASSPORT"]["NUMBER"]?>" data-type="masked-passport-number-input">
 				</div>
 			</div>
 			<div class="form-group">
@@ -91,11 +95,11 @@
 			<div class="flex-row passport-additional-data-row">
 				<div class="form-group has-feedback">
 					<label for="" class="sr-only">Дата выдачи</label>
-					<input type="text" name="USER[PASSPORT][WHEN_ISSUED]" id="" class="form-control" placeholder="Когда выдан" value="<?=$arResult["USER"]["PASSPORT"]["PROPERTY_WHEN_ISSUED_VALUE"]?>" data-type="masked-input">
+					<input type="text" name="USER[PASSPORT][WHEN_ISSUED]" id="" class="form-control" placeholder="Когда выдан" value="<?=$arResult["USER"]["PASSPORT"]["PROPERTY_WHEN_ISSUED_VALUE"]?>" data-type="masked-date-input">
 				</div>
 				<div class="form-group">
 					<label for="" class="sr-only">Код подразделения</label>
-					<input type="text" name="USER[PASSPORT][CODE_DIVISION]" id="" class="form-control" placeholder="Код подразделения" value="<?=$arResult["USER"]["PASSPORT"]["PROPERTY_CODE_DIVISION_VALUE"]?>">
+					<input type="text" name="USER[PASSPORT][CODE_DIVISION]" id="" class="form-control" placeholder="Код подразделения" value="<?=$arResult["USER"]["PASSPORT"]["PROPERTY_CODE_DIVISION_VALUE"]?>" data-type="masked-passport-code-input">
 				</div>
 			</div>
 			<div class="form-group">

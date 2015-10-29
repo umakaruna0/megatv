@@ -215,6 +215,11 @@ class CSotal
         //получим список устройств, выполняющих запись
         $arDevices = $this->getDevices();
         
+        if(empty($channel_asset["collection"][0]["er_lcn"]))
+        {
+            return false;
+        }
+        
         $response = self::sendRequest(
             array(
                 "device_id" => $arDevices["devices"][0]["id"],
@@ -299,11 +304,22 @@ class CSotal
 			curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($data) );	
 		}
         
+        $log_file = "/logs/sotal/sotal_".date("d_m_Y").".txt";
+        
+        CDev::log(array(
+            "DATETIME" => date("d.m.Y H:i:s"),
+            "METHOD"  => $method,
+            "DATA"    => $data,
+            "SEND_METHOD" => $sendMethod
+        ), false, $log_file);
+        
 		$response = curl_exec($ch);
         
 		curl_close($ch);
 
 		$response = json_decode($response, true);
+        
+        CDev::log(array("RESPONSE"  => $response, "LINE"=>"--------------------------------------------------------------"), false, $log_file);
         
         //echo $method."<br />";
         //echo "<pre>"; print_r($response); echo "</pre>";
@@ -320,7 +336,7 @@ class CSotal
     
     private static function log($data)
     {
-        define("LOG_FILENAME", LOGS_DIR."MW".date("d_m_Y_H_i_s").".txt");
+        define("LOG_FILENAME", "/logs/sotal_".date("d_m_Y_H_i_s").".txt");
         
         if(!is_array($data) && !is_object($data))
 		{

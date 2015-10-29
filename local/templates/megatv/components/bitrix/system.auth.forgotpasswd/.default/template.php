@@ -21,7 +21,7 @@ if(!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED!==true)die();
  * @var CUser $USER
  * @var CMain $APPLICATION
  */
-//if(method_exists($this, 'setFrameMode')) $this->setFrameMode(TRUE);
+if(method_exists($this, 'setFrameMode')) $this->setFrameMode(TRUE);
 ?>
 
 <?
@@ -31,7 +31,6 @@ if(!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED!==true)die();
     <?if (strlen($arResult["BACKURL"]) > 0):?>
 		<input type="hidden" name="backurl" value="<?= $arResult["BACKURL"] ?>"/>
 	<?endif;?>
-	<input type="hidden" name="AUTH_FORM" value="Y">
 	<input type="hidden" name="TYPE" value="SEND_PWD">
     
     <input type="hidden" name="ajax_key" value="<?=md5('ajax_'.LICENSE_KEY)?>" />

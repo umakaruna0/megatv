@@ -4,10 +4,10 @@
         foreach($arResult["TOPICS"] as $arTopic)
         {
             ?>
-            <a class="category-logo" href="#">
+            <span class="category-logo">
         		<span data-icon="icon-<?=$arTopic["ICON"]?>-theme"></span>
         		<span class="category-title"><?=$arTopic["TITLE"]?></span>
-        	</a>
+        	</span>
             <?
         }
         ?>

@@ -1,6 +1,19 @@
 <?
 require($_SERVER["DOCUMENT_ROOT"]."/bitrix/header.php");
 $APPLICATION->SetTitle("MegaTV");
+
+
+$arTopics = array();
+global $arRecommendFilter;
+$arProgTime = CProgTime::getList(array("CODE"=>htmlspecialcharsbx($_REQUEST["SCHEDULE_CODE"])), array("ID", "PROPERTY_PROG", "PROPERTY_CHANNEL"));
+$arProgTime = array_shift($arProgTime);
+if(intval($arProgTime["ID"])==0)
+{
+    $explode = explode("/", $APPLICATION->GetCurDir());
+    unset($explode[count($explode)-2]);
+    $backurl = implode("/", $explode);
+    LocalRedirect($backurl);
+}
 ?>
 <?$APPLICATION->IncludeComponent(
 	"bitrix:news.detail",
@@ -56,10 +69,24 @@ false
 </div>
 
 <?
-$arTopics = array();
-global $arRecommendFilter;
-$arProgTime = CProgTime::getList(array("CODE"=>htmlspecialcharsbx($_REQUEST["SCHEDULE_CODE"])), array("ID", "PROPERTY_PROG"));
-$arProgTime = array_shift($arProgTime);
+/**
+ * Данные в статистику
+ */
+if($USER->IsAuthorized())
+{
+    $arStat = CStatChannel::getList(array("UF_USER"=>$USER->GetID(), "UF_CHANNEL"=>$arProgTime["PROPERTY_CHANNEL_VALUE"]), array("ID", "UF_RATING"));
+    if(intval($arStat[0]["ID"])>0)
+    {
+        $rating = $arStat[0]["UF_RATING"]+1;
+        CStatChannel::update($arStat[0]["ID"], array("UF_RATING"=>$rating));
+    }else{
+        CStatChannel::add(array(
+            "UF_USER" => $USER->GetID(),
+            "UF_CHANNEL" => $arProgTime["PROPERTY_CHANNEL_VALUE"]
+        ));
+    }
+}
+//--------------------------------------------------
 
 //Темы программы
 $arProg = CProg::getByID($arProgTime["PROPERTY_PROG_VALUE"], array("PROPERTY_TOPIC", "PROPERTY_CATEGORY"));

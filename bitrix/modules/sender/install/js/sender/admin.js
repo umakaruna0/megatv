@@ -161,6 +161,15 @@
 			}
 		}
 
+		var counter = BX.findChild(elementParent, {
+			"className": "connector_form_counter"
+		}, true);
+		if(counter)
+		{
+			counter.innerHTML = '';
+			BX.addClass(counter.parentNode, 'loading');
+		}
+
 		BX.ajax({
 			url: 'sender_group_count.php',
 			method: 'POST',
@@ -170,14 +179,27 @@
 			async: true,
 			processData: true,
 			onsuccess: function(data){
-				var counter = BX.findChild(elementParent, {
-					"className": "connector_form_counter"
-				}, true);
-
 				if(counter)
 				{
+					BX.removeClass(counter.parentNode, 'loading');
 					counter.innerHTML = data.COUNT;
 					ConnectorCounterSummary();
+				}
+			},
+			onfailure: function(){
+				var dialog = new BX.CDialog({
+					height: 100,
+					width: 500,
+					'title': BX.message('GROUP_ADDRESS_CALC_TITLE'),
+					'content': BX.message('GROUP_ADDRESS_CALC_TEXT'),
+					'buttons': [BX.CDialog.prototype.btnClose]
+				});
+				dialog.ShowError(BX.message('GROUP_ADDRESS_CALC_ERROR'));
+				dialog.Show();
+				if(counter)
+				{
+					BX.removeClass(counter.parentNode, 'loading');
+					counter.innerHTML = BX.message('GROUP_ADDRESS_CALC_ERROR').toLowerCase();
 				}
 			}
 		});

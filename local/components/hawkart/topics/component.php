@@ -58,7 +58,7 @@ foreach($activeChannels as $activeChannel)
 
 
 $arProgTimes = CProgTime::getList(array(
-    ">=PROPERTY_DATE" => date("Y-m-d", strtotime($arTime["SELECTED_DATE"])),
+    //">PROPERTY_DATE" => date("Y-m-d", strtotime($arTime["SELECTED_DATE"])),
 ), array("ID", "CODE", "PROPERTY_DATE_START", "PROPERTY_DATE_END", "PROPERTY_PROG", "PROPERTY_CHANNEL"));
 
 foreach($arResult["TOPICS"] as &$arTopic)
@@ -100,12 +100,12 @@ foreach($arResult["TOPICS"] as &$arTopic)
                 $arTopic["PROGS"][] = $arProg;
                 
                 $key++;
-                if($key>48)
+                if($key>10)
                     break;
             }
         }   
         
-        $arProgs = CScheduleTable::setIndex(array(
+        $arProgs = CScheduleTable::topics(array(
             "PROGS" => $arTopic["PROGS"],
         ));
     }

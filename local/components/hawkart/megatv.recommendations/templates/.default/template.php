@@ -1,9 +1,9 @@
 <section class="broadcast-results" data-module="broadcast-results">
     <div class="categories-logos">
-        <a class="category-logo" href="#">
+        <span class="category-logo">
     		<span data-icon="icon-megatv-recommendations"></span>
     		<span class="category-title">Мега ТВ рекомендует</span>
-    	</a>
+    	</span>
     </div>
     <div class="categories-items">
         <div class="row-wrap">

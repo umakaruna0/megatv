@@ -80,7 +80,18 @@ if($ID <= 0)
 }
 
 $statClickList = array();
-$arStatDeliveried = array();
+$statResult = array(
+	'all' => 0,
+	'all_print' => 0,
+	'delivered' => 0,
+	'error' => 0,
+	'not_send' => 0,
+	'read' => 0,
+	'click' => 0,
+	'unsub' => 0,
+);
+
+
 if($ID > 0)
 {
 	$postingDb = \Bitrix\Sender\PostingTable::getList(array(
@@ -99,28 +110,63 @@ if($ID > 0)
 	if (!empty($arPosting) && $arPosting['MAILING_CHAIN_REITERATE'] == 'Y')
 	{
 		$defaultDate = new \Bitrix\Main\Type\DateTime();
+
+		$postingReiterateList = array();
 		$postingReiterateDb = \Bitrix\Sender\PostingTable::getList(array(
 			'select' => array(
-				'ID', 'DATE_SENT',
-				'CNT', 'READ_CNT', 'CLICK_CNT', 'UNSUB_CNT'
+				'ID', 'DATE_SENT'
 			),
 			'filter' => array(
 				'MAILING_CHAIN_ID' => $ID,
 				'!STATUS' => \Bitrix\Sender\PostingTable::STATUS_NEW,
-				'POSTING_RECIPIENT.STATUS' => \Bitrix\Sender\PostingRecipientTable::SEND_RESULT_SUCCESS
-			),
-			'runtime' => array(
-				new \Bitrix\Main\Entity\ExpressionField('CNT', 'COUNT(DISTINCT %s)', 'POSTING_RECIPIENT.ID'),
-				new \Bitrix\Main\Entity\ExpressionField('READ_CNT', 'COUNT(DISTINCT %s)', 'POSTING_RECIPIENT.POSTING_READ.RECIPIENT_ID'),
-				new \Bitrix\Main\Entity\ExpressionField('CLICK_CNT', 'COUNT(DISTINCT %s)', 'POSTING_RECIPIENT.POSTING_CLICK.RECIPIENT_ID'),
-				new \Bitrix\Main\Entity\ExpressionField('UNSUB_CNT', 'COUNT(DISTINCT %s)', 'POSTING_RECIPIENT.POSTING_UNSUB.RECIPIENT_ID')
 			),
 			'order' => array('DATE_SENT' => 'DESC', 'ID' => 'DESC'),
 			'limit' => 50,
 		));
-		while($arPostingReiterate = $postingReiterateDb->fetch())
+		while($postingReiterate = $postingReiterateDb->fetch())
 		{
-			//echo $arPostingReiterate['POSTING_DATE_SENT'].'<br>';
+			$postingReiterate['CNT'] = 0;
+			$postingReiterate['READ_CNT'] = 0;
+			$postingReiterate['CLICK_CNT'] = 0;
+			$postingReiterate['UNSUB_CNT'] = 0;
+
+			$postingReiterateList[$postingReiterate['ID']] = $postingReiterate;
+		}
+		$postingReiterateListId = array_keys($postingReiterateList);
+
+		$paramList = array('Recipient', 'Read', 'Click', 'Unsub');
+		foreach($paramList as $paramName)
+		{
+			if($paramName == 'Recipient')
+			{
+				$paramNameKey = 'CNT';
+				$paramGetListArgs = array(
+					'select' => array('POSTING_ID', 'CNT'),
+					'filter' => array('POSTING_ID' => $postingReiterateListId),
+					'runtime' => array(new \Bitrix\Main\Entity\ExpressionField('CNT', 'COUNT(%s)', 'ID'))
+				);
+			}
+			else
+			{
+				$paramNameKey = strtoupper($paramName).'_CNT';
+				$paramGetListArgs = array(
+					'select' => array('POSTING_ID', 'CNT'),
+					'filter' => array('POSTING_ID' => $postingReiterateListId),
+					'runtime' => array(new \Bitrix\Main\Entity\ExpressionField('CNT', 'COUNT(DISTINCT %s)', 'RECIPIENT_ID'))
+				);
+			}
+
+			$statDb = call_user_func_array(
+				array('Bitrix\Sender\Posting' . $paramName . 'Table', 'getList'),
+				array($paramGetListArgs));
+			while($statParam = $statDb->fetch())
+			{
+				$postingReiterateList[$statParam['POSTING_ID']][$paramNameKey] = $statParam['CNT'];
+			}
+		}
+
+		foreach($postingReiterateList as $arPostingReiterate)
+		{
 			if(empty($arPostingReiterate['DATE_SENT']))
 				$arPostingReiterate['DATE_SENT'] = $defaultDate;
 
@@ -160,34 +206,43 @@ if($ID > 0)
 	if(!empty($arPosting))
 	{
 		$statListDb = \Bitrix\Sender\PostingRecipientTable::getList(array(
-			'select' => array(
-				'STATUS', 'CNT', 'READ_CNT', 'CLICK_CNT', 'UNSUB_CNT'
-			),
+			'select' => array('STATUS', 'CNT'),
 			'filter' => array('POSTING_ID' => $arPosting['ID']),
 			'runtime' => array(
-				new \Bitrix\Main\Entity\ExpressionField('CNT', 'COUNT(DISTINCT %s)', 'ID'),
-				new \Bitrix\Main\Entity\ExpressionField('READ_CNT', 'COUNT(DISTINCT %s)', 'POSTING_READ.RECIPIENT_ID'),
-				new \Bitrix\Main\Entity\ExpressionField('CLICK_CNT', 'COUNT(DISTINCT %s)', 'POSTING_CLICK.RECIPIENT_ID'),
-				new \Bitrix\Main\Entity\ExpressionField('UNSUB_CNT', 'COUNT(DISTINCT %s)', 'POSTING_UNSUB.RECIPIENT_ID')
+				new \Bitrix\Main\Entity\ExpressionField('CNT', 'COUNT(%s)', 'ID'),
 			),
-			//'group' => array('STATUS')
 		));
-
 		while($stat = $statListDb->fetch())
 		{
+			$statResult['all'] += $stat['CNT'];
 			switch($stat['STATUS'])
 			{
 				case \Bitrix\Sender\PostingRecipientTable::SEND_RESULT_SUCCESS:
-					$arStatDeliveried = $stat;
+					$statResult['delivered'] = $stat['CNT'];
 					break;
 				case \Bitrix\Sender\PostingRecipientTable::SEND_RESULT_ERROR:
-					$arStatError = $stat;
+					$statResult['error'] = $stat['CNT'];
 					break;
 				case \Bitrix\Sender\PostingRecipientTable::SEND_RESULT_NONE:
-					$arStatNotSent = $stat;
+					$statResult['not_send'] = $stat['CNT'];
 					break;
 			}
+		}
+		$statResult['all_print'] = $statResult['all'];
 
+		$paramList = array('Read', 'Click', 'Unsub');
+		foreach($paramList as $paramName)
+		{
+			$paramGetListArgs = array(
+				'select' => array('CNT'),
+				'filter' => array('POSTING_ID' => $arPosting['ID']),
+				'runtime' => array(new \Bitrix\Main\Entity\ExpressionField('CNT', 'COUNT(DISTINCT %s)', 'RECIPIENT_ID'))
+			);
+			$statDb = call_user_func_array(
+				array('Bitrix\Sender\Posting' . $paramName . 'Table', 'getList'),
+				array($paramGetListArgs));
+			$statParam = $statDb->fetch();
+			$statResult[strtolower($paramName)] = $statParam['CNT'];
 		}
 	}
 
@@ -223,13 +278,12 @@ $lAdmin->BeginCustomContent();
 if(!empty($strError)):
 	CAdminMessage::ShowMessage($strError);
 else:
-	$arStatDeliveried['CNT'] += intval($arStatError['CNT']);
-	$arStatDeliveried['CNT_PRINT'] = intval($arStatDeliveried['CNT']);
-	if(intval($arStatDeliveried['CNT'])<=0)
-		$arStatDeliveried['CNT'] = 1;
 
-	$cntDivider = $arStatDeliveried['CNT'] > 0 ? $arStatDeliveried['CNT'] : 1;
-	$cntDivider = $cntDivider/100;
+	if(intval($statResult['all'])<=0)
+	{
+		$statResult['all'] = 1;
+	}
+	$cntDivider = $statResult['all']/100;
 ?>
 <div class="sender_statistics">
 	<div class="sender-stat-cont">
@@ -254,13 +308,13 @@ else:
 					</table>
 				</div>
 				<div class="sender-stat-info-cnt">
-					<?if(!empty($arStatDeliveried)):?>
+					<?if(!empty($statResult)):?>
 						<table>
 							<tr>
 								<td><?=GetMessage("sender_stat_report_cnt_all")?></td>
 								<td>
-									<span><?=intval($arStatDeliveried['CNT_PRINT'])?> </span>
-									(<?=round(intval($arStatDeliveried['CNT_PRINT'])/$cntDivider, 2)?>%)
+									<span><?=intval($statResult['all_print'])?> </span>
+									(<?=round(intval($statResult['all_print'])/$cntDivider, 2)?>%)
 								</td>
 							</tr>
 							<tr><td colspan="2">&nbsp;</td></tr>
@@ -271,30 +325,30 @@ else:
 							<tr>
 								<td class="sender-stat-info-cnt-metric-name"><?=GetMessage("sender_stat_report_cnt_read")?></td>
 								<td>
-									<span><?=intval($arStatDeliveried['READ_CNT'])?> </span>
-									(<?=round(intval($arStatDeliveried['READ_CNT'])/$cntDivider, 2)?>%)
+									<span><?=intval($statResult['read'])?> </span>
+									(<?=round(intval($statResult['read'])/$cntDivider, 2)?>%)
 								</td>
 							</tr>
 							<tr>
 								<td class="sender-stat-info-cnt-metric-name"><?=GetMessage("sender_stat_report_cnt_click")?></td>
 								<td>
-									<span><?=intval($arStatDeliveried['CLICK_CNT'])?> </span>
-									(<?=round(intval($arStatDeliveried['CLICK_CNT'])/$cntDivider, 2)?>%)
+									<span><?=intval($statResult['click'])?> </span>
+									(<?=round(intval($statResult['click'])/$cntDivider, 2)?>%)
 								</td>
 							</tr>
 							<tr>
 								<td class="sender-stat-info-cnt-metric-name"><?=GetMessage("sender_stat_report_cnt_error")?></td>
 								<td>
-									<span><?=intval($arStatError['CNT'])?> </span>
-									(<?=round(intval($arStatError['CNT'])/$cntDivider, 2)?>%)
+									<span><?=intval($statResult['error'])?> </span>
+									(<?=round(intval($statResult['error'])/$cntDivider, 2)?>%)
 								</td>
 							</tr>
 							<tr><td colspan="2">&nbsp;</td></tr>
 							<tr>
 								<td><?=GetMessage("sender_stat_report_cnt_unsub")?></td>
 								<td>
-									<span><?=intval($arStatDeliveried['UNSUB_CNT'])?> </span>
-									(<?=round(intval($arStatDeliveried['UNSUB_CNT'])/$cntDivider, 2)?>%)
+									<span><?=intval($statResult['unsub'])?> </span>
+									(<?=round(intval($statResult['unsub'])/$cntDivider, 2)?>%)
 								</td>
 							</tr>
 						</table>
@@ -316,49 +370,23 @@ else:
 		$postingDataProvider = array();
 		$postingDataProvider[] = array(
 			"title" => GetMessage("sender_stat_graph_all"),
-			"value" => intval($arStatDeliveried['CNT']),
-			"value_print" => intval($arStatDeliveried['CNT_PRINT']),
-			"value_prsnt" => round(intval($arStatDeliveried['CNT_PRINT'])/$cntDivider, 2)
+			"value" => intval($statResult['all']),
+			"value_print" => intval($statResult['all_print']),
+			"value_prsnt" => round(intval($statResult['all_print'])/$cntDivider, 2)
 		);
 
-		if(intval($arStatDeliveried['READ_CNT'])>0)
+		$paramList = array('read', 'click', 'unsub', 'error');
+		foreach($paramList as $paramName)
 		{
-			$postingDataProvider[] = array(
-				"title" => GetMessage("sender_stat_graph_read"),
-				"value" => intval($arStatDeliveried['READ_CNT']),
-				"value_print" => intval($arStatDeliveried['READ_CNT']),
-				"value_prsnt" => round(intval($arStatDeliveried['READ_CNT'])/$cntDivider, 2)
-			);
-		}
-
-		if(intval($arStatDeliveried['CLICK_CNT'])>0)
-		{
-			$postingDataProvider[] = array(
-				"title" => GetMessage("sender_stat_graph_click"),
-				"value" => intval($arStatDeliveried['CLICK_CNT']),
-				"value_print" => intval($arStatDeliveried['CLICK_CNT']),
-				"value_prsnt" => round(intval($arStatDeliveried['CLICK_CNT'])/$cntDivider, 2)
-			);
-		}
-
-		if(intval($arStatDeliveried['UNSUB_CNT'])>0)
-		{
-			$postingDataProvider[] = array(
-				"title" => GetMessage("sender_stat_graph_unsub"),
-				"value" => intval($arStatDeliveried['UNSUB_CNT']),
-				"value_print" => intval($arStatDeliveried['UNSUB_CNT']),
-				"value_prsnt" => round(intval($arStatDeliveried['UNSUB_CNT'])/$cntDivider, 2)
-			);
-		}
-
-		if(intval($arStatError['CNT'])>0)
-		{
-			$postingDataProvider[] = array(
-				"title" => GetMessage("sender_stat_graph_error"),
-				"value" => intval($arStatError['CNT']),
-				"value_print" => intval($arStatError['CNT']),
-				"value_prsnt" => round(intval($arStatError['CNT'])/$cntDivider, 2)
-			);
+			if(intval($statResult[$paramName])>0)
+			{
+				$postingDataProvider[] = array(
+					"title" => GetMessage("sender_stat_graph_" . $paramName),
+					"value" => intval($statResult[$paramName]),
+					"value_print" => intval($statResult[$paramName]),
+					"value_prsnt" => round(intval($statResult[$paramName])/$cntDivider, 2)
+				);
+			}
 		}
 
 		?>

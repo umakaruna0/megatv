@@ -7,8 +7,9 @@ IncludeTemplateLangFile(__FILE__);
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 		<meta name="format-detection" content="telephone=no">
-		<link rel="shortcut icon" href="/favicon.ico">
-		<link rel="icon" href="/favicon.ico">
+		<link rel="shortcut icon" href="/favicon.png">
+		<link rel="icon" href="/favicon.png">
+		<meta name='yandex-verification' content='6b022e42074ebaca' />
         <?
         echo '<meta http-equiv="Content-Type" content="text/html; charset='.LANG_CHARSET.'"'.(true ? ' /':'').'>'."\n";
         $APPLICATION->ShowMeta("robots", false, true);
@@ -26,6 +27,7 @@ IncludeTemplateLangFile(__FILE__);
         if(isset($_POST["city-id"]) && intval($_POST["city-id"])>0 && check_bitrix_sessid())
         {
             CCityEx::setGeoCity(intval($_POST["city-id"]));
+            header("Location: index.php");
         }
         ?>
 		<title><?$APPLICATION->ShowTitle()?></title>

@@ -1,4 +1,5 @@
 <?php
+
 CModule::AddAutoloadClasses('sender', array(
 
 		"bitrix\\sender\\contactlisttable" => "lib/contact.php",
@@ -18,5 +19,6 @@ CModule::AddAutoloadClasses('sender', array(
 
 \CJSCore::RegisterExt("sender_admin", Array(
 	"js" =>    "/bitrix/js/sender/admin.js",
+	"lang" =>    "/bitrix/modules/sender/lang/" . LANGUAGE_ID . "/js_admin.php",
 	"rel" =>   array()
 ));

@@ -107,7 +107,7 @@ class CUserEx
     {
         if($arFields["ID"]>0)
         {
-            $activeFreeChannels = CChannel::getList(array("ACTIVE"=>"Y", "PROPERTY_PRICE"=>false), array("ID"));
+            $activeFreeChannels = CChannel::getList(array("ACTIVE"=>"Y", "PROPERTY_PRICE"=>false, "PROPERTY_RECORD_CANCEL"=>false), array("ID"));
             foreach($activeFreeChannels as $activeFreeChannel)
             {
                 $CSubscribeEx = new CSubscribeEx("CHANNEL");
