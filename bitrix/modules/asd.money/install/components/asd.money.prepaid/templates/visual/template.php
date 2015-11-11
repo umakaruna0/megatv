@@ -33,7 +33,7 @@ CUtil::InitJSCore(array('jquery'));
 		<div class="logo">
 			<input type="radio" name="pay_system" id="asd_ps_<?= $arSystem['PAY_SYSTEM_ID']?>" value="<?= $arSystem['PAY_SYSTEM_ID']?>" <?if ($arResult['REQUEST_PAY_SYSTEM'] == $arSystem['PAY_SYSTEM_ID']){?> checked="checked"<?}?>>
 			<label for="asd_ps_<?= $arSystem['PAY_SYSTEM_ID']?>">
-				<img src="<?= ($arSystem['LOGOTIP']['SRC'] ? $arSystem['LOGOTIP']['SRC'] : $templateFolder.'/images/logo-default-ps.gif')?>" title="<?= htmlspecialcharsbx($arSystem['NAME'])?>">
+				<span style="background-image:url(<?= ($arSystem['LOGOTIP']['SRC'] ? $arSystem['LOGOTIP']['SRC'] : $templateFolder.'/images/logo-default-ps.gif')?>)"></span>
 				<div class="paysystem_name"><?= htmlspecialcharsbx($arSystem['NAME'])?></div>
 			</label>
 		</div>

@@ -1,4 +1,9 @@
 <section class="broadcast-results" data-module="broadcast-results">
+    <script type="text/x-config">
+    {
+        "recordingURL": "<?=SITE_TEMPLATE_PATH?>/ajax/to_record.php"
+    }
+    </script>
     <div class="categories-logos">
         <span class="category-logo">
     		<span data-icon="icon-megatv-recommendations"></span>

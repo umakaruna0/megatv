@@ -14,6 +14,7 @@ class CLDAP
 	var $conn;
 
 	protected static $PHOTO_ATTRIBS = array("thumbnailPhoto", "jpegPhoto");
+	protected $arGroupMaps;
 
 	function Connect($arFields = Array())
 	{
@@ -639,7 +640,7 @@ class CLDAP
 		// if there's a manager - query it
 		if ($managerDN)
 		{
-			preg_match('/^(CN=.*?)(\,){1}(OU|DC){1}/i', $managerDN, $matches); //Extract "CN=User Name" from full name
+			preg_match('/^(CN=.*?)(\,){1}([^\,])*(=){1}/i', $managerDN, $matches); //Extract "CN=User Name" from full name
 			$user = isset($matches[1]) ? str_replace('\\', '',$matches[1]) : "";
 			$userArr = $this->GetUserArray($user);
 
@@ -918,19 +919,22 @@ class CLDAP
 	function GetGroupMaps()
 	{
 		global $DB;
-		static $arGroupMaps = false;
-		if(!is_array($arGroupMaps))
+
+		if(!is_array($this->arGroupMaps))
 		{
-			$arGroupMaps = Array();
+			$this->arGroupMaps = array();
 			$rsCorellations = $DB->Query("SELECT LDAP_GROUP_ID, GROUP_ID FROM b_ldap_group WHERE LDAP_SERVER_ID=".intval($this->arFields['ID']));
+
 			while ($arCorellation = $rsCorellations->Fetch())
 			{
-				if(!is_array($arGroupMaps[$arCorellation["LDAP_GROUP_ID"]]))
-					$arGroupMaps[$arCorellation["LDAP_GROUP_ID"]] = Array();
-				$arGroupMaps[$arCorellation["LDAP_GROUP_ID"]][] = $arCorellation["GROUP_ID"];
+				if(!is_array($this->arGroupMaps[$arCorellation["LDAP_GROUP_ID"]]))
+					$this->arGroupMaps[$arCorellation["LDAP_GROUP_ID"]] = array();
+
+				$this->arGroupMaps[$arCorellation["LDAP_GROUP_ID"]][] = $arCorellation["GROUP_ID"];
 			}
 		}
-		return $arGroupMaps;
+
+		return $this->arGroupMaps;
 	}
 
 	//Need this to delete old photo

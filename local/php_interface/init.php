@@ -21,6 +21,9 @@ use \Bitrix\Main\Type\DateTime;
 
 \Bitrix\Main\Loader::includeModule('olegpro.ipgeobase');
 
+CModule::IncludeModule("echogroup.smsru");
+AddEventHandler("main", "OnBeforeEventSend",array("CEchogroupSmsru","TerminateEvent"));
+
 // Классы
 $sClassesPath = '/local/php_interface/classes/';
 CModule::AddAutoloadClasses(
@@ -53,6 +56,7 @@ AddEventHandler('main', 'OnEpilog', '_Check404Error', 1);
 AddEventHandler("main", "OnBeforeUserLogin", Array("CUserEx", "OnBeforeUserLogin"));
 AddEventHandler("main", "OnBeforeUserRegister", Array("CUserEx", "OnBeforeUserRegister"));
 AddEventHandler("main", "OnAfterUserAdd", Array("CUserEx", "OnAfterUserUpdateHandler"));
+AddEventHandler("main", "OnBeforeUserSendPassword", Array("CUserEx", "OnBeforeUserSendPasswordHandler"));
 
 // обработка опенграфовских мета-тегов
 AddEventHandler('main', 'OnEpilog', array('CMyEpilogHooks', 'OpenGraph'));

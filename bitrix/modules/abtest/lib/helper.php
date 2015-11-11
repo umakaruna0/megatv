@@ -15,11 +15,12 @@ class Helper
 	public static function getActiveTest()
 	{
 		static $abtest;
+		static $defined;
 
 		if (!defined('SITE_ID') || !SITE_ID)
 			return null;
 
-		if (empty($abtest))
+		if (empty($defined))
 		{
 			$cache = new \CPHPCache();
 
@@ -41,6 +42,8 @@ class Helper
 				$cache->startDataCache();
 				$cache->endDataCache($abtest);
 			}
+
+			$defined = true;
 
 			if (!empty($abtest))
 			{

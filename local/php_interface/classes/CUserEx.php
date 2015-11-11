@@ -3,7 +3,15 @@ class CUserEx
 {
     function OnBeforeUserLogin($arFields)
     {
-        $filter = Array("=EMAIL" =>$arFields["LOGIN"]);
+        $phone = preg_replace("/[^0-9]/", '', $arFields["LOGIN"]);
+        
+        if(CDev::check_phone($phone))
+        {
+            $filter = Array("PERSONAL_PHONE" =>$phone);
+        }else{
+            $filter = Array("=EMAIL" =>$arFields["LOGIN"]);
+        }
+        
         $rsUsers = CUser::GetList(($by="LAST_NAME"), ($order="asc"), $filter);
         if($user = $rsUsers->GetNext())
             $arFields["LOGIN"] = $user["LOGIN"];
@@ -13,6 +21,19 @@ class CUserEx
     {
         $arFields["LOGIN"] = $arFields["EMAIL"];
         $arFields["PERSONAL_BIRTHDAY"] = $arFields["USER_PERSONAL_BIRTHDAY"];
+    }
+    
+    function OnBeforeUserSendPasswordHandler($arFields)
+    {
+        /*$rsUser = CUser::GetByID($arFields["ID"]);
+        $arUser = $rsUser->Fetch();
+        
+        $rsUser = CUser::GetByLogin($email);
+        if($arUser["UF_PHONE_REG"]=="Y")
+        {
+            $text = "Проверочное слово: ".$arFields["USER_CHECKWORD"];
+            CEchogroupSmsru::Send($arUser["PERSONAL_PHONE"], $text);
+        }*/
     }
     
     public static function generateDataSotal()

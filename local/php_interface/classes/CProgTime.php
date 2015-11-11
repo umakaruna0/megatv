@@ -25,6 +25,23 @@ class CProgTime
         return $str;
     }
     
+    public static function driveNotifyMessage()
+    {
+        ob_start();
+        ?>
+        <div class="extend-drive-notify">
+			<div class="extend-drive-notify-text-wrap">
+				<span data-icon="icon-storage"></span>
+				<p>У Вас закончилось свободное место на облачном хранилище МЕГА.ДИСК</p>
+				<p><a href="/personal/services/">Заказать дополнительную емкость</a></p>
+			</div>
+		</div>
+        <?
+        $message = ob_get_contents();  
+        ob_end_clean();
+        return $message;
+    }
+    
     public static function getByID($ID, $arSelect = false)
     {
         CModule::IncludeModule("iblock");
@@ -264,6 +281,7 @@ class CProgTime
             <?endif;?>
             
             <?=$status_icon?>
+            <?=self::driveNotifyMessage()?>
             
         	<div class="item-header">
         		<time><?=substr($arProg["DATE_START"], 11, 5)?></time>
@@ -315,6 +333,7 @@ class CProgTime
             <?endif;?>
             
 			<?=$status_icon?>
+            <?=self::driveNotifyMessage()?>
             
 			<div class="item-header">
                 <?if(CTimeEx::dateDiff($start, $datetime) && CTimeEx::dateDiff($datetime, $end)):?>
@@ -375,6 +394,7 @@ class CProgTime
             <div class="item-image-holder" style="background-image: url(<?=$arProg["PICTURE"]["SRC"]?>)"></div>
         	
             <?=$status_icon?>
+            <?=self::driveNotifyMessage()?>
             
             <div class="item-header">
 				<time><?=substr($arProg["DATE_START"], 11, 5)?> <span class="date">| <?=substr($arProg["DATE_START"], 0, 10)?></span></time>
@@ -411,6 +431,7 @@ class CProgTime
 			<div class="item-image-holder" style="background-image: url(<?=$arProg["PICTURE"]["SRC"]?>)"></div>
             
 			<?=$status_icon?>
+            <?=self::driveNotifyMessage()?>
             
 			<div class="item-header">
 				<time><?=substr($arProg["DATE_START"], 11, 5)?> | <?=substr($arProg["DATE_START"], 0, 10)?></time>

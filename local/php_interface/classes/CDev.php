@@ -410,4 +410,13 @@ class CDev
         }
         return false;
     }
+    
+    public static function check_phone($phone)
+    {
+        if (preg_match("/^([0-9]{11})$/", $phone))
+        {
+            return true;
+        }
+        return false;
+    }
 }
