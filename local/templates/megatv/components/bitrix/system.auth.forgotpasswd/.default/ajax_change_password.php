@@ -14,18 +14,21 @@ $result = array();
 $result['status'] = "error";
 $result['errors'] = array();
 $result['message'] = '';
+//$result['post'] = $_POST;
 
 if(!$USER->IsAuthorized())
 {
     $html="";
     
-    if (strlen($_POST['ajax_key']) && $_POST['ajax_key']!=md5('ajax_'.LICENSE_KEY) || htmlspecialcharsbx($_POST["TYPE"])!="SEND_PWD" || !check_bitrix_sessid()) 
+    if (strlen($_POST['ajax_key']) && $_POST['ajax_key']!=md5('ajax_'.LICENSE_KEY) || !check_bitrix_sessid()) 
     {
         $html = "Сессия не действительна!";
     }
     
     $emailTo = trim(htmlspecialcharsbx($_POST['USER_EMAIL']));
     $phone = preg_replace("/[^0-9]/", '', $emailTo);
+    $chekword = htmlspecialcharsbx($_POST["checkword"]);
+    $password = htmlspecialcharsbx($_POST["password"]);
     
     if(!CDev::check_email($emailTo) && !CDev::check_phone($phone))
     {
@@ -36,27 +39,21 @@ if(!$USER->IsAuthorized())
     {
         if(CDev::check_phone($phone))
         {
-            $rsUsers = CUser::GetList(($by="EMAIL"), ($order="desc"), Array("PERSONAL_PHONE" =>$phone));
+            $rsUsers = CUser::GetList(($by="EMAIL"), ($order="desc"), Array("PERSONAL_PHONE" =>$phone), array("SELECT"=>array("UF_PHONE_CHECKWORD", "ID")));
             if($arUser = $rsUsers->GetNext())
             {
-                //отправить на телефон
-                $arResult = $USER->SendPassword($arUser["LOGIN"], $arUser["EMAIL"]);
-                if($arResult["TYPE"] == "OK")
+                if($arUser["UF_PHONE_CHECKWORD"]==$chekword && !empty($arUser["UF_PHONE_CHECKWORD"]))
                 {
-                    $result['message'] = "<font style='color:green'>На ваш email придет сообщение с необходимыми данными.</font>";
-                    
-                    $PASS_1 = mb_substr(md5(uniqid(rand(),true)), 0, 8);
                     $cuser = new CUser;
                     $cuser->Update($arUser["ID"], array(
-                        "UF_PHONE_CHECKWORD" => $PASS_1
+                        "UF_PHONE_CHECKWORD" => "",
+                        "PASSWORD"          	=> $password,
+                        "CONFIRM_PASSWORD"  	=> $password,
                     ));
-                    
-                    $text = "Проверочное слово: ".$PASS_1;
-                    CEchogroupSmsru::Send($phone, $text);
-                    
                     $result['status'] = "success";
+                }else{
+                    $result['errors']["USER_EMAIL"] = "";
                 }
-
             }else{
                 $result['errors']["USER_EMAIL"] = 'Пользователь с такие телефоном не найден.';
             }
@@ -64,11 +61,14 @@ if(!$USER->IsAuthorized())
             $rsUsers = CUser::GetList(($by="EMAIL"), ($order="desc"), Array("=EMAIL" =>$emailTo));
             if($arUser = $rsUsers->GetNext())
             {
-                $arResult = $USER->SendPassword($arUser["LOGIN"], $arUser["EMAIL"]);
+                $arResult = $USER->ChangePassword($arUser["LOGIN"], $chekword, $password, $password);
                 if($arResult["TYPE"] == "OK")
-                    $result['message'] = "<font style='color:green'>На ваш email придет сообщение с необходимыми данными.</font>";
-                    
-                $result['status'] = "success";
+                {
+                    $result['message'] = "Пароль успешно сменен.";
+                    $result['status'] = "success";
+                }else{
+                    $result['message'] = $arResult["MESSAGE"];
+                }
             }else{
                 $result['errors']["USER_EMAIL"] = 'Пользователь с такие e-mail адресом не найден.';
             }
@@ -76,7 +76,6 @@ if(!$USER->IsAuthorized())
         
     }else{
         $result['status'] = "error";
-        $result['message'] = $html;
     }
 }else{
     $result['message'] = 'Вы уже авторизованны.';

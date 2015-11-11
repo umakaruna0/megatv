@@ -35,7 +35,7 @@ IncludeTemplateLangFile(__FILE__);
 	<body>
         <div id="panel"><?$APPLICATION->ShowPanel();?></div>
         
-        <?$APPLICATION->IncludeComponent("bitrix:main.include", "", array("AREA_FILE_SHOW" => "file", "PATH" => SITE_DIR."include/header-signin.php"), false);?>
+        <?//$APPLICATION->IncludeComponent("bitrix:main.include", "", array("AREA_FILE_SHOW" => "file", "PATH" => SITE_DIR."include/header-signin.php"), false);?>
         
 		<div class="site-wrapper" data-module="page">
 

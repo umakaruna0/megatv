@@ -1,6 +1,6 @@
 <?if(!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED!==true)die();
 
-if (strlen($_POST['ajax_key']) && $_POST['ajax_key']==md5('ajax_'.LICENSE_KEY) && htmlspecialcharsbx($_POST["TYPE"])=="AUTH" && check_bitrix_sessid()) 
+/*if (strlen($_POST['ajax_key']) && $_POST['ajax_key']==md5('ajax_'.LICENSE_KEY) && htmlspecialcharsbx($_POST["TYPE"])=="AUTH" && check_bitrix_sessid()) 
 {
    $APPLICATION->RestartBuffer();
    if (!defined('PUBLIC_AJAX_MODE')) 
@@ -12,14 +12,15 @@ if (strlen($_POST['ajax_key']) && $_POST['ajax_key']==md5('ajax_'.LICENSE_KEY) &
    {
       echo json_encode(array(
          'type' => 'error',
+         'status' => 'error',
          'message' => strip_tags($arResult['ERROR_MESSAGE']['MESSAGE']),
       ));
    } else {
-      echo json_encode(array('type' => 'ok'));
+      echo json_encode(array('type' => 'ok', 'status' => 'ok'));
    }
    require($_SERVER['DOCUMENT_ROOT'].'/bitrix/modules/main/include/epilog_after.php');
    die();
-}
+}*/
 
 if ($arResult["FORM_TYPE"] != "login") 
 {
@@ -37,44 +38,47 @@ if ($arResult["FORM_TYPE"] != "login")
 } 
 else 
 {    
-    ?> 
-    <form action="<?=$arResult["AUTH_URL"]?>" method="POST" target="_top" id="login-form" class="signin-form" data-redirect="<?=$arParams["PROFILE_URL"]?>">
-    	<input type="hidden" name="AUTH_FORM" value="Y" />
-    	<input type="hidden" name="TYPE" value="AUTH" />
-        <input type="hidden" name="ajax_key" value="<?=md5('ajax_'.LICENSE_KEY)?>" />
-        <?=bitrix_sessid_post()?>
-        
-		<div class="form-group email-container" autocomplete="off">
-			<label for="" class="sr-only">Эл. почта</label>
-			<input type="email" name="USER_LOGIN" id="" class="form-control" value="<?=$arResult["USER_EMAIL"]?>" placeholder="Эл. почта" autocomplete="off"/>
-		</div>
-        
-		<div class="form-group">
-			<label for="" class="sr-only">Пароль</label>
-			<input type="password" name="USER_PASSWORD" class="form-control" placeholder="Пароль">
-		</div>
-		<span class="divider"><span>или</span></span>
-		<ul class="social-singin-list">
-			<?/*<li><a href="#"><span data-icon="icon-ya-social"></span></a></li>
-			<li><a href="#"><span data-icon="icon-ok-social"></span></a></li>
-			<li><a href="#"><span data-icon="icon-gp-social"></span></a></li>
-			<li><a href="#"><span data-icon="icon-in-social"></span></a></li>
-			<li><a href="#"><span data-icon="icon-vk-social"></span></a></li>
-			<li><a href="#"><span data-icon="icon-tw-social"></span></a></li>
-			<li><a href="#"><span data-icon="icon-im-social"></span></a></li>*/?>
+    ?>
+    <div class="authorize-overlay is-signin-overlay" data-module="signin-overlay">
+		<div class="overlay-content">
+			<h4 class="overlay-title">Войти</h4>
             
-            <li><a href="/social/?provider=yandex"><span data-icon="icon-ya-social"></span></a></li>
-            <li><a href="/social/?provider=odnoklassniki"><span data-icon="icon-ok-social"></span></a></li>
-            <li><a href="/social/?provider=google"><span data-icon="icon-gp-social"></span></a></li>
-            <li><a href="/social/?provider=linkedin"><span data-icon="icon-in-social"></span></a></li>
+            <?require($_SERVER["DOCUMENT_ROOT"].SITE_TEMPLATE_PATH."/include/social-auth.php");?>
             
-            <li><a href="/social/?provider=vkontakte"><span data-icon="icon-vk-social"></span></a></li>
-            <li><a href="/social/?provider=twitter"><span data-icon="icon-tw-social"></span></a></li>
-            <li><a href="/social/?provider=instagram"><span data-icon="icon-im-social"></span></a></li>
-			<li><a href="/social/?provider=facebook"><span data-icon="icon-fb-social"></span></a></li>
-		</ul>
-		<button type="submit" name="Login" class="btn btn-primary btn-block">Войти</button>
-	</form>
+			<span class="divider"><span>или</span></span>
+            
+			<form action="<?= $templateFolder ?>/ajax.php" method="POST" target="_top" id="login-form" class="signin-form" data-redirect="<?=$arParams["PROFILE_URL"]?>">
+            	<input type="hidden" name="AUTH_FORM" value="Y" />
+            	<input type="hidden" name="TYPE" value="AUTH" />
+                <input type="hidden" name="ajax_key" value="<?=md5('ajax_'.LICENSE_KEY)?>" />
+                <?=bitrix_sessid_post()?>
+                
+        		<div class="form-group email-container" autocomplete="off">
+        			<label for="" class="sr-only">Телефон или эл. почта</label>
+        			<input type="text" name="USER_LOGIN" class="form-control" value="<?=$arResult["USER_EMAIL"]?>" placeholder="Телефон или эл. почта" autocomplete="off" data-type="adaptive-field" />
+        		</div>
+                
+				<div class="form-group has-feedback" data-type="password-field-group">
+					<label for="" class="sr-only">Пароль</label>
+                    <input type="password" name="USER_PASSWORD" class="form-control" placeholder="Пароль" data-type="password-field" autocomplete="off">
+					<input type="text" class="form-control" data-type="password-visualizer" placeholder="Пароль">
+					<span class="form-control-feedback">
+						<a href="#" data-type="password-visibility-toggle"><span data-icon="icon-password-eye"></span></a>
+					</span>
+				</div>
+                
+				<div class="form-actions">
+					<button type="submit" name="Login" class="btn btn-primary btn-block btn-multistate" data-type="multistate-button">
+						<span class="default-state init-state">Войти</span>
+						<span class="done-state">Авторизую вас...</span>
+						<span class="fail-data-state"><span data-icon="icon-msbutton-cross-circle"></span>Проверьте введённые данные</span>
+						<span class="fail-network-state"><span data-icon="icon-msbutton-broken-network"></span>Ошибка соединения с сервером</span>
+					</button>
+					<a href="#" class="form-subaction-link" data-type="reset-handler-link">Восстановить пароль</a>
+				</div>
+			</form>
+		</div>
+	</div>
     <?
 }
 ?>

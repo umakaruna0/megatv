@@ -8,7 +8,7 @@ if(!is_object($USER))
     $USER = new CUser;
 
 $result = array();
-$result['status'] = 'error';
+$result['status'] = false;
 $result['message'] = '';
 $result['errors'] = array();
 
@@ -17,44 +17,56 @@ if (strlen($_POST['ajax_key']) && $_POST['ajax_key']!=md5('ajax_'.LICENSE_KEY) |
     $result['errors']["USER_NAME"] = "Сессия не действительна!";
 }
 
+/*if(htmlspecialcharsbx($_POST["TYPE"])!="REGISTRATION" || !check_bitrix_sessid())
+{
+    $result['errors']["USER_NAME"] = "Сессия не действительна и тип!";
+}*/
+
 if(!$USER->IsAuthorized() && count($result['errors'])==0)
 {
+    $NAME = htmlspecialcharsbx(strip_tags($_POST["USER_NAME"]));
+    $LAST_NAME = htmlspecialcharsbx(strip_tags($_POST["USER_LAST_NAME"]));
+    $SECOND_NAME = htmlspecialcharsbx(strip_tags($_POST["USER_SECOND_NAME"]));
+    $BIRTHDAY = htmlspecialcharsbx(strip_tags($_POST["USER_PERSONAL_BIRTHDAY"]));
     $EMAIL = htmlspecialcharsbx(strip_tags($_POST["USER_EMAIL"]));
+    //$PASS_1 = htmlspecialcharsbx(strip_tags($_POST["USER_PASSWORD"]));
+    //$PASS_2 = htmlspecialcharsbx(strip_tags($_POST["USER_CONFIRM_PASSWORD"]));
     $AGREE = htmlspecialcharsbx(strip_tags($_POST["AGREE"]));
     
-    $phone = preg_replace("/[^0-9]/", '', $EMAIL);
-
-    if(!CDev::check_email($EMAIL) && !CDev::check_phone($phone))
+    if(!CDev::check_email($EMAIL))
     {
         $result['errors']["USER_EMAIL"] = "Неверный формат данных";
     }else{
-        
-        if(CDev::check_phone($phone))
+        $rsUsers = CUser::GetList(($by="EMAIL"), ($order="desc"), Array("=EMAIL" =>$EMAIL));
+        while($rsUsers->NavNext(true, "f_"))
         {
-            $rsUsers = CUser::GetList(($by="EMAIL"), ($order="desc"), Array("PERSONAL_PHONE" =>$phone));
-            if($arUser = $rsUsers->GetNext())
-            {
-                if($arUser["ACTIVE"]=="N")
-                {
-                    $result["status"] = "need_confirm";
-                    exit(json_encode($result));
-                }
-                $result['errors']["USER_EMAIL"] = "Введенный телефон уже есть на сайте";
-            }
-        }else{
-            $rsUsers = CUser::GetList(($by="EMAIL"), ($order="desc"), Array("=EMAIL" =>$EMAIL));
-            if($arUser = $rsUsers->GetNext())
-            {
-                if($arUser["ACTIVE"]=="N")
-                {
-                    $result["status"] = "need_confirm";
-                    exit(json_encode($result));
-                }
-                $result['errors']["USER_EMAIL"] = "Введенный email уже есть на сайте";
-            }
+            $result['errors']["USER_EMAIL"] = "Введенный email уже есть на сайте";
         }
     }
+    
+    if(empty($NAME))
+    {
+        $result['errors']["USER_NAME"] = "Введите имя";
+    }
+    
+    if(!empty($BIRTHDAY) && !preg_match("/^([0-9]{2})+([\/]{1})+([0-9]{2})+([\/]{1})+([0-9]{4})$/", $BIRTHDAY))
+    {
+        $result['errors']["USER_PERSONAL_BIRTHDAY"] = "Неверный формат данных";
+    }else{
+        $BIRTHDAY = str_replace("/", ".", $BIRTHDAY);
+    }
 
+    /*if(strlen($PASS_1)<6 || strlen($PASS_2)<6)
+    {
+        $result['errors']["USER_PASSWORD"] = $result['errors']["USER_CONFIRM_PASSWORD"] = "Длина пароля должна быть не менее 6 символов!";
+    }
+
+    if($PASS_1!=$PASS_2)
+    {
+        $result['errors']["USER_PASSWORD"] = $result['errors']["USER_CONFIRM_PASSWORD"] ="Пароли не совпадают!<br />";
+    }*/
+    
+    
     if($AGREE!="on")
     {
         $result['errors']["AGREE"] = "Примите условия договора оферты";
@@ -73,27 +85,22 @@ if(!$USER->IsAuthorized() && count($result['errors'])==0)
         
         $user = new CUser;
         $arFields = Array(
+            "NAME"                  => $NAME,
+            'LAST_NAME'             => $LAST_NAME,
+            "SECOND_NAME"           => $SECOND_NAME,
         	"LOGIN"             	=> $EMAIL,
         	"LID"               	=> SITE_ID,
-        	"ACTIVE"            	=> "N",
+        	"ACTIVE"            	=> "N",       //"Y",
         	"PASSWORD"          	=> $PASS_1,
         	"CONFIRM_PASSWORD"  	=> $PASS_1,
         	"EMAIL"			        => $EMAIL,
             "GROUP_ID"              => $arrGroups,
+            "PERSONAL_BIRTHDAY"     => $BIRTHDAY,
             "CHECKWORD"             => md5(CMain::GetServerUniqID().uniqid()),
             "CONFIRM_CODE"          => randString(8),
             "USER_IP"               => $_SERVER["REMOTE_ADDR"],
             "USER_HOST"             => @gethostbyaddr($_SERVER["REMOTE_ADDR"])
         );
-        
-        //Если ввели телефон
-        if(CDev::check_phone($phone))
-        {
-            $arFields["PERSONAL_PHONE"] = $phone;
-            $arFields["EMAIL"] = $arFields["LOGIN"] = $phone."@megatv.su";
-            $arFields["UF_PHONE_REG"] = "Y";
-        }
-        
         $USER_ID = $user->Add($arFields);
         
 		if(intval($USER_ID)>0)
@@ -101,30 +108,15 @@ if(!$USER->IsAuthorized() && count($result['errors'])==0)
             $arFields["USER_ID"] = $USER_ID;
             $event = new CEvent;
     		$event->SendImmediate("NEW_USER", SITE_ID, $arFields);
-            
-            if(CDev::check_phone($phone))
-            {
-                $checkword = mb_substr(md5(uniqid(rand(),true)), 0, 8);
-                $cuser = new CUser;
-                $cuser->Update($USER_ID, array(
-                    "UF_PHONE_CHECKWORD" => $checkword
-                ));
-                
-                $text = "Код активации для подтверждения рег-ции: ".$checkword;
-                CEchogroupSmsru::Send($phone, $text);
-                
-            }else{
-                
-                //Для подтверждения регистрации перейдите по следующей ссылке:
-                //http://#SERVER_NAME#/auth/index.php?confirm_registration=yes&confirm_user_id=#USER_ID#&confirm_code=#CONFIRM_CODE#
-                
-                $event->SendImmediate("NEW_USER_CONFIRM", SITE_ID, $arFields);  //на почту письмо для подтверждения
-            }
+            //unset($arFields["PASSWORD"]);
+    		//unset($arFields["CONFIRM_PASSWORD"]);
+    		$event->SendImmediate("NEW_USER_CONFIRM", SITE_ID, $arFields);
         }
 
-        $result['status'] = "success";
+        $result['status'] = true;
         $result['message'] = "<font style='color:green'>На ваш email высланы регистрационные данные для подтверждения!!!</font><br />";
         
+        //$USER->Login($EMAIL, $PASS_1, 'Y');
         CUserEx::capacityAdd($USER_ID, 1);   // за мэйл +1ГБ
         
         //Бонус за регистрацию
@@ -132,10 +124,12 @@ if(!$USER->IsAuthorized() && count($result['errors'])==0)
 
         COption::SetOptionString("main", "captcha_registration", "Y");
     }else{
-        $result['status'] = 'error';
+        $result['status'] = false;
         $result['message'] = $html;
     }
 }
 
 exit(json_encode($result));
+
+require($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/include/epilog_after.php");
 ?>

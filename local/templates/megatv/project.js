@@ -1,6 +1,6 @@
 $(document).on('ready', function(){
     
-    $('form#login-form').submit(function(){
+    /*$('form#login-form').submit(function(){
         var $this = $(this);
         
         $this.find(".email-container").removeClass("has-error");
@@ -55,6 +55,7 @@ $(document).on('ready', function(){
 
         return false;
     });
+    */
     
     $('form.asd-prepaid-form').on('submit', function(){
         var $form = $(this);
@@ -156,7 +157,7 @@ $(document).on('ready', function(){
     
     
     
-    
+    /*
     $('form#recovery-form').submit(function(){
         var $this = $(this);
         
@@ -180,6 +181,7 @@ $(document).on('ready', function(){
         }, 'json');
         return false;
     });
+    */
     
     $(".modal-nav li a").click(function(e){
         e.preventDefault();
@@ -223,7 +225,7 @@ $(document).on('ready', function(){
         return false;
     });*/
     
-    $('a#channels-show-ajax-link').on('click', function (e) {
+    /*$('a#channels-show-ajax-link').on('click', function (e) {
 		e.preventDefault();
         var _this = this;
         
@@ -277,7 +279,7 @@ $(document).on('ready', function(){
         }
 
         return false;
-    });
+    });*/
     
     function icon(name, options) {
     	var optionsz = options || {};

@@ -2,11 +2,11 @@
 {
     overflow: hidden;
 }
-.broadcast-results .categories-items
+/*.broadcast-results .categories-items
 {
     bottom: 0px;
 }
-/*
+
 .user-subscription-channels .channels-list .item.status-active .subscription-logo .icon,
 .subscription-services .available-subscriptions .item.status-active .subscription-logo .icon 
 {

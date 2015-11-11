@@ -1,5 +1,5 @@
 <?if($APPLICATION->GetCurDir()!="/personal/records/"):?>
-    <div class="calendar" data-module="calendar">
+    <?/*<div class="calendar" data-module="calendar">
     	<script type="text/x-config">
     		{
     			"currentDate": "<?=CTimeEx::getCurDate()?>",
@@ -21,7 +21,21 @@
     	<a href="#" class="prev-trigger disabled" data-type="prev-trigger"><span data-icon="icon-left-arrow-days"></span></a>
     	<div class="dates-holder" data-type="dates-carousel"></div>
     	<a href="#" class="next-trigger" data-type="next-trigger"><span data-icon="icon-right-arrow-days"></span></a>
-    </div>
+    </div>*/?>
+    
+    <div class="calendar-carousel" data-module="calendar-carousel">
+		<script type="text/x-config">
+			{
+				"currentDate": "<?=CTimeEx::getCurDate()?>",
+                "minDate": 1,
+                "maxDate":<?=CTimeEx::getCalendarDays()?>
+			}
+		</script>
+		<a href="#" class="prev-trigger disabled" data-type="prev-trigger"><span data-icon="icon-left-arrow-days"></span></a>
+		<div class="dates-holder" data-type="dates-carousel"></div>
+		<a href="#" class="next-trigger" data-type="next-trigger"><span data-icon="icon-right-arrow-days"></span></a>
+	</div>
+    
 <?else:?>
     <div class="fill-disk-space" data-type="fill-disk-space">
 		<div class="progress-holder" data-progress="<?=$APPLICATION->ShowViewContent('user_filled_space_percent');?>"></div>

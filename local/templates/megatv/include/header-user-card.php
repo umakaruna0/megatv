@@ -96,10 +96,40 @@
             <?
         }else{
             ?>
-            <li><a href="#" class="signin-link" data-type="auth-screens-trigger" data-target="#singin-form">Войти</a></li>
-            <li><a href="#" class="signup-link" data-type="auth-screens-trigger" data-target="#singup-form">Зарегистрироваться</a></li>
+            <li><a href="#" class="signin-link" data-type="signin-overlay-toggle">Войти</a></li>
+			<li><a href="#" class="signup-link" data-type="signup-overlay-toggle">Зарегистрироваться</a></li>
             <?
         }
         ?>
 	</ul>
 </nav>
+
+<?if(!$USER->IsAuthorized()):?>
+    <?$APPLICATION->IncludeComponent("bitrix:system.auth.form", "auth_ajax",Array(
+         "REGISTER_URL" => "register.php",
+         "FORGOT_PASSWORD_URL" => "",
+         "PROFILE_URL" => "/",
+         "SHOW_ERRORS" => "Y" 
+         )
+    );?>
+    <?$APPLICATION->IncludeComponent("bitrix:system.auth.registration","",Array());?>
+    <?$APPLICATION->IncludeComponent(
+        "bitrix:system.auth.forgotpasswd",
+        ".default",
+        Array()
+    );?>
+    <div class="authorize-overlay is-success-signup-overlay" data-module="success-signup-overlay">
+		<div class="overlay-content">
+			<h4 class="overlay-title">Поздравляем вас</h4>
+			<p>Вы успешно зарегистрировались на МЕГАТВ.</p>
+			<a href="/" class="btn btn-primary btn-block">Начать пользоваться сервисом</a>
+		</div>
+	</div>
+	<div class="authorize-overlay is-success-reset-overlay" data-module="success-reset-overlay">
+		<div class="overlay-content">
+			<h4 class="overlay-title">Пароль изменён</h4>
+			<p>Вы успешно изменили пароль для входа в свой аккаунт на МЕГАТВ.</p>
+			<a href="#" class="btn btn-primary btn-block" data-type="signin-handler-link">Авторизоваться</a>
+		</div>
+	</div>
+<?endif;?>

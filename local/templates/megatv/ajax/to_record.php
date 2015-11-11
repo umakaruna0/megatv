@@ -30,7 +30,7 @@ if($USER->IsAuthorized() && $prog_time>0)
     $arRecords = CRecordEx::getList(array("UF_USER"=>$USER_ID, "UF_SCHEDULE"=>$prog_time), array("ID"));
     if(intval($arRecords[0]["ID"])>0 && count($arRecords)>0)
     {
-        exit(json_encode(array("status"=>false, "error"=> "Такая запись уже есть.")));
+        exit(json_encode(array("status"=>"error", "error"=> "Такая запись уже есть.")));
     }
     
     //Провеим, хватит ли пространства!
@@ -39,13 +39,12 @@ if($USER->IsAuthorized() && $prog_time>0)
     $gb = $minutes*18.5/1024;
     $busy = floatval($arUser["UF_CAPACITY_BUSY"])+$gb;
     
-    if($busy>floatval($arUser["UF_CAPACITY"]))
+    if($busy>=floatval($arUser["UF_CAPACITY"]))
     {
-        exit(json_encode(array("status"=>false, "error"=> "Не достаточно места на диске для записи")));
+        exit(json_encode(array("status"=>"require-space", "error"=> "Не достаточно места на диске для записи")));
     }else{
         if(in_array($arProgTime["PROPERTY_CHANNEL_VALUE"], $selectedChannels))
         {
-            
             $log_file = "/logs/sotal/sotal_".date("d_m_Y").".txt";
             CDev::log(array(
                 "ACTION"  => "PUT_TO_RECORD",
@@ -92,10 +91,10 @@ if($USER->IsAuthorized() && $prog_time>0)
                 
                 $status = "success";
             }else{
-                exit(json_encode(array("status"=>false, "error"=> "Ошибка, программа на запись не поставлена. [sotal problem]")));
+                exit(json_encode(array("status"=>"error", "error"=> "Ошибка, программа на запись не поставлена. [sotal problem]")));
             } 
         }else{
-            exit(json_encode(array("status"=>false, "error"=> "Нельзя записать")));
+            exit(json_encode(array("status"=>"error", "error"=> "Нельзя записать")));
         }
     }    
 }
