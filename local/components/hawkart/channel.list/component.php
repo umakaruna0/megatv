@@ -4,6 +4,9 @@ if(!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED!==true)
 ini_set('max_execution_time', 30);
 global $USER;
 
+$time_start = microtime(true);
+//echo "start = ".$time_start."<br />";
+
 $arParams = $arParams + array(
     "DATETIME" => CTimeEx::getDatetime(),
     "CITY" => CCityEx::getGeoCity(),
@@ -11,6 +14,16 @@ $arParams = $arParams + array(
     "LIST_URL" => $APPLICATION->GetCurDir(),
     "AJAX_TYPE" => $_REQUEST["AJAX_TYPE"]
 );
+
+$arResult["CONFIG_DATES"] = array();
+$fisrt_date = date('d.m.Y', strtotime("-1 day", strtotime(CTimeEx::getCurDate())));
+for($i = 0; $i<CTimeEx::getCalendarDays()+2; $i++)
+{
+    $date_confing = date('d.m.Y', strtotime("+".$i." day", strtotime($fisrt_date)));
+    $arResult["CONFIG_DATES"][] = $date_confing;
+}
+
+//CDev::pre($arResult["CONFIG_DATES"]);
 
 $arResult["ITEMS"] = CChannel::getList(array("ACTIVE"=>"Y"), array("ID", "NAME", "DETAIL_PAGE_URL", "PROPERTY_ICON"));
 if($USER->IsAuthorized())
@@ -100,12 +113,26 @@ foreach($arResult["ITEMS"] as $key=>$arItem)
 }
 unset($arResult["ITEMS"]);
 
+$next_date = date('d.m.Y', strtotime("+1 day", strtotime(date("d.m.Y"))));
+
 //Получим все программы текущих каналов за выбранный день
-$arProgTimes = CProgTime::getList(
-    array(
-        "PROPERTY_DATE" => date("Y-m-d", strtotime($arParams["DATETIME"]["SELECTED_DATE"])),
-        "PROPERTY_CHANNEL" => $arChannelIds
-    ),
+$arrFilter = array(
+    "PROPERTY_CHANNEL" => $arChannelIds
+);
+if(!isset($_REQUEST["date"]))
+{
+    $arParams["CURRENT_DATE"] = date("d.m.Y");
+    
+    $arrFilter[">PROPERTY_DATE"] = date('Y-m-d', strtotime("-2 day", strtotime(date("d.m.Y"))));
+    $arrFilter["<=PROPERTY_DATE"] = date("Y-m-d");
+}else{
+    $arParams["CURRENT_DATE"] = $_REQUEST["date"];   
+    $arrFilter["PROPERTY_DATE"] = date("Y-m-d", strtotime($arParams["CURRENT_DATE"]));
+}
+
+//Получим все программы текущих каналов за выбранный день
+$arProgTimes = CProgTime::getList(                 
+    $arrFilter,
     array(
         "ID", "NAME", "CODE", "PROPERTY_DATE_START", "PROPERTY_DATE_END", "PROPERTY_PROG", "PROPERTY_CHANNEL", "PROPERTY_DATE"
     )
@@ -115,6 +142,7 @@ unset($arChannelIds);
 
 //BROADCAT_COLS
 $arProgWithTime = array();
+$arResult["DATES"] = array();
 foreach($arProgTimes as &$arProgTime)
 {
     $channel = $arProgTime["PROPERTY_CHANNEL_VALUE"];
@@ -131,21 +159,33 @@ foreach($arProgTimes as &$arProgTime)
     $arProg["CHANNEL_ID"] = $channel;
     $arProg["DETAIL_PAGE_URL"] = $arResult["CHANNELS"][$channel]["DETAIL_PAGE_URL"].$arProgTime["CODE"]."/";
     
-    $arResult["CHANNELS"][$channel]["PROGS"][] = $arProg;
+    $date = $arProgTime["PROPERTY_DATE_VALUE"];
+    $arResult["DATES"][$date][$channel][] = $arProg;
 }
 
 unset($arProgTimes);
 
-foreach($arResult["CHANNELS"] as $channel => &$arChannel )
+$arResult["FIRST_DATE"] = false;
+foreach($arResult["DATES"] as $date => $arChannels )
 {
-    $arProgs = CScheduleTable::setIndex(array(
-        "CITY" => $arParams["CITY"],
-        "PROGS" => $arChannel["PROGS"],
-        "NEWS" => $arChannel["PROPERTIES"]["NEWS"]["VALUE"],
-    ));
+    if(!$arResult["FIRST_DATE"])
+        $arResult["FIRST_DATE"] = $date;
     
-    $arChannel["PROGS"] = $arProgs;
+    foreach($arChannels as $channel=>$arProgs)
+    {
+        $arProgs = CScheduleTable::setIndex(array(
+            "CITY" => $arParams["CITY"],
+            "PROGS" => $arProgs,
+            "NEWS" => $arResult["CHANNELS"][$channel]["PROPERTIES"]["NEWS"]["VALUE"],
+        ));
+        
+        $arResult["DATES"][$date][$channel] = $arProgs;
+    }
 }
+
+$time_end = microtime(true);
+$time = $time_end - $time_start;
+//echo "end = ".$time_end."<br />";echo "время выполнения = ".$time."<br />";
 
 $this->IncludeComponentTemplate();
 ?>

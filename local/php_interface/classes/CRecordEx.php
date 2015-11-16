@@ -78,7 +78,16 @@ class CRecordEx
            'UF_SCHEDULE' => $arFields["UF_SCHEDULE"],
            'UF_PROG' => $arProgTime["PROPERTY_PROG_VALUE"]
         );
-                          
+        
+        $arProg = CProg::getByID($arProgTime["PROPERTY_PROG_VALUE"], array("NAME", "PROPERTY_SUB_TITLE", "PREVIEW_PICTURE", "PROPERTY_PICTURE_DOUBLE"));
+        $data["UF_NAME"] = $arProg["NAME"];
+        $data["UF_SUB_TITLE"] = $arProg["PROPERTY_SUB_TITLE_VALUE"];
+        
+        $picture = CFile::GetPath($arProg["PREVIEW_PICTURE"]);
+        $picture_double = CFile::GetPath($arProg["PROPERTY_PICTURE_DOUBLE_VALUE"]);
+        $data["UF_PICTURE"] = CFile::MakeFileArray($picture);
+        $data["UF_PICTURE_DOUBLE"] = CFile::MakeFileArray($picture_double);
+                         
         $result = $entity_data_class::add($data);
         if ($result->isSuccess()) 
         {         
@@ -107,6 +116,25 @@ class CRecordEx
         { 
             return implode(', ', $result->getErrors());
         }        
+    }
+    
+    public static function updateFromProg()
+    {
+        $arRecords = self::getList(false, array("UF_PROG", "ID"));
+        foreach($arRecords as $arRecord)
+        {
+            $data = array();
+            $arProg = CProg::getByID($arRecord["UF_PROG"], array("NAME", "PROPERTY_SUB_TITLE", "PREVIEW_PICTURE", "PROPERTY_PICTURE_DOUBLE"));
+            $data["UF_NAME"] = $arProg["NAME"];
+            $data["UF_SUB_TITLE"] = $arProg["PROPERTY_SUB_TITLE_VALUE"];
+            
+            $picture = CFile::GetPath($arProg["PREVIEW_PICTURE"]);
+            $picture_double = CFile::GetPath($arProg["PROPERTY_PICTURE_DOUBLE_VALUE"]);
+            $data["UF_PICTURE"] = CFile::MakeFileArray($picture);
+            $data["UF_PICTURE_DOUBLE"] = CFile::MakeFileArray($picture_double);
+            
+            self::update($arRecord["ID"], $data);
+        }
     }
     
     public static function delete($ID)

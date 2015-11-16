@@ -220,12 +220,12 @@ class CProgTime
 				<span data-icon="icon-recordit"></span>
                 <span class="status-desc">Записать</span>
 			</span>
-			<div class="recording-notify">
+			<?/*<div class="recording-notify">
 				<div class="recording-notify-text-wrap">
 					<span data-icon="icon-recording-progress"></span>
 					<p>Ваша любимая передача<br> поставлена на запись</p>
 				</div>
-			</div>
+			</div>*/?>
         <?endif;
         
         $content = ob_get_contents();  
@@ -274,14 +274,16 @@ class CProgTime
         <div class="item<?if($status):?> status-<?=$status?><?endif;?><?if($time_pointer && $arParams["NEED_POINTER"]):?> js-time-pointer<?endif;?><?if(empty($arProg["PICTURE"]["SRC"])):?> is-noimage<?endif;?><?if($arProg["CLASS"]=="double"):?> double-item<?endif;?>"
             data-type="broadcast" data-broadcast-id="<?=$arProg["SCHEDULE_ID"]?>"
         >
-            <div class="item-image-holder" style="background-image: url(<?=$arProg["PICTURE"]["SRC"]?>)"></div>
-        	
+            <div class="item-image-holder">
+				<img data-src="<?=$arProg["PICTURE"]["SRC"]?>" alt="">
+			</div>
+            
             <?if($time_pointer):?>
                 <span class="badge">в эфире</span>
             <?endif;?>
             
             <?=$status_icon?>
-            <?=self::driveNotifyMessage()?>
+            <?//=self::driveNotifyMessage()?>
             
         	<div class="item-header">
         		<time><?=substr($arProg["DATE_START"], 11, 5)?></time>

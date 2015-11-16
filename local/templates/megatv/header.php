@@ -98,7 +98,7 @@ IncludeTemplateLangFile(__FILE__);
                     		"PARENT_SECTION" => "",
                     		"PARENT_SECTION_CODE" => "",
                     		"INCLUDE_SUBSECTIONS" => "Y",
-                    		"CACHE_TYPE" => "A",
+                    		"CACHE_TYPE" => "N",
                     		"CACHE_TIME" => "36000000",
                     		"CACHE_FILTER" => "N",
                     		"CACHE_GROUPS" => "Y",

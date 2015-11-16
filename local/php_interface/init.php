@@ -15,6 +15,8 @@ define("SUBSCRIBE_HL", 4);
 define("RECORD_HL", 5);
 define("BONUS_FOR_REGISTRATION", 20);   //бонус за регистрацию +20 ГБ пространства
 
+require_once $_SERVER['DOCUMENT_ROOT'] . '/vendor/autoload.php';
+
 use \Bitrix\Highloadblock as HL;
 use \Bitrix\Main\Entity;
 use \Bitrix\Main\Type\DateTime;

@@ -122,6 +122,17 @@ class CTimeEx
         return $arDATE["DD"]." ".ToLower(GetMessage("MONTH_".intval($arDATE["MM"])."_S"))." ".$arDATE["YYYY"];
     }
     
+    public static function dateToStrWithDay($date = false)
+    {
+        if(!$date)
+            $date = self::getCurDate();
+            
+        $day = FormatDate("l", MakeTimeStamp($date));
+            
+        $arDATE = ParseDateTime($date, FORMAT_DATETIME);
+        return $day.". ".$arDATE["DD"]." ".ToLower(GetMessage("MONTH_".intval($arDATE["MM"])."_S"));
+    }
+    
     public static function dateDiff($date1, $date2)
     {
         return strtotime($date1)<strtotime($date2);

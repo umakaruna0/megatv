@@ -51,18 +51,27 @@ class CCityEx
         
         if(!$_SESSION["USER_GEO"] || empty($_SESSION["USER_GEO"]))
         {
-            $arGeo = \Olegpro\IpGeoBase\IpGeoBase::getInstance()->getRecord();
-
-            if(!empty($arGeo))
+            if($_COOKIE["city_select_data"])
             {
-                $arCities = self::getList(array("NAME"=>$arGeo["city"]), $arSelect);
+                $arCities = self::getList(array("NAME"=>$_COOKIE["city_select_data"]), $arSelect);
                 if(!empty($arCities[0]))
                 {
                     $_SESSION["USER_GEO"] = $arCities[0];
                 }
-                
             }else{
-                $_SESSION["USER_GEO"] = self::getByID(array("ID"=>self::$defaultCityID), $arSelect);
+                $arGeo = \Olegpro\IpGeoBase\IpGeoBase::getInstance()->getRecord();
+
+                if(!empty($arGeo))
+                {
+                    $arCities = self::getList(array("NAME"=>$arGeo["city"]), $arSelect);
+                    if(!empty($arCities[0]))
+                    {
+                        $_SESSION["USER_GEO"] = $arCities[0];
+                    }
+                    
+                }else{
+                    $_SESSION["USER_GEO"] = self::getByID(array("ID"=>self::$defaultCityID), $arSelect);
+                }
             }
         }
         

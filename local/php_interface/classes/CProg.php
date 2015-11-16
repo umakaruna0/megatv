@@ -109,6 +109,43 @@ class CProg
         }
     }
     
+    public static function delete($arrFilter = false) 
+    {
+		CModule::IncludeModule("iblock");
+        global $DB;
+        
+        $arProgs = array();
+        $arSelect = Array("PROPERTY_PROG");
+        $arFilter = array("IBLOCK_ID" => PROG_TIME_IB, "ACTIVE" => "Y", ">PROPERTY_DATE"=>date('Y-m-d', strtotime("-2 day", strtotime(date("d.m.Y"))))); 
+        $rsRes = CIBlockElement::GetList( array("SORT" => "ASC"), $arFilter, false, false, $arSelect);
+		while( $arItem = $rsRes->GetNext() )
+        {
+            $arProgs[] = $arItem["PROPERTY_PROG_VALUE"];
+            CIBlockElement::Delete($arItem["ID"]);
+		}
+        $arProgs = array_unique($arProgs);
+        
+        
+        $arSelect = Array("ID");
+        $arFilter = array("IBLOCK_ID" => PROG_IB); 
+        
+        if($arrFilter)
+            $arFilter = array_merge($arFilter, $arrFilter);
+        
+        $rsRes = CIBlockElement::GetList( array("SORT" => "ASC"), $arFilter, false, false, $arSelect);
+		while( $arItem = $rsRes->GetNext() )
+        {
+            if(!in_array($arItem["ID"], $arProgs))
+            {
+                $DB->StartTransaction();
+                CIBlockElement::Delete($arItem["ID"]);
+                $DB->Commit();
+            }  
+		}
+        
+        self::updateCache();
+	}
+    
     public static function addRating($ID, $addRating)
     {
         $arProg = self::getByID($ID, array("PROPERTY_RATING"));
