@@ -20,7 +20,7 @@ CModule::IncludeModule("catalog");
 CModule::IncludeModule("sale");
 
 CProg::updateCache();
-       
+/*       
 $arProgs = CProg::getList(array("PREVIEW_PICTURE"=>false, "!PROPERTY_PICTURE_DOUBLE"=>false), array(
     "ID", "NAME", "PREVIEW_TEXT", "PROPERTY_CHANNEL", "PROPERTY_SUB_TITLE", "PREVIEW_PICTURE",
     "PROPERTY_PICTURE_DOUBLE", "PROPERTY_PICTURE_HALF", "PROPERTY_PICTURE_VERTICAL", "PROPERTY_PICTURE_VERTICAL_DOUBLE"
@@ -39,7 +39,7 @@ foreach($arProgs as $arProg)
         ));
         CFile::Delete($arProg["PROPERTY_".$code."_VALUE"]);
     } 
-}
+}*/
 
 die();
 ?>

@@ -45,7 +45,7 @@ if(!$USER->IsAuthorized() && count($result['errors'])==0)
             $rsUsers = CUser::GetList(($by="EMAIL"), ($order="desc"), Array("=EMAIL" =>$EMAIL));
             if($arUser = $rsUsers->GetNext())
             {
-                if($arUser["ACTIVE"]=="N")
+                if($arUser["ACTIVE"]!="Y")
                 {
                     $result["status"] = "need_confirm";
                     exit(json_encode($result));

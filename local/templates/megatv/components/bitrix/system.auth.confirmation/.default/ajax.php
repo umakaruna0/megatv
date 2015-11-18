@@ -88,7 +88,7 @@ if(!$USER->IsAuthorized() && count($result['errors'])==0)
                     $event = new CEvent;
                     $event->SendImmediate("USER_INFO_AFTER_CONFIRM", SITE_ID, $arFields);
                     
-                    $USER->Authorize($arUser["ID"]);
+                    $USER->Authorize($arResult["USER"]["ID"]);
                     
                     $result['status'] = "success";
                 }

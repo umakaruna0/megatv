@@ -14,16 +14,17 @@ $broadcastID = intval($_GET["broadcastID"]);
 
 if($_GET["record"]!="false")
 {
-    $arRecord = CRecordEx::getByID($broadcastID);
+    $arRecord = CRecordEx::getByID($broadcastID, array("ID", "UF_PROG", "UF_URL", "UF_PROGRESS_PERS", "UF_NAME", "UF_SUB_TITLE", "UF_PICTURE_DOUBLE"));
 }else{
-    $arRecords = CRecordEx::getList(array("UF_USER"=> $USER->GetID(), "UF_SCHEDULE"=>$broadcastID), array("UF_PROG", "ID", "UF_URL"));
+    $arRecords = CRecordEx::getList(array("UF_USER"=> $USER->GetID(), "UF_SCHEDULE"=>$broadcastID), array("ID", "UF_PROG", "UF_URL", "UF_PROGRESS_PERS", "UF_NAME", "UF_SUB_TITLE", "UF_PICTURE_DOUBLE"));
     $arRecord = $arRecords[0];
 }
 
-$arProg = CProg::getByID($arRecord["UF_PROG"], array("NAME", "PROPERTY_SUB_TITLE", "PROPERTY_PICTURE_DOUBLE", "ID"));
-$arProg["PICTURE"] = CDev::resizeImage($arProg["PROPERTY_PICTURE_DOUBLE_VALUE"], 896, 504);
+//$arProg = CProg::getByID($arRecord["UF_PROG"], array("NAME", "PROPERTY_SUB_TITLE", "PROPERTY_PICTURE_DOUBLE", "ID"));
+//$arProg["PICTURE"] = CDev::resizeImage($arProg["PROPERTY_PICTURE_DOUBLE_VALUE"], 896, 504);
 
-$arWatched = CRecordEx::getList(array("!UF_WATCHED"=> false, "UF_PROG"=>$arProg["ID"]), array("ID"));
+$arRecord["PICTURE"] = CDev::resizeImage($arRecord["UF_PICTURE_DOUBLE"], 896, 504);
+$arWatched = CRecordEx::getList(array("!UF_WATCHED"=> false, "UF_URL"=>$arRecord["UF_URL"]), array("ID"));
 ?>
 <div class="advert-holder">
     <?$APPLICATION->IncludeComponent("bitrix:main.include", "", array("AREA_FILE_SHOW" => "file", "PATH" => SITE_DIR."include/player-banner.php"), false);?>
@@ -34,13 +35,13 @@ $arWatched = CRecordEx::getList(array("!UF_WATCHED"=> false, "UF_PROG"=>$arProg[
 			"seekTime": "<?=intval($arRecord["UF_PROGRESS_SECS"])?>",
 			"broadcastID": "<?=$broadcastID?>",
 			"streamURL": "<?=$arRecord["UF_URL"]?>",
-			"posterURL": "<?=$arProg["PICTURE"]["SRC"]?>",
-			"videoTitle": "<?=$arProg["NAME"]?><?= $arProg["PROPERTY_SUB_TITLE_VALUE"] ? " | ".$arProg["PROPERTY_SUB_TITLE_VALUE"] : "" ?>",
+			"posterURL": "<?=$arRecord["PICTURE"]["SRC"]?>",
+			"videoTitle": "<?=$arRecord["UF_NAME"]?><?= $arRecord["UF_SUB_TITLE"] ? " | ".$arRecord["UF_SUB_TITLE"] : "" ?>",
             "playerFlashURL": "<?=SITE_TEMPLATE_PATH?>/megatv/app/js/vendors/jwplayer/jwplayer.flash.swf"
 		}
 	</script>
 	<div class="block-header">
-		<h3 class="block-title"><?=$arProg["NAME"]?><?= $arProg["PROPERTY_SUB_TITLE_VALUE"] ? " <small>|".$arProg["PROPERTY_SUB_TITLE_VALUE"]."</small>" : "" ?></h3>
+		<h3 class="block-title"><?=$arRecord["UF_NAME"]?><?= $arRecord["UF_SUB_TITLE"] ? " <small>|".$arRecord["UF_SUB_TITLE"]."</small>" : "" ?></h3>
 	</div>
 	<div class="block-body">
 		<a href="#" class="close-link" data-dismiss="modal"><span data-icon="icon-times"></span></a>
@@ -67,7 +68,7 @@ $arWatched = CRecordEx::getList(array("!UF_WATCHED"=> false, "UF_PROG"=>$arProg[
 				<a href="broadcast-card-recommendate.html" class="btn btn-default"><span data-icon="icon-network-social"></span>Рекомендовать друзьям</a>*/?>
 			</div>
 		</div>
-        <?$APPLICATION->IncludeComponent("hawkart:prog.comments", "", Array("PROG_ID"=>$arProg["ID"]), false);?>
+        <?$APPLICATION->IncludeComponent("hawkart:prog.comments", "", Array("PROG_ID"=>$arRecord["UF_PROG"]), false);?>
 	</div>
 </div><!-- .broadcast-player -->
 <?die();?>

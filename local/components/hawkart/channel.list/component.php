@@ -121,10 +121,11 @@ $arrFilter = array(
 );
 if(!isset($_REQUEST["date"]))
 {
-    $arParams["CURRENT_DATE"] = date("d.m.Y");
-    
-    $arrFilter[">PROPERTY_DATE"] = date('Y-m-d', strtotime("-2 day", strtotime(date("d.m.Y"))));
-    $arrFilter["<=PROPERTY_DATE"] = date("Y-m-d");
+    $arParams["CURRENT_DATE"] = date("d.m.Y", strtotime($arParams["DATETIME"]["SERVER_DATETIME_WITH_OFFSET"]));
+
+    //$arrFilter[">PROPERTY_DATE"] = date('Y-m-d', strtotime("-2 day", strtotime(date("d.m.Y"))));
+    //$arrFilter["<=PROPERTY_DATE"] = date("Y-m-d");
+    $arrFilter["PROPERTY_DATE"] = date("Y-m-d", strtotime($arParams["DATETIME"]["SERVER_DATETIME_WITH_OFFSET"]));
 }else{
     $arParams["CURRENT_DATE"] = $_REQUEST["date"];   
     $arrFilter["PROPERTY_DATE"] = date("Y-m-d", strtotime($arParams["CURRENT_DATE"]));

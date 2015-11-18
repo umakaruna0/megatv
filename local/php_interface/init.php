@@ -59,6 +59,7 @@ AddEventHandler("main", "OnBeforeUserLogin", Array("CUserEx", "OnBeforeUserLogin
 AddEventHandler("main", "OnBeforeUserRegister", Array("CUserEx", "OnBeforeUserRegister"));
 AddEventHandler("main", "OnAfterUserAdd", Array("CUserEx", "OnAfterUserUpdateHandler"));
 AddEventHandler("main", "OnBeforeUserSendPassword", Array("CUserEx", "OnBeforeUserSendPasswordHandler"));
+AddEventHandler("main", "OnBeforeUserDelete", Array("CUserEx", "OnBeforeUserDeleteHandler"));
 
 // обработка опенграфовских мета-тегов
 AddEventHandler('main', 'OnEpilog', array('CMyEpilogHooks', 'OpenGraph'));

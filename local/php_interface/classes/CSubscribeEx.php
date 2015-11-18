@@ -154,4 +154,15 @@ class CSubscribeEx
             CUserEx::capacityAdd($USER_ID, $gb);
         }
     }
+    
+    public static function delete($ID)
+    {
+        CModule::IncludeModule('highloadblock');
+        
+        $hlblock = Bitrix\Highloadblock\HighloadBlockTable::getById(SUBSCRIBE_HL)->fetch();
+        $entity = Bitrix\Highloadblock\HighloadBlockTable::compileEntity( $hlblock );
+        $entity_data_class = $entity->getDataClass();
+                   
+        $result = $entity_data_class::delete($ID);       
+    }
 }

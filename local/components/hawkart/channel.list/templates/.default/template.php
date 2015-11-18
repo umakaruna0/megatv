@@ -64,6 +64,7 @@ $curPage++;
     
 	<div class="categories-items kinetic-active">
         <div class="canvas-wrap">
+            <div class="left-days-placeholder"></div>
             <?
             $date_count = 1;
             foreach($arResult["DATES"] as $date => $arChannels)
@@ -118,8 +119,8 @@ $curPage++;
                         
                         $next_date = date('d.m.Y', strtotime("+1 day", strtotime($date)));
                     }
-                    if($date_count<count($arResult["DATES"]))
-                    {
+                    //if($date_count<count($arResult["DATES"]))
+                    //{
                         ?>
                         <div class="day-mark">
                             <span>
@@ -128,13 +129,14 @@ $curPage++;
                             </span>
                         </div>
                         <?
-                    }
+                    //}
                     ?>
                 </div>
                 <?
                 $date_count++;
             }
             ?>
+            <div class="right-days-placeholder"></div>
             
         </div>
     </div><!-- /.categories-items -->

@@ -36,6 +36,63 @@ class CUserEx
         }*/
     }
     
+    function OnBeforeUserDeleteHandler($user_id)
+    {
+        CModule::IncludeModule("iblock");
+        CModule::IncludeModule("sale");
+        
+        //Привязки к соц. сетям
+        $arrFilter = array(
+            "IBLOCK_ID" => USER_SOCIAL_IB,
+            "PROPERTY_USER_ID" => $user_id,
+        );
+        $arSelect = array("ID");
+        $rsRes = CIBlockElement::GetList( $arOrder, $arrFilter, false, false, $arSelect );
+		while( $arItem = $rsRes->GetNext() )
+        {
+            CIBlockElement::Delete($arItem["ID"]);
+		}
+        
+        //Удаляем записи
+        $arRecords = CRecordEx::getList(array("UF_USER"=>$user_id), array("ID"));
+        foreach($arRecords as $arRecord)
+        {
+            CRecordEx::delete($arRecord["ID"]);
+        }
+        
+        //Удаляем счет
+        if($arAccount = CSaleUserAccount::GetByUserID($user_id, "RUR"))
+        {
+            CSaleUserAccount::Delete($arAccount["ID"]);
+        }
+        
+        //Удаляем заказы
+        $arFilter = Array(
+           "USER_ID" => $user_id,
+        );
+        $db_sales = CSaleOrder::GetList(array("DATE_INSERT" => "ASC"), $arFilter);
+        while ($ar_sales = $db_sales->Fetch())
+        {
+            CSaleOrder::Delete($ar_sales["ID"]);
+        }
+        
+        //Удаляем статистику
+        $arStats = CStatChannel::getList(array("UF_USER"=>$user_id), array("ID"));
+        foreach($arStats as $arStat)
+        {
+            CStatChannel::delete($arStat["ID"]);
+        }
+        
+        //Удаляем подписки
+        $arSubObj = new CSubscribeEx("CHANNEL");
+        $arSubs = $arSubObj->getList(array("UF_USER"=>$user_id), array("ID"));
+        foreach($arSubs as $arSub)
+        {
+            CSubscribeEx::delete($arSub["ID"]);
+        }
+
+    }
+    
     public static function generateDataSotal()
     {
         global $USER;

@@ -34,13 +34,16 @@ foreach($arProgTimes as $arProg)
     CIBlockElement::Delete($arProg["ID"]);
 }*/
 
-//Удаляем устаревшие программы
+//Удаляем устаревшие расписания программ
 CProgTime::delete();
 
 //Загружаем и импортируем данные из EPG
 $Epg = new CEpg();
 $Epg->download();
 $Epg->import();
+
+//Удаляем устаревшие программы
+CProg::delete();
 
 echo " --finish loading--";
 die();

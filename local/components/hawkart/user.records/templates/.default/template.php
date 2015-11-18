@@ -30,10 +30,10 @@ if(count($arResult["RECORDS"])==0)
                         <?
                         if($arParams["WATCHED"]=="Y")
                         {
-                            $path = $_SERVER["DOCUMENT_ROOT"].$arRecord["PROG"]["PICTURE"]["SRC"];
+                            $path = $_SERVER["DOCUMENT_ROOT"].$arRecord["PICTURE"]["SRC"];
                             ?><div class="item-image-holder" style="background-image: url(<?=SITE_TEMPLATE_PATH?>/ajax/img_grey.php?path=<?=urlencode($path)?>)"></div><?
                         }else{
-                            $img = $arRecord["PROG"]["PICTURE"]["SRC"];
+                            $img = $arRecord["PICTURE"]["SRC"];
                             ?><div class="item-image-holder" style="background-image: url(<?=$img?>)"></div><?
                         }
                         ?>
@@ -56,7 +56,7 @@ if(count($arResult["RECORDS"])==0)
 						</div>
 						<div class="item-header">
 							<div class="view-progress" data-progress="<?=intval($arRecord["UF_PROGRESS_PERS"])?>"></div>
-							<span><?=$arRecord["PROG"]["NAME"]?></span>
+							<span><?=$arRecord["UF_NAME"]?></span>
 						</div>
 					</div>
                     <?

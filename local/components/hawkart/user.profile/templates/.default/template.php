@@ -4,7 +4,7 @@
 	</div>
 	<div class="block-body">
         <div class="avatar-col">
-			<div class="user-avatar-holder<?if(!$arResult["USER"]["PERSONAL_PHOTO"]):?> is-empty is-loading<?endif;?>" data-module="avatar-loader">
+			<div class="user-avatar-holder<?if(!$arResult["USER"]["PERSONAL_PHOTO"]):?> is-empty<?endif;?>" data-module="avatar-loader">
 				<script type="text/x-config">
 					{
 						"url": "<?= $templateFolder ?>/upload.php"

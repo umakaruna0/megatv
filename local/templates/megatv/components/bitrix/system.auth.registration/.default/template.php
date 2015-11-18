@@ -4,16 +4,9 @@
 <div class="authorize-overlay is-signup-overlay" data-module="signup-overlay">
 	<div class="overlay-content">
 		<h4 class="overlay-title">Регистрация</h4>
-		<ul class="social-authorize-list">
-			<li><a href="#" data-type="social-signin-link"><span data-icon="icon-ya-social" data-size="small"></span></a></li>
-			<li><a href="#" data-type="social-signin-link"><span data-icon="icon-ok-social" data-size="small"></span></a></li>
-			<li><a href="#" data-type="social-signin-link"><span data-icon="icon-gp-social" data-size="small"></span></a></li>
-			<li><a href="#" data-type="social-signin-link"><span data-icon="icon-in-social" data-size="small"></span></a></li>
-			<li><a href="#" data-type="social-signin-link"><span data-icon="icon-vk-social" data-size="small"></span></a></li>
-			<li><a href="#" data-type="social-signin-link"><span data-icon="icon-tw-social" data-size="small"></span></a></li>
-			<li><a href="#" data-type="social-signin-link"><span data-icon="icon-im-social" data-size="small"></span></a></li>
-			<li><a href="#" data-type="social-signin-link"><span data-icon="icon-fb-social" data-size="small"></span></a></li>
-		</ul>
+
+        <?require($_SERVER["DOCUMENT_ROOT"].SITE_TEMPLATE_PATH."/include/social-auth.php");?>
+        
 		<span class="divider"><span>или</span></span>
 		<div class="steps">
 			<div class="step fade in active">

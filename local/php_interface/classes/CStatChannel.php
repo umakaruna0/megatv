@@ -80,4 +80,15 @@ class CStatChannel
             return implode(', ', $result->getErrors());
         }        
     }
+    
+    public static function delete($ID)
+    {
+        CModule::IncludeModule('highloadblock');
+        
+        $hlblock = Bitrix\Highloadblock\HighloadBlockTable::getById(7)->fetch();
+        $entity = Bitrix\Highloadblock\HighloadBlockTable::compileEntity( $hlblock );
+        $entity_data_class = $entity->getDataClass();
+                   
+        $result = $entity_data_class::delete($ID);       
+    }
 }
