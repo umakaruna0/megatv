@@ -177,6 +177,9 @@ class CProgTime
 
         $arDatetime = CTimeEx::getDatetime();
         $date_now = CTimeEx::dateOffset($arDatetime["OFFSET"], date("d.m.Y H:i:s")); 
+        $datetime = $arDatetime["SERVER_DATETIME_WITH_OFFSET"];
+        $start = $arProg["DATE_START"];
+        $end = $arProg["DATE_END"];
 
         $status = "";
         if(isset($arRecordsStatuses["VIEWED"][$schedule]))
@@ -191,7 +194,7 @@ class CProgTime
         {
             $status = "recorded";
         }
-        else if(in_array($arProg["CHANNEL_ID"], $arSubscriptionChannels) && $USER->IsAuthorized() || !$USER->IsAuthorized()/* && CTimeEx::dateDiff($date_now, $arProg["DATE_START"])*/)
+        else if(in_array($arProg["CHANNEL_ID"], $arSubscriptionChannels) && $USER->IsAuthorized() && CTimeEx::dateDiff($date_now, $end) || !$USER->IsAuthorized() )
         {
             $status = "recordable";
         }
@@ -215,6 +218,7 @@ class CProgTime
 				<span class="status-desc">Просмотрено</span>
 			</span>
         <?endif;?>
+        
         <?if($status == "recordable"):?>
             <span class="item-status-icon">
 				<span data-icon="icon-recordit"></span>

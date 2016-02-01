@@ -16,7 +16,8 @@ $arParams = $arParams + array(
 );
 
 $arResult["CONFIG_DATES"] = array();
-$fisrt_date = date('d.m.Y', strtotime("-1 day", strtotime(CTimeEx::getCurDate())));
+//$fisrt_date = date('d.m.Y', strtotime("-1 day", strtotime(CTimeEx::getCurDate())));
+$fisrt_date = date('d.m.Y', strtotime(CTimeEx::getCurDate()));
 for($i = 0; $i<CTimeEx::getCalendarDays()+2; $i++)
 {
     $date_confing = date('d.m.Y', strtotime("+".$i." day", strtotime($fisrt_date)));

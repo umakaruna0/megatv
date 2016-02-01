@@ -419,4 +419,63 @@ class CDev
         }
         return false;
     }
+    
+    public static function deleteDirectory($dirPath) 
+    {
+        if (is_dir($dirPath)) 
+        {
+            $objects = scandir($dirPath);
+            foreach ($objects as $object) 
+            {
+                if ($object != "." && $object !="..") 
+                {
+                    if (filetype($dirPath . DIRECTORY_SEPARATOR . $object) == "dir") 
+                    {
+                        deleteDirectory($dirPath . DIRECTORY_SEPARATOR . $object);
+                    } else {
+                        unlink($dirPath . DIRECTORY_SEPARATOR . $object);
+                    }
+                }
+            }
+            reset($objects);
+            rmdir($dirPath);
+        }
+    }
+    
+    public static function deleteOldFiles($dir, $expire_time)
+    {
+        // проверяем, что $dir - каталог
+        if (is_dir($dir)) 
+        {
+            // открываем каталог
+            if ($dh = opendir($dir)) 
+            {
+                // читаем и выводим все элементы от первого до последнего
+                while (($file = readdir($dh)) !== false) 
+                {
+                    // текущее время
+                    $time_sec=time();
+                    
+                    // время изменения файла
+                    $time_file=filemtime($dir . $file);
+                    
+                    // теперь узнаем сколько прошло времени (в секундах)
+                    $time=$time_sec-$time_file;
+                    
+                    $unlink = $dir.$file;
+                    
+                    if (is_file($unlink))
+                    {
+                        if ($time>$expire_time)
+                        {
+                            unlink($unlink);
+                        }
+                    }
+                }
+                // закрываем каталог
+                closedir($dh);
+            }
+        }
+    }
+    
 }

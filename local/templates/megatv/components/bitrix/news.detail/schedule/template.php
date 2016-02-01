@@ -11,7 +11,9 @@
     <?
     $arStatus = CProgTime::status(array(
         "SCHEDULE_ID" => $arResult["ID"],
-        "CHANNEL_ID" => $arResult["PROPERTIES"]["CHANNEL"]["VALUE"]
+        "CHANNEL_ID" => $arResult["PROPERTIES"]["CHANNEL"]["VALUE"],
+        "DATE_START" => $arResult["DATE_START"],
+        "DATE_END" => $arResult["DATE_END"]
     ));
     $status = $arStatus["status"];
     $status_icon = $arStatus["status-icon"];

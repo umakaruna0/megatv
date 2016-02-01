@@ -84,10 +84,10 @@ class CEpg
             $path_parts = pathinfo($url);
             $file_name = $path_parts["filename"];
             $path = FULL_PATH_DOCUMENT_ROOT."/upload/tmp/".$file_name.".jpg";
-            $path_cut = FULL_PATH_DOCUMENT_ROOT."/upload/tmp/".$file_name."_cut_".$width."_".$height.".jpg";
+            $path_cut = FULL_PATH_DOCUMENT_ROOT."/upload/epg/".$file_name."_cut_".$width."_".$height.".jpg";
         }else{
             $path = $default = FULL_PATH_DOCUMENT_ROOT."/upload/default.jpg";
-            $path_cut = FULL_PATH_DOCUMENT_ROOT."/upload/tmp/default_cut_".$width."_".$height.".jpg";
+            $path_cut = FULL_PATH_DOCUMENT_ROOT."/upload/epg/default_cut_".$width."_".$height.".jpg";
             
             return false;
         }

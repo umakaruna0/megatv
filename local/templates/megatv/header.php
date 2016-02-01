@@ -10,6 +10,7 @@ IncludeTemplateLangFile(__FILE__);
 		<link rel="shortcut icon" href="/favicon.png">
 		<link rel="icon" href="/favicon.png">
 		<meta name='yandex-verification' content='6b022e42074ebaca' />
+        <meta name="author" content="http://hawkart.ru, разработка и поддержка интернет-проектов и информационных систем"/>
         <?
         echo '<meta http-equiv="Content-Type" content="text/html; charset='.LANG_CHARSET.'"'.(true ? ' /':'').'>'."\n";
         $APPLICATION->ShowMeta("robots", false, true);
