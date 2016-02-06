@@ -51,6 +51,8 @@ else
             	<input type="hidden" name="AUTH_FORM" value="Y" />
             	<input type="hidden" name="TYPE" value="AUTH" />
                 <input type="hidden" name="ajax_key" value="<?=md5('ajax_'.LICENSE_KEY)?>" />
+                <input type="hidden" id="USER_REMEMBER_frm" name="USER_REMEMBER" value="Y"/>
+                
                 <?=bitrix_sessid_post()?>
                 
         		<div class="form-group email-container" autocomplete="off">

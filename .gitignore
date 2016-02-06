@@ -123,6 +123,6 @@ syslog
 /.idea/
 
 #ignore libs installed by Composer
-/vendor/
+#/vendor/
 
 /local/config/config.php

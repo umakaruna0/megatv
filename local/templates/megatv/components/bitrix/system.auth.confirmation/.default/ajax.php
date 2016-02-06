@@ -56,7 +56,7 @@ if(!$USER->IsAuthorized() && count($result['errors'])==0)
                     $text = "Ваш логин - ".$phone.", пароль - ".$PASS_1;
                     CEchogroupSmsru::Send($phone, $text);
                     
-                    $USER->Authorize($arUser["ID"]);
+                    $USER->Authorize($arUser["ID"], true);
                     
                     $result['status'] = "success";
                 }else{
@@ -88,7 +88,7 @@ if(!$USER->IsAuthorized() && count($result['errors'])==0)
                     $event = new CEvent;
                     $event->SendImmediate("USER_INFO_AFTER_CONFIRM", SITE_ID, $arFields);
                     
-                    $USER->Authorize($arResult["USER"]["ID"]);
+                    $USER->Authorize($arResult["USER"]["ID"], true);
                     
                     $result['status'] = "success";
                 }

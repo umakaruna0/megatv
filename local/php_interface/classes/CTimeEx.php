@@ -47,6 +47,7 @@ class CTimeEx
         $countDays = 10 - ($w-$dateFullDownload);
         $countDays--;
         return $countDays;
+        //return 4;
     }
     
     public static function getCurDate()

@@ -1,5 +1,7 @@
 {
     "require": {
-        "hybridauth/hybridauth": "^2.5"
+        "hybridauth/hybridauth": "^2.6",
+        "google/apiclient": "^1.1",
+        "guzzlehttp/guzzle": "^3.8"
     }
 }
