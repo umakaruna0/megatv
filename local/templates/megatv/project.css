@@ -2,6 +2,10 @@
 {
     overflow: hidden;
 }
+.icon-matchtv-channel, [data-icon="icon-matchtv-channel"]{
+    width: 169px;
+    height: 38px;
+}
 /*.broadcast-results .categories-items
 {
     bottom: 0px;
