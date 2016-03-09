@@ -34,9 +34,13 @@ class CRecordEx
     }
     
     
-    public static function getBySotalID($sotal_id,$arSelect=false)
+    public static function getBySotalID($sotal_id, $arSelect=false)
     {
-        $arRecords = self::getList(array("UF_SOTAL_ID"=>$sotal_id), array("ID"));
+        $arSel = array("ID");
+        if($arSelect)
+            $arSel = array_merge($arSel, $arSelect);
+            
+        $arRecords = self::getList(array("UF_SOTAL_ID"=>$sotal_id), $arSel);
         
         if(!empty($arRecords))
             return $arRecords[0];
