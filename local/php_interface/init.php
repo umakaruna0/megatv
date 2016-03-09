@@ -50,7 +50,8 @@ CModule::AddAutoloadClasses(
         '\CServiceEx' => $sClassesPath.'CServiceEx.php',
         '\CUserEx' => $sClassesPath.'CUserEx.php',
         '\CCommentEx' => $sClassesPath.'CCommentEx.php',
-        '\CStatChannel' => $sClassesPath.'CStatChannel.php'
+        '\CStatChannel' => $sClassesPath.'CStatChannel.php',
+        '\CNotifyEx' => $sClassesPath.'CNotifyEx.php'
 	)
 );
 

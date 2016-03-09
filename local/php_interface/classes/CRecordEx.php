@@ -68,12 +68,14 @@ class CRecordEx
         $entity = Bitrix\Highloadblock\HighloadBlockTable::compileEntity( $hlblock );
         $entity_data_class = $entity->getDataClass();
         
-        $arProgTime = CProgTime::getByID($arFields["UF_SCHEDULE"], array("PROPERTY_DATE_END", "PROPERTY_PROG"));
-        $dt = new Bitrix\Main\Type\DateTime(date('Y-m-d H:i:s', strtotime($arProgTime["PROPERTY_DATE_END_VALUE"])), 'Y-m-d H:i:s');
+        $arProgTime = CProgTime::getByID($arFields["UF_SCHEDULE"], array("PROPERTY_DATE_END", "PROPERTY_PROG", "PROPERTY_DATE_START"));
+        $start = new Bitrix\Main\Type\DateTime(date('Y-m-d H:i:s', strtotime($arProgTime["PROPERTY_DATE_START_VALUE"])), 'Y-m-d H:i:s');
+        $end = new Bitrix\Main\Type\DateTime(date('Y-m-d H:i:s', strtotime($arProgTime["PROPERTY_DATE_END_VALUE"])), 'Y-m-d H:i:s');
         
         $data = array(
            'UF_USER' => $USER_ID,
-           'UF_DATE_END' => $dt,
+           'UF_DATE_START' => $start,
+           'UF_DATE_END' => $end,
            'UF_SOTAL_ID' => $arFields["UF_SOTAL_ID"],
            'UF_SCHEDULE' => $arFields["UF_SCHEDULE"],
            'UF_PROG' => $arProgTime["PROPERTY_PROG_VALUE"]
