@@ -25,7 +25,7 @@ CModule::IncludeModule("sale");
 $dt = new Bitrix\Main\Type\DateTime(date('Y-m-d H:i:s', time()), 'Y-m-d H:i:s');
 $arFilter = array(
     "UF_URL" => false,
-    ">UF_DATE_START" => $dt,
+    "<UF_DATE_START" => $dt,
     ">UF_DATE_END" => $dt,
     "UF_BEFORE_NOTIFY" => false
 );
