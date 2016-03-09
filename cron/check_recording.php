@@ -23,15 +23,17 @@ CModule::IncludeModule("sale");
  * Уведомление на email в момент начала записи
  */
 $dt = new Bitrix\Main\Type\DateTime(date('Y-m-d H:i:s', time()), 'Y-m-d H:i:s');
+echo $dt;
 $arFilter = array(
     "UF_URL" => false,
     ">UF_DATE_START" => $dt,
-    ">UF_DATE_END" => $dt,
+	//">UF_DATE_END" => $dt,
     "UF_BEFORE_NOTIFY" => false
 );
 $arRecords = CRecordEx::getList($arFilter, array("ID", "UF_USER", "UF_NAME", "UF_SUB_TITLE"));
 foreach($arRecords as $arRecord)
 {
+	print_r($arRecord);
     CNotifyEx::onRecord(array(
         "USER_ID" => $arRecord["UF_USER"],
         "RECORD_ID" => $arRecord["ID"],
