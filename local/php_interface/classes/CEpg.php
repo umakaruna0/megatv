@@ -66,8 +66,6 @@ class CEpg
         {
             foreach($icons as $icon)
             {
-                //$width_icon = intval($icon["@attributes"]["width"]);
-                //$height_icon = intval($icon["@attributes"]["height"]);
                 if(intval($icon["@attributes"]["width"])>$max)
                 {
                     $max = intval($icon["@attributes"]["width"]);
@@ -223,13 +221,13 @@ class CEpg
             
             if (!array_key_exists($unique, $arProgs))
             {
-                if(isset($arProg['episode-num']))
+                if(isset($arProg['episode-number']))
                 {
-                    $arFields["PROPS"]["SERIA"] = intval($arProg['episode-num']);
+                    $arFields["PROPS"]["SERIA"] = intval($arProg['episode-number']);
                 }
-                if(isset($arProg['season-num']))
+                if(isset($arProg['season']))
                 {
-                    $arFields["PROPS"]["SEASON"] = intval($arProg['season-num']);
+                    $arFields["PROPS"]["SEASON"] = intval($arProg['season']);
                 }
                 
                 if(!is_array($arProg["category"]))
@@ -239,6 +237,10 @@ class CEpg
                 if(!is_array($arProg["topic"]))
                     $arProg["topic"] = array($arProg["topic"]);
                 $arFields["PROPS"]["TOPIC"] = implode(", ", $arProg["topic"]);
+                
+                if(!is_array($arProg["GANRE"]))
+                    $arProg["ganre"] = array($arProg["ganre"]);
+                $arFields["PROPS"]["GANRE"] = implode(", ", $arProg["ganre"]);
                 
                 if(!is_array($arProg["country"]))
                     $arProg["country"] = array($arProg["country"]);

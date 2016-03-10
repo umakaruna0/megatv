@@ -41,6 +41,8 @@ CProgTime::delete();
 $path = $_SERVER['DOCUMENT_ROOT'].'/logs/sotal/';
 CDev::deleteOldFiles($path, 86400*2);
 
+CDev::deleteOldFiles($_SERVER['DOCUMENT_ROOT'].'/upload/epg/', 86400*2);
+
 //Удаляем кэш
 /*$pathes = array(
     //"/logs/sotal/",

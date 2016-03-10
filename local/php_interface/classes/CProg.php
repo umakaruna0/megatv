@@ -116,7 +116,7 @@ class CProg
         
         $arProgs = array();
         $arSelect = Array("PROPERTY_PROG");
-        $arFilter = array("IBLOCK_ID" => PROG_TIME_IB, "ACTIVE" => "Y", ">PROPERTY_DATE"=>date('Y-m-d', strtotime("-2 day", strtotime(date("d.m.Y"))))); 
+        $arFilter = array("IBLOCK_ID" => PROG_TIME_IB, "ACTIVE" => "Y", ">=PROPERTY_DATE"=>date('Y-m-d', strtotime("-2 day", strtotime(date("d.m.Y"))))); 
         $rsRes = CIBlockElement::GetList( array("SORT" => "ASC"), $arFilter, false, false, $arSelect);
 		while( $arItem = $rsRes->GetNext() )
         {
@@ -124,7 +124,6 @@ class CProg
             CIBlockElement::Delete($arItem["ID"]);
 		}
         $arProgs = array_unique($arProgs);
-        
         
         $arSelect = Array("ID");
         $arFilter = array("IBLOCK_ID" => PROG_IB); 
