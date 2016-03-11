@@ -39,9 +39,9 @@ CProgTime::delete();
 
 //Удаляем старые файлы лога
 $path = $_SERVER['DOCUMENT_ROOT'].'/logs/sotal/';
-CDev::deleteOldFiles($path, 86400*2);
+CDev::deleteOldFiles($path, 86400);
 
-CDev::deleteOldFiles($_SERVER['DOCUMENT_ROOT'].'/upload/epg/', 86400*2);
+CDev::deleteDirectory($_SERVER['DOCUMENT_ROOT'].'/upload/epg');
 
 //Удаляем кэш
 /*$pathes = array(
