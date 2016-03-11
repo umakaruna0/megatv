@@ -41,8 +41,6 @@ CProgTime::delete();
 $path = $_SERVER['DOCUMENT_ROOT'].'/logs/sotal/';
 CDev::deleteOldFiles($path, 86400);
 
-CDev::deleteDirectory($_SERVER['DOCUMENT_ROOT'].'/upload/epg');
-
 //Удаляем кэш
 /*$pathes = array(
     //"/logs/sotal/",
@@ -67,7 +65,7 @@ $Epg->import();
 
 //Удаляем устаревшие программы
 CProg::delete();
-
+CDev::deleteDirectory($_SERVER['DOCUMENT_ROOT'].'/upload/epg');
 CDev::deleteDirectory($_SERVER['DOCUMENT_ROOT'].'/upload/resize_cache');
 
 echo " --finish loading--";

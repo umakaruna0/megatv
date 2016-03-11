@@ -109,6 +109,36 @@ class CProg
         }
     }
     
+    /**
+     * Delete old pics from upload/iblock
+     */
+    public static function deletePics($arrFilter = false)
+    {
+        CModule::IncludeModule("iblock");
+        global $DB;
+        
+        $arSelect = Array("ID","PREVIEW_PICTURE", 'DETAIL_PICTURE', "PROPERTY_PICTURE_DOUBLE", "PROPERTY_PICTURE_HALF", 
+            "PROPERTY_PICTURE_VERTICAL", "PROPERTY_PICTURE_VERTICAL_DOUBLE");
+            
+        $arFilter = array("IBLOCK_ID" => PROG_IB); 
+        
+        if($arrFilter)
+            $arFilter = array_merge($arFilter, $arrFilter);
+        
+        $arProgs = CIBlockElement::GetList( array("SORT" => "ASC"), $arFilter, false, false, $arSelect);
+		while( $arProg = $arProgs->GetNext() )
+        {
+            $arProps = array("PICTURE_DOUBLE", "PICTURE_HALF", "PICTURE_VERTICAL", "PICTURE_VERTICAL_DOUBLE");
+            foreach($arProps as $code)
+            {
+                CFile::Delete($arProg["PROPERTY_".$code."_VALUE"]);
+            }
+            
+            CFile::Delete($arProg["PREVIEW_PICTURE"]);
+            CFile::Delete($arProg["DETAIL_PICTURE"]);
+        }
+    }
+    
     public static function delete($arrFilter = false) 
     {
 		CModule::IncludeModule("iblock");
@@ -131,6 +161,8 @@ class CProg
         if($arrFilter)
             $arFilter = array_merge($arFilter, $arrFilter);
         
+        $this->deletePics(array_merge($arFilter, array("ID"=>$arProgs)));
+
         $rsRes = CIBlockElement::GetList( array("SORT" => "ASC"), $arFilter, false, false, $arSelect);
 		while( $arItem = $rsRes->GetNext() )
         {
