@@ -274,7 +274,7 @@ class CEpg
             //echo "<pre>"; print_r($arProg); echo "</pre>";
             
             //continue;
-            if(empty($arProgs[$unique]["PREVIEW_PICTURE"]))
+            if(empty($arProgs[$unique]["PREVIEW_PICTURE"]) || !empty($arProgs[$unique]["PREVIEW_PICTURE"]))
             {
                 $icons = array();
                 if(!is_array($arProg["icon"]))

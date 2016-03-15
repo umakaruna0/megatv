@@ -29,12 +29,13 @@ $arFilter = array(
     ">UF_DATE_END" => $dt,
     "UF_BEFORE_NOTIFY" => false
 );
-$arRecords = CRecordEx::getList($arFilter, array("ID", "UF_USER", "UF_NAME", "UF_SUB_TITLE"));
+$arRecords = CRecordEx::getList($arFilter, array("ID", "UF_USER", "UF_NAME", "UF_SUB_TITLE", "UF_PICTURE"));
 foreach($arRecords as $arRecord)
 {
     CNotifyEx::onRecord(array(
         "USER_ID" => $arRecord["UF_USER"],
         "RECORD_ID" => $arRecord["ID"],
+        "PICTURE" => "http://megatv.su".CFile::GetPath($user_record["UF_PICTURE"]),
         "RECORD_NAME" => trim($arRecord["UF_NAME"]." ".$arRecord["UF_SUB_TITLE"])
     ));
     CRecordEx::update($arRecord["ID"], array("UF_BEFORE_NOTIFY" => "Y"));

@@ -57,7 +57,7 @@ while($arUser = $rsUsers->GetNext())
                 
                 if(!empty($url))
                 {
-                    $user_record = CRecordEx::getBySotalID($record_id, array("ID", "UF_NAME", "UF_SUB_TITLE"));
+                    $user_record = CRecordEx::getBySotalID($record_id, array("ID", "UF_NAME", "UF_SUB_TITLE", "UF_PICTURE"));
                     
                     //Если достаточно пространства
                     if(intval($arUser["UF_CAPACITY_BUSY"])<intval($arUser["UF_CAPACITY"]))
@@ -67,7 +67,9 @@ while($arUser = $rsUsers->GetNext())
                             "USER_NAME" => $arUser["NAME"],
                             "USER_EMAIL" => $arUser["EMAIL"],
                             "RECORD_ID" => $user_record["ID"],
-                            "RECORD_NAME" => trim($user_record["UF_NAME"]." ".$user_record["UF_SUB_TITLE"])
+                            "RECORD_NAME" => trim($user_record["UF_NAME"]." ".$user_record["UF_SUB_TITLE"]),
+                            "PICTURE" => "http://megatv.su".CFile::GetPath($user_record["UF_PICTURE"]),
+                            "URL" => "http://megatv.su/personal/records/?record_id=".$user_record["ID"]."&play=yes"
                         ));
                         
                         CRecordEx::update($user_record["ID"], array("UF_URL" => $url, "UF_AFTER_NOTIFY" => "Y"));
