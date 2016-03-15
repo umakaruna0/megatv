@@ -283,7 +283,7 @@ class CProgTime
 			</div>
             
             <?if($time_pointer):?>
-                <span class="badge">в эфире</span>
+                <span class="badge" data-channel-id="<?=$arProg["CHANNEL_ID"]?>">в эфире</span>
             <?endif;?>
             
             <?=$status_icon?>
