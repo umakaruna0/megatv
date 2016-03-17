@@ -11,6 +11,7 @@
 /** @var string $componentPath */
 /** @var CBitrixComponent $component */
 $this->setFrameMode(true);
+global $USER;
 ?>
 
 <?
@@ -48,7 +49,9 @@ $curPage++;
         	<?
         	$this->AddEditAction($arItem['ID'], $arItem['EDIT_LINK'], CIBlock::GetArrayByID($arItem["IBLOCK_ID"], "ELEMENT_EDIT"));
         	$this->AddDeleteAction($arItem['ID'], $arItem['DELETE_LINK'], CIBlock::GetArrayByID($arItem["IBLOCK_ID"], "ELEMENT_DELETE"), array("CONFIRM" => GetMessage('CT_BNL_ELEMENT_DELETE_CONFIRM')));
-        	?>
+        	
+            if(!in_array($arItem['ID'], $arResult["CHANNELS_SHOW"]) && $USER->IsAuthorized()) continue;
+            ?>
     		<a class="category-logo" href="<?=$arItem["DETAIL_PAGE_URL"]?>" id="<?=$this->GetEditAreaId($arItem['ID']);?>">
     			<span data-icon="<?=$arItem["PROPERTIES"]["ICON"]["VALUE"]?>"></span>
     		</a>
@@ -78,9 +81,10 @@ $curPage++;
                     {
                         $channel = $arChannel["ID"];
                         $arProgs = $arChannels[$channel];
-                    //}
-                    //foreach($arChannels as $channel=>$arProgs)
-                    //{
+                        
+                        if(!in_array($channel, $arResult["CHANNELS_SHOW"]) && $USER->IsAuthorized())
+                            continue;
+
                         ?>
                         <div class="category-row">
                             <?

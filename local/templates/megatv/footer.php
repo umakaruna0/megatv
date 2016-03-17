@@ -53,8 +53,8 @@
             (function (d, w, c) {
                 (w[c] = w[c] || []).push(function() {
                     try {
-                        w.yaCounter32828642 = new Ya.Metrika({
-                            id:32828642,
+                        w.yaCounter36131600 = new Ya.Metrika({
+                            id:36131600,
                             clickmap:true,
                             trackLinks:true,
                             accurateTrackBounce:true,
@@ -75,9 +75,10 @@
                 } else { f(); }
             })(document, window, "yandex_metrika_callbacks");
         </script>
-        <noscript><div><img src="https://mc.yandex.ru/watch/32828642" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+        <noscript><div><img src="https://mc.yandex.ru/watch/36131600" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
         <!-- /Yandex.Metrika counter -->
         
+        <!-- Facebook social -->
         <script>
           window.fbAsyncInit = function() {
             FB.init({
@@ -95,6 +96,7 @@
              fjs.parentNode.insertBefore(js, fjs);
            }(document, 'script', 'facebook-jssdk'));
         </script>
+        <!-- Facebook social -->
 
 	</body>
 </html>

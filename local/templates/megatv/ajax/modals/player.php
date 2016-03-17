@@ -10,10 +10,19 @@ global $USER;
 if(!is_object($USER))
     $USER = new CUser;
 
+if(!$USER->IsAuthorized())
+    return false;
+
+/**
+ * Показ прямого эфира канала
+ */ 
 if(isset($_REQUEST["channel_id"]))
 {
     $arChannel = CChannel::getByID($_REQUEST["channel_id"], array("NAME", "PROPERTY_STREAM_URL", "PREVIEW_PICTURE"));
     ?>
+    <div class="advert-holder">
+        <?$APPLICATION->IncludeComponent("bitrix:main.include", "", array("AREA_FILE_SHOW" => "file", "PATH" => SITE_DIR."include/player-banner.php"), false);?>
+    </div>
     <div class="broadcast-player" data-module="broadcast-player">
     	<script type="text/x-config">
     		{
@@ -37,6 +46,11 @@ if(isset($_REQUEST["channel_id"]))
     </div>
     <?
 }else{
+    
+    /**
+     * Показ передачи
+     */ 
+    
     $broadcastID = intval($_GET["broadcastID"]);
     
     if($_GET["record"]!="false")

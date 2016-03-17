@@ -273,6 +273,9 @@ class CProgTime
             $time_pointer = true;
         }
         
+        if(!empty($arProg["PROPERTY_SUB_TITLE_VALUE"]))
+            $arProg["NAME"].= " | ".$arProg["PROPERTY_SUB_TITLE_VALUE"];
+        
         ob_start();
         ?>
         <div class="item<?if($status):?> status-<?=$status?><?endif;?><?if($time_pointer && $arParams["NEED_POINTER"]):?> js-time-pointer<?endif;?><?if(empty($arProg["PICTURE"]["SRC"])):?> is-noimage<?endif;?><?if($arProg["CLASS"]=="double"):?> double-item<?endif;?>"
@@ -322,7 +325,11 @@ class CProgTime
         
         $start = $arProg["DATE_START"];
         $end = $arProg["DATE_END"];
-        $datetime = $arParams["DATETIME"]["SERVER_DATETIME_WITH_OFFSET"];        
+        $datetime = $arParams["DATETIME"]["SERVER_DATETIME_WITH_OFFSET"];
+        
+        if(!empty($arProg["PROPERTY_SUB_TITLE_VALUE"]))
+            $arProg["NAME"].= " | ".$arProg["PROPERTY_SUB_TITLE_VALUE"];
+               
         ob_start();
         ?>
         <div class="item<?if($status):?> status-<?=$status?><?endif;?><?if($arProg["CLASS"]=="half"):?> half-item<?endif;?>"

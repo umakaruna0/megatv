@@ -64,14 +64,25 @@ class CEpg
         $url = false;
         if(count($icons)>1)
         {
-            foreach($icons as $icon)
+            while(!$url)
+            {
+                $rand_key = array_rand($icons, 1);
+                $icon = $icons[$rand_key];
+                if(intval($icon["@attributes"]["width"])>$width)
+                {
+                    $url = $icon["@attributes"]["src"];
+                }                
+            }
+                    
+            /*foreach($icons as $icon)
             {
                 if(intval($icon["@attributes"]["width"])>$max)
                 {
                     $max = intval($icon["@attributes"]["width"]);
                     $url = $icon["@attributes"]["src"];
                 }
-            }
+            }*/
+
         }else{
             $url = $icons["@attributes"]["src"];
         }
@@ -221,11 +232,11 @@ class CEpg
             
             if (!array_key_exists($unique, $arProgs))
             {
-                if(isset($arProg['episode-number']))
+                if(!empty($arProg['episode-number']))
                 {
                     $arFields["PROPS"]["SERIA"] = intval($arProg['episode-number']);
                 }
-                if(isset($arProg['season']))
+                if(!empty($arProg['season']))
                 {
                     $arFields["PROPS"]["SEASON"] = intval($arProg['season']);
                 }
@@ -238,7 +249,7 @@ class CEpg
                     $arProg["topic"] = array($arProg["topic"]);
                 $arFields["PROPS"]["TOPIC"] = implode(", ", $arProg["topic"]);
                 
-                if(!is_array($arProg["GANRE"]))
+                if(!is_array($arProg["ganre"]))
                     $arProg["ganre"] = array($arProg["ganre"]);
                 $arFields["PROPS"]["GANRE"] = implode(", ", $arProg["ganre"]);
                 
@@ -353,10 +364,6 @@ class CEpg
                     $arFile["del"] = "Y";
                     CIBlockElement::SetPropertyValueCode($progID, "PICTURE_VERTICAL_DOUBLE", $arFile);
                 }
-                
-                //die();
-                
-                //break;
             }
             
             //continue;

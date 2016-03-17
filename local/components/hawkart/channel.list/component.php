@@ -97,6 +97,10 @@ $end = $arResult["NAV_RESULT"]->NavPageNomer*intval($arParams["NEWS_COUNT"]);
 // всего страниц - номер последней страницы
 $totalPages = $arResult["NAV_RESULT"]->NavPageCount = ceil(count($arResult["ITEMS"])/$arParams["NEWS_COUNT"]);
 
+$arSubscriptionChannels = $APPLICATION->GetPageProperty("ar_subs_channels");
+$arResult["CHANNELS_SHOW"] = json_decode($arSubscriptionChannels, true);
+
+
 $arChannelIds = array();
 $arResult["CHANNELS"] = array();
 $k = 1; 
