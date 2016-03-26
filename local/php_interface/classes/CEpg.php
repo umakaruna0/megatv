@@ -34,7 +34,7 @@ class CEpg
         ftp_close($conn);
     }
     
-    public static function resizeImage(/*$url,*/ $icons, $type)
+    public static function resizeImage($icons, $type)
     {
         switch($type)
         {
@@ -180,6 +180,7 @@ class CEpg
         
         foreach($xml->programme as $arProg)
         {
+            $_arProg = $arProg;
             $json = json_encode($arProg);
             $arProg = json_decode($json, TRUE);
             
@@ -197,13 +198,16 @@ class CEpg
                 "PROPS" => array(
                     "CHANNEL" => $arChannel["ID"],
                     "YEAR_LIMIT" => $arProg["rating"]["value"],
-                    "YEAR" => $arProg["year"]
+                    "YEAR" => $arProg["year"],
+                    "EPG_ID" => (int)$arProg["@attributes"]["aid"]
                 )
             );
             
             if(isset($arProg["sub-title"]))
             {
                 $arFields["PROPS"]["SUB_TITLE"] = trim($arProg["sub-title"]);
+                $attr = $_arProg->{'sub-title'}->attributes();
+                $arFields["PROPS"]["EPG_SUB_ID"] = (int)$attr["id"];
             }
             
             //генерируем идентификатор программы для проверки на существование
@@ -280,11 +284,11 @@ class CEpg
                 }
             }else{
                 $progID = $arProgs[$unique]["ID"];
+                CIBlockElement::SetPropertyValueCode($progID, "EPG_ID", (int)$arProg["@attributes"]["aid"]);
+                $attr = $_arProg->{'sub-title'}->attributes();
+                CIBlockElement::SetPropertyValueCode($progID, "EPG_SUB_ID", (int)$attr["id"]);
             }
             
-            //echo "<pre>"; print_r($arProg); echo "</pre>";
-            
-            //continue;
             if(empty($arProgs[$unique]["PREVIEW_PICTURE"]) || !empty($arProgs[$unique]["PREVIEW_PICTURE"]))
             {
                 $icons = array();
@@ -305,11 +309,6 @@ class CEpg
                         CFile::Delete($arProgs[$unique]["PROPERTY_".$code."_VALUE"]);
                     } 
                 }
-                
-                
-                //die();
-                
-                //CDev::pre($icons);
                 
                 $file = self::resizeImage($icons, "preview");
                 if(!empty($file))
@@ -366,8 +365,6 @@ class CEpg
                 }
             }
             
-            //continue;
-            
             //Добавление расписания для программы
             $dateStart = $arProg["@attributes"]["start"];
             
@@ -394,7 +391,8 @@ class CEpg
                         "DATE_END" => $arProg["@attributes"]["stop"],
                         "DATE" =>  date("d.m.Y", strtotime($arProg["date"])),
                         "CHANNEL" => $arChannel["ID"],
-                        "PROG" => $progID
+                        "PROG" => $progID,
+                        "EPG_ID" => (int)$arProg["@attributes"]["id"]
                     )
                 );
                 $progTimeID = CProgTime::add($arFields);
@@ -413,6 +411,7 @@ class CEpg
                 }
             }else{
                 $progTimeID = $arProgTimes[$uniqueTimeID]["ID"];
+                CIBlockElement::SetPropertyValueCode($progTimeID, "EPG_ID", (int)$arProg["@attributes"]["id"]);
             }
             
             $arScheduleIdsNotDelete[] = $progTimeID;

@@ -48,6 +48,8 @@ class CNotifyEx
                 "EMAIL" => $arParams["USER_EMAIL"],
                 "USER_ID" => $arParams["USER_ID"],
                 "USER_NAME" => $arParams["USER_NAME"],
+                "URL" => $arParams["URL"],
+                "PICTURE" => $arParams["PICTURE"],
             );
             if(CEvent::Send("RECORD_AFTER", array(SITE_ID), $arEventFields))
             {
