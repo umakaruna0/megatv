@@ -85,7 +85,7 @@ class CRecordEx
            'UF_PROG' => $arProgTime["PROPERTY_PROG_VALUE"]
         );
         
-        $arProg = CProg::getByID($arProgTime["PROPERTY_PROG_VALUE"], array("NAME", "PROPERTY_SUB_TITLE", "PREVIEW_PICTURE", "PROPERTY_PICTURE_DOUBLE"));
+        $arProg = CProg::getByID($arProgTime["PROPERTY_PROG_VALUE"], array("NAME", "PROPERTY_SUB_TITLE", "PREVIEW_PICTURE", "PROPERTY_PICTURE_DOUBLE", "PROPERTY_CATEGORY"));
         $data["UF_NAME"] = $arProg["NAME"];
         $data["UF_SUB_TITLE"] = $arProg["PROPERTY_SUB_TITLE_VALUE"];
         
@@ -93,6 +93,8 @@ class CRecordEx
         $picture_double = CFile::GetPath($arProg["PROPERTY_PICTURE_DOUBLE_VALUE"]);
         $data["UF_PICTURE"] = CFile::MakeFileArray($picture);
         $data["UF_PICTURE_DOUBLE"] = CFile::MakeFileArray($picture_double);
+        
+        $data["UF_CATEGORY"] = $arProg["PROPERTY_CATEGORY_VALUE"];
                          
         $result = $entity_data_class::add($data);
         if ($result->isSuccess()) 

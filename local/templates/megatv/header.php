@@ -23,13 +23,7 @@ IncludeTemplateLangFile(__FILE__);
         $APPLICATION->ShowHeadStrings();
     	$APPLICATION->ShowHeadScripts();
         
-        global $USER;
-        session_start();
-        if(isset($_POST["city-id"]) && intval($_POST["city-id"])>0 && check_bitrix_sessid())
-        {
-            CCityEx::setGeoCity(intval($_POST["city-id"]));
-            header("Location: index.php");
-        }
+        require($_SERVER["DOCUMENT_ROOT"].SITE_TEMPLATE_PATH."/include/header-code.php");
         ?>
 		<title><?$APPLICATION->ShowTitle()?></title>
         <!-- Google Analytics -->
@@ -132,16 +126,42 @@ IncludeTemplateLangFile(__FILE__);
                     false
                     );?>
                     
-                    <?require($_SERVER["DOCUMENT_ROOT"].SITE_TEMPLATE_PATH."/include/header-user-card.php");?>
-
-				</div>
-				<div class="bottom-panel">
+                    <div class="lang-select" data-module="lang-select">
+						<script type="text/x-config">
+							{
+								"url": "<?=$APPLICATION->GetCurDir()?>",
+								"languages": [
+									{ "id": 0, "text": "Ru" },
+									{ "id": 1, "text": "En" }
+								]
+							}
+						</script>
+						<form action="" id="lang-select-form">
+							<input type="hidden" name="lang-id" value="" id="lang-select-value">
+							<select name="lang-select" id="lang-select">
+							</select>
+                            <?=bitrix_sessid_post()?>
+						</form>
+					</div>
                     
-                    <?require($_SERVER["DOCUMENT_ROOT"].SITE_TEMPLATE_PATH."/include/header-calendar.php");?>
-                      
-                    <?$APPLICATION->IncludeComponent("hawkart:search", "", Array(), false);?>  
-                                      
-                    <?$APPLICATION->IncludeComponent("bitrix:menu","top",Array(
+                    <?if($APPLICATION->GetCurDir()!="/personal/records/"):?>
+                    <div class="calendar-carousel" data-module="calendar-carousel">
+                		<script type="text/x-config">
+                			{
+                				"currentDate": "<?=CTimeEx::getCurDate()?>",
+                                "minDate": 1,
+                                "maxDate":<?=CTimeEx::getCalendarDays()?>
+                			}
+                		</script>
+                		<a href="#" class="prev-trigger disabled" data-type="prev-trigger"><span data-icon="icon-left-arrow-days"></span></a>
+                		<div class="dates-holder" data-type="dates-carousel"></div>
+                		<a href="#" class="next-trigger" data-type="next-trigger"><span data-icon="icon-right-arrow-days"></span></a>
+                	</div>
+                    <?endif;?>
+                    
+                    <?$APPLICATION->IncludeComponent("hawkart:search", "", Array(), false);?>
+                    
+                     <?$APPLICATION->IncludeComponent("bitrix:menu","top",Array(
                             "ROOT_MENU_TYPE" => "top", 
                             "MAX_LEVEL" => "1", 
                             "CHILD_MENU_TYPE" => "top", 
@@ -154,7 +174,14 @@ IncludeTemplateLangFile(__FILE__);
                             "MENU_CACHE_GET_VARS" => "" 
                         )
                     );?>
+                    
+                    <?require($_SERVER["DOCUMENT_ROOT"].SITE_TEMPLATE_PATH."/include/header-user-card.php");?>
 
 				</div>
+                
+				<?/*<div class="bottom-panel">
+                    <?require($_SERVER["DOCUMENT_ROOT"].SITE_TEMPLATE_PATH."/include/header-calendar.php");?>
+				</div>*/?>
+                
 			</header>
 			<main class="site-content">
