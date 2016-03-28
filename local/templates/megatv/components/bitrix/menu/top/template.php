@@ -1,5 +1,5 @@
-<?if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED!==true)die();?>
-<?if (!empty($arResult)):?>
+<?if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED!==true)die();
+if (!empty($arResult)):?>
 <ul class="sections-menu">
 
 <?
@@ -8,7 +8,9 @@ foreach($arResult as $key=>$arItem):
 	if($arParams["MAX_LEVEL"] == 1 && $arItem["DEPTH_LEVEL"] > 1) 
 		continue;
 
-    if($arItem["TEXT"]=="Мои записи"){
+    if($arItem["TEXT"]=="Мои записи")
+    {
+        $showMyRecs = true;
         $myRecSelected = $arItem["SELECTED"];
         continue;
     }
@@ -20,6 +22,8 @@ foreach($arResult as $key=>$arItem):
 	<?endif?>
 	
 <?endforeach?>
-    <li class="<?if($arItem["SELECTED"]):?>active <?else:?><?endif;?>sections-menu-recordings"><a href="/personal/records/"><span data-icon="icon-film-collection"></span> <span>Мои записи<span class="count"><?=$APPLICATION->GetPageProperty("ar_record_in_rec")?> из <?=$APPLICATION->GetPageProperty("ar_record_recorded")?></span></span></a></li>
+    <?if($showMyRecs):?>
+        <li class="<?if($arItem["SELECTED"]):?>active <?else:?><?endif;?>sections-menu-recordings"><a href="/personal/records/"><span data-icon="icon-film-collection"></span> <span>Мои записи<span class="count"><?=$APPLICATION->GetPageProperty("ar_record_in_rec")?> из <?=$APPLICATION->GetPageProperty("ar_record_recorded")?></span></span></a></li>
+    <?endif;?>
 </ul>
 <?endif?>

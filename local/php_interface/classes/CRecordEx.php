@@ -1,7 +1,7 @@
 <?
 class CRecordEx
 {
-    public static function getList($arrFilter = false, $arSelect = false)
+    public static function getList($arrFilter = false, $arSelect = false, $arOrder = false)
     {
         global $USER;
         CModule::IncludeModule('highloadblock');
@@ -17,7 +17,8 @@ class CRecordEx
         if($arrFilter)
             $arFilter = array_merge($arFilter, $arrFilter);
         
-        $arOrder = array("ID" => "ASC");
+        if(!$arOrder)
+            $arOrder = array("ID" => "ASC");
         
         $rsData = $entity_data_class::getList(array(
         	'filter' => $arFilter,

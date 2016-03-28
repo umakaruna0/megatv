@@ -198,10 +198,16 @@ class CEpg
                 "PROPS" => array(
                     "CHANNEL" => $arChannel["ID"],
                     "YEAR_LIMIT" => $arProg["rating"]["value"],
-                    "YEAR" => $arProg["year"],
-                    "EPG_ID" => (int)$arProg["@attributes"]["aid"]
+                    "YEAR" => $arProg["year"]
                 )
             );
+            
+            if(isset($arProg["title"]))
+            {
+                $attr = $_arProg->title->attributes();
+                $arFields["UF_EPG_ID"] = (string)$attr["id"];
+                $epg_id = (string)$attr["id"];
+            }
             
             if(isset($arProg["sub-title"]))
             {
@@ -284,7 +290,7 @@ class CEpg
                 }
             }else{
                 $progID = $arProgs[$unique]["ID"];
-                CIBlockElement::SetPropertyValueCode($progID, "EPG_ID", (int)$arProg["@attributes"]["aid"]);
+                CIBlockElement::SetPropertyValueCode($progID, "EPG_ID", $epg_id);
                 $attr = $_arProg->{'sub-title'}->attributes();
                 CIBlockElement::SetPropertyValueCode($progID, "EPG_SUB_ID", (int)$attr["id"]);
             }

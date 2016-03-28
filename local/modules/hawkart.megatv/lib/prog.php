@@ -86,10 +86,6 @@ class ProgTable extends Entity\DataManager
 				'title'     => Localization\Loc::getMessage('prog_entity_channel_id_field'),
                 'required'  => true
 			),
-            'UF_CHANNEL' => array(
-				'data_type' => 'Local\Hawkart\Megatv\Channel',
-				'reference' => array('=this.CHANNEL_ID' => 'ref.ID'),
-			),
             'UF_SEASON' => array(
 				'data_type' => 'string',
 				'title'     => Localization\Loc::getMessage('prog_entity_season_field'),
@@ -141,8 +137,12 @@ class ProgTable extends Entity\DataManager
             'UF_HD' => array(
 				'data_type' => 'boolean',
 				'title'     => Localization\Loc::getMessage('prog_entity_hd_field'),
-				'values'    => array('N', 'Y'),
-			),            
+				'values'    => array(0, 1),
+			), 
+            'UF_PREMIERE' => array(
+				'data_type' => 'boolean',
+				'values'    => array(0, 1),
+			),             
             'UF_CODE' => array(
 				'data_type' => 'string',
 				'title'     => Localization\Loc::getMessage('prog_entity_code_field'),

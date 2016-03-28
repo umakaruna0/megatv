@@ -19,7 +19,7 @@ $aMenuLinks = Array(
 		"/personal/records/", 
 		Array(), 
 		Array(), 
-		"" 
+		"\$USER->IsAuthorized()" 
 	)
 );
 ?>

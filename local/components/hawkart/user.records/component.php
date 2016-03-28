@@ -15,8 +15,10 @@ $arFilter = array(
     $arFilter["!UF_WATCHED"] = false;
 }*/
 
+$arFilter["!UF_URL"] = false;
+
 $arRecords = CRecordEx::getList($arFilter, array("ID", "UF_PROG", "UF_URL", "UF_PROGRESS_PERS", 
-"UF_NAME", "UF_SUB_TITLE", "UF_PICTURE", "UF_CATEGORY", "UF_WATCHED", "UF_DATE_START"));
+"UF_NAME", "UF_SUB_TITLE", "UF_PICTURE", "UF_CATEGORY", "UF_WATCHED", "UF_DATE_START"), array("UF_DATE_END"=>"DESC"));
 
 $arResult["RECORDS"] = array();
 foreach($arRecords as $arRecord)
