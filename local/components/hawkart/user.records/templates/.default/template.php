@@ -45,7 +45,7 @@ if(count($arResult["RECORDS"])==0)
         {
             $datetime = $arRecord['UF_DATE_START']->toString();
             $date = substr($datetime, 0, 10);
-            $time = substr($datetime, 12, 4);
+            $time = substr($datetime, 11, 5);
             if(strlen($arRecord["UF_NAME"])>25)
             {
                 $arRecord["UF_NAME"] = substr($arRecord["UF_NAME"], 0, 25)."...";

@@ -187,11 +187,21 @@ foreach($arResult["DATES"] as $date => $arChannels )
         
         $arResult["DATES"][$date][$channel] = $arProgs;
     }
+    
+    $arResult["DATES"][$date]["YOUTUBE"] = CYoutube::dailyShow();
 }
 
 $time_end = microtime(true);
 $time = $time_end - $time_start;
 //echo "end = ".$time_end."<br />";echo "время выполнения = ".$time."<br />";
+
+$arResult["SOCIAL_CHANNELS"] = array(
+    array(
+        "ID" => "YOUTUBE",
+        "NAME" => "Youtube",
+        "PROPERTIES" => array("ICON" => array("VALUE"=>""))
+    )
+);
 
 $this->IncludeComponentTemplate();
 ?>

@@ -459,18 +459,15 @@ class Epg
         $epgName = (string)\CXmlEx::getAttr($xml, "generator-info-name");
         
         $arScheduleIdsNotDelete = array();
-        $arProgTimeDelete = array();        //Расписание, которое нужно удалить
-        
-        //echo date("i:s")."<br />";
+        $arProgTimeDelete = array();            //Расписание, которое нужно удалить
         $arCategories = self::importCategory();
         $arGanres = self::importGanre();
         $arTopics = self::importTopic();
         $arCountries = self::importCountry();
-        $arProductions = self::importProduction();
-        $arRoles = self::importRole();
-        $arPeople = self::importPeople($arRoles);
+        //$arProductions = self::importProduction();
+        //$arRoles = self::importRole();
+        //$arPeople = self::importPeople($arRoles);
         $arChannels = self::importChannel($xml->channel);
-        //echo date("i:s");
         
         /**
          * Get prog's list
@@ -543,11 +540,8 @@ class Epg
                 if(!empty($arProg['season']))
                     $arFields["UF_SEASON"] = (string)$arProg['season'];
                 
-                if(!is_array($arProg["category"]))
-                    $arProg["category"] = array($arProg["category"]);
-                $arFields["UF_CATEGORY"] = implode(", ", $arProg["category"]);
-                
-                
+                $attr = $_arProg->{'category'}->attributes();
+                $arFields["UF_CATEGORY"] = $arCategories[(string)$attr["id"]]["ID"];
                 
                 if(!is_array($arProg["topic"]))
                     $arProg["topic"] = array($arProg["topic"]);
@@ -588,6 +582,30 @@ class Epg
                         "PROG" => $arFields,
                     ), false, $log_file);*/
                 }
+                
+                
+                if(!is_array($arProg["topic"]))
+                {
+                    foreach($_arProg->topic as $topic)
+                    {
+                        $attr = $topic->attributes();
+                        $topic_epg_id = (string)$attr["id"];
+                        
+                        if(!is_array($arTopics[$topic_epg_id]))
+                        {
+                            
+                        }else{
+                            
+                        }
+                    }
+                }else{
+                    
+                }
+                
+                
+                
+                
+                
         
             }else{
                 $prog_id = $arProgs[$prog_epg_id]["ID"];

@@ -61,7 +61,8 @@ CModule::AddAutoloadClasses(
         '\CUserEx' => $sClassesPath.'CUserEx.php',
         '\CCommentEx' => $sClassesPath.'CCommentEx.php',
         '\CStatChannel' => $sClassesPath.'CStatChannel.php',
-        '\CNotifyEx' => $sClassesPath.'CNotifyEx.php'
+        '\CNotifyEx' => $sClassesPath.'CNotifyEx.php',
+        '\CYoutube' => $sClassesPath.'CYoutube.php',
 	)
 );
 

@@ -19,6 +19,7 @@ CModule::IncludeModule("iblock");
 CModule::IncludeModule("catalog");
 CModule::IncludeModule("sale");
 
+echo date("H:i:s")."\r\n";
 
 //DELETE ALL PROGS & SCHEDULE
 /*CProg::updateCache();
@@ -41,32 +42,17 @@ CProgTime::delete();
 $path = $_SERVER['DOCUMENT_ROOT'].'/logs/sotal/';
 CDev::deleteOldFiles($path, 86400);
 
-//Удаляем кэш
-/*$pathes = array(
-    //"/logs/sotal/",
-    "/bitrix/cache/",
-    "/upload/resize_cache/",
-    "/upload/tmp/",
-    "/bitrix/tmp/",
-    "/bitrix/managed_cache/",
-    "/bitrix/stack_cache/"
-);
-foreach($pathes as $path)
-{
-    $path = $_SERVER['DOCUMENT_ROOT'].$path;
-    CDev::deleteOldFiles($path, 86400*2);
-    CDev::deleteDirectory($path);
-}*/
-
 //Загружаем и импортируем данные из EPG
 $Epg = new CEpg();
 $Epg->download();
 $Epg->import();
 
 //Удаляем устаревшие программы
-CProg::delete();
-CDev::deleteDirectory($_SERVER['DOCUMENT_ROOT'].'/upload/epg');
-CDev::deleteDirectory($_SERVER['DOCUMENT_ROOT'].'/upload/resize_cache');
+//CProg::delete();
+//CDev::deleteDirectory($_SERVER['DOCUMENT_ROOT'].'/upload/epg');
+//CDev::deleteDirectory($_SERVER['DOCUMENT_ROOT'].'/upload/resize_cache');
+
+echo date("H:i:s")."\r\n";
 
 echo " --finish loading--";
 die();

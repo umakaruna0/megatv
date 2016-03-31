@@ -56,6 +56,11 @@ $curPage++;
     			<span data-icon="<?=$arItem["PROPERTIES"]["ICON"]["VALUE"]?>"></span>
     		</a>
         <?endforeach?>
+        <?foreach($arResult["SOCIAL_CHANNELS"] as $arItem):?>
+            <a class="category-logo" href="#">
+    			<span data-icon="<?=$arItem["PROPERTIES"]["ICON"]["VALUE"]?>"><?=$arItem["NAME"]?></span>
+    		</a>
+        <?endforeach?>
 	</div>
     
     <a href="#" class="prev-button" data-type="prev-button">
@@ -123,6 +128,40 @@ $curPage++;
                         
                         $next_date = date('d.m.Y', strtotime("+1 day", strtotime($date)));
                     }
+                    
+                    foreach($arResult["SOCIAL_CHANNELS"] as $arChannel)
+                    {
+                        $socialChannel = $arChannel["ID"];
+                        $arProgs = $arChannels[$socialChannel];
+                        ?>
+                        <div class="category-row">
+                            <?
+                            if(!$first)
+                            {
+                                $arParams["NEED_POINTER"] = true;
+                                $first = true;
+                            }
+                            $notShow = array();
+                            foreach($arProgs as $key=>$arProg)
+                            {
+                                if(in_array($key, $notShow))
+                                    continue;
+
+                                $arProgNext = $arProgs[$key+1];
+                                ?>
+                                <div class="pair-container">
+                                    <?=CProgTime::getSocialProgInfoIndex($arProg, $socialChannel)?>
+                                    <?=CProgTime::getSocialProgInfoIndex($arProgNext, $socialChannel)?>
+                				</div>
+                                <?
+                                $notShow[]=$key+1;
+                            }
+                            unset($arParams["NEED_POINTER"]);
+                            ?>
+                        </div>
+                        <?
+                    }
+
                     //if($date_count<count($arResult["DATES"]))
                     //{
                         ?>

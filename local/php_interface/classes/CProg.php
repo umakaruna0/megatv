@@ -145,8 +145,11 @@ class CProg
         global $DB;
         
         $arProgs = array();
-        $arSelect = Array("PROPERTY_PROG");
-        $arFilter = array("IBLOCK_ID" => PROG_TIME_IB, "ACTIVE" => "Y", ">=PROPERTY_DATE"=>date('Y-m-d', strtotime("-2 day", strtotime(date("d.m.Y"))))); 
+        $arSelect = Array("PROPERTY_PROG", "ID");
+        $arFilter = array(
+            "IBLOCK_ID" => PROG_TIME_IB, "ACTIVE" => "Y", 
+            ">=PROPERTY_DATE"=>date('Y-m-d', strtotime("-2 day", strtotime(date("d.m.Y"))))
+        ); 
         $rsRes = CIBlockElement::GetList( array("SORT" => "ASC"), $arFilter, false, false, $arSelect);
 		while( $arItem = $rsRes->GetNext() )
         {
@@ -161,7 +164,7 @@ class CProg
         if($arrFilter)
             $arFilter = array_merge($arFilter, $arrFilter);
         
-        $this->deletePics(array_merge($arFilter, array("ID"=>$arProgs)));
+        self::deletePics(array_merge($arFilter, array("ID"=>$arProgs)));
 
         $rsRes = CIBlockElement::GetList( array("SORT" => "ASC"), $arFilter, false, false, $arSelect);
 		while( $arItem = $rsRes->GetNext() )

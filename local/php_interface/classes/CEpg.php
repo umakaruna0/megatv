@@ -293,6 +293,8 @@ class CEpg
                 CIBlockElement::SetPropertyValueCode($progID, "EPG_ID", $epg_id);
                 $attr = $_arProg->{'sub-title'}->attributes();
                 CIBlockElement::SetPropertyValueCode($progID, "EPG_SUB_ID", (int)$attr["id"]);
+                
+                CIBlockElement::SetPropertyValueCode($progID, "CATEGORY", $arProg["category"]);
             }
             
             if(empty($arProgs[$unique]["PREVIEW_PICTURE"]) || !empty($arProgs[$unique]["PREVIEW_PICTURE"]))
@@ -423,26 +425,7 @@ class CEpg
             $arScheduleIdsNotDelete[] = $progTimeID;
         }
         
-        unset($arProgTimes);
-        
-        die();
-        
-        //Найдем все расписание на ближайшие 10 дней и удалим лишние
-        echo "<h1>delete</h1>";
-        //CDev::pre($arScheduleIdsNotDelete);
-        CProgTime::updateCache();
-        $filterDateStart = CTimeEx::datetimeForFilter(date("Y-m-d 00:00:00"));
-        $arProgTimes = CProgTime::getList(array(
-            ">=PROPERTY_DATE_START" => $filterDateStart,
-        ), array("ID", "PROPERTY_CHANNEL", "PROPERTY_DATE_START"));
-        foreach($arProgTimes as $arProgTime)
-        {
-            if(!in_array($arProgTime["ID"], $arScheduleIdsNotDelete))
-            {
-                echo "delete=".$arProgTime["ID"]."<br />";
-                CIBlockElement::Delete($arProgTime["ID"]);
-            }
-        }
+        CProgTime::deleteNotInFile($arScheduleIdsNotDelete);
         
         unset($arProgTimes);
         unset($arScheduleIdsNotDelete);

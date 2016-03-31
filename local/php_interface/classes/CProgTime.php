@@ -4,11 +4,14 @@ class CProgTime
 {
     public static $cacheDir = "prog_time";
     
-    public static function cutName($title)
+    public static function cutName($title, $len = false)
     {
-        if(strlen($title)>40)
+        if(!$len)
+            $len = 40;
+        
+        if(strlen($title)>$len)
         {
-            $title = substr($title, 0, 40)."...";
+            $title = substr($title, 0, $len)."...";
         }
         
         return $title;
@@ -159,6 +162,28 @@ class CProgTime
 	}
     
     
+    public static function deleteNotInFile($arScheduleIdsNotDelete, $arrFilter = false) 
+    {
+		CModule::IncludeModule("iblock");
+        $arProgTimes = array();
+        $arSelect = Array("ID");
+        $arFilter = array("IBLOCK_ID" => PROG_TIME_IB, "ACTIVE" => "Y", ">=PROPERTY_DATE" => date('Y-m-d')); 
+        
+        if($arrFilter)
+            $arFilter = array_merge($arFilter, $arrFilter);
+        
+        $rsRes = CIBlockElement::GetList( array("SORT" => "ASC"), $arFilter, false, false, $arSelect);
+		while( $arItem = $rsRes->GetNext() )
+        {
+            if(!in_array($arItem["ID"], $arScheduleIdsNotDelete) && !empty($arScheduleIdsNotDelete))
+            {
+                CIBlockElement::Delete($arItem["ID"]);
+            }
+		}
+        
+        self::updateCache();
+	}
+    
     /**
      * "RECORDING"
        "RECORDED"
@@ -297,6 +322,35 @@ class CProgTime
         		<a href="<?=$arProg["DETAIL_PAGE_URL"]?>">
                     <?=self::cutName($arProg["NAME"])?>
                     <?/*if(!empty($arProg["PROPERTY_SUB_TITLE_VALUE"])):?>.<br><?=$arProg["PROPERTY_SUB_TITLE_VALUE"]?><?endif;*/?> 
+                </a>
+        	</div>
+        </div>
+        <?
+        $content = ob_get_contents();  
+        ob_end_clean();
+        
+        return $content;
+    }
+    
+    public static function getSocialProgInfoIndex($arProg, $socialChannel)
+    {               
+        ob_start();
+        ?>
+        <div class="item status-recorded status-social-v half-item"
+            data-type="broadcast" data-broadcast-id="<?=strtolower($socialChannel)?>|<?=$arProg["ID"]?>"
+        >
+            <div class="item-image-holder">
+				<img data-src="<?=$arProg["IMG"]?>" alt="">
+			</div>
+            
+            <span class="item-status-icon" href="#">
+				<span data-icon="icon-recorded"></span>
+				<span class="status-desc">Смотреть</span>
+			</span>
+            
+        	<div class="item-header">
+        		<a href="#">
+                    <?=self::cutName($arProg["NAME"], 70)?>
                 </a>
         	</div>
         </div>
