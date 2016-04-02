@@ -8,7 +8,7 @@ set_time_limit(0);
 
 require($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/include/prolog_before.php");
 
-$youtube = new CYoutube();
+$youtube = new \YoutubeClient();
 $youtube->import();
 
 die();

@@ -144,17 +144,7 @@ $curPage++;
                             $notShow = array();
                             foreach($arProgs as $key=>$arProg)
                             {
-                                if(in_array($key, $notShow))
-                                    continue;
-
-                                $arProgNext = $arProgs[$key+1];
-                                ?>
-                                <div class="pair-container">
-                                    <?=CProgTime::getSocialProgInfoIndex($arProg, $socialChannel)?>
-                                    <?=CProgTime::getSocialProgInfoIndex($arProgNext, $socialChannel)?>
-                				</div>
-                                <?
-                                $notShow[]=$key+1;
+                                echo CProgTime::getSocialProgInfoIndex($arProg, $socialChannel);
                             }
                             unset($arParams["NEED_POINTER"]);
                             ?>

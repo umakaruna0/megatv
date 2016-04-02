@@ -81,11 +81,6 @@ class ProgTable extends Entity\DataManager
 				'data_type' => 'string',
 				'title'     => Localization\Loc::getMessage('prog_entity_epg_sub_id_field')
 			),
-            'UF_CHANNEL_ID' => array(
-				'data_type' => 'integer',
-				'title'     => Localization\Loc::getMessage('prog_entity_channel_id_field'),
-                'required'  => true
-			),
             'UF_SEASON' => array(
 				'data_type' => 'string',
 				'title'     => Localization\Loc::getMessage('prog_entity_season_field'),
@@ -148,58 +143,14 @@ class ProgTable extends Entity\DataManager
 				'title'     => Localization\Loc::getMessage('prog_entity_code_field'),
                 'required'  => true
 			),
-            'UF_IMG_PREVIEW_ID' => array(
+            'UF_IMG_ID' => array(
 				'data_type' => 'integer',
-				'title'     => Localization\Loc::getMessage('prog_entity_img_preview_id_field')
+				'title'     => Localization\Loc::getMessage('prog_entity_img_id_field')
 			),
-            'UF_IMG_PREVIEW' => array(
-				'data_type' => 'Local\Hawkart\Megatv\Image',
-				'reference' => array('=this.IMG_PREVIEW_ID' => 'ref.ID'),
-			),
-            'UF_IMG_DETAIL_ID' => array(
-				'data_type' => 'integer',
-				'title'     => Localization\Loc::getMessage('prog_entity_img_detail_id_field')
-			),
-            'UF_IMG_DETAIL' => array(
-				'data_type' => 'Local\Hawkart\Megatv\Image',
-				'reference' => array('=this.IMG_DETAIL_ID' => 'ref.ID'),
-			),
-            'UF_IMG_DOUBLE_ID' => array(
-				'data_type' => 'integer',
-				'title'     => Localization\Loc::getMessage('prog_entity_img_double_id_field')
-			),
-            'UF_IMG_DOUBLE' => array(
-				'data_type' => 'Local\Hawkart\Megatv\Image',
-				'reference' => array('=this.IMG_DOUBLE_ID' => 'ref.ID'),
-			),
-            'UF_IMG_HALF_ID' => array(
-				'data_type' => 'integer',
-				'title'     => Localization\Loc::getMessage('prog_entity_img_half_id_field')
-			),
-            'UF_IMG_HALF' => array(
-				'data_type' => 'Local\Hawkart\Megatv\Image',
-				'reference' => array('=this.IMG_HALF_ID' => 'ref.ID'),
-			),
-            'UF_IMG_VERTICAL_ID' => array(
-				'data_type' => 'integer',
-				'title'     => Localization\Loc::getMessage('prog_entity_img_vertical_id_field')
-			),
-            'UF_IMG_VERTICAL' => array(
-				'data_type' => 'Local\Hawkart\Megatv\Image',
-				'reference' => array('=this.IMG_VERTICAL_ID' => 'ref.ID'),
-			),
-            'UF_IMG_VERTICAL_DOUBLE_ID' => array(
-				'data_type' => 'integer',
-				'title'     => Localization\Loc::getMessage('prog_entity_img_vertical_double_id_field')
-			),
-            'UF_IMG_VERTICAL_DOUBLE' => array(
-				'data_type' => 'Local\Hawkart\Megatv\Image',
-				'reference' => array('=this.IMG_VERTICAL_DOUBLE_ID' => 'ref.ID'),
-			),
-			'UF_SORT' => array(
-				'data_type' => 'integer',
-				'title'     => Localization\Loc::getMessage('prog_entity_sort_field'),
-			),
+            'UF_IMG' => array(
+				'data_type' => '\Hawkart\Megatv\Image',
+				'reference' => array('=this.UF_IMG_ID' => 'ref.ID'),
+			)
 		);
 	}
 }

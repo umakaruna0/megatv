@@ -336,7 +336,7 @@ class CProgTime
     {               
         ob_start();
         ?>
-        <div class="item status-recorded status-social-v half-item"
+        <div class="item status-recorded status-social-v"
             data-type="broadcast" data-broadcast-id="<?=strtolower($socialChannel)?>|<?=$arProg["ID"]?>"
         >
             <div class="item-image-holder">

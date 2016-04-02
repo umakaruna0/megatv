@@ -47,17 +47,20 @@ if(isset($_REQUEST["channel_id"]))
     <?
 }else{
     
-    if(strpos($_GET["broadcastID"], "youtube")!==false)
+    if(strpos($_GET["broadcastID"], "youtube")!==false || strpos($_GET["broadcastID"], "vk")!==false)
     {
+        $id = str_replace(array("youtube|", "vk|"), "", $_GET["broadcastID"]);
+        
         if(strpos($_GET["broadcastID"], "youtube")!==false)
         {
-            $id = str_replace("youtube|", "", $_GET["broadcastID"]);
-            $videos = \CYoutube::getList();
-            foreach($videos as $arVideo)
-            {
-                if($arVideo["ID"]==$id)
-                    break;
-            }
+            $videos = \YoutubeClient::getList();
+        }else{
+            $videos = \VkClient::getList();
+        }
+        foreach($videos as $arVideo)
+        {
+            if($arVideo["ID"]==$id)
+                break;
         }
         
         ?>
@@ -71,7 +74,7 @@ if(isset($_REQUEST["channel_id"]))
         			"broadcastID": "0",
         			"streamURL": "<?=$arVideo["VIDEO_URL"]?>",
         			"posterURL": "<?=$arVideo["PLAYER_BG"]?>",
-        			"videoTitle": "<?=$arVideo["NAME"]?>",
+        			"videoTitle": "<?=htmlspecialchars($arVideo["NAME"])?>",
                     "playerFlashURL": "<?=SITE_TEMPLATE_PATH?>/megatv/app/js/vendors/jwplayer/jwplayer.flash.swf"
         		}
         	</script>
@@ -81,7 +84,12 @@ if(isset($_REQUEST["channel_id"]))
         	<div class="block-body">
         		<a href="#" class="close-link" data-dismiss="modal"><span data-icon="icon-times"></span></a>
         		<div class="player-holder">
-        			<div id="player"></div>
+                    <?if(strpos($_GET["broadcastID"], "youtube")!==false):?>
+                        <div id="player"></div>
+                    <?else:?>
+                        <iframe src="<?=$arVideo["VIDEO_URL"]?>" width="896" height="504" frameborder="0" id="v" class="flash"></iframe>
+                        <div id="player"></div>
+                    <?endif;?>
         		</div>
         	</div>
         </div>

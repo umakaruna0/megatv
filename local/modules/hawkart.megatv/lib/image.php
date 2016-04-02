@@ -1,6 +1,6 @@
 <?php
 
-//namespace Hawkart\Megatv;
+namespace Hawkart\Megatv;
 
 use Bitrix\Main\Entity;
 use Bitrix\Main\Localization;
@@ -9,6 +9,7 @@ Localization\Loc::loadMessages(__FILE__);
 
 class ImageTable extends Entity\DataManager
 {
+
 	/**
 	 * Returns DB table name for entity
 	 *
@@ -32,27 +33,23 @@ class ImageTable extends Entity\DataManager
 				'primary' => true,
 				'autocomplete' => true
 			),
-			'TITLE' => array(
+			'UF_EXTERNAL_ID' => array(
 				'data_type' => 'string',
-				'title'     => Localization\Loc::getMessage('image_entity_title_field'),
-                'required'  => true
+				'title'     => Localization\Loc::getMessage('image_entity_external_id_field'),
+                'required'  => true,
 			),
-            'PATH' => array(
+            'UF_PATH' => array(
 				'data_type' => 'string',
 				'title'     => Localization\Loc::getMessage('image_entity_path_field'),
                 'required'  => true
 			),
-            'WIDTH' => array(
+            'UF_WIDTH' => array(
 				'data_type' => 'integer',
 				'title'     => Localization\Loc::getMessage('image_entity_width_field'),
 			),
-            'HEIGHT' => array(
+            'UF_HEIGHT' => array(
 				'data_type' => 'integer',
 				'title'     => Localization\Loc::getMessage('image_entity_height_field')
-			),
-            'ORIGIN_TITLE' => array(
-				'data_type' => 'string',
-				'title'     => Localization\Loc::getMessage('image_entity_origin_title_field'),
 			),
 		);
 	}

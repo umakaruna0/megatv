@@ -188,7 +188,8 @@ foreach($arResult["DATES"] as $date => $arChannels )
         $arResult["DATES"][$date][$channel] = $arProgs;
     }
     
-    $arResult["DATES"][$date]["YOUTUBE"] = CYoutube::dailyShow();
+    $arResult["DATES"][$date]["YOUTUBE"] = YoutubeClient::dailyShow();
+    $arResult["DATES"][$date]["VK"] = VkClient::dailyShow();
 }
 
 $time_end = microtime(true);
@@ -199,6 +200,11 @@ $arResult["SOCIAL_CHANNELS"] = array(
     array(
         "ID" => "YOUTUBE",
         "NAME" => "Youtube",
+        "PROPERTIES" => array("ICON" => array("VALUE"=>""))
+    ),
+    array(
+        "ID" => "VK",
+        "NAME" => "Vk",
         "PROPERTIES" => array("ICON" => array("VALUE"=>""))
     )
 );

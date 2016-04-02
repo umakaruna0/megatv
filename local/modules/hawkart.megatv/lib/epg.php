@@ -13,11 +13,13 @@ class Epg
     private static $ftpLogin = 'saturn';
     private static $ftpPasss = '7M3Z17cp';
     private static $ftpFile = 'TV_Pack.xml';
+    protected static $origin_dir = "/upload/epg_original/";
+    protected static $cut_dir = "/upload/epg_cut/";
     
     public function __construct($dir = false)
     {
         if(!$dir)
-            $dir = FULL_PATH_DOCUMENT_ROOT."/upload/";
+            $dir = $_SERVER["DOCUMENT_ROOT"]."/upload/";
             
         $this->dir = $dir;
         $this->file = $this->dir.self::$ftpFile;
@@ -450,6 +452,94 @@ class Epg
         return $arChannels;
     }
     
+    /**
+     * Adding rand original image to server directory  for progs
+     * 
+     * @return array|boolean
+     */
+    public static function addImage($icons)
+    {        
+        $max = 0;
+        $url = false;
+        if(count($icons)>1)
+        {
+            while(!$url)
+            {
+                $rand_key = array_rand($icons, 1);
+                $icon = $icons[$rand_key];
+                if(intval($icon["@attributes"]["width"])>$width)
+                {
+                    $url = $icon["@attributes"]["src"];
+                }                
+            }
+        }else{
+            $url = $icons["@attributes"]["src"];
+        }
+        
+        if($url)
+        {
+            $path_parts = pathinfo($url);
+            $file_name = $path_parts["filename"];
+            $path = self::$origin_dir. $file_name. ".jpg";
+            file_put_contents($_SERVER["DOCUMENT_ROOT"]. $path, file_get_contents($url));
+        }else{
+            $file_name = "default";
+            $path = self::$origin_dir. "default.jpg";
+            
+            return false;          
+        }
+        
+        list($width, $height, $type, $attr) = getimagesize($_SERVER["DOCUMENT_ROOT"]. $path);
+
+        return array(
+            "origin_path" => $url,
+            "server_path" => $path,
+            "width" => $width,
+            "height" => $height
+        );
+    }
+    
+    /**
+     * Make cut images for imported progs 
+     */
+    public static function addCropFiles($prog_ids)
+    {
+        $arProgs = array();
+        $result = ProgTable::getList(array(
+            'filter' => array("=ID" => $prog_ids),
+            'select' => array('UF_IMG_PATH' => "UF_IMG.UF_PATH")
+        ));
+        while ($row = $result->fetch())
+        {
+            $path_from = $row["UF_IMG_PATH"];
+            $path_parts = pathinfo($row["UF_IMG_PATH"]);
+            $file_name = $path_parts["filename"];
+            
+            $arCropedSize = array(
+                array(288, 144),
+                array(288, 288),
+                /*array(300, 300),
+                array(600, 600),
+                array(300, 550),*/
+            );
+            foreach($arCropedSize as $arSize)
+            {
+                $path_to = self::$cut_dir. $file_name. "_". $arSize[0]. "_". $arSize[1]. ".jpg";
+                
+                CFile::add(array(
+                    "path_from" => $_SERVER["DOCUMENT_ROOT"]. $path_from,
+                    "path_to" => $_SERVER["DOCUMENT_ROOT"]. $path_to,
+                    "width" => $arSize[0],
+                    "height" =>  $arSize[1]
+                ));
+            }
+        }
+    }
+    
+    
+    /**
+     * Import Epg file 
+     */
     public function import()
     {
         if (file_exists($this->file))
@@ -458,6 +548,7 @@ class Epg
         $epgUrl = (string)\CXmlEx::getAttr($xml, "generator-info-url");
         $epgName = (string)\CXmlEx::getAttr($xml, "generator-info-name");
         
+        $arProgCropIds = array();   //prog id list to crop image
         $arScheduleIdsNotDelete = array();
         $arProgTimeDelete = array();            //Расписание, которое нужно удалить
         $arCategories = self::importCategory();
@@ -468,6 +559,9 @@ class Epg
         //$arRoles = self::importRole();
         //$arPeople = self::importPeople($arRoles);
         $arChannels = self::importChannel($xml->channel);
+        
+        //Delete cropped images
+        \CDev::deleteOldFiles($_SERVER["DOCUMENT_ROOT"]. self::$cut_dir, 0);
         
         /**
          * Get prog's list
@@ -504,11 +598,6 @@ class Epg
             $_arProg = $arProg;
             $json = json_encode($arProg);
             $arProg = json_decode($json, TRUE);
-            //$epg_id = (string)$arProg["@attributes"]["channel"];
-            //$arChannel = $arChannels[$epg_id];
-        
-            if(/*intval($arChannel["ID"])==0 || */intval($arChannel["UF_ACTIVE"])!=1)
-                continue;
             
             $arFields = array(
                 "UF_ACTIVE" => 1,
@@ -540,8 +629,12 @@ class Epg
                 if(!empty($arProg['season']))
                     $arFields["UF_SEASON"] = (string)$arProg['season'];
                 
-                $attr = $_arProg->{'category'}->attributes();
-                $arFields["UF_CATEGORY"] = $arCategories[(string)$attr["id"]]["ID"];
+                //$attr = $_arProg->{'category'}->attributes();
+                //$arFields["UF_CATEGORY"] = $arCategories[(string)$attr["id"]]["ID"];
+                
+                if(!is_array($arProg["category"]))
+                    $arProg["category"] = array($arProg["category"]);
+                $arFields["UF_CATEGORY"] = implode(", ", $arProg["category"]);
                 
                 if(!is_array($arProg["topic"]))
                     $arProg["topic"] = array($arProg["topic"]);
@@ -567,6 +660,38 @@ class Epg
                     $arProg["credits"]["presenter"] = array($arProg["credits"]["presenter"]);
                 $arFields["UF_PRESENTER"] = implode(", ", $arProg["credits"]["presenter"]);
                 
+                
+                //--------------Add original image----------------
+                $icons = array();
+                if(!is_array($arProg["icon"]))
+                    $arProg["icon"] = array($arProg["icon"]);
+                
+                $ar_src = self::addImage($arProg["icon"]);
+                if(!$ar_src)
+                {
+                    $result = ImageTable::getList(array(
+                        'filter' => array("=UF_EXTERNAL_ID" => md5($ar_src["origin_path"])),
+                        'select' => array("ID")
+                    ));
+                    if ($row = $result->fetch())
+                    {
+                        $arFields["UF_IMG_ID"] = (int)$row["ID"];
+                    }else{
+                        
+                        $resultImg = ImageTable::add(array(
+                            "UF_PATH" => $ar_src["server_path"],
+                            "UF_EXTERNAL_ID" => md5($ar_src["origin_path"]),
+                            "UF_WIDTH" => intval($ar_src["width"]),
+                            "UF_HEIGHT" => intval($ar_src["height"])
+                        ));
+                        if ($resultImg->isSuccess())
+                        {
+                            $arFields["UF_IMG_ID"] = (int)$resultImg->getId();
+                        }
+                    }
+                }
+                //------------------------------------------------
+
                 $result = ProgTable::add($arFields);
                 if ($result->isSuccess())
                 {
@@ -582,7 +707,6 @@ class Epg
                         "PROG" => $arFields,
                     ), false, $log_file);*/
                 }
-                
                 
                 if(!is_array($arProg["topic"]))
                 {
@@ -601,18 +725,19 @@ class Epg
                 }else{
                     
                 }
-                
-                
-                
-                
-                
+
         
             }else{
                 $prog_id = $arProgs[$prog_epg_id]["ID"];
             }
             
-            
+            $arProgCropIds[] = $prog_id;
             
         }
+        
+        /**
+         * Make cut images for imported progs 
+         */
+        self::addCropFiles($arProgCropIds);
     }
 }

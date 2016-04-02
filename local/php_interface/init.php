@@ -62,7 +62,8 @@ CModule::AddAutoloadClasses(
         '\CCommentEx' => $sClassesPath.'CCommentEx.php',
         '\CStatChannel' => $sClassesPath.'CStatChannel.php',
         '\CNotifyEx' => $sClassesPath.'CNotifyEx.php',
-        '\CYoutube' => $sClassesPath.'CYoutube.php',
+        '\YoutubeClient' => $sClassesPath.'YoutubeClient.php',
+        '\VkClient' => $sClassesPath.'VkClient.php',
 	)
 );
 

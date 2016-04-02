@@ -71,3 +71,7 @@
 {
     background-color: rgba(33,110,216,.5);
 }
+.broadcast-player>.block-header
+{
+    max-width: 900px;
+}
