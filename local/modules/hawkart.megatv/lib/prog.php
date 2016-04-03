@@ -72,6 +72,10 @@ class ProgTable extends Entity\DataManager
 				'data_type' => 'text',
 				'title'     => Localization\Loc::getMessage('prog_entity_desc_field'),
 			),
+            'UF_SUB_DESC' => array(
+				'data_type' => 'text',
+				'title'     => Localization\Loc::getMessage('prog_entity_sub_desc_field'),
+			),
             'UF_EPG_ID' => array(
 				'data_type' => 'string',
 				'title'     => Localization\Loc::getMessage('prog_entity_epg_id_field'),
@@ -153,4 +157,14 @@ class ProgTable extends Entity\DataManager
 			)
 		);
 	}
+    
+    /**
+     * Clear table
+     */
+    public static function deleteAll()
+    {
+        global $DB;
+        $DB->Query("DELETE FROM ".self::getTableName(), false);
+        $DB->Query("ALTER TABLE ".self::getTableName()." AUTO_INCREMENT=1", false);
+    }
 }

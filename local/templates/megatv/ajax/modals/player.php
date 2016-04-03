@@ -87,8 +87,15 @@ if(isset($_REQUEST["channel_id"]))
                     <?if(strpos($_GET["broadcastID"], "youtube")!==false):?>
                         <div id="player"></div>
                     <?else:?>
-                        <iframe src="<?=$arVideo["VIDEO_URL"]?>" width="896" height="504" frameborder="0" id="v" class="flash"></iframe>
-                        <div id="player"></div>
+                        <iframe src="<?=$arVideo["VIDEO_URL"]?>" width="896" height="504" frameborder="0" id="vk-player" class="flash"></iframe>
+                        <div  style="display: none !important"><div id="player"></div></div>
+                        <script>
+                            $(function(){
+                                $(".close-link").click(function(){
+                                    $("#vk-player").remove();
+                                });
+                            });
+                        </script> 
                     <?endif;?>
         		</div>
         	</div>

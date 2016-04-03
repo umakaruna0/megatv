@@ -506,7 +506,7 @@ class Epg
     {
         $arProgs = array();
         $result = ProgTable::getList(array(
-            'filter' => array("=ID" => $prog_ids),
+            'filter' => array("=ID" => $prog_ids, ">UF_IMG.ID" => 0),
             'select' => array('UF_IMG_PATH' => "UF_IMG.UF_PATH")
         ));
         while ($row = $result->fetch())
@@ -563,32 +563,34 @@ class Epg
         //Delete cropped images
         \CDev::deleteOldFiles($_SERVER["DOCUMENT_ROOT"]. self::$cut_dir, 0);
         
+        //Delete schedule before prev day
+        ScheduleTable::deleteOld();
+        
         /**
          * Get prog's list
          */
         $arProgs = array();
         $result = ProgTable::getList(array(
             'filter' => array("!UF_EPG_ID" => false),
-            'select' => array("UF_EPG_ID", "ID")
+            'select' => array("UF_EPG_ID", "UF_EPG_SUB_ID", "ID", "UF_IMG_ID")
         ));
         while ($row = $result->fetch())
         {
-            $arProgs[$row["UF_EPG_ID"]] = $row;
+            $arProgs[$row["UF_EPG_ID"].$row["UF_EPG_SUB_ID"]] = $row;
         }
         
         /**
          * Get schedule's list
          */
-        /*$arSchedules = array();
-        $result = \Hawkart\Megatv\ScheduleTable::getList(array(
+        $arSchedules = array();
+        $result = ScheduleTable::getList(array(
             'filter' => array(),
             'select' => array("UF_EPG_ID", "ID")
         ));
         while ($row = $result->fetch())
         {
             $arSchedules[$row["UF_EPG_ID"]] = $row["ID"];
-        }*/
-        
+        }
         
         /**
          * Update Progs
@@ -599,10 +601,16 @@ class Epg
             $json = json_encode($arProg);
             $arProg = json_decode($json, TRUE);
             
+            $channel_epg_id = (string) $arProg["@attributes"]["channel"];
+            $arChannel = $arChannels[$channel_epg_id];
+            
+            if(intval($arChannel["ID"])==0 || !$arChannel["UF_ACTIVE"])
+                continue;
+            
             $arFields = array(
                 "UF_ACTIVE" => 1,
                 "UF_TITLE" => trim((string)$arProg["title"]),
-                "UF_DESC" => (string)$arProg["desc"],
+                "UF_DESC" => (string)$_arProg->desc,
                 "UF_YEAR_LIMIT" => (int)$arProg["rating"]["value"],
                 "UF_YEAR" => (string)$arProg["year"]
             );
@@ -613,21 +621,27 @@ class Epg
                 $arFields["UF_EPG_ID"] = (string)$attr["id"];
                 $prog_epg_id = (string)$attr["id"];
             }
+            
+            if(isset($arProg["sub-title"]) && !empty($arProg["sub-title"]))
+            {
+                $arFields["UF_SUB_TITLE"] = trim($arProg["sub-title"]);
+                $attr = $_arProg->{'sub-title'}->attributes();
+                $arFields["UF_EPG_SUB_ID"] = (string)$attr["id"];
+                $prog_epg_id.= $arFields["UF_EPG_SUB_ID"];
+            }
         
             if (!array_key_exists($prog_epg_id, $arProgs))
             {
-                if(isset($arProg["sub-title"]))
+                if(!empty($_arProg->{"desc-sub-title"}))
                 {
-                    $arFields["UF_SUB_TITLE"] = trim($arProg["sub-title"]);
-                    $attr = $_arProg->{'sub-title'}->attributes();
-                    $arFields["UF_EPG_SUB_ID"] = (string)$attr["id"];
+                    $arFields["UF_SUB_DESC"] = (string) $_arProg->{"desc-sub-title"};
                 }
                 
-                if(!empty($arProg['episode-number']))
-                    $arFields["UF_SERIA"] = (string)$arProg['episode-number'];
+                if(!empty($_arProg->{"episode-number"}))
+                    $arFields["UF_SERIA"] = (string) $_arProg->{"episode-number"};
                 
-                if(!empty($arProg['season']))
-                    $arFields["UF_SEASON"] = (string)$arProg['season'];
+                if(!empty($_arProg->season))
+                    $arFields["UF_SEASON"] = (string) $_arProg->season;
                 
                 //$attr = $_arProg->{'category'}->attributes();
                 //$arFields["UF_CATEGORY"] = $arCategories[(string)$attr["id"]]["ID"];
@@ -667,7 +681,7 @@ class Epg
                     $arProg["icon"] = array($arProg["icon"]);
                 
                 $ar_src = self::addImage($arProg["icon"]);
-                if(!$ar_src)
+                if($ar_src)
                 {
                     $result = ImageTable::getList(array(
                         'filter' => array("=UF_EXTERNAL_ID" => md5($ar_src["origin_path"])),
@@ -708,7 +722,7 @@ class Epg
                     ), false, $log_file);*/
                 }
                 
-                if(!is_array($arProg["topic"]))
+                /*if(!is_array($arProg["topic"]))
                 {
                     foreach($_arProg->topic as $topic)
                     {
@@ -724,20 +738,149 @@ class Epg
                     }
                 }else{
                     
-                }
-
+                }*/
         
             }else{
                 $prog_id = $arProgs[$prog_epg_id]["ID"];
+
+                /*if(intval($arProgs[$prog_epg_id]["UF_IMG_ID"])==0)
+                {
+                    $arFields = array();
+                    $icons = array();
+                    if(!is_array($arProg["icon"]))
+                        $arProg["icon"] = array($arProg["icon"]);
+                    
+                    $ar_src = self::addImage($arProg["icon"]);
+                    if(!$ar_src)
+                    {
+                        $result = ImageTable::getList(array(
+                            'filter' => array("=UF_EXTERNAL_ID" => md5($ar_src["origin_path"])),
+                            'select' => array("ID")
+                        ));
+                        if ($row = $result->fetch())
+                        {
+                            $arFields["UF_IMG_ID"] = (int)$row["ID"];
+                        }else{
+                            
+                            $resultImg = ImageTable::add(array(
+                                "UF_PATH" => $ar_src["server_path"],
+                                "UF_EXTERNAL_ID" => md5($ar_src["origin_path"]),
+                                "UF_WIDTH" => intval($ar_src["width"]),
+                                "UF_HEIGHT" => intval($ar_src["height"])
+                            ));
+                            if ($resultImg->isSuccess())
+                            {
+                                $arFields["UF_IMG_ID"] = (int)$resultImg->getId();
+                            }
+                        }
+                    }
+
+                    ProgTable::Update($prog_id, $arFields);
+                }*/
             }
+            
+            /**
+             * Adding schedules
+             */
+            $schedule_epg_id = (string) $arProg["@attributes"]["id"];
+            
+            $dateStart = new \Bitrix\Main\Type\DateTime( date("Y-m-d H:i:s", strtotime($arProg["@attributes"]["start"])), 'Y-m-d H:i:s' );
+            $dateEnd = new \Bitrix\Main\Type\DateTime( date("Y-m-d H:i:s", strtotime($arProg["@attributes"]["stop"])), 'Y-m-d H:i:s' );
+            $date = new \Bitrix\Main\Type\Date(date("Y-m-d", strtotime($arProg["date"])), 'Y-m-d');
+            
+            if (!array_key_exists($schedule_epg_id, $arSchedules))
+            {
+                $title = (string)$arProg["title"];
+                if(!empty($arProg["sub-title"]))
+                {
+                    $title.= " | ". trim($arProg["sub-title"]);
+                }
+                
+                $arFields = array(
+                    "UF_ACTIVE" => 1,
+                    //"UF_TITLE" => (string)$arProg["title"],
+                    "UF_DATE_START" => $dateStart,
+                    "UF_DATE_END" => $dateEnd,
+                    "UF_DATE" => $date,
+                    "UF_CHANNEL_ID" => (int) $arChannel["ID"],
+                    "UF_PROG_ID" => (int) $prog_id,
+                    "UF_EPG_ID" => (string) $arProg["@attributes"]["id"],
+                    "UF_CODE" => $title." - ". $arProg["@attributes"]["start"]
+                );
+                
+                /*if(!empty($arProg["desc-sub-title"]))
+                {
+                    $arFields["UF_DESC"] = (string) $arProg["desc-sub-title"];
+                }else{
+                    $arFields["UF_DESC"] = (string) $arProg["desc"];
+                }*/
+                
+                $result = ScheduleTable::add($arFields);
+                if ($result->isSuccess())
+                {
+                    $schedule_id = $result->getId();
+                }else{
+                    $errors = $result->getErrorMessages();
+                    /*print_r($errors);
+                    \CDev::log(array(
+                        "ERROR" => $errors,
+                        "PROG" => $arFields,
+                    ), false, $log_file);*/
+                }
+            }else{
+                $schedule_id = (int) $arSchedules[$schedule_epg_id]["ID"];
+                
+                $arFields = array(
+                    "UF_DATE_START" => $dateStart,
+                    "UF_DATE_END" => $dateEnd,
+                    "UF_DATE" => $date
+                );
+                
+                ScheduleTable::Update($schedule_id, $arFields);
+            }
+            
+            $arScheduleIdsNotDelete[] = $schedule_id;
             
             $arProgCropIds[] = $prog_id;
             
         }
         
         /**
-         * Make cut images for imported progs 
+         * Delete not exist schedule
          */
+        if(!empty($arScheduleIdsNotDelete))
+        {
+            $result = ScheduleTable::getList(array(
+                'filter' => array(
+                    ">=UF_DATE" => new \Bitrix\Main\Type\Date(date("Y-m-d"), 'Y-m-d')
+                ),
+                'select' => array("ID")
+            ));
+            while ($row = $result->fetch())
+            {
+                if(!in_array($row["ID"], $arScheduleIdsNotDelete))
+                {
+                    ScheduleTable::delete($row["ID"]);
+                }
+            }
+        }
+        
+        //Make cut images for imported progs 
         self::addCropFiles($arProgCropIds);
+        
+        unset($arScheduleIdsNotDelete);
+        unset($arProgCropIds);
     }
-}
+    
+    /**
+     * Clear tables & deleting images
+     */
+    public static function clear()
+    {
+        ProgTable::deleteAll();
+        ScheduleTable::deleteAll();
+        ImageTable::deleteAll();
+        \CDev::deleteOldFiles($_SERVER["DOCUMENT_ROOT"]. self::$cut_dir, 0);
+        \CDev::deleteOldFiles($_SERVER["DOCUMENT_ROOT"]. self::$origin_dir, 0);
+    }
+} 

@@ -53,4 +53,14 @@ class ImageTable extends Entity\DataManager
 			),
 		);
 	}
+    
+    /**
+     * Clear table
+     */
+    public static function deleteAll()
+    {
+        global $DB;
+        $DB->Query("DELETE FROM ".self::getTableName(), false);
+        $DB->Query("ALTER TABLE ".self::getTableName()." AUTO_INCREMENT=1", false);
+    }
 }

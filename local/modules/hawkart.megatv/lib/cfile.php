@@ -12,9 +12,16 @@ class CFile
     protected static $origin_dir = "/upload/epg_original/";
     protected static $cut_dir = "/upload/epg_cut/";
     
-    public static function getPath($id, $arDimenssion = false)
+    /**
+     * @return string
+     */
+    public static function getCropedPath($origin_path, $arDimenssion)
     {   
+        $path_parts = pathinfo($origin_path["path_from"]);
+        $file_name = $path_parts["filename"];
+        $path = self::$cut_dir. $file_name. "_". $arDimenssion[0]. "_". $arDimenssion[1]. ".jpg";
         
+        return $path;
     }
     
     /**

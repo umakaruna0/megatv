@@ -1,6 +1,6 @@
 <?php
 
-//namespace Hawkart\Megatv;
+namespace Hawkart\Megatv;
 
 use Bitrix\Main\Entity;
 use Bitrix\Main\Localization;
@@ -19,6 +19,26 @@ class ScheduleTable extends Entity\DataManager
 	{
 		return 'hw_schedule';
 	}
+    
+    /**
+     * Change data before adding
+     * 
+     * @return object 
+     */
+    public static function onBeforeAdd(Entity\Event $event)
+    {
+        $result = new Entity\EventResult;
+        $data = $event->getParameter("fields");
+
+        if (isset($data['UF_CODE']))
+        {
+            $arParams = array("replace_space"=>"-", "replace_other"=>"-");
+            $code = \CDev::translit(trim($data["UF_CODE"]), "ru", $arParams);
+            $result->modifyFields(array('UF_CODE' => $code));
+        }
+
+        return $result;
+    }
 
 	/**
 	 * Returns entity map definition
@@ -39,7 +59,7 @@ class ScheduleTable extends Entity\DataManager
 				'values'    => array(0, 1),
 				'required'  => true
 			),
-			'UF_TITLE' => array(
+			/*'UF_TITLE' => array(
 				'data_type' => 'string',
 				'title'     => Localization\Loc::getMessage('schedule_entity_title_field'),
                 'required'  => true
@@ -47,7 +67,7 @@ class ScheduleTable extends Entity\DataManager
 			'UF_DESC' => array(
 				'data_type' => 'text',
 				'title'     => Localization\Loc::getMessage('schedule_entity_desc_field'),
-			),
+			),*/
             'UF_EPG_ID' => array(
 				'data_type' => 'integer',
 				'title'     => Localization\Loc::getMessage('schedule_entity_epg_id_field'),
@@ -59,8 +79,8 @@ class ScheduleTable extends Entity\DataManager
                 'required'  => true
 			),
             'UF_CHANNEL' => array(
-				'data_type' => 'Local\Hawkart\Megatv\Channel',
-				'reference' => array('=this.CHANNEL_ID' => 'ref.ID'),
+				'data_type' => 'Hawkart\Megatv\Channel',
+				'reference' => array('=this.UF_CHANNEL_ID' => 'ref.ID'),
 			),
             'UF_PROG_ID' => array(
 				'data_type' => 'integer',
@@ -68,8 +88,8 @@ class ScheduleTable extends Entity\DataManager
                 'required'  => true
 			),
             'UF_PROG' => array(
-				'data_type' => 'Local\Hawkart\Megatv\Prog',
-				'reference' => array('=this.PROG_ID' => 'ref.ID'),
+				'data_type' => 'Hawkart\Megatv\Prog',
+				'reference' => array('=this.UF_PROG_ID' => 'ref.ID'),
 			),
             'UF_DATE' => array(
 				'data_type' => 'date',
@@ -90,11 +110,34 @@ class ScheduleTable extends Entity\DataManager
 				'data_type' => 'string',
 				'title'     => Localization\Loc::getMessage('schedule_entity_code_field'),
                 'required'  => true
-			),
-			'UF_SORT' => array(
-				'data_type' => 'integer',
-				'title'     => Localization\Loc::getMessage('schedule_entity_sort_field'),
-			),
+			)
 		);
 	}
+    
+    /**
+     * Delete schedule before prev day
+     */
+    public static function deleteOld()
+    {
+        $result = self::getList(array(
+            'filter' => array(
+                "<UF_DATE" => new \Bitrix\Main\Type\Date(date('Y-m-d', strtotime('-1 day')), 'Y-m-d')
+            ),
+            'select' => array("ID")
+        ));
+        while ($row = $result->fetch())
+        {
+            ScheduleTable::delete($row["ID"]);
+        }
+    }
+    
+    /**
+     * Clear table
+     */
+    public static function deleteAll()
+    {
+        global $DB;
+        $DB->Query("DELETE FROM ".self::getTableName(), false);
+        $DB->Query("ALTER TABLE ".self::getTableName()." AUTO_INCREMENT=1", false);
+    }
 }
