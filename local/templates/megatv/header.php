@@ -39,7 +39,10 @@ IncludeTemplateLangFile(__FILE__);
         </script>
         <!-- Google Analytics -->
 	</head>
-	<body>
+	<body
+        <?if($APPLICATION->GetCurDir()=="/personal/records/"):?> class="page-records"<?endif;?>
+        <?if($APPLICATION->GetCurDir()=="/recommendations/"):?> class="page-recommendations"<?endif;?>
+    >
         <div id="panel"><?$APPLICATION->ShowPanel();?></div>
         
         <?//$APPLICATION->IncludeComponent("bitrix:main.include", "", array("AREA_FILE_SHOW" => "file", "PATH" => SITE_DIR."include/header-signin.php"), false);?>
@@ -58,12 +61,12 @@ IncludeTemplateLangFile(__FILE__);
 			</script>
                         
 			<header class="site-header">
-				<div class="fullsize-banner adv-styling-01<?if(strpos($_COOKIE['advertizing_hidden_banners'], "header-adv")!==false):?> hide<?endif;?>" data-type="advertizing" id="header-adv">
+				<?/*<div class="fullsize-banner adv-styling-01<?if(strpos($_COOKIE['advertizing_hidden_banners'], "header-adv")!==false):?> hide<?endif;?>" data-type="advertizing" id="header-adv">
 					<div class="banner-content">
                         <?$APPLICATION->IncludeComponent("bitrix:main.include", "", array("AREA_FILE_SHOW" => "file", "PATH" => SITE_DIR."include/header-banner.php"), false);?>
 					</div>
 					<a href="#" class="close-link" data-type="hide-banner-link">Скрыть</a>
-				</div>
+				</div>*/?>
 				<div class="top-panel">
                     <?if($APPLICATION->GetCurDir()=="/"):?>
 					   <span class="logo"></span>

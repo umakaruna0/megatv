@@ -2,7 +2,7 @@
 if(count($arResult["RECORDS"])==0)
     return false;
 ?>
-<div class="user-recorded-broadcasts-categories" data-module="user-recorded-broadcasts-categories">
+<div class="broadcasts-categories" data-module="broadcasts-categories">
 	<script type="text/x-config">
 		{
 			"url": "/personal/records/"
@@ -32,7 +32,7 @@ if(count($arResult["RECORDS"])==0)
 </div>
 
 
-<section class="user-recorded-broadcasts" data-module="user-recorded-broadcasts">
+<section class="broadcasts" data-module="user-recorded-broadcasts">
     <script type="text/x-config">
 		{
 			"url": "<?=SITE_TEMPLATE_PATH?>/ajax/delete_record.php"
@@ -72,10 +72,10 @@ if(count($arResult["RECORDS"])==0)
 					
 					<div class="actions-panel">
 						<ul class="actions-list">
-							<li><a href="#" data-type="delete-trigger"><span data-icon="icon-trash-action"></span></a></li>
-							<?/*<li><a href="#" data-type="share-trigger"><span data-icon="icon-network-action"></span></a></li>*/?>
+							<li><a href="#" data-type="delete-trigger" title="Удалить"><span data-icon="icon-trash-action"></span></a></li>
+							<?/*<li><a href="#" data-type="share-trigger" title="Поделиться"><span data-icon="icon-network-action"></span></a></li>*/?>
 							<?if(!empty($arRecord["UF_URL"])):?>
-                                <li><a href="#" data-type="player-trigger"><span data-icon="icon-play-action"></span></a></li>
+                                <li><a href="#" data-type="player-trigger" title="Просмотреть"><span data-icon="icon-play-action"></span></a></li>
                             <?endif;?>
 						</ul>
 						<div class="delete-dialog">
@@ -92,7 +92,7 @@ if(count($arResult["RECORDS"])==0)
                         <div class="meta">
 							<div class="time"><?=$time?></div>
 							<div class="date"><?=$date?></div>
-							<div class="category"><a href="#"><?=$arRecord["UF_CATEGORY"]?></a></div>
+							<div class="category"><a href="#" data-type="category"><?=$arRecord["UF_CATEGORY"]?></a></div>
 						</div>
 						<div class="title">
 							<a href="#"><?=$arRecord["UF_NAME"]?></a>

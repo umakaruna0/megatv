@@ -9,7 +9,7 @@ class CEpg
     public function __construct($dir = false)
     {
         if(!$dir)
-            $dir = FULL_PATH_DOCUMENT_ROOT."/local/";
+            $dir = FULL_PATH_DOCUMENT_ROOT."/upload/";
             
         $this->dir = $dir;
         $this->file = $this->dir.self::$ftpFile;

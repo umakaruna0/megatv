@@ -332,6 +332,66 @@ class CProgTime
         return $content;
     }
     
+    public static function getProgInfoRecommend($arProg)
+    {
+        $arProg["PICTURE"] = CDev::resizeImage($arProg["PREVIEW_PICTURE"], 288, 288);
+        $start = $arProg["DATE_START"];
+
+        $arStatus = self::status($arProg);
+        $status = $arStatus["status"];
+        $status_icon = $arStatus["status-icon"];
+        
+        if(!empty($arProg["PROPERTY_SUB_TITLE_VALUE"]))
+            $arProg["NAME"].= " | ".$arProg["PROPERTY_SUB_TITLE_VALUE"];
+        
+        $date = substr($start, 0, 10);
+        $time = substr($start, 11, 5);
+        
+        ob_start();
+        ?>
+        <div class="item<?if($status=="viewed"):?> status-viewed<?elseif($status=="recording"):?> recording-in-progress<?else:?> status-<?=$status?><?endif;?>" 
+            data-broadcast-id="<?=$arProg["SCHEDULE_ID"]?>" data-category="<?=$arProg["CAT_CODE"]?>"
+        >
+            <div class="inner">
+                <?
+                if($status=="viewed")
+                {
+                    $path = $_SERVER["DOCUMENT_ROOT"].$arProg["PICTURE"]["SRC"];
+                    ?>
+                    <div class="item-image-holder" style="background-image: url(<?=SITE_TEMPLATE_PATH?>/ajax/img_grey.php?path=<?=urlencode($path)?>)"></div>
+                    <span class="item-status-icon">
+						<span data-icon="icon-viewed"></span>
+						<span class="status-desc">Просмотрено</span>
+					</span>
+                    <?
+                }else{
+                    $img = $arProg["PICTURE"]["SRC"];
+                    ?><div class="item-image-holder" style="background-image: url(<?=$img?>)"></div><?
+                }
+                ?>
+                
+                <?=$status_icon?>
+                <?=self::driveNotifyMessage()?>
+				
+				<div class="item-header">
+                    <div class="meta">
+						<div class="time"><?=$time?></div>
+						<div class="date"><?=$date?></div>
+						<div class="category"><a href="#" data-type="category"><?=$arProg["CATEGORY"]?></a></div>
+					</div>
+					<div class="title">
+						<a href="<?=$arProg["DETAIL_PAGE_URL"]?>"><?=self::cutName($arProg["NAME"])?></a>
+					</div>
+				</div>
+            </div>
+		</div>
+        <?
+        $content = ob_get_contents();  
+        ob_end_clean();
+        
+        return $content;
+    }
+    
     public static function getSocialProgInfoIndex($arProg, $socialChannel)
     {               
         ob_start();
