@@ -58,7 +58,7 @@ Box.Application.addService('icon-loader', function () {
 		},
 		renderSprite: function (path) {
 			var file = (path !== '' && typeof path !== 'undefined') ? path : '/img/sprites/svg_sprite.svg';
-			var revision = 1459513283;
+			var revision = 1460392643;
 			if (!document.createElementNS || !document.createElementNS('http://www.w3.org/2000/svg', 'svg').createSVGRect) {
 				document.createElement('svg');
 				document.createElement('use');
@@ -1368,6 +1368,7 @@ Box.Application.addModule('city-select', function (context) {
 	return {
 
 		init: function () {
+
 			// services
 			selectService = context.getService('select');
 			popoverService = context.getService('popover');
@@ -1378,6 +1379,7 @@ Box.Application.addModule('city-select', function (context) {
 			popoverContent = '<p>Мы угадали Ваш город?</p><ul><li><a href="#" data-type="select-trigger">Выбрать другой</a></li><li><a href="#" data-type="popover-trigger">Да, угадали</a></li></ul>';
 			// configs
 			remoteURL = context.getConfig('url');
+
 			citiesArr = context.getConfig('cities');
 			showCityRequestPopover = context.getConfig('showCityRequestPopover') || false;
 			writedCookies = cookieService.get(DATA_KEY);
