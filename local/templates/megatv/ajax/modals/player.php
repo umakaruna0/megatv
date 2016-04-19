@@ -34,6 +34,10 @@ if(isset($_REQUEST["channel_id"]))
                 "playerFlashURL": "<?=SITE_TEMPLATE_PATH?>/megatv/app/js/vendors/jwplayer/jwplayer.flash.swf"
     		}
     	</script>
+        <a class="back-link" href="#" data-dismiss="modal">
+    		<span data-icon="icon-backlink-arrow"></span>
+    		<span>Вернуться назад</span>
+    	</a>
     	<div class="block-header">
     		<h3 class="block-title"><?=$arChannel["NAME"]?></h3>
     	</div>
@@ -78,6 +82,10 @@ if(isset($_REQUEST["channel_id"]))
                     "playerFlashURL": "<?=SITE_TEMPLATE_PATH?>/megatv/app/js/vendors/jwplayer/jwplayer.flash.swf"
         		}
         	</script>
+            <a class="back-link" href="#" data-dismiss="modal">
+        		<span data-icon="icon-backlink-arrow"></span>
+        		<span>Вернуться назад</span>
+        	</a>
         	<div class="block-header">
         		<h3 class="block-title"><?=$arVideo["NAME"]?></h3>
         	</div>
@@ -134,6 +142,10 @@ if(isset($_REQUEST["channel_id"]))
                     "playerFlashURL": "<?=SITE_TEMPLATE_PATH?>/megatv/app/js/vendors/jwplayer/jwplayer.flash.swf"
         		}
         	</script>
+            <a class="back-link" href="#" data-dismiss="modal">
+        		<span data-icon="icon-backlink-arrow"></span>
+        		<span>Вернуться назад</span>
+        	</a>
         	<div class="block-header">
         		<h3 class="block-title"><?=$arRecord["UF_NAME"]?><?= $arRecord["UF_SUB_TITLE"] ? " <small>|".$arRecord["UF_SUB_TITLE"]."</small>" : "" ?></h3>
         	</div>

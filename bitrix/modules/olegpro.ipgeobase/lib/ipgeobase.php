@@ -7,7 +7,7 @@
 
 namespace Olegpro\IpGeoBase;
 
-use Bitrix\Main\Text\Encoding;
+use \Bitrix\Main\Text\Encoding;
 
 
 class IpGeoBase extends \IPGeoBase
@@ -44,7 +44,7 @@ class IpGeoBase extends \IPGeoBase
 
             if (is_array($result)) {
                 foreach ($result as $key => $value) {
-                    $result[$key] = Encoding::getInstance()->convertEncoding($value, 'windows-1251', SITE_CHARSET);
+                    $result[$key] = Encoding::convertEncoding($value, 'windows-1251', SITE_CHARSET);
                 }
             }
 

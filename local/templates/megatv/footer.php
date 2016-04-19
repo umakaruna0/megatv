@@ -8,10 +8,7 @@
 					<a href="#" class="close-link" data-type="hide-banner-link">Скрыть</a>
 				</div>*/?>
 				<div class="footer-content">
-					<span class="footer-logo"></span>
-					<p class="copyrights">
-                        <?$APPLICATION->IncludeComponent("bitrix:main.include", "", array("AREA_FILE_SHOW" => "file", "PATH" => SITE_DIR."include/footer-copyright.php"), false);?>
-                    </p>
+                    <?$APPLICATION->IncludeComponent("bitrix:main.include", "", array("AREA_FILE_SHOW" => "file", "PATH" => SITE_DIR."include/footer-copyright.php"), false);?>
 				</div>
 			</footer>
 			<div class="drop-overlay"></div>

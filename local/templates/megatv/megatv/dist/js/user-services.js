@@ -58,7 +58,7 @@ Box.Application.addService('icon-loader', function () {
 		},
 		renderSprite: function (path) {
 			var file = (path !== '' && typeof path !== 'undefined') ? path : '/img/sprites/svg_sprite.svg';
-			var revision = 1460392643;
+			var revision = 1460990441;
 			if (!document.createElementNS || !document.createElementNS('http://www.w3.org/2000/svg', 'svg').createSVGRect) {
 				document.createElement('svg');
 				document.createElement('use');
@@ -819,6 +819,9 @@ Box.Application.addBehavior('load-broadcast-player', function (context) {
 			});
 		}
 	}
+	function play() {
+		jwplayer('player').play();
+	}
 
 	// --------------------------------------------------------------------------
 	// Public
@@ -853,6 +856,9 @@ Box.Application.addBehavior('load-broadcast-player', function (context) {
 					// add class for body, that remove padding-right for fullscreen player
 					$('body').addClass('player-modal-open');
 				}
+
+				// Autoplay when show modal
+				play();
 			});
 		},
 		destroy: function () {

@@ -8,7 +8,7 @@ global $USER;
     Array(
         "IBLOCK_TYPE" => "directories",
 		"IBLOCK_ID" => "6",
-		"NEWS_COUNT" => "10",
+		"NEWS_COUNT" => "45",
         "DISPLAY_BOTTOM_PAGER" => "Y",
     ),
 	false
