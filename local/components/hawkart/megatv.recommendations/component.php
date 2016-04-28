@@ -1,88 +1,122 @@
 <?
-if(!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED!==true)
-	die();
+if(!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED!==true) die();
 
 $arResult["PROGS"] = array();
-$arTime = CTimeEx::getDatetime();
-  
-   
-//активные каналы
-$activeChannels = CChannel::getList(array("ACTIVE"=>"Y"), array("ID", "DETAIL_PAGE_URL", "PROPERTY_ICON"));
-$ids = array();
-$arResult["CHANNELS"] = array();
-foreach($activeChannels as $activeChannel)
+$arTime = \CTimeEx::getDatetime();
+
+$arMatrix = array();
+
+if($USER->IsAuthorized())
 {
-    $ids[] = $activeChannel["ID"];
-    $arResult["CHANNELS"][$activeChannel["ID"]] = $activeChannel;
+    $arStatistic = \Hawkart\Megatv\CStat::getByUser();
+    foreach(array("CATS", "TAGS", "CHANNELS", "SERIALS") as $statPart)
+    {
+        uasort($arStatistic[$statPart], function($a, $b){
+            return $b - $a;
+        });
+        
+        $arStatistic[$statPart] = array_keys($arStatistic[$statPart]);
+        array_splice($arStatistic[$statPart], 3);
+        foreach($arStatistic[$statPart] as $key)
+        {
+            $arMatrix[$statPart][$key] = array();
+        }
+    }
+    unset($arStatistic);
 }
 
-$arrFilter = array(
-    "IBLOCK_ID" => PROG_IB,
-    "ACTIVE" => "Y",
-    "!PROPERTY_RECOMMEND" => false,
-    "PROPERTY_CHANNEL" => CIBlockElement::SubQuery(
-        "ID",
-        array(
-            "IBLOCK_ID" => CHANNEL_IB,
-            "ACTIVE" => "Y",
-        )
-    ));
+//CDev::pre($arMatrix);
 
-$arSelect = array("ID", "NAME", "PROPERTY_CHANNEL", "PROPERTY_SUB_TITLE", "PREVIEW_PICTURE", "PROPERTY_PICTURE_DOUBLE", "PROPERTY_PICTURE_HALF", "PROPERTY_CATEGORY");
-$rsRes = CIBlockElement::GetList( array("PROPERTY_RATING" => "DESC"), $arrFilter, false, false, $arSelect );
-while( $arItem = $rsRes->GetNext() )
-{
-    $arProgs[$arItem["ID"]] = $arItem;
+//get progs by rating
+$countPerPage = 20;
+$limit = 200;
+$count = 0;
+
+$arParams["CURRENT_DATETIME"] = date("d.m.Y H:i:s", strtotime($arTime["SERVER_DATETIME_WITH_OFFSET"]));
+$dateStart = date("Y-m-d H:i:s", strtotime($arParams["CURRENT_DATETIME"]));
+$result = \Hawkart\Megatv\ScheduleTable::getList(array(
+    'filter' => array(
+        "UF_CHANNEL.UF_ACTIVE" => 1,
+        "UF_PROG.UF_ACTIVE" => 1,
+        ">UF_DATE_START" => new \Bitrix\Main\Type\DateTime($dateStart, 'Y-m-d H:i:s'),
+    ),
+    'select' => array(
+        "ID", "UF_CODE", "UF_DATE_START", "UF_DATE_END", "UF_DATE", "UF_CHANNEL_ID", "UF_PROG_ID",
+        "UF_TITLE" => "UF_PROG.UF_TITLE", "UF_SUB_TITLE" => "UF_PROG.UF_SUB_TITLE", "UF_IMG_PATH" => "UF_PROG.UF_IMG.UF_PATH",
+        "UF_CHANNEL_CODE" => "UF_CHANNEL.UF_CODE", "UF_CATEGORY" => "UF_PROG.UF_CATEGORY",
+        "UF_ID" => "UF_PROG.UF_EPG_ID"
+    ),
+    'order' => array("UF_PROG.UF_RATING" => "DESC"),
+    'limit' => $limit
+));
+while ($arSchedule = $result->fetch())
+{   
+    if($count<$countPerPage)
+    {
+        $arSchedule["UF_DATE_START"] = $arSchedule["DATE_START"] = $arSchedule['UF_DATE_START']->toString();
+        $arSchedule["UF_DATE_END"] = $arSchedule["DATE_END"] = $arSchedule['UF_DATE_END']->toString();
+        $arSchedule["UF_DATE"] = $arSchedule["DATE"] = $arSchedule['UF_DATE']->toString();
+        $arSchedule["DETAIL_PAGE_URL"] = "/channels/".$arSchedule["UF_CHANNEL_CODE"]."/".$arSchedule["UF_ID"]."/?event=".$arSchedule["ID"];
+    
+        if(!empty($arSchedule["UF_CATEGORY"]))
+            $arCats[] = $arSchedule["UF_CATEGORY"];    
+        
+        if($USER->IsAuthorized())
+        {
+            if(array_key_exists($arSchedule["UF_CATEGORY"], $arMatrix["CATS"]))
+            {
+                $arMatrix["CATS"][$arSchedule["UF_CATEGORY"]][] = $arSchedule; $count++;
+            }
+            else if(array_key_exists($arSchedule["UF_ID"], $arMatrix["SERIALS"]))
+            {
+                $arMatrix["SERIALS"][$arSchedule["UF_ID"]][] = $arSchedule; $count++;
+            }
+            else if(array_key_exists($arSchedule["UF_CHANNEL_ID"], $arMatrix["CHANNELS"]))
+            {
+                $arMatrix["CHANNELS"][$arSchedule["UF_CHANNEL_ID"]][] = $arSchedule; $count++;
+            }
+        }else{
+            $arResult["PROGS"][] = $arSchedule;
+            $count++;
+        }
+    }
 }
 
-if(count($arProgs)>0)
+if($USER->IsAuthorized())
 {
-    $progIds = array();
-    foreach($arProgs as $arProg)
+    //CDev::pre($arMatrix);
+    
+    $arResult["PROGS"] = array();
+    foreach(array("CATS", "CHANNELS", "SERIALS") as $statPart)
     {
-        $progIds[] = $arProg["ID"];
+        $arMatrixMerged[$statPart] = array();
+        foreach($arMatrix[$statPart] as $key=>$arSchedule)
+        {
+            $arMatrixMerged[$statPart] = array_merge($arMatrixMerged[$statPart], $arSchedule);
+        }
     }
+    unset($arMatrix);
     
-    $key = 0;
-    $exist = array();
-    $arProgTimes = CProgTime::getList(array(
-        ">=PROPERTY_DATE_START" => CTimeEx::datetimeForFilter(date("Y-m-d H:i:s")),
-        "PROPERTY_PROG" => $progIds,
-    ), array("ID", "CODE", "PROPERTY_DATE_START", "PROPERTY_DATE_END", "PROPERTY_PROG", "PROPERTY_CHANNEL"));
-    foreach($arProgTimes as $arProgTime)
+    $arResult["PROGS"] = $arMatrixMerged["CATS"];
+    //CDev::pre($arMatrixMerged);
+    
+    /*$i = 1;
+    $str = 1;
+    while($i<$count)
     {
-        $arProg = $arProgs[$arProgTime["PROPERTY_PROG_VALUE"]];
-        
-        if(in_array($arProg["ID"], $exist))
-            continue;
-            
-        $channel = $arProg["PROPERTY_CHANNEL_VALUE"];
-        $arSchedule = $arProgTime;
-        $arProg["SCHEDULE_ID"] = $arSchedule["ID"];
-        $arProg["CHANNEL_ID"] = $channel;
-        $arProg["CATEGORY"] = $arProg["PROPERTY_CATEGORY_VALUE"];
-        $arProg["DATE_START"] = CTimeEx::dateOffset($arTime["OFFSET"], $arSchedule["PROPERTY_DATE_START_VALUE"]);
-        $arProg["DATE_END"] = CTimeEx::dateOffset($arTime["OFFSET"], $arSchedule["PROPERTY_DATE_END_VALUE"]);
-        $arProg["DETAIL_PAGE_URL"] = $arResult["CHANNELS"][$channel]["DETAIL_PAGE_URL"].$arSchedule["CODE"]."/";
-        
-        $arResult["PROGS"][] = $arProg;
-        $exist[] = $arProg["ID"];
-        
-        
-        if(!empty($arProg["CATEGORY"]))
-            $arCats[] = $arProg["CATEGORY"];
-        
-        $key++;
-        if($key>48) break;
-    }
-    
-    //CDev::pre($arResult["PROGS"]);
-    
-    $arResult["PROGS"] = CScheduleTable::setIndex(array(
+        foreach(array("CATS", "CHANNELS", "SERIALS") as $statPart)
+        {
+            $arMatrixMerged
+        }
+        $arResult["PROGS"][]
+    }*/
+}
+
+if(count($arResult["PROGS"])>0)
+{
+    $arResult["PROGS"] = \Hawkart\Megatv\CScheduleView::setIndex(array(
         "PROGS" => $arResult["PROGS"],
     ));
-    
-    //CDev::pre($arResult["PROGS"]);
 }
 
 $arCats = array_unique($arCats);
@@ -91,7 +125,7 @@ $arResult["CATEGORIES"] = array();
 foreach($arCats as $category)
 {
     $arParams = array("replace_space"=>"-", "replace_other"=>"-");
-    $str = CDev::translit($category, "ru", $arParams);
+    $str = \CDev::translit($category, "ru", $arParams);
     $arResult["CATEGORIES"][$category] = $str; 
 }
 

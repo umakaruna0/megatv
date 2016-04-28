@@ -59,17 +59,8 @@ class ScheduleTable extends Entity\DataManager
 				'values'    => array(0, 1),
 				'required'  => true
 			),
-			/*'UF_TITLE' => array(
-				'data_type' => 'string',
-				'title'     => Localization\Loc::getMessage('schedule_entity_title_field'),
-                'required'  => true
-			),
-			'UF_DESC' => array(
-				'data_type' => 'text',
-				'title'     => Localization\Loc::getMessage('schedule_entity_desc_field'),
-			),*/
             'UF_EPG_ID' => array(
-				'data_type' => 'integer',
+				'data_type' => 'string',
 				'title'     => Localization\Loc::getMessage('schedule_entity_epg_id_field'),
                 'required'  => true
 			),
@@ -79,7 +70,7 @@ class ScheduleTable extends Entity\DataManager
                 'required'  => true
 			),
             'UF_CHANNEL' => array(
-				'data_type' => 'Hawkart\Megatv\Channel',
+				'data_type' => '\Hawkart\Megatv\ChannelTable',
 				'reference' => array('=this.UF_CHANNEL_ID' => 'ref.ID'),
 			),
             'UF_PROG_ID' => array(
@@ -88,8 +79,15 @@ class ScheduleTable extends Entity\DataManager
                 'required'  => true
 			),
             'UF_PROG' => array(
-				'data_type' => 'Hawkart\Megatv\Prog',
+				'data_type' => '\Hawkart\Megatv\ProgTable',
 				'reference' => array('=this.UF_PROG_ID' => 'ref.ID'),
+			),
+            'UF_EPG_FILE_ID' => array(
+				'data_type' => 'integer',
+			),
+            'UF_EPG_FILE' => array(
+				'data_type' => '\Hawkart\Megatv\EpgTable',
+				'reference' => array('=this.UF_EPG_FILE_ID' => 'ref.ID'),
 			),
             'UF_DATE' => array(
 				'data_type' => 'date',

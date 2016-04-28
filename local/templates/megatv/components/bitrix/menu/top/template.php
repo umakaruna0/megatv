@@ -23,7 +23,7 @@ foreach($arResult as $key=>$arItem):
 	
 <?endforeach?>
     <?if($showMyRecs):?>
-        <li class="<?if($arItem["SELECTED"]):?>active <?else:?><?endif;?>sections-menu-recordings"><a href="/personal/records/"><span data-icon="icon-film-collection"></span> <span>Мои записи<span class="count"><?=$APPLICATION->GetPageProperty("ar_record_in_rec")?> из <?=$APPLICATION->GetPageProperty("ar_record_recorded")?></span></span></a></li>
+        <li class="<?if($arItem["SELECTED"]):?>active <?else:?><?endif;?>sections-menu-recordings"><a href="/personal/records/"><span data-icon="icon-film-collection"></span> <span>Мои записи<span class="count"><?=$APPLICATION->GetPageProperty("ar_record_in_rec")?> из <?=$APPLICATION->GetPageProperty("ar_record_total")?></span></span></a></li>
     <?endif;?>
 </ul>
 <?endif?>

@@ -2,13 +2,10 @@
 define('STOP_STATISTICS', true);
 require_once($_SERVER['DOCUMENT_ROOT'].'/bitrix/modules/main/include/prolog_before.php');
 $GLOBALS['APPLICATION']->RestartBuffer();
-CModule::IncludeModule("iblock");
-CModule::IncludeModule("sale");
-CModule::IncludeModule("catalog");
 
 global $USER;
 if(!is_object($USER))
-    $USER = new CUser;
+    $USER = new \CUser;
 
 if(!$USER->IsAuthorized())
     return false;
@@ -18,7 +15,12 @@ if(!$USER->IsAuthorized())
  */ 
 if(isset($_REQUEST["channel_id"]))
 {
-    $arChannel = CChannel::getByID($_REQUEST["channel_id"], array("NAME", "PROPERTY_STREAM_URL", "PREVIEW_PICTURE"));
+    $result = \Hawkart\Megatv\ChannelTable::getList(array(
+        'filter' => array("=ID" => intval($_REQUEST["channel_id"])),
+        'select' => array("ID", "UF_TITLE", "UF_IMG_PATH" => "UF_IMG.UF_PATH", "UF_STREAM_URL"),
+        'limit' => 1
+    ));
+    $arChannel = $result->fetch();
     ?>
     <div class="advert-holder">
         <?$APPLICATION->IncludeComponent("bitrix:main.include", "", array("AREA_FILE_SHOW" => "file", "PATH" => SITE_DIR."include/player-banner.php"), false);?>
@@ -28,9 +30,9 @@ if(isset($_REQUEST["channel_id"]))
     		{
     			"seekTime": "0",
     			"broadcastID": "0",
-    			"streamURL": "<?=$arChannel["PROPERTY_STREAM_URL_VALUE"]?>",
-    			"posterURL": "<?=CFile::GetPath($arChannel["PREVIEW_PICTURE"])?>",
-    			"videoTitle": "<?=$arChannel["NAME"]?>",
+    			"streamURL": "<?=$arChannel["UF_STREAM_URL"]?>",
+    			"posterURL": "<?=$arChannel["UF_IMG_PATH"]?>",
+    			"videoTitle": "<?=$arChannel["UF_TITLE"]?>",
                 "playerFlashURL": "<?=SITE_TEMPLATE_PATH?>/megatv/app/js/vendors/jwplayer/jwplayer.flash.swf"
     		}
     	</script>
@@ -39,7 +41,7 @@ if(isset($_REQUEST["channel_id"]))
     		<span>Вернуться назад</span>
     	</a>
     	<div class="block-header">
-    		<h3 class="block-title"><?=$arChannel["NAME"]?></h3>
+    		<h3 class="block-title"><?=$arChannel["UF_TITLE"]?></h3>
     	</div>
     	<div class="block-body">
     		<a href="#" class="close-link" data-dismiss="modal"><span data-icon="icon-times"></span></a>
@@ -113,20 +115,37 @@ if(isset($_REQUEST["channel_id"]))
         
         /**
          * Показ передачи
-         */ 
-        
+         */
         $broadcastID = intval($_GET["broadcastID"]);
         
         if($_GET["record"]!="false")
         {
-            $arRecord = CRecordEx::getByID($broadcastID, array("ID", "UF_PROG", "UF_URL", "UF_PROGRESS_PERS", "UF_NAME", "UF_SUB_TITLE", "UF_PICTURE_DOUBLE"));
+            $arFilter = array("=ID" => $broadcastID);
         }else{
-            $arRecords = CRecordEx::getList(array("UF_USER"=> $USER->GetID(), "UF_SCHEDULE"=>$broadcastID), array("ID", "UF_PROG", "UF_URL", "UF_PROGRESS_PERS", "UF_NAME", "UF_SUB_TITLE", "UF_PICTURE_DOUBLE"));
-            $arRecord = $arRecords[0];
+            $arFilter = array("=UF_USER_ID" => $USER->GetID(), "=UF_SCHEDULE_ID" => $broadcastID);
         }
         
-        $arRecord["PICTURE"] = CDev::resizeImage($arRecord["UF_PICTURE_DOUBLE"], 896, 504);
-        $arWatched = CRecordEx::getList(array("!UF_WATCHED"=> false, "UF_URL"=>$arRecord["UF_URL"]), array("ID"));
+        $result = \Hawkart\Megatv\RecordTable::getList(array(
+            'filter' => $arFilter,
+            'select' => array(
+                "ID", "UF_PROG_ID", "UF_URL", "UF_PROGRESS_SECS",
+                "UF_TITLE" => "UF_PROG.UF_TITLE", "UF_SUB_TITLE" => "UF_PROG.UF_SUB_TITLE", "UF_IMG_PATH" => "UF_PROG.UF_IMG.UF_PATH",
+            ),
+            'limit' => 1
+        ));
+        $arRecord = $result->fetch();
+        $arRecord["UF_NAME"] = \Hawkart\Megatv\ProgTable::getName($arRecord);
+        $arRecord["PICTURE"]["SRC"] = \Hawkart\Megatv\CFile::getCropedPath($arRecord["UF_IMG_PATH"], array(300, 300), true);
+        
+        //get count watched
+        $countWatched = 0;
+        $result = \Hawkart\Megatv\RecordTable::getList(array(
+            'filter' => array("UF_WATCHED"=> 1, "=UF_PROG_ID"=>$arRecord["UF_PROG_ID"]),
+            'select' => array(
+                new \Bitrix\Main\Entity\ExpressionField('CNT', 'COUNT(*)', array('ID'))
+            )
+        ));
+        $arWatched = $result->fetch();
         ?>
         <div class="advert-holder">
             <?$APPLICATION->IncludeComponent("bitrix:main.include", "", array("AREA_FILE_SHOW" => "file", "PATH" => SITE_DIR."include/player-banner.php"), false);?>
@@ -138,7 +157,7 @@ if(isset($_REQUEST["channel_id"]))
         			"broadcastID": "<?=$broadcastID?>",
         			"streamURL": "<?=$arRecord["UF_URL"]?>",
         			"posterURL": "<?=$arRecord["PICTURE"]["SRC"]?>",
-        			"videoTitle": "<?=$arRecord["UF_NAME"]?><?= $arRecord["UF_SUB_TITLE"] ? " | ".$arRecord["UF_SUB_TITLE"] : "" ?>",
+        			"videoTitle": "<?=$arRecord["UF_NAME"]?>",
                     "playerFlashURL": "<?=SITE_TEMPLATE_PATH?>/megatv/app/js/vendors/jwplayer/jwplayer.flash.swf"
         		}
         	</script>
@@ -147,7 +166,7 @@ if(isset($_REQUEST["channel_id"]))
         		<span>Вернуться назад</span>
         	</a>
         	<div class="block-header">
-        		<h3 class="block-title"><?=$arRecord["UF_NAME"]?><?= $arRecord["UF_SUB_TITLE"] ? " <small>|".$arRecord["UF_SUB_TITLE"]."</small>" : "" ?></h3>
+        		<h3 class="block-title"><?=$arRecord["UF_TITLE"]?><?= $arRecord["UF_SUB_TITLE"] ? " <small>|".$arRecord["UF_SUB_TITLE"]."</small>" : "" ?></h3>
         	</div>
         	<div class="block-body">
         		<a href="#" class="close-link" data-dismiss="modal"><span data-icon="icon-times"></span></a>
@@ -156,7 +175,7 @@ if(isset($_REQUEST["channel_id"]))
         			<div class="player-panel">
         				<dl class="view-count">
         					<dt>Просмотров:</dt>
-        					<dd><?=intval(count($arWatched))?></dd>
+        					<dd><?=intval($arWatched["CNT"])?></dd>
         				</dl>
         				<?/*<dl class="download-count">
         					<dt>Скачиваний:</dt>
@@ -174,7 +193,7 @@ if(isset($_REQUEST["channel_id"]))
         				<a href="broadcast-card-recommendate.html" class="btn btn-default"><span data-icon="icon-network-social"></span>Рекомендовать друзьям</a>*/?>
         			</div>
         		</div>
-                <?$APPLICATION->IncludeComponent("hawkart:prog.comments", "", Array("PROG_ID"=>$arRecord["UF_PROG"]), false);?>
+                <?$APPLICATION->IncludeComponent("hawkart:prog.comments", "", Array("PROG_ID"=>$arRecord["UF_PROG_ID"]), false);?>
         	</div>
         </div><!-- .broadcast-player -->
         <?

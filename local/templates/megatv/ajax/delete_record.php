@@ -5,21 +5,23 @@ $GLOBALS['APPLICATION']->RestartBuffer();
 
 global $USER;
 if(!is_object($USER))
-    $USER = new CUser;
+    $USER = new \CUser;
     
 $status = false;
 
 $record_id = intval($_REQUEST["broadcastID"]);
 if($USER->IsAuthorized() && $record_id>0 && $_REQUEST["delete"])
 {
-    $arRecord = CRecordEx::getByID($record_id);
-    if($arRecord["UF_USER"]==$USER->GetID())
+    $result = \Hawkart\Megatv\RecordTable::getById($record_id);
+    $arRecord = $result->fetch();
+    
+    if($arRecord["UF_USER_ID"]==$USER->GetID())
     {
         $USER_ID = $USER->GetID();
-        $rsUser = CUser::GetByID($USER_ID);
+        $rsUser = \CUser::GetByID($USER_ID);
         $arUser = $rsUser->Fetch();
         
-        $Sotal = new CSotal($arUser["ID"]);
+        $Sotal = new \Hawkart\Megatv\CSotal($arUser["ID"]);
         $Sotal->getSubscriberToken();
         $arSchedules = $Sotal->getScheduleList();
         
@@ -33,10 +35,10 @@ if($USER->IsAuthorized() && $record_id>0 && $_REQUEST["delete"])
                 $gb = $minutes*(18.5/1024);
                 
                 $busy = floatval($arUser["UF_CAPACITY_BUSY"])-$gb; 
-                $user = new CUser;
+                $user = new \CUser;
                 $user->Update($arUser["ID"], array("UF_CAPACITY_BUSY"=>$busy));
                 
-                CRecordEx::delete($record_id);
+                \Hawkart\Megatv\RecordTable::delete($record_id);
                 $is_deleted = true;
                 
                 break;
@@ -44,7 +46,7 @@ if($USER->IsAuthorized() && $record_id>0 && $_REQUEST["delete"])
         }
         
         if(!$is_deleted)
-            CRecordEx::delete($record_id);
+            \Hawkart\Megatv\RecordTable::delete($record_id);
         
         //Возможно нужно сделать апи для отмены в сотале + вернуть пространство свободное
         

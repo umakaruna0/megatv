@@ -32,7 +32,7 @@
                     $arDATE = ParseDateTime($date, FORMAT_DATETIME);
                     ?>
                     <li>
-    					<div class="user-avatar<?if($arUser["PERSONAL_PHOTO"]):?> is-empty<?endif;?>">
+    					<div class="user-avatar<?if(!$arUser["PERSONAL_PHOTO"]):?> is-empty<?endif;?>">
     						<?if($arUser["PERSONAL_PHOTO"]):?>
                                 <img src="<?=CFile::GetPath($arUser["PERSONAL_PHOTO"])?>" alt="<?=$USER->GetFullName()?>" width="50" height="50">
                             <?endif;?>

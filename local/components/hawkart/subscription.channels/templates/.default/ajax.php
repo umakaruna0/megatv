@@ -11,36 +11,44 @@ $result = array();
 $channelID = intval($_REQUEST["channelID"]);
 $status = htmlspecialcharsbx($_REQUEST["status"]);
 
+//get subcribe channel list
 $selectedChannels = array();
-$CSubscribeEx = new CSubscribeEx("CHANNEL");
-$arChannels = $CSubscribeEx->getList(array("UF_USER"=>$USER->GetID()), array("UF_CHANNEL", "ID"));
-foreach($arChannels as $arChannel)
+$result = \Hawkart\Megatv\SubscribeTable::getList(array(
+    'filter' => array("=UF_USER_ID" => $USER->GetID()),
+    'select' => array("UF_CHANNEL_ID", "ID")
+));
+while ($arSub = $result->fetch())
 {
-    $selectedChannels[$arChannel["UF_CHANNEL"]] = $arChannel["ID"];
+    $selectedChannels[$arSub["UF_CHANNEL_ID"]] = $arSub["ID"];
 }
 
-
-$arChannel = CChannel::getByID($channelID, array("PROPERTY_RECORD_CANCEL"));
-if(!empty($arChannel["PROPERTY_RECORD_CANCEL_VALUE"]))
+//check disable sub
+$result = \Hawkart\Megatv\ChannelTable::getList(array(
+    'filter' => array("UF_FORBID_REC" => 1, "=ID" => $channelID),
+    'select' => array("ID")
+));
+if ($arChannel = $result->fetch())
 {
     exit(json_encode(array("status"=>"disable", "error"=>"Нельзя подписаться на канал")));
 }
 
 
+//update subsribes
+$CSubscribe = new \Hawkart\Megatv\CSubscribe("CHANNEL");
 if(!isset($selectedChannels[$channelID]))
 {
-    $result = $CSubscribeEx->setUserSubscribe($channelID);
+    $result = $CSubscribe->setUserSubscribe($channelID);
     
 }else{
     if($status=="enable")
     {
-        $active = "Y";
+        $active = 1;
     }else{
-        $active = "N";
+        $active = 0;
     }
     
     $subscribeID = $selectedChannels[$channelID];
-    $result = $CSubscribeEx->updateUserSubscribe($subscribeID, array("UF_ACTIVE"=>$active));
+    $result = $CSubscribe->updateUserSubscribe($subscribeID, array("UF_ACTIVE"=>$active));
 }
  
 if(!$result)

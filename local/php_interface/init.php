@@ -2,19 +2,12 @@
 //Константы
 define("FULL_PATH_DOCUMENT_ROOT", "/home/d/daotel/MEGATV/public_html"); //изменить на сервере
 define("LOG_FILENAME", "/logs/import.txt");
-define("CHANNEL_IB", 6);    //ид каналов
 define("PROG_IB", 7);   //ид программ
-define("PROG_TIME_IB", 8);   //ид показа программ
-define("CITY_IB", 5);
-define("SERVICE_IB", 13);
 define("BROADCAT_COLS", 24);
 define("USER_SOCIAL_IB", 9);
 define("PASSPORT_IB", 10);
 define("SOCIAL_CONFIG_IB", 11);
-define("SUBSCRIBE_HL", 4);
 define("RECORD_HL", 5);
-define("CHANNEL_HL", 11);
-define("PROG_HL", 10);
 define("BONUS_FOR_REGISTRATION", 20);   //бонус за регистрацию +20 ГБ пространства
 
 require_once $_SERVER['DOCUMENT_ROOT'] . '/vendor/autoload.php';
@@ -24,18 +17,10 @@ use \Bitrix\Main\Entity;
 use \Bitrix\Main\Type\DateTime;
 
 \Bitrix\Main\Loader::includeModule('olegpro.ipgeobase');
-CModule::IncludeModule("echogroup.smsru");
-CModule::IncludeModule("hawkart.megatv");
-AddEventHandler("main", "OnBeforeEventSend",array("CEchogroupSmsru","TerminateEvent"));
-/*CModule::AddAutoloadClasses(
-	"",
-	array(
-		"\ChannelTable" => "/local/modules/hawkart.megatv/lib/channel.php",
-        "\ImageTable" => "/local/modules/hawkart.megatv/lib/image.php",
-        "\ProgTable" => "/local/modules/hawkart.megatv/lib/prog.php",
-        "\ScheduleTable" => "/local/modules/hawkart.megatv/lib/schedule.php"
-	)
-);*/
+\CModule::IncludeModule("echogroup.smsru");
+\CModule::IncludeModule("hawkart.megatv");
+AddEventHandler("main", "OnBeforeEventSend",array("CEchogroupSmsru", "TerminateEvent"));
+
 // Классы
 $sClassesPath = '/local/php_interface/classes/';
 CModule::AddAutoloadClasses(
@@ -44,23 +29,12 @@ CModule::AddAutoloadClasses(
         '\CCacheEx' => $sClassesPath.'CCacheEx.php',
         '\CXmlEx' => $sClassesPath.'CXmlEx.php',
 		'\CDev' => $sClassesPath.'CDev.php',
-        '\CCityEx' => $sClassesPath.'CCity.php',
         '\CSaleAccountEx' => $sClassesPath.'CSaleAccountEx.php',
-        '\CChannel' => $sClassesPath.'CChannel.php',
-        '\CProg' => $sClassesPath.'CProg.php',
-        '\CProgTime' => $sClassesPath.'CProgTime.php',
-        '\CEpg' => $sClassesPath.'CEpg.php',
         '\CTimeEx' => $sClassesPath.'CTimeEx.php',
-        '\CScheduleTable' => $sClassesPath.'CScheduleTable.php',
         '\CSocialAuth' => $sClassesPath.'CSocialAuth.php',
-        '\CSubscribeEx' => $sClassesPath.'CSubscribeEx.php',
-        '\CSotal' => $sClassesPath.'CSotal.php',
         '\UploadHandler' => $sClassesPath.'UploadHandler.php',
-        '\CRecordEx' => $sClassesPath.'CRecordEx.php',
-        '\CServiceEx' => $sClassesPath.'CServiceEx.php',
         '\CUserEx' => $sClassesPath.'CUserEx.php',
         '\CCommentEx' => $sClassesPath.'CCommentEx.php',
-        '\CStatChannel' => $sClassesPath.'CStatChannel.php',
         '\CNotifyEx' => $sClassesPath.'CNotifyEx.php',
         '\YoutubeClient' => $sClassesPath.'YoutubeClient.php',
         '\VkClient' => $sClassesPath.'VkClient.php',
@@ -104,74 +78,8 @@ function _Check404Error()
    {
        GLOBAL $APPLICATION;
        $APPLICATION->RestartBuffer();
-       include $_SERVER['DOCUMENT_ROOT'].'/bitrix/templates/'.SITE_TEMPLATE_ID.'/header.php';
+       include $_SERVER['DOCUMENT_ROOT'].SITE_TEMPLATE_PATH.'/header.php';
        require ($_SERVER['DOCUMENT_ROOT'].'/404.php');
-       include $_SERVER['DOCUMENT_ROOT'].'/bitrix/templates/'.SITE_TEMPLATE_ID.'/footer.php';
+       include $_SERVER['DOCUMENT_ROOT'].SITE_TEMPLATE_PATH.'/footer.php';
    }
-}
-
-AddEventHandler("iblock", "OnBeforeIBlockElementUpdate", Array("MyCIBlockElement", "OnBeforeIBlockElementUpdateHandler"));
-AddEventHandler("iblock", "OnAfterIBlockElementUpdate", Array("MyCIBlockElement", "OnAfterIBlockElementUpdateHandler"));
-
-class MyCIBlockElement
-{
-    function OnBeforeIBlockElementUpdateHandler(&$arFields)
-    {
-        //Если включили бесплатный канал, активируем для всех пользователей подписку.
-        if($arFields["IBLOCK_ID"]==CHANNEL_IB)
-        {
-            CModule::IncludeModule("iblock");
-            $res = CIBlockElement::GetByID($arFields["ID"]);
-            $arChannel = $res->GetNext();
-            
-            $price = intval($arFields["PROPERTY_VALUES"][41]["n0"]["VALUE"]);
-            
-            if($arFields["ACTIVE"]=="Y" && $arChannel["ACTIVE"]=="N" && $price==0)
-            {
-                //Найдем пользователей, для кого эта подписка была включена
-                $userIds = array();
-                $CSubscribeEx = new CSubscribeEx("CHANNEL");
-                $arSubscriptions = $CSubscribeEx->getList(array("UF_CHANNEL"=>$arFields["ID"]), array("ID", "UF_USER"));
-                if(count($arSubscriptions)>0)
-                {
-                    foreach($arSubscriptions as $arSub)
-                    {
-                        $userIds[$arSub["UF_USER"]] = $arSub["ID"];
-                    }
-                }
-                
-                $dbUsers = CUser::GetList(($by="EMAIL"), ($order="desc"), Array("ACTIVE" =>"Y"));
-                while($arUser = $dbUsers->Fetch())
-                {
-                    if(!array_key_exists($arUser["ID"], $userIds))
-                    {
-                        $CSubscribeEx->setUserSubscribe($arFields["ID"], $arUser["ID"]);
-                    }else{
-                        $sub_id = $userIds[$arUser["ID"]];
-                        $CSubscribeEx->updateUserSubscribe($sub_id, array("UF_ACTIVE"=>"Y"));
-                    }
-                }
-                
-                //Обновим кэш каналов
-                CChannel::updateCache();
-            }
-        }
-    }
-    
-    function OnAfterIBlockElementUpdateHandler(&$arFields)
-    {
-        //Обновление кэша
-        if($arFields["IBLOCK_ID"]==CHANNEL_IB)
-        {
-            CChannel::updateCache();
-        }
-        if($arFields["IBLOCK_ID"]==PROG_IB)
-        {
-            CProg::updateCache();
-        }
-        if($arFields["IBLOCK_ID"]==PROG_TIME_IB)
-        {
-            CProgTime::updateCache();
-        }
-    }
 }

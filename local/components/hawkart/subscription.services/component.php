@@ -7,27 +7,35 @@ CModule::IncludeModule("iblock");
 $arResult["CHANNELS"] = array();
 
 $selectedServices = array();
-$CSubscribeEx = new CSubscribeEx("SERVICE");
-$arServices = $CSubscribeEx->getList(array("UF_ACTIVE"=>"Y", "UF_USER"=>$USER->GetID()), array("UF_SERVICE"));
-foreach($arServices as $arService)
+$arServices = array();
+
+//get service subscribe list
+$result = \Hawkart\Megatv\SubscribeTable::getList(array(
+    'filter' => array("UF_ACTIVE"=>1, "=UF_USER_ID" => $USER->GetID()),
+    'select' => array("UF_SERVICE_ID")
+));
+while ($arSub = $result->fetch())
 {
-    $selectedServices[] = $arService["UF_SERVICE"];
+    $selectedServices[] = $arSub["UF_CHANNEL_ID"];
 }
 
-$arServices = CServiceEx::getList(array("ACTIVE"=>"Y"), array("ID", "NAME", "PREVIEW_TEXT", "PROPERTY_TEXT", "PROPERTY_PRICE", "PROPERTY_DISK"));
-foreach($arServices as &$arService)
+//get all services
+$result = \Hawkart\Megatv\ServiceTable::getList(array(
+    'filter' => array("UF_ACTIVE" => 1),
+    'select' => array("ID", "UF_TITLE", "UF_TEXT", "UF_PRICE", "UF_DISK_TYPE", "UF_DESC")
+));
+while ($arService = $result->fetch())
 {
     if(in_array($arService["ID"], $selectedServices))
-    {
         $arService["SELECTED"] = true;
-    }
+
+    $arServices[] = $arService;
 }
 
 $arResult["SERVICES"] = $arServices;
 
 $rsUser = CUser::GetByID($USER->GetID());
 $arUser = $rsUser->Fetch();
-
 $arResult["USER"] = $arUser;
 
 if(floatval($arResult["USER"]["UF_CAPACITY_BUSY"])==0 || floatval($arResult["USER"]["UF_CAPACITY"])==0)

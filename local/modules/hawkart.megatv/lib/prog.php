@@ -9,6 +9,21 @@ Localization\Loc::loadMessages(__FILE__);
 
 class ProgTable extends Entity\DataManager
 {
+    /**
+     * array("UF_TITLE", "UF_SUB_TITLE")
+     * 
+     * @return string
+     */
+    public static function getName($arProg)
+    {
+        $str = $arProg["UF_TITLE"];
+        if(!empty($arProg["UF_SUB_TITLE"]))
+        {
+            $str.= " | ".$arProg["UF_SUB_TITLE"];
+        }
+        
+        return $str;
+    }
 
 	/**
 	 * Returns DB table name for entity
@@ -152,11 +167,48 @@ class ProgTable extends Entity\DataManager
 				'title'     => Localization\Loc::getMessage('prog_entity_img_id_field')
 			),
             'UF_IMG' => array(
-				'data_type' => '\Hawkart\Megatv\Image',
+				'data_type' => '\Hawkart\Megatv\ImageTable',
 				'reference' => array('=this.UF_IMG_ID' => 'ref.ID'),
 			)
 		);
 	}
+    
+    /**
+     * change rating for prog
+     */
+    public static function addRating($ID, $addRating)
+    {
+        $result = self::getList(array(
+            'filter' => array("=ID" => intval($ID)),
+            'select' => array("ID", "UF_RATING"),
+        ));
+        if ($arProg = $result->fetch())
+        {
+            //$rating = intval($arProg["UF_RATING"]) + intval($addRating);
+            //self::update($arProg["ID"], array("UF_RATING"=>$rating));
+        }
+    }
+    
+    /**
+     * change rating for all serial
+     */
+    public static function addByEpgRating($prog_epg_id, $addRating)
+    {
+        global $DB;
+        
+        $DB->Query("UPDATE ".self::getTableName()." SET UF_RATING = Coalesce(UF_RATING, 0) + ".intval($addRating).
+        " WHERE UF_EPG_ID='".$prog_epg_id."'");
+    }
+    
+    /**
+     * delete rating
+     */
+    public static function clearRateAll()
+    {
+        global $DB;
+        $DB->Query("UPDATE ".self::getTableName()." SET UF_RATING = 0");
+    }
+    
     
     /**
      * Clear table

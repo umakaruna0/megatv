@@ -6,7 +6,7 @@ global $USER;
 
 <div class="flex-row user-profile-top-row">
 
-    <?$APPLICATION->IncludeComponent("hawkart:user.profile", "", Array("CITY_GEO"=>CCityEx::getGeoCity()), false);?>
+    <?$APPLICATION->IncludeComponent("hawkart:user.profile", "", Array("CITY_GEO"=>\Hawkart\Megatv\CityTable::getGeoCity()), false);?>
     
 	<section class="user-info-subscriptions" data-module="user-info-subscriptions">
 		<script type="text/x-config">

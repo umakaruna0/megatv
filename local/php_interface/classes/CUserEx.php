@@ -5,14 +5,14 @@ class CUserEx
     {
         $phone = preg_replace("/[^0-9]/", '', $arFields["LOGIN"]);
         
-        if(CDev::check_phone($phone))
+        if(\CDev::check_phone($phone))
         {
             $filter = Array("PERSONAL_PHONE" =>$phone);
         }else{
             $filter = Array("=EMAIL" =>$arFields["LOGIN"]);
         }
         
-        $rsUsers = CUser::GetList(($by="LAST_NAME"), ($order="asc"), $filter);
+        $rsUsers = \CUser::GetList(($by="LAST_NAME"), ($order="asc"), $filter);
         if($user = $rsUsers->GetNext())
             $arFields["LOGIN"] = $user["LOGIN"];
     }
@@ -38,8 +38,8 @@ class CUserEx
     
     function OnBeforeUserDeleteHandler($user_id)
     {
-        CModule::IncludeModule("iblock");
-        CModule::IncludeModule("sale");
+        \CModule::IncludeModule("iblock");
+        \CModule::IncludeModule("sale");
         
         //Привязки к соц. сетям
         $arrFilter = array(
@@ -47,48 +47,52 @@ class CUserEx
             "PROPERTY_USER_ID" => $user_id,
         );
         $arSelect = array("ID");
-        $rsRes = CIBlockElement::GetList( $arOrder, $arrFilter, false, false, $arSelect );
+        $rsRes = \CIBlockElement::GetList( $arOrder, $arrFilter, false, false, $arSelect );
 		while( $arItem = $rsRes->GetNext() )
         {
-            CIBlockElement::Delete($arItem["ID"]);
+            \CIBlockElement::Delete($arItem["ID"]);
 		}
         
         //Удаляем записи
-        $arRecords = CRecordEx::getList(array("UF_USER"=>$user_id), array("ID"));
+        $arRecords = \CRecordEx::getList(array("UF_USER"=>$user_id), array("ID"));
         foreach($arRecords as $arRecord)
         {
-            CRecordEx::delete($arRecord["ID"]);
+            \CRecordEx::delete($arRecord["ID"]);
         }
         
         //Удаляем счет
-        if($arAccount = CSaleUserAccount::GetByUserID($user_id, "RUR"))
+        if($arAccount = \CSaleUserAccount::GetByUserID($user_id, "RUR"))
         {
-            CSaleUserAccount::Delete($arAccount["ID"]);
+            \CSaleUserAccount::Delete($arAccount["ID"]);
         }
         
         //Удаляем заказы
         $arFilter = Array(
            "USER_ID" => $user_id,
         );
-        $db_sales = CSaleOrder::GetList(array("DATE_INSERT" => "ASC"), $arFilter);
+        $db_sales = \CSaleOrder::GetList(array("DATE_INSERT" => "ASC"), $arFilter);
         while ($ar_sales = $db_sales->Fetch())
         {
-            CSaleOrder::Delete($ar_sales["ID"]);
+            \CSaleOrder::Delete($ar_sales["ID"]);
         }
         
-        //Удаляем статистику
-        $arStats = CStatChannel::getList(array("UF_USER"=>$user_id), array("ID"));
-        foreach($arStats as $arStat)
+        $result = \Hawkart\Megatv\StatChannelTable::getList(array(
+            'filter' => array("=UF_USER" => (int) $user_id),
+            'select' => array('ID')
+        ));
+        while ($arStat = $result->fetch())
         {
-            CStatChannel::delete($arStat["ID"]);
+            \Hawkart\Megatv\StatChannelTable::delete($arStat["ID"]);
         }
         
         //Удаляем подписки
-        $arSubObj = new CSubscribeEx("CHANNEL");
-        $arSubs = $arSubObj->getList(array("UF_USER"=>$user_id), array("ID"));
-        foreach($arSubs as $arSub)
+        $result = \Hawkart\Megatv\CSubscribe::getList(array(
+            'filter' => array("UF_USER_ID" => $user_id),
+            'select' => array("ID")
+        ));
+        if ($arSub = $result->fetch())
         {
-            CSubscribeEx::delete($arSub["ID"]);
+            \Hawkart\Megatv\CSubscribe::delete($arSub["ID"]);
         }
 
     }
@@ -97,7 +101,7 @@ class CUserEx
     {
         global $USER;
         $USER_ID = $USER->GetID();
-        $rsUser = CUser::GetByID($USER_ID);
+        $rsUser = \CUser::GetByID($USER_ID);
         $arUser = $rsUser->Fetch();
 
         $password = mb_substr(md5(uniqid(rand(),true)), 0, 12);
@@ -122,15 +126,15 @@ class CUserEx
         $imageMaxWidth = 216; // Максимальная ширина уменьшенной картинки 
         $imageMaxHeight = 216; // Максимальная высота уменьшенной картинки
         
-        $rsUser = CUser::GetByID($USER_ID);
+        $rsUser = \CUser::GetByID($USER_ID);
         $arUser = $rsUser->Fetch();
         
         if(intval($arUser["PERSONAL_PHOTO"])>0)
         {
-            $arFile = CFile::GetFileArray($arUser["PERSONAL_PHOTO"]);
+            $arFile = \CFile::GetFileArray($arUser["PERSONAL_PHOTO"]);
             
             // проверяем, что файл является картинкой
-            if (!CFile::IsImage($arFile["FILE_NAME"]))
+            if (!\CFile::IsImage($arFile["FILE_NAME"]))
             {
                 echo "не является картинкой";
                 continue;
@@ -143,7 +147,7 @@ class CUserEx
                 $tmpFilePath = $_SERVER['DOCUMENT_ROOT']."/upload/tmp/".$arFile["FILE_NAME"];
                 
                 // Уменьшаем картинку
-                $resizeRez = CFile::ResizeImageFile( // уменьшение картинки для превью
+                $resizeRez = \CFile::ResizeImageFile( // уменьшение картинки для превью
                     $source = $_SERVER['DOCUMENT_ROOT'].$arFile["SRC"],
                     $dest = $tmpFilePath,
                     array(
@@ -158,17 +162,17 @@ class CUserEx
                 // Записываем изменение в свойство
                 if ($resizeRez && $tmpFilePath) 
                 {
-                    $arNewFile = CFile::MakeFileArray($tmpFilePath);
+                    $arNewFile = \CFile::MakeFileArray($tmpFilePath);
 
                     $arNewFile['del'] = "Y";
                     $arNewFile['old_file'] = $arUser['PERSONAL_PHOTO'];
                     $arNewFile["MODULE_ID"] = "main";
                     $fields['PERSONAL_PHOTO'] = $arNewFile;
                     
-                    $user = new CUser;
+                    $user = new \CUser;
                     $user->Update($arUser["ID"], $fields);
                     
-                    $rsUser = CUser::GetByID($USER_ID);
+                    $rsUser = \CUser::GetByID($USER_ID);
                     $arUser = $rsUser->Fetch();
                     
                     // Удалим временный файл
@@ -185,18 +189,21 @@ class CUserEx
     {
         if($arFields["ID"]>0)
         {
-            $activeFreeChannels = CChannel::getList(array("ACTIVE"=>"Y", "PROPERTY_PRICE"=>false, "PROPERTY_RECORD_CANCEL"=>false), array("ID"));
-            foreach($activeFreeChannels as $activeFreeChannel)
+            $result = \Hawkart\Megatv\ChannelTable::getList(array(
+                'filter' => array("UF_ACTIVE" => 1, "!UF_PRICE_H24" => true, "!UF_FORBID_REC"=>1),
+                'select' => array("ID")
+            ));
+            while ($arChannel = $result->fetch())
             {
-                $CSubscribeEx = new CSubscribeEx("CHANNEL");
-                $CSubscribeEx->setUserSubscribe($activeFreeChannel["ID"], $arFields["ID"]);
+                $CSubscribe = new \Hawkart\Megatv\CSubscribe("CHANNEL");
+                $CSubscribe->setUserSubscribe($activeFreeChannel["ID"], $arFields["ID"]);
             }
         }
     }
     
     public static function getBudget($USER_ID=false)
     {
-        return CSaleAccountEx::budget($USER_ID);
+        return \CSaleAccountEx::budget($USER_ID);
     }
     
     public static function capacityAdd($USER_ID, $gb)
@@ -205,12 +212,12 @@ class CUserEx
         if(!$USER_ID)
             $USER_ID = $USER->GetID();
             
-        $rsUser = CUser::GetByID($USER_ID);
+        $rsUser = \CUser::GetByID($USER_ID);
         $arUser = $rsUser->Fetch();
         
         $capacity = $arUser["UF_CAPACITY"] + $gb;
         
-        $cuser = new CUser;
+        $cuser = new \CUser;
         $cuser->Update($arUser["ID"], array(
             "UF_CAPACITY" => $capacity
         ));

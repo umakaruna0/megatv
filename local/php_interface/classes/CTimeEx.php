@@ -1,15 +1,17 @@
 <?
 class CTimeEx
 {
+    protected static $defaultTimezone = "+0300";
+    
     public static function getDatetime()
     {
-        global $APPLICATION;
-        
-        $arCity = CCityEx::getGeoCity();
-        $offset = intval($arCity["PROPERTY_OFFSET_VALUE"]); //сдвиг относительно время сервера
+        $arCity = \Hawkart\Megatv\CityTable::getGeoCity();
+        $curTimezone = $arCity["UF_TIMEZONE"]; //current timezone
         
         $arResult = array();
         $arResult["SERVER_DATETIME"] = date("d.m.Y H:i:s");     //серверная дата 
+        $arResult["TIMEZONE"] = $curTimezone;
+        $offset = (intval($curTimezone) - intval(self::$defaultTimezone))/100;        
         $arResult["OFFSET"] = $offset;  //сдвиг относительно Москвы (берется из города)
         $arResult["SERVER_DATETIME_WITH_OFFSET"] = self::dateOffset($offset, $arResult["SERVER_DATETIME"]);
         $arResult["SELECTED_DATE"] = $_SESSION["DATE_CURRENT_SHOW"];
@@ -89,13 +91,21 @@ class CTimeEx
         return date('d.m.Y H:i:s', strtotime($offset." hour", strtotime($datetime)));
     }
     
+    public static function dateOffsetByTimezone($offset, $datetime)
+    {
+        $arCity = \Hawkart\Megatv\CityTable::getGeoCity();
+        $offset = (intval($arCity["UF_TIMEZONE"]) - intval(self::$defaultTimezone))/100;
+
+        return date('d.m.Y H:i:s', strtotime($offset." hour", strtotime($datetime)));
+    }
+    
     //Высчитываем с учетом города сдвиг по времени относительно дня
     public static function getDateTimeOffset($offset = 0)
     {       
         if(!$offset)
         {
-            $arCity = CCityEx::getGeoCity();
-            $offset = intval($arCity["PROPERTY_OFFSET_VALUE"]); //сдвиг относительно время сервера
+            $arCity = \Hawkart\Megatv\CityTable::getGeoCity();
+            $offset = (intval($arCity["UF_TIMEZONE"]) - intval(self::$defaultTimezone))/100;
         }
         
         $date = self::getCurDate();

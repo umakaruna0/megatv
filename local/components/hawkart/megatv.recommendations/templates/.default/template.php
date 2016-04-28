@@ -1,4 +1,3 @@
-
 <div class="broadcasts-categories" data-module="broadcasts-categories">
 	<script type="text/x-config">
 		{
@@ -39,8 +38,8 @@
         $notShow = array();
         foreach($arResult["PROGS"] as $key=>$arProg)
         {
-            $arProg["CAT_CODE"] = $arResult["CATEGORIES"][$arProg["CATEGORY"]];
-            echo CProgTime::getProgInfoRecommend($arProg);
+            $arProg["CAT_CODE"] = $arResult["CATEGORIES"][$arProg["UF_CATEGORY"]];
+            echo \Hawkart\Megatv\CScheduleTemplate::getProgInfoRecommend($arProg);
         }
         ?>
     </div>

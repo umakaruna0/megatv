@@ -49,6 +49,54 @@ class ChannelTable extends Entity\DataManager
         return $result;
     }
     
+    /**
+     * Если включили бесплатный канал, активируем для всех пользователей подписку.
+     * 
+     * @return object 
+     */
+    public static function OnBeforeUpdate(Entity\Event $event)
+    {
+        $result = new Entity\EventResult;
+        $primary = $event->getParameter("id");
+        $data = $event->getParameter("fields");
+
+        $res = self::getById($primary);
+        $arChannel = $res->fetch();
+        $price = floatval($arChannel["UF_PRICE_H24"]);
+
+        if($data["UF_ACTIVE"] && !$arChannel["UF_ACTIVE"] && $price==0)
+        {
+            //Найдем пользователей, для кого эта подписка была включена
+            $userIds = array();
+            
+            $result = SubscribeTable::getList(array(
+                'filter' => array("=UF_CHANNEL_ID" => $data["ID"]),
+                'select' => array("ID", "UF_USER_ID")
+            ));
+            while ($arSub = $result->fetch())
+            {
+                $userIds[$arSub["UF_USER_ID"]] = $arSub["ID"];
+            }
+
+            $CSubscribe = new CSubscribe("CHANNEL");
+            $dbUsers = \CUser::GetList(($by="EMAIL"), ($order="desc"), Array("ACTIVE" =>"Y"));
+            while($arUser = $dbUsers->Fetch())
+            {
+                if(!array_key_exists($arUser["ID"], $userIds))
+                {
+                    $CSubscribe->setUserSubscribe($data["ID"], $arUser["ID"]);
+                }else{
+                    $sub_id = $userIds[$arUser["ID"]];
+                    $CSubscribe->updateUserSubscribe($sub_id, array("UF_ACTIVE"=>1));
+                }
+            }
+        }
+
+        return $result;
+    }
+    
+    
+    
 	/**
 	 * Returns entity map definition
 	 *
@@ -125,13 +173,19 @@ class ChannelTable extends Entity\DataManager
 				'title'     => Localization\Loc::getMessage('channel_entity_img_id_field')
 			),
             'UF_IMG' => array(
-				'data_type' => 'Local\Hawkart\Megatv\Image',
-				'reference' => array('=this.IMG_ID' => 'ref.ID'),
-			),
-			'UF_SORT' => array(
-				'data_type' => 'integer',
-				'title'     => Localization\Loc::getMessage('channel_entity_sort_field'),
-			),
+				'data_type' => '\Hawkart\Megatv\ImageTable',
+				'reference' => array('=this.UF_IMG_ID' => 'ref.ID'),
+			)
 		);
 	}
+    
+    /**
+     * Clear table
+     */
+    public static function deleteAll()
+    {
+        global $DB;
+        $DB->Query("DELETE FROM ".self::getTableName(), false);
+        $DB->Query("ALTER TABLE ".self::getTableName()." AUTO_INCREMENT=1", false);
+    }
 }

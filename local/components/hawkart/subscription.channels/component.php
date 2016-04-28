@@ -1,26 +1,31 @@
 <?
-if(!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED!==true)
-	die();
+if(!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED!==true) die();
 
 global $USER;
-CModule::IncludeModule("iblock");
 $arResult["CHANNELS"] = array();
-
 $selectedChannels = array();
-$CSubscribeEx = new CSubscribeEx("CHANNEL");
-$arChannels = $CSubscribeEx->getList(array("UF_ACTIVE"=>"Y", "UF_USER"=>$USER->GetID()), array("UF_CHANNEL"));
-foreach($arChannels as $arChannel)
+$arChannels = array();
+
+//get subsribe channel list
+$result = \Hawkart\Megatv\SubscribeTable::getList(array(
+    'filter' => array("UF_ACTIVE"=>1, "=UF_USER_ID" => $USER->GetID()),
+    'select' => array("UF_CHANNEL_ID")
+));
+while ($arSub = $result->fetch())
 {
-    $selectedChannels[] = $arChannel["UF_CHANNEL"];
+    $selectedChannels[] = $arSub["UF_CHANNEL_ID"];
 }
 
-$arChannels = CChannel::getList(array("ACTIVE"=>"Y"), array("ID", "NAME", "PROPERTY_ICON", "PROPERTY_PRICE"));
-foreach($arChannels as &$arChannel)
+$result = \Hawkart\Megatv\ChannelTable::getList(array(
+    'filter' => array("UF_ACTIVE" => 1),
+    'select' => array("ID", "UF_TITLE", "UF_ICON", "UF_PRICE_H24")
+));
+while ($arChannel = $result->fetch())
 {
     if(in_array($arChannel["ID"], $selectedChannels))
-    {
         $arChannel["SELECTED"] = true;
-    }
+
+    $arChannels[] = $arChannel;
 }
 
 $arResult["CHANNELS"] = $arChannels;

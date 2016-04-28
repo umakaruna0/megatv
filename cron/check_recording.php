@@ -13,32 +13,37 @@ ini_set('mbstring.internal_encoding', 'UTF-8');
 
 global $USER, $APPLICATION;
 if (!is_object($USER))
-    $USER=new CUser;
-
-CModule::IncludeModule("iblock");
-CModule::IncludeModule("catalog");
-CModule::IncludeModule("sale");
+    $USER=new \CUser;
 
 /**
  * Уведомление на email в момент начала записи
  */
 $dt = new Bitrix\Main\Type\DateTime(date('Y-m-d H:i:s', time()), 'Y-m-d H:i:s');
-$arFilter = array(
-    "UF_URL" => false,
-    "<UF_DATE_START" => $dt,
-    ">UF_DATE_END" => $dt,
-    "UF_BEFORE_NOTIFY" => false
-);
-$arRecords = CRecordEx::getList($arFilter, array("ID", "UF_USER", "UF_NAME", "UF_SUB_TITLE", "UF_PICTURE"));
-foreach($arRecords as $arRecord)
+$result = \Hawkart\Megatv\RecordTable::getList(array(
+    'filter' => array(
+        "UF_URL" => false,
+        ">UF_DATE_START" => $dt,
+        "<UF_DATE_END" => $dt,
+        "!UF_BEFORE_NOTIFY" => 1
+    ),
+    'select' => array(
+        "ID", "UF_TITLE" => "UF_PROG.UF_TITLE", "UF_SUB_TITLE" => "UF_PROG.UF_SUB_TITLE",
+        "UF_IMG_PATH" => "UF_PROG.UF_IMG.UF_PATH", "UF_USER_ID"
+    )
+));
+while ($arRecord = $result->fetch())
 {
-    CNotifyEx::onRecord(array(
-        "USER_ID" => $arRecord["UF_USER"],
+    $arRecord["NAME"] = \Hawkart\Megatv\ProgTable::getName($arRecord);
+    $arRecord["PICTURE"]["SRC"] = \Hawkart\Megatv\CFile::getCropedPath($arRecord["UF_IMG_PATH"], array(300, 300), true);
+    
+    \CNotifyEx::onRecord(array(
+        "USER_ID" => $arRecord["UF_USER_ID"],
         "RECORD_ID" => $arRecord["ID"],
-        "PICTURE" => "http://megatv.su".CFile::GetPath($user_record["UF_PICTURE"]),
-        "RECORD_NAME" => trim($arRecord["UF_NAME"]." ".$arRecord["UF_SUB_TITLE"])
+        "PICTURE" => "http://megatv.su".$arRecord["PICTURE"]["SRC"],
+        "RECORD_NAME" => trim($arRecord["NAME"])
     ));
-    CRecordEx::update($arRecord["ID"], array("UF_BEFORE_NOTIFY" => "Y"));
+    
+    \Hawkart\Megatv\RecordTable::update($arRecord["ID"], array("UF_BEFORE_NOTIFY" => 1));
 }
 die();
 ?>

@@ -19,19 +19,19 @@
             foreach($arResult["SERVICES"] as $arService)
             {
                 ?>
-                <li class="item<?if($arService["SELECTED"] && $arService["PROPERTY_DISK_VALUE"]):?> status-active<?endif;?>" data-service-id="<?=$arService["ID"]?>" data-type="service-item">
+                <li class="item<?if($arService["SELECTED"] && $arService["UF_DISK_TYPE"]):?> status-active<?endif;?>" data-service-id="<?=$arService["ID"]?>" data-type="service-item">
     				<div class="decor"><span class="decor-title">Добавить</span><span data-icon="icon-round-checkbox-mark"></span></div>
-                    <?if($arService["PROPERTY_DISK_VALUE"]):?>
+                    <?if($arService["UF_DISK_TYPE"]):?>
                         <div class="subscription-logo">
-        					<span data-icon="<?=$arService["PROPERTY_TEXT_VALUE"]?>"></span>
+        					<span data-icon="<?=$arService["UF_TEXT"]?>"></span>
         				</div>
                     <?else:?>
-                        <div class="subscription-text-logo"><?=$arService["PROPERTY_TEXT_VALUE"]?></div>
+                        <div class="subscription-text-logo"><?=$arService["UF_TEXT"]?></div>
                     <?endif;?>
     				
     				<div class="item-header">
-    					<span class="price"><?=intval($arService["PROPERTY_PRICE_VALUE"])?> Р <small>сутки</small></span>
-    					<span class="item-title"><?=$arService["PREVIEW_TEXT"]?></span>
+    					<span class="price"><?=intval($arService["UF_PRICE"])?> Р <small>сутки</small></span>
+    					<span class="item-title"><?=$arService["UF_DESC"]?></span>
     				</div>
     			</li>
                 <?

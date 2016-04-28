@@ -320,7 +320,7 @@ $(document).on('ready', function(){
     	}
     }
     
-    $(".badge").click(function(e){
+    $(".badge, .channel-online").on('click', function(e){
         e.preventDefault();
         channel_id = $(this).data("channel-id");
         pageModule = $('[data-module="page"]').get(0);

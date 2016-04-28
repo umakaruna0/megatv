@@ -20,7 +20,7 @@
                     <?
                 }
                 
-                echo CProgTime::getProgInfoRecommendIndex($arProg, $arParams, $key);
+                echo \Hawkart\Megatv\CScheduleTemplate::getProgInfoRecommendIndex($arProg, $arParams, $key);
                 
                 if($key==3)
                 {

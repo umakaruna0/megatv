@@ -1,5 +1,5 @@
 <?
-$_SERVER["DOCUMENT_ROOT"] = "/home/d/daotel/MEGATV/public_html"; //изменить на сервере
+$_SERVER["DOCUMENT_ROOT"] = "/home/d/daotel/MEGATV/public_html";
 $DOCUMENT_ROOT = $_SERVER["DOCUMENT_ROOT"];
 
 define("NO_KEEP_STATISTIC", true);
@@ -13,27 +13,33 @@ ini_set('mbstring.internal_encoding', 'UTF-8');
 
 global $USER, $APPLICATION;
 if (!is_object($USER))
-    $USER=new CUser;
-
-CModule::IncludeModule("iblock");
-CModule::IncludeModule("catalog");
-CModule::IncludeModule("sale");
+    $USER=new \CUser;
 
 //Получим список записей для каждого пользователей, у которых нет еще ссылки на видео
 $arUserRecords = array();
+$arRecords = array();
 $dt = new Bitrix\Main\Type\DateTime(date('Y-m-d H:i:s', time()), 'Y-m-d H:i:s');
-$arFilter = array(
-    "UF_URL" => false,
-    "<=UF_DATE_END" => $dt
-);
-$arRecordsWait = CRecordEx::getList($arFilter, array("UF_USER", "UF_SOTAL_ID"));
-foreach($arRecordsWait as $arRecord)
+$result = \Hawkart\Megatv\RecordTable::getList(array(
+    'filter' => array(
+        "UF_URL" => false,
+        "<=UF_DATE_END" => $dt
+    ),
+    'select' => array(
+        "ID", "UF_TITLE" => "UF_PROG.UF_TITLE", "UF_SUB_TITLE" => "UF_PROG.UF_SUB_TITLE",
+        "UF_IMG_PATH" => "UF_PROG.UF_IMG.UF_PATH", "UF_SOTAL_ID", "UF_USER_ID"
+    )
+));
+while ($arRecord = $result->fetch())
 {
-    $arUserRecords[$arRecord["UF_USER"]][] = $arRecord["UF_SOTAL_ID"];
+    $arRecord["NAME"] = \Hawkart\Megatv\ProgTable::getName($arRecord);
+    $arRecord["PICTURE"]["SRC"] = \Hawkart\Megatv\CFile::getCropedPath($arRecord["UF_IMG_PATH"], array(300, 300), true);
+
+    $arUserRecords[$arRecord["UF_USER_ID"]][] = $arRecord["UF_SOTAL_ID"];
+    $arRecords[$arRecord["UF_SOTAL_ID"]] = $arRecord;
 }
 
 $filter = Array("ACTIVE" =>"Y", "!UF_SOTAL_LOGIN" => false);
-$rsUsers = CUser::GetList(($by="LAST_NAME"), ($order="asc"), $filter, array("SELECT"=>array("UF_CAPACITY_BUSY", "UF_CAPACITY"), "FIELDS" => array("ID", "EMAIL", "NAME")) );
+$rsUsers = \CUser::GetList(($by="LAST_NAME"), ($order="asc"), $filter, array("SELECT"=>array("UF_CAPACITY_BUSY", "UF_CAPACITY"), "FIELDS" => array("ID", "EMAIL", "NAME")) );
 while($arUser = $rsUsers->GetNext())
 {
     //Если у пользователя есть программы, ожидающие записи
@@ -41,7 +47,7 @@ while($arUser = $rsUsers->GetNext())
     {
         $ids = $arUserRecords[$arUser["ID"]];
         
-        $Sotal = new CSotal($arUser["ID"]);
+        $Sotal = new \Hawkart\Megatv\CSotal($arUser["ID"]);
         $Sotal->getSubscriberToken();
         $arSchedules = $Sotal->getScheduleList();
         
@@ -57,22 +63,22 @@ while($arUser = $rsUsers->GetNext())
                 
                 if(!empty($url))
                 {
-                    $user_record = CRecordEx::getBySotalID($record_id, array("ID", "UF_NAME", "UF_SUB_TITLE", "UF_PICTURE"));
-                    
+                    $arRecord = $arRecords[$record_id];
+
                     //Если достаточно пространства
                     if(intval($arUser["UF_CAPACITY_BUSY"])<intval($arUser["UF_CAPACITY"]))
                     {
-                        CNotifyEx::afterRecord(array(
+                        \CNotifyEx::afterRecord(array(
                             "USER_ID" => $arUser["ID"],
                             "USER_NAME" => $arUser["NAME"],
                             "USER_EMAIL" => $arUser["EMAIL"],
-                            "RECORD_ID" => $user_record["ID"],
-                            "RECORD_NAME" => trim($user_record["UF_NAME"]." ".$user_record["UF_SUB_TITLE"]),
-                            "PICTURE" => "http://megatv.su".CFile::GetPath($user_record["UF_PICTURE"]),
-                            "URL" => "http://megatv.su/personal/records/?record_id=".$user_record["ID"]."&play=yes"
+                            "RECORD_ID" => $arRecord["ID"],
+                            "RECORD_NAME" => $arRecord["NAME"],
+                            "PICTURE" => "http://megatv.su".$arRecord["PICTURE"]["SRC"],
+                            "URL" => "http://megatv.su/personal/records/?record_id=".$arRecord["ID"]."&play=yes"
                         ));
                         
-                        CRecordEx::update($user_record["ID"], array("UF_URL" => $url, "UF_AFTER_NOTIFY" => "Y"));
+                        \Hawkart\Megatv\RecordTable::update($arRecord["ID"], array("UF_URL" => $url, "UF_AFTER_NOTIFY" => 1));
                     }
                     
                 }        
@@ -82,6 +88,9 @@ while($arUser = $rsUsers->GetNext())
         unset($Sotal);
     }
 }
+
+unset($arUserRecords);
+unset($arRecords);
 
 echo "loaded";
 

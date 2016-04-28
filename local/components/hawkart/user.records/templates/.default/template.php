@@ -95,7 +95,7 @@ if(count($arResult["RECORDS"])==0)
 							<div class="category"><a href="#" data-type="category"><?=$arRecord["UF_CATEGORY"]?></a></div>
 						</div>
 						<div class="title">
-							<a href="#"><?=$arRecord["UF_NAME"]?></a>
+							<a href="<?=$arRecord["DETAIL_PAGE_URL"]?>"><?=$arRecord["UF_NAME"]?></a>
 						</div>
 					</div>
                 </div>

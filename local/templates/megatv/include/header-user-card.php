@@ -2,8 +2,8 @@
     <?
     if($USER->IsAuthorized())
     {           
-        $budget = floatval(CUserEx::getBudget());
-        $arUser = CUserEx::updateAvatar($USER->GetID());
+        $budget = floatval(\CUserEx::getBudget());
+        $arUser = \CUserEx::updateAvatar($USER->GetID());
         
         if(floatval($arUser["UF_CAPACITY_BUSY"])==0 || floatval($arUser["UF_CAPACITY"])==0)
         {
@@ -17,7 +17,7 @@
         $APPLICATION->AddViewContent('user_filled_space_percent', $filledPercent);  
         ?>
         
-        <div class="fill-disk-space" data-type="fill-disk-space">
+        <div class="fill-disk-space" data-type="fill-disk-space" onclick="window.location.href='/personal/services/';" style="cursor: pointer;">
     		<div class="progress-holder" data-progress="<?=$APPLICATION->ShowViewContent('user_filled_space_percent');?>"></div>
     		<span class="label">Занято <strong><?=$APPLICATION->ShowViewContent('user_filled_space');?> ГБ</strong></span>
     	</div>                
@@ -26,7 +26,7 @@
             <div class="user-card">
 				<a href="/personal/" class="user-avatar<?if(!$arUser["PERSONAL_PHOTO"]):?> is-empty<?endif;?>" data-type="avatar-holder">
                     <?if($arUser["PERSONAL_PHOTO"]):?>
-                        <img src="<?=CFile::GetPath($arUser["PERSONAL_PHOTO"])?>" alt="<?=$USER->GetFullName()?>" width="50" height="50">
+                        <img src="<?=\CFile::GetPath($arUser["PERSONAL_PHOTO"])?>" alt="<?=$USER->GetFullName()?>" width="50" height="50">
                     <?endif;?>
                 </a>
                 <?

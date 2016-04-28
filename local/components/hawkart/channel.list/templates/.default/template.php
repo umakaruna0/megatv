@@ -38,7 +38,7 @@ $curPage++;
             <?$key = 1;foreach($arResult["CONFIG_DATES"] as $date){?>
             {
                 "dayReq": "<?=$date?>",
-                "dayMark": "<?=CTimeEx::dateToStrWithDay($date);?>"
+                "dayMark": "<?=\CTimeEx::dateToStrWithDay($date);?>"
             }<?if($key<count($arResult["CONFIG_DATES"])):?>,<?endif; $key++;}?>
         ]
     }
@@ -47,25 +47,22 @@ $curPage++;
 	<div class="categories-logos">
         <?foreach($arResult["CHANNELS"] as $arItem):?>
         	<?
-        	$this->AddEditAction($arItem['ID'], $arItem['EDIT_LINK'], CIBlock::GetArrayByID($arItem["IBLOCK_ID"], "ELEMENT_EDIT"));
-        	$this->AddDeleteAction($arItem['ID'], $arItem['DELETE_LINK'], CIBlock::GetArrayByID($arItem["IBLOCK_ID"], "ELEMENT_DELETE"), array("CONFIRM" => GetMessage('CT_BNL_ELEMENT_DELETE_CONFIRM')));
-        	
             if(!in_array($arItem['ID'], $arResult["CHANNELS_SHOW"]) && $USER->IsAuthorized()) continue;
             ?>
-    		<a class="category-logo" href="#<?//=$arItem["DETAIL_PAGE_URL"]?>" id="<?=$this->GetEditAreaId($arItem['ID']);?>">
-    			<span data-icon="<?=$arItem["PROPERTIES"]["ICON"]["VALUE"]?>"></span>
+    		<a class="category-logo channel-online" href="#" data-channel-id="<?=$arItem['ID']?>">
+    			<span data-icon="<?=$arItem["UF_ICON"]?>"></span>
     		</a>
         <?endforeach?>
         <?foreach($arResult["SOCIAL_CHANNELS"] as $arItem):?>
             <a class="category-logo" href="#">
-    			<span data-icon="<?=$arItem["PROPERTIES"]["ICON"]["VALUE"]?>"><?=$arItem["NAME"]?></span>
+    			<span data-icon="<?=$arItem["UF_ICON"]?>"><?=$arItem["NAME"]?></span>
     		</a>
         <?endforeach?>
 	</div>
     
     <a href="#" class="prev-button" data-type="prev-button">
 		<span class="sticky-wrapp">
-			<span class="prev-date"><?=CTimeEx::dateToStrWithDay($arResult["FIRST_DATE"]);?></span>
+			<span class="prev-date"><?=\CTimeEx::dateToStrWithDay($arResult["FIRST_DATE"]);?></span>
 			<span data-icon="icon-kinetic-arrow"></span>
 		</span>
 	</a>
@@ -106,7 +103,7 @@ $curPage++;
                                     
                                 if($arProg["CLASS"]=="one" || $arProg["CLASS"]=="double")
                                 {
-                                    echo CProgTime::getProgInfoIndex($arProg, $arParams);
+                                    echo \Hawkart\Megatv\CScheduleTemplate::getProgInfoIndex($arProg, $arParams);
                                 }
         
                                 if($arProg["CLASS"]=="half")
@@ -114,8 +111,8 @@ $curPage++;
                                     $arProgNext = $arProgs[$key+1];
                                     ?>
                                     <div class="pair-container">
-                                        <?=CProgTime::getProgInfoIndex($arProg, $arParams)?>
-                                        <?=CProgTime::getProgInfoIndex($arProgNext, $arParams)?>
+                                        <?=\Hawkart\Megatv\CScheduleTemplate::getProgInfoIndex($arProg, $arParams)?>
+                                        <?=\Hawkart\Megatv\CScheduleTemplate::getProgInfoIndex($arProgNext, $arParams)?>
                     				</div>
                                     <?
                                     $notShow[]=$key+1;
@@ -144,7 +141,7 @@ $curPage++;
                             $notShow = array();
                             foreach($arProgs as $key=>$arProg)
                             {
-                                echo CProgTime::getSocialProgInfoIndex($arProg, $socialChannel);
+                                echo \Hawkart\Megatv\CScheduleTemplate::getSocialProgInfoIndex($arProg, $socialChannel);
                             }
                             unset($arParams["NEED_POINTER"]);
                             ?>
@@ -157,8 +154,8 @@ $curPage++;
                         ?>
                         <div class="day-mark">
                             <span>
-                                <span class="current-day"><?=CTimeEx::dateToStrWithDay($date);?></span>
-                                <span class="next-day"><?=CTimeEx::dateToStrWithDay($next_date);?></span>
+                                <span class="current-day"><?=\CTimeEx::dateToStrWithDay($date);?></span>
+                                <span class="next-day"><?=\CTimeEx::dateToStrWithDay($next_date);?></span>
                             </span>
                         </div>
                         <?
@@ -179,7 +176,7 @@ $curPage++;
     ?>
     <a href="#" class="next-button" data-type="next-button">
 		<span class="sticky-wrapp">
-			<span class="next-date"><?=CTimeEx::dateToStrWithDay($next_date);?></span>
+			<span class="next-date"><?=\CTimeEx::dateToStrWithDay($next_date);?></span>
 			<span data-icon="icon-kinetic-arrow"></span>
 		</span>
 	</a>

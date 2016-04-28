@@ -20,7 +20,7 @@
 				<span class="load-avatar-text-holder"><span><?if($arResult["USER"]["PERSONAL_PHOTO"]):?>Обновить аватар<?else:?>Загрузить аватар<?endif;?></span></span>
 			</div>
 			<span class="user-name"><?=trim($arResult["USER"]["NAME"]." ".$arResult["USER"]["LAST_NAME"])?></span>
-			<span class="user-city"><?=$arParams["CITY_GEO"]["NAME"]?></span>
+			<span class="user-city"><?=$arParams["CITY_GEO"]["UF_TITLE"]?></span>
 		</div>
         
         <form action="<?= $templateFolder ?>/ajax.php" class="user-profile-form" data-module="user-profile-form">

@@ -7,7 +7,7 @@
 
 namespace Olegpro\IpGeoBase;
 
-use \Bitrix\Main\Text\Encoding;
+use Bitrix\Main\Text\Encoding;
 
 
 class IpGeoBase extends \IPGeoBase

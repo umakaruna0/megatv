@@ -2,10 +2,12 @@
 if(!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED!==true)
 	die();
 
+\CModule::IncludeModule("iblock");
+
 global $USER;
 if($USER->IsAuthorized())
 {
-    $rsUser = CUser::GetByID($USER->GetID());
+    $rsUser = \CUser::GetByID($USER->GetID());
     $arUser = $rsUser->Fetch();
     
     $arrFilter = array(
@@ -14,7 +16,7 @@ if($USER->IsAuthorized())
         "PROPERTY_USER_ID" => $arUser["ID"]
     );
     $arSelect = array("ID", "PROPERTY_SERIA_NUMBER", "PROPERTY_WHEN_ISSUED", "PROPERTY_CODE_DIVISION", "PREVIEW_TEXT", "DETAIL_TEXT");
-    $rsRes = CIBlockElement::GetList( $arOrder, $arrFilter, false, false, $arSelect );
+    $rsRes = \CIBlockElement::GetList( $arOrder, $arrFilter, false, false, $arSelect );
 	$arPassport = $rsRes->GetNext();
     
     $arSocials = array();
@@ -24,7 +26,7 @@ if($USER->IsAuthorized())
         "PROPERTY_USER_ID" => $arUser["ID"]
     );
     $arSelect = array("PROPERTY_SOCIAL_PROVIDER");
-    $rsRes = CIBlockElement::GetList( $arOrder, $arrFilter, false, false, $arSelect );
+    $rsRes = \CIBlockElement::GetList( $arOrder, $arrFilter, false, false, $arSelect );
 	if( $arItem = $rsRes->GetNext() )
     {
         $arSocials[] = $arItem["PROPERTY_SOCIAL_PROVIDER_VALUE"];

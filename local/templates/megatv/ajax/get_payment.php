@@ -3,11 +3,11 @@ define('STOP_STATISTICS', true);
 require_once($_SERVER['DOCUMENT_ROOT'].'/bitrix/modules/main/include/prolog_before.php');
 $GLOBALS['APPLICATION']->RestartBuffer();
 
-CModule::IncludeModule("sale");
+\CModule::IncludeModule("sale");
 
 global $USER;
 if(!is_object($USER))
-    $USER = new CUser;
+    $USER = new \CUser;
 ?>
 
 <?$APPLICATION->IncludeComponent(

@@ -9,6 +9,8 @@ Localization\Loc::loadMessages(__FILE__);
 
 class CountryTable extends Entity\DataManager
 {
+    protected static $rus_id = 15;
+    
 	/**
 	 * Returns DB table name for entity
 	 *

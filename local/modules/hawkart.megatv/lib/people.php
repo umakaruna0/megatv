@@ -45,7 +45,7 @@ class PeopleTable extends Entity\DataManager
                 'required'  => true
 			),
             'UF_ROLE' => array(
-				'data_type' => 'Local\Hawkart\Megatv\Role',
+				'data_type' => 'Local\Hawkart\Megatv\RoleTable',
 				'reference' => array('=this.UF_ROLE_ID' => 'ref.ID'),
 			),
 		);
