@@ -110,6 +110,9 @@ class ChannelTable extends Entity\DataManager
 				'primary' => true,
 				'autocomplete' => true
 			),
+            'UF_SORT' => array(
+				'data_type' => 'integer',
+			),
 			'UF_ACTIVE' => array(
 				'data_type' => 'boolean',
 				'title'     => Localization\Loc::getMessage('channel_entity_active_field'),

@@ -24,8 +24,9 @@ for($i = 0; $i<\CTimeEx::getCalendarDays()+2; $i++)
 $arResult["ITEMS"] = array();
 $arFilter = array("UF_ACTIVE" => 1);
 $arSelect = array('ID', 'UF_TITLE', 'UF_ICON', 'UF_CODE', "UF_IS_NEWS");
+$arSort = array("UF_SORT" => "ASC");
 $obCache = new \CPHPCache;
-if( $obCache->InitCache(86400, serialize($arFilter).serialize($arSelect), "/channels/"))
+if( $obCache->InitCache(86400, serialize($arFilter).serialize($arSelect).serialize($arSort), "/channels/"))
 {
 	$arResult["ITEMS"] = $obCache->GetVars();
 }
@@ -33,7 +34,8 @@ elseif($obCache->StartDataCache())
 {
 	$result = \Hawkart\Megatv\ChannelTable::getList(array(
         'filter' => $arFilter,
-        'select' => $arSelect
+        'select' => $arSelect,
+        'order' => $arSort
     ));
     while ($row = $result->fetch())
     {

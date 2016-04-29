@@ -17,6 +17,8 @@ web.config
 
 # upload, logs, backups, temp & test
 /_dev/
+/test/
+/logs/
 /upload/
 /test.php
 /*.html

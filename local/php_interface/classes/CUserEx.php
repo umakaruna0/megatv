@@ -54,8 +54,11 @@ class CUserEx
 		}
         
         //Удаляем записи
-        $arRecords = \CRecordEx::getList(array("UF_USER"=>$user_id), array("ID"));
-        foreach($arRecords as $arRecord)
+        $result = \Hawkart\Megatv\RecordTable::getList(array(
+            'filter' => array("UF_USER_ID"=>$user_id),
+            'select' => array("ID"),
+        ));
+        while ($arRecord = $result->fetch())
         {
             \CRecordEx::delete($arRecord["ID"]);
         }
@@ -76,23 +79,14 @@ class CUserEx
             \CSaleOrder::Delete($ar_sales["ID"]);
         }
         
-        $result = \Hawkart\Megatv\StatChannelTable::getList(array(
-            'filter' => array("=UF_USER" => (int) $user_id),
-            'select' => array('ID')
-        ));
-        while ($arStat = $result->fetch())
-        {
-            \Hawkart\Megatv\StatChannelTable::delete($arStat["ID"]);
-        }
-        
         //Удаляем подписки
-        $result = \Hawkart\Megatv\CSubscribe::getList(array(
-            'filter' => array("UF_USER_ID" => $user_id),
+        $result = \Hawkart\Megatv\SubscribeTable::getList(array(
+            'filter' => array("=UF_USER_ID" => $user_id),
             'select' => array("ID")
         ));
         if ($arSub = $result->fetch())
         {
-            \Hawkart\Megatv\CSubscribe::delete($arSub["ID"]);
+            \Hawkart\Megatv\SubscribeTable::delete($arSub["ID"]);
         }
 
     }
@@ -106,7 +100,7 @@ class CUserEx
 
         $password = mb_substr(md5(uniqid(rand(),true)), 0, 12);
         
-        $cUser = new CUser;
+        $cUser = new \CUser;
         $cUser->Update($USER_ID, array(
             "UF_SOTAL_LOGIN" => "email_".$USER_ID."@"."megatv.ru",
             "UF_SOTAL_PASS" => $password
