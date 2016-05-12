@@ -22,7 +22,7 @@ $epg = new \Hawkart\Megatv\CEpg();
 $epg->download();
 $epg->import();
 
-\CDev::deleteDirectory($_SERVER['DOCUMENT_ROOT'].'/upload/resize_cache');
+\CDev::deleteDirectory($_SERVER['DOCUMENT_ROOT'].'/bitrix/cache', 0);
 
 echo date("H:i:s")."\r\n";
 

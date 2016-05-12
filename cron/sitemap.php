@@ -11,6 +11,7 @@ require($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/include/prolog_before.ph
 $date = date("Y-m-d");
 
 $xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><urlset xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\">";
+$urls = array();
 
 $count = 1;
 $result = \Hawkart\Megatv\ScheduleTable::getList(array(
@@ -23,15 +24,21 @@ $result = \Hawkart\Megatv\ScheduleTable::getList(array(
     )
 ));
 while ($arSchedule = $result->fetch())
-{
+{   
     $url = "http://megatv.su/channels/".$arSchedule["UF_CHANNEL_CODE"]."/".$arSchedule["UF_ID"]."/";
-    
+    $urls[] = $url;
+}
+
+$urls = array_unique($urls);
+foreach($urls as $url)
+{
     $xml.="<url>
       <loc>".$url."</loc>
       <lastmod>".$date."</lastmod>
       <changefreq>daily</changefreq>
-   </url>"; 
+    </url>";
 }
+unset($urls);
 
 $xml.="</urlset>";
 
