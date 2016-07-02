@@ -18,10 +18,11 @@ IncludeTemplateLangFile(__FILE__);
         $APPLICATION->ShowMeta("description", false, true);
         $APPLICATION->ShowCSS(true, true);
         
-        $APPLICATION->SetAdditionalCSS(SITE_TEMPLATE_PATH.'/megatv/dist/css/main.css');
+        $APPLICATION->SetAdditionalCSS(SITE_TEMPLATE_PATH.'/megatv/public/css/main.css');
         $APPLICATION->SetAdditionalCSS(SITE_TEMPLATE_PATH.'/project.css');
         $APPLICATION->ShowHeadStrings();
     	$APPLICATION->ShowHeadScripts();
+        $APPLICATION->SetDirProperty("h1-hide", "hidden");
         
         require($_SERVER["DOCUMENT_ROOT"].SITE_TEMPLATE_PATH."/include/header-code.php");
         ?>
@@ -139,3 +140,4 @@ IncludeTemplateLangFile(__FILE__);
                 
 			</header>
 			<main class="site-content">
+                <section class="section-h1 <?$APPLICATION->ShowProperty("h1-hide");?>"><h1><?$APPLICATION->ShowProperty("h1");?></h1></section>

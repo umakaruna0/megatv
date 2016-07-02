@@ -1,8 +1,9 @@
 <?
 require($_SERVER["DOCUMENT_ROOT"]."/bitrix/header.php");
-$APPLICATION->SetTitle("Каналы");
+$APPLICATION->SetTitle("Программа телепередач на сегодня - ТВ программа в Москве на МегаТВ, записи телепередач онлайн");
+$APPLICATION->SetDirProperty("h1", "Программа телепередач на сегодня");
+$APPLICATION->SetDirProperty("h1-hide", "");
 ?>
-
 <?$APPLICATION->IncludeComponent("hawkart:channel.list", "", 
     Array(
 		"NEWS_COUNT" => "45",
