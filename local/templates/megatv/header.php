@@ -13,7 +13,7 @@ IncludeTemplateLangFile(__FILE__);
         <?/*<meta name="author" content="http://hawkart.ru, разработка и поддержка интернет-проектов и информационных систем"/>*/?>
         <?
         echo '<meta http-equiv="Content-Type" content="text/html; charset='.LANG_CHARSET.'"'.(true ? ' /':'').'>'."\n";
-        //$APPLICATION->ShowMeta("robots", false, true);
+        $APPLICATION->ShowMeta("robots", false, true);
         $APPLICATION->ShowMeta("keywords", false, true);
         $APPLICATION->ShowMeta("description", false, true);
         $APPLICATION->ShowCSS(true, true);
@@ -69,7 +69,7 @@ IncludeTemplateLangFile(__FILE__);
 					<a href="#" class="close-link" data-type="hide-banner-link">Скрыть</a>
 				</div>*/?>
 				<div class="top-panel">
-                    <?if($APPLICATION->GetCurDir()=="/"):?>
+                    <?if($APPLICATION->GetCurPage(false) === '/'):?>
 					   <span class="logo"></span>
                     <?else:?>
                         <a href="/" class="logo"></a>

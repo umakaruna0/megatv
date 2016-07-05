@@ -13,9 +13,6 @@ global $USER, $APPLICATION;
 if (!is_object($USER))
     $USER=new \CUser;
 
-/**
- * Уведомление на email в момент начала записи
- */
 $arSerials = array();
 $result = \Hawkart\Megatv\ProgTable::getList(array(
     'filter' => array(
