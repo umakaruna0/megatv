@@ -57,6 +57,17 @@ if(intval($arResult["ID"])==0)
     }else{
         LocalRedirect($APPLICATION->GetCurDir(), false, "301 Moved Permanently");
     }
+}else{
+    //FOR SEO
+    $url_params = parse_url($_SERVER["REQUEST_URI"]);
+    if(substr($url_params["path"], -1)!="/")
+    {
+        $url = $url_params["path"]."/";
+        if(!empty($url_params["query"]))
+            $url.= "?".$url_params["query"];
+        
+        LocalRedirect($url, false, "301 Moved permanently");
+    }
 }
 
 //get status schedule

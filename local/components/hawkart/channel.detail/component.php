@@ -39,11 +39,23 @@ if ($arResult = $result->fetch())
 $arSubscriptionChannels = $APPLICATION->GetPageProperty("ar_subs_channels");
 $arResult["CHANNELS_SHOW"] = json_decode($arSubscriptionChannels, true);
 
-//show error page
+//show error page SEO
 if(intval($arResult["ID"])==0 || (!in_array($arResult['UF_CHANNEL_BASE_ID'], $arResult["CHANNELS_SHOW"]) && $USER->IsAuthorized()))
 {
     CHTTP::SetStatus("404 Not Found");
     @define("ERROR_404", "Y");
+}else{
+    
+    //FOR SEO
+    $url_params = parse_url($_SERVER["REQUEST_URI"]);
+    if(substr($url_params["path"], -1)!="/")
+    {
+        $url = $url_params["path"]."/";
+        if(!empty($url_params["query"]))
+            $url.= "?".$url_params["query"];
+        
+        LocalRedirect($url, false, "301 Moved permanently");
+    }
 }
 
 $file = \YoutubeClient::getFilePathByChannel($arResult['UF_CHANNEL_BASE_ID']);

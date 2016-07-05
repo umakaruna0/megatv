@@ -36,6 +36,25 @@ $arUrlRewrite = array(
 		"ID"	=>	"bitrix:news.list",
 		"PATH"	=>	"/channels/index.php",
 	),
+    
+    array(
+		"CONDITION"	=>	"#^/serials/(.*)/(.*)#",
+		"RULE"	=>	"EPG_ID=\$1",
+		"ID"	=>	"hawkart:serial.detail",
+		"PATH"	=>	"/serials/detail.php",
+	),
+    array(
+		"CONDITION"	=>	"#^/serials/(.*)/#",
+		"RULE"	=>	"EPG_ID=\$1",
+		"ID"	=>	"hawkart:serial.detail",
+		"PATH"	=>	"/serials/detail.php",
+	),
+    array(
+		"CONDITION"	=>	"#^/serials/(.*)#",
+		"RULE"	=>	"",
+		"ID"	=>	"hawkart:serial.list",
+		"PATH"	=>	"/serials/index.php",
+	),
 );
 
 ?>
