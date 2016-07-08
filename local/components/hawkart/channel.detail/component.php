@@ -61,48 +61,19 @@ if(intval($arResult["ID"])==0 || (!in_array($arResult['UF_CHANNEL_BASE_ID'], $ar
     }
 }
 
-$file = \YoutubeClient::getFilePathByChannel($arResult['UF_CHANNEL_BASE_ID']);
-$arResult["PROGS"] = \YoutubeClient::dailyShow($file);
-
-//CDev::pre($arResult["PROGS"]);
-
-/*
-//filter progs by date & use epg_file_id
-$arDate = \CTimeEx::getDateFilter($arParams["DATETIME"]["SELECTED_DATE"]);
-$dateStart = date("Y-m-d H:i:s", strtotime("-2 hours", strtotime($arDate["DATE_FROM"])));
-$dateEnd = date("Y-m-d H:i:s", strtotime($arDate["DATE_TO"]));
-
-$result = \Hawkart\Megatv\ScheduleTable::getList(array(
-    'filter' => array(
-        "=UF_CHANNEL_ID" => $arResult["ID"],
-        ">=UF_DATE_START" => new \Bitrix\Main\Type\DateTime($dateStart, 'Y-m-d H:i:s'),
-        "<UF_DATE_START" => new \Bitrix\Main\Type\DateTime($dateEnd, 'Y-m-d H:i:s'),
-    ),
-    'select' => array(
-        "ID", "UF_CODE", "UF_DATE_START", "UF_DATE_END", "UF_DATE", "UF_CHANNEL_ID", "UF_PROG_ID",
-        "UF_TITLE" => "UF_PROG.UF_TITLE", "UF_SUB_TITLE" => "UF_PROG.UF_SUB_TITLE", "UF_IMG_PATH" => "UF_PROG.UF_IMG.UF_PATH",
-        "UF_RATING" => "UF_PROG.UF_RATING", "UF_HD" => "UF_PROG.UF_HD", "UF_DESC" => "UF_PROG.UF_DESC",
-        "UF_ID" => "UF_PROG.UF_EPG_ID"
-    ),
-    'limit' => 12
+$arResult["PROGS"] = array();
+$result = \Hawkart\Megatv\ProgExternalTable::getList(array(
+    'filter' => array("UF_SERIAL.UF_CHANNEL_ID" => '%"'.$arResult['UF_CHANNEL_BASE_ID'].'"%'),
+    'select' => array("ID", "UF_TITLE", "UF_EXTERNAL_ID", "UF_THUMBNAIL_URL", "UF_JSON")
 ));
-while ($arSchedule = $result->fetch())
+while ($row = $result->fetch())
 {
-    $arSchedule["UF_DATE_START"] = $arSchedule["DATE_START"] = \CTimeEx::dateOffset($arSchedule['UF_DATE_START']->toString());
-    $arSchedule["UF_DATE_END"] = $arSchedule["DATE_END"] = \CTimeEx::dateOffset($arSchedule['UF_DATE_END']->toString());
-    $arSchedule["UF_DATE"] = $arSchedule["DATE"] = substr($arSchedule["DATE_START"], 0, 10);
-    $arSchedule["PROG_ID"] = $arSchedule["UF_PROG_ID"];
-    $arSchedule["DETAIL_PAGE_URL"] = $arResult["DETAIL_PAGE_URL"].$arSchedule["UF_ID"]."/?event=".$arSchedule["ID"];
-    $arResult["PROGS"][] = $arSchedule;
+    if(strpos($row["UF_THUMBNAIL_URL"], "rutube")!==false)
+    {
+        $row["UF_THUMBNAIL_URL"].="?size=m";
+    }
+    $arResult["ITEMS"][] = $row;
 }
-
-$arSchedules = \Hawkart\Megatv\CScheduleView::setChannel(array(
-    "PROGS" => $arResult["PROGS"],
-    "NEWS" => $arResult["UF_IS_NEWS"],
-));
-
-$arResult["PROGS"] = $arSchedules;
-*/
 
 /**
  * Add data to statistics

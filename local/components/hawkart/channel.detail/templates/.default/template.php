@@ -21,11 +21,31 @@ $this->setFrameMode(true);
     <div class="broadcasts-list">
         <?
         $notShow = array();
-        foreach($arResult["PROGS"] as $key=>$arProg)
+        foreach($arResult["ITEMS"] as $key=>$arVideo)
         {
-            $arProg["CAT_CODE"] = $arResult["CATEGORIES"][$arProg["UF_CATEGORY"]];
-            echo \Hawkart\Megatv\CScheduleTemplate::getSocialProgInfoChannel($arProg, "YOUTUBE|".$arResult['UF_CHANNEL_BASE_ID']);
-            //echo \Hawkart\Megatv\CScheduleTemplate::getProgInfoRecommend($arProg);
+            ?>
+            <div class="item status-recorded status-social-v"
+                data-type="broadcast" data-broadcast-id="<?=$arVideo["UF_EXTERNAL_ID"]?>"
+            >
+                <div class="inner">
+                    <div class="item-image-holder" style="background-image: url(<?=$arVideo["UF_THUMBNAIL_URL"]?>)"></div>
+                    
+                    <span class="item-status-icon" href="#">
+        				<span data-icon="icon-recorded"></span>
+        				<span class="status-desc">Смотреть</span>
+        			</span>
+                    
+                	<div class="item-header">
+                        <div class="meta">
+    						
+    					</div>
+                        <div class="title">
+                    		<a href="#"><?=$arVideo["UF_TITLE"]?></a>
+                        </div>
+                	</div>
+                </div>
+            </div>
+            <?
         }
         ?>
     </div>

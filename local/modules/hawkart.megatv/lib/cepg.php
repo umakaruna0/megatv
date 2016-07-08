@@ -1057,10 +1057,10 @@ class CEpg
         unset($arScheduleIdsNotDelete);
         unset($arProgCropIds);
         
-        self::importSerials();
+        self::guessSerials();
     }
     
-    public static function importSerials()
+    public static function guessSerials()
     {
         /**
          * Get serials list

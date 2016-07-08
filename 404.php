@@ -14,6 +14,7 @@ $APPLICATION->SetTitle("404 Not Found");
         echo $file;
         ?>
     </div>
+    <div style="clear: both;"></div>
 </div>
 <?
 require($_SERVER["DOCUMENT_ROOT"]."/bitrix/footer.php");?>

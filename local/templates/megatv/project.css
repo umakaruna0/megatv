@@ -72,10 +72,18 @@
     padding: 30px 10px;
 
 }
-.sitemap ul:first-child{
-    min-width: 300px;
-    margin: 0 auto;
-}
 .sitemap ul li, .sitemap ul li a{
     text-align: left;
+}
+.sitemap ul{
+    margin-top: 10px;
+}
+.sitemap ul li{
+    margin: 7px 0 5px;
+}
+.sitemap ul li ul li{
+    float: left;
+    width: 300px;
+    margin: 7px 0;
+    padding-right: 20px;
 }
