@@ -14,11 +14,9 @@ $html = '<!DOCTYPE html>
 <body>
 
 <ul>
-    <li>
-        <a href="http://tvguru.com/">Программа телепередач на сегодня</a>
-    </li>
-    <li>Каналы:<br />
-        <ul>
+    <li><a href="http://tvguru.com/">Программа телепередач на сегодня</a></li>
+    <li><a href="http://tvguru.com/recommendations/">Рекомендации</a></li>
+    <li>Каналы:<ul>
 ';
 
 $arFilter = array("UF_ACTIVE" => 1);
@@ -30,7 +28,29 @@ $result = \Hawkart\Megatv\ChannelBaseTable::getList(array(
 ));
 while ($arChannel = $result->fetch())
 {
-    $html.='<li><a href="http://tvguru.com/channels/'.$arChannel["UF_CODE"].'/">'.$arChannel["UF_TITLE"].'</a></li>';
+    $html.='<li><a href="http://tvguru.com/channels/'.$arChannel["UF_CODE"].'/">'.$arChannel["UF_TITLE"].'</a><ul>';
+    
+    $ids = array();
+    
+    $result_sh = \Hawkart\Megatv\ScheduleTable::getList(array(
+        'filter' => array(
+            "=UF_CHANNEL.UF_BASE_ID" => $arChannel["ID"],
+            "=UF_PROG.UF_ACTIVE" => 1,
+        ),
+        'select' => array(
+            "ID", "UF_ID" => "UF_PROG.UF_EPG_ID", "UF_CHANNEL_CODE" => "UF_CHANNEL.UF_BASE.UF_CODE",
+            "UF_NAME" => "UF_PROG.UF_TITLE", "UF_SUB_NAME" => "UF_PROG.UF_SUB_TITLE",
+        )
+    ));
+    while ($arSchedule = $result_sh->fetch())
+    {   
+        if(!in_array($arSchedule["UF_ID"], $ids))
+            $html.='<li><a href="http://tvguru.com/channels/'.$arChannel["UF_CODE"].'/'.$arSchedule["UF_ID"].'/">'.trim($arSchedule["UF_NAME"].' '.$arSchedule["UF_SUB_NAME"]).'</a></li>';
+        
+        $ids[] = $arSchedule["UF_ID"];
+    }
+    unset($ids);
+    $html.="</ul></li>";
 }
 
 $urls = array();
@@ -64,9 +84,8 @@ $xml.="</urlset>";
 $file = $_SERVER["DOCUMENT_ROOT"]."/sitemap.xml";
 file_put_contents($file, $xml);
 
-$html.='</ul>
-        </li>
-        <li><a href="http://tvguru.com/recommendations/">Рекомендации</a></li>
+$html.='
+        </ul></li>
     </ul>
 </body>
 </html>';
