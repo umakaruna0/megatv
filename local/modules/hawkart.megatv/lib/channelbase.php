@@ -176,7 +176,13 @@ class ChannelBaseTable extends Entity\DataManager
 			),
             'UF_H1' => array(
 				'data_type' => 'string',
-			), 
+			),
+            'UF_KEYWORDS' => array(
+				'data_type' => 'string',
+			),
+            'UF_DESCRIPTION' => array(
+				'data_type' => 'string',
+			),
 		);
 	}
     

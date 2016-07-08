@@ -18,7 +18,8 @@ $arSelect = array(
     'ID', 'UF_CHANNEL_ID', 'UF_CHANNEL_BASE_ID' => 'UF_CHANNEL.UF_BASE.ID', 
     'UF_TITLE' => 'UF_CHANNEL.UF_BASE.UF_TITLE', 'UF_ICON' => 'UF_CHANNEL.UF_BASE.UF_ICON',
     'UF_CODE' => 'UF_CHANNEL.UF_BASE.UF_CODE', "UF_IS_NEWS" => 'UF_CHANNEL.UF_BASE.UF_IS_NEWS',
-    'UF_DESC' => 'UF_CHANNEL.UF_BASE.UF_DESC', 'UF_H1' => 'UF_CHANNEL.UF_BASE.UF_H1'
+    'UF_DESC' => 'UF_CHANNEL.UF_BASE.UF_DESC', 'UF_H1' => 'UF_CHANNEL.UF_BASE.UF_H1',
+    'UF_DESCRIPTION' => 'UF_CHANNEL.UF_BASE.UF_DESCRIPTION', 'UF_KEYWORDS' => 'UF_CHANNEL.UF_BASE.UF_KEYWORDS'
 );
 $arSort = array("UF_CHANNEL.UF_BASE.UF_SORT" => "ASC");
 $result = \Hawkart\Megatv\ChannelCityTable::getList(array(
@@ -32,6 +33,8 @@ if ($arResult = $result->fetch())
     $arResult["DETAIL_PAGE_URL"] = "/channels/".$arResult['UF_CODE']."/";
     $title = $arResult["UF_TITLE"]." -  телепрограмма на сегодня, программа телепередач канала ".$arResult["UF_H1"]." на МегаТВ";
     $APPLICATION->SetTitle($title);
+    //$APPLICATION->SetPageProperty("keywords", $arResult["UF_KEYWORDS"]);
+    $APPLICATION->SetPageProperty("description", TruncateText($arResult["UF_DESCRIPTION"], 256));
     $APPLICATION->SetDirProperty("h1", $arResult["UF_H1"] ? $arResult["UF_H1"] : $arResult["UF_TITLE"]);
 }
 

@@ -18,8 +18,8 @@
         ?>
         
         <div class="fill-disk-space" data-type="fill-disk-space" onclick="window.location.href='/personal/services/';" style="cursor: pointer;">
-    		<div class="progress-holder" data-progress="<?=$APPLICATION->ShowViewContent('user_filled_space_percent');?>"></div>
-    		<span class="label">Занято <strong><?=$APPLICATION->ShowViewContent('user_filled_space');?> ГБ</strong></span>
+    		<div class="progress-holder" data-progress="<?=$filledPercent?>"></div>
+    		<span class="label">Занято <strong><?=round($arUser["UF_CAPACITY_BUSY"], 2);?> ГБ</strong></span>
     	</div>                
 
         <nav class="header-nav" data-module="user-navigation">

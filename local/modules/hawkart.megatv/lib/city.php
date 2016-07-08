@@ -42,10 +42,13 @@ class CityTable extends Entity\DataManager
             
             $utc = $json["region"]["utc"];
             
-            $arFields = array(
-                "UF_TIMEZONE" => $utc
-            );
-            CityTable::update($city_id, $arFields);
+            if(!empty($json["region"]) && intval($utc)>0)
+            {
+                $arFields = array(
+                    "UF_TIMEZONE" => $utc
+                );
+                CityTable::update($city_id, $arFields);
+            }
         }
     }
     
