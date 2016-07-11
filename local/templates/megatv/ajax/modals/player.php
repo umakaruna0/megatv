@@ -36,7 +36,7 @@ if(isset($_REQUEST["channel_id"]))
     			"streamURL": "<?=$arChannel["UF_STREAM_URL"]?>",
     			"posterURL": "<?=$arChannel["UF_IMG_PATH"]?>",
     			"videoTitle": "<?=$arChannel["UF_TITLE"]?>",
-                "playerFlashURL": "<?=SITE_TEMPLATE_PATH?>/megatv/app/js/vendors/jwplayer/jwplayer.flash.swf"
+                "playerFlashURL": "<?=SITE_TEMPLATE_PATH?>/megatv/public/js/jwplayer/jwplayer.flash.swf"
     		}
     	</script>
         <a class="back-link" href="#" data-dismiss="modal">
@@ -89,7 +89,7 @@ if(isset($_REQUEST["channel_id"]))
         			"streamURL": "<?=$arVideo["VIDEO_URL"]?>",
         			"posterURL": "<?=$arVideo["PLAYER_BG"]?>",
         			"videoTitle": "<?=htmlspecialchars($arVideo["NAME"])?>",
-                    "playerFlashURL": "<?=SITE_TEMPLATE_PATH?>/megatv/app/js/vendors/jwplayer/jwplayer.flash.swf"
+                    "playerFlashURL": "<?=SITE_TEMPLATE_PATH?>/megatv/public/js/jwplayer/jwplayer.flash.swf"
         		}
         	</script>
             <a class="back-link" href="#" data-dismiss="modal">
@@ -170,7 +170,7 @@ if(isset($_REQUEST["channel_id"]))
         			"streamURL": "<?=$arRecord["UF_URL"]?>",
         			"posterURL": "<?=$arRecord["PICTURE"]["SRC"]?>",
         			"videoTitle": "<?=$arRecord["UF_NAME"]?>",
-                    "playerFlashURL": "<?=SITE_TEMPLATE_PATH?>/megatv/app/js/vendors/jwplayer/jwplayer.flash.swf"
+                    "playerFlashURL": "<?=SITE_TEMPLATE_PATH?>/megatv/public/js/jwplayer/jwplayer.flash.swf"
         		}
         	</script>
             <a class="back-link" href="#" data-dismiss="modal">

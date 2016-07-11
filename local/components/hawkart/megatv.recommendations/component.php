@@ -47,7 +47,7 @@ if($USER->IsAuthorized())
     
     $arRecommend = \Hawkart\Megatv\CStat::getRecommend($USER->GetID()); 
     
-    //CDev::pre($arRecommend);
+    //\CDev::pre($arRecommend); die();
     
     $arProgs = array();
     $arRecommendSorted = array();
@@ -119,7 +119,7 @@ if($USER->IsAuthorized())
             
             while(!$added)
             {
-                $arSchedule = array_shift($arRecommendSorted[$by_what]);
+                $arSchedule = $arRecommendSorted[$by_what][0];//array_shift($arRecommendSorted[$by_what]);
                 
                 if(!in_array($arSchedule["UF_ID"], $notRepeatIds))
                 {
@@ -139,13 +139,12 @@ if($USER->IsAuthorized())
                 
                 unset($arRecommendSorted[$by_what][0]);
                 $arRecommendSorted[$by_what] = array_values($arRecommendSorted[$by_what]);
-                
+
                 if(count($arRecommendSorted[$by_what])==0)
                     $added = true;
             }
         }
-    }
-        
+    }   
 }else{
     
     $arFilter["=UF_CHANNEL_ID"] = \Hawkart\Megatv\ChannelTable::getActiveIdByCity();

@@ -20,11 +20,27 @@ while($arUser = $rsUsers->GetNext())
     );
     $json = json_encode($arRecommend);
     
-    $oUser = new CUser;
-    $oUser->Update($arUser["ID"], array(
-        "UF_RECOMMEND" => $json
+    $result = \Hawkart\Megatv\UserTable::getList(array(
+        'filter' => array(
+            "=UF_USER_ID" => $arUser["ID"], 
+        ),
+        'select' => array(
+            "ID"
+        )
     ));
-    //break;
+    if($arUserTable = $result->fetch())
+    {
+        $arFields = array(
+            "UF_RECOMMEND" => $json
+        );
+        \Hawkart\Megatv\UserTable::Update($arUser["ID"], $arFields);
+    }else{
+        $arFields = array(
+            "UF_USER_ID" => $arUser["ID"],
+            "UF_RECOMMEND" => $json
+        );
+        \Hawkart\Megatv\UserTable::add($arFields);
+    }
 }
 
 echo date("H:i:s")."\r\n";

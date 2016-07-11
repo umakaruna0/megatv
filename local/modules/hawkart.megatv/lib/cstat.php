@@ -315,8 +315,18 @@ class CStat
     
     public static function getRecommend($user_id)
     {
-        $rsUser = \CUser::GetByID($user_id);
-        $arUser = $rsUser->Fetch();
+        //$rsUser = \CUser::GetByID($user_id);
+        //$arUser = $rsUser->Fetch();
+        
+        $result = \Hawkart\Megatv\UserTable::getList(array(
+            'filter' => array(
+                "=UF_USER_ID" => $user_id, 
+            ),
+            'select' => array(
+                "UF_RECOMMEND"
+            )
+        ));
+        $arUser = $result->fetch();
         
         return json_decode($arUser["UF_RECOMMEND"], true);
     }
