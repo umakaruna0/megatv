@@ -53,36 +53,41 @@ class ChannelCityTable extends Entity\DataManager
             $arChannels[$arChannel["UF_EPG_ID"]] = $arChannel["ID"];
         }
         
-        $file = $_SERVER["DOCUMENT_ROOT"]."/local/modules/hawkart.megatv/files/channel_citiy.csv";
+        $file = $_SERVER["DOCUMENT_ROOT"]."/local/modules/hawkart.megatv/data/channel_city.csv";
         $lines = file($file);
         foreach ($lines as $line_num => $line) 
         {
-            $arItem = explode(";". $line);
+            $arItem = explode(";", $line);
+            $city =  trim($arItem[0]);
             
-            $city = trim($arItem[0]);
-            $channel_epg_id = trim($arItem[1]);
-            $offset = trim($arItem[2]);
-            $orbita = trim($arItem[3]);
-            
-            $city_id = $arCities[$city];
-            $channel_id = $arChannels[$channel_epg_id];
-            
-            if(intval($arItems[$channel_id."-".$city]["ID"])==0)
+            foreach($arItem as $value)
             {
-                $arFields = array(
-                    "UF_CITY_ID" => $city_id,
-                    "UF_CHANNEL_ID" => $channel_id,
-                    "UF_OFFSET" => $offset,
-                    "UF_ORBITA" => $orbita
-                );
-                $result = ChannelCityTable::add($arFields);
-                if ($result->isSuccess())
+                if(strpos($value, "channel_id=")!==false)
                 {
-                    $id = $result->getId();
-                    $arItems[$channel_id."-".$city] = $id;
+                    $channel_epg_id = str_replace("channel_id=", "", $value);
+                    $channel_epg_id = trim($channel_epg_id);
+                    
+                    $city_id = $arCities[$city];
+                    $channel_id = $arChannels[$channel_epg_id];
+                    
+                    if(intval($arChannelCity[$channel_id."-".$city_id])==0 && intval($city_id)>0 && intval($channel_id)>0)
+                    {
+                        //echo $city."   ".$channel_epg_id."<br />";
+                        $arFields = array(
+                            "UF_CITY_ID" => $city_id,
+                            "UF_CHANNEL_ID" => $channel_id
+                        );
+                        
+                        //\CDev::pre($arFields);
+                        $result = ChannelCityTable::add($arFields);
+                        if ($result->isSuccess())
+                        {
+                            $id = $result->getId();
+                            $arChannelCity[$channel_id."-".$city_id] = $id;
+                        }
+                    }
                 }
             }
-            
         }
     }
     

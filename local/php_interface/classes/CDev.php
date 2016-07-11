@@ -482,4 +482,19 @@ class CDev
             }
         }
     }    
+    
+    public static function xls2Array($file, $DOCUMENT_ROOT, $setOutput=false)
+    {
+        mb_internal_encoding("ISO-8859-1");
+        require_once($DOCUMENT_ROOT. '/vendor/excel/excel_reader2.php' );
+        $data = new Spreadsheet_Excel_Reader();  
+        if($setOutput)     
+            $data->setOutputEncoding('CP-1251');
+            
+        $data->setUTFEncoder('mb');
+        $data->read($file);
+        $arStrings = $data->sheets;
+        
+        return $arStrings[0]["cells"];
+    }
 }
