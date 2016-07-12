@@ -51,12 +51,10 @@ $this->setFrameMode(true);
     </div>
 </section>
 
-<div class="fullsize-banner adv-styling-02">
-	<div class="banner-content">
-		<?$APPLICATION->IncludeComponent("bitrix:main.include", "", array("AREA_FILE_SHOW" => "file", "PATH" => SITE_DIR."include/channel-banner.php"), false);?>
-	</div>
-</div>
-
-<div class="channel-desc">
-    <?=htmlspecialchars_decode($arResult["UF_DESC"]);?>
-</div>
+<?$this->SetViewTarget("channel_footer_desc");?>
+    <?if(!empty($arResult["UF_DESC"])):?>
+        <div class="channel-desc">
+        <?=htmlspecialchars_decode($arResult["UF_DESC"]);?>
+        </div>
+    <?endif;?>
+<?$this->EndViewTarget();?>

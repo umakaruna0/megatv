@@ -1,12 +1,7 @@
 <?if(!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED!==true) die();?>
             </main>
 			<footer class="site-footer">
-				<?/*<div class="fullsize-banner adv-styling-01<?if(strpos($_COOKIE['advertizing_hidden_banners'], "footer-adv")!==false):?> hide<?endif;?>" data-type="advertizing" id="footer-adv">
-					<div class="banner-content">
-                        <?$APPLICATION->IncludeComponent("bitrix:main.include", "", array("AREA_FILE_SHOW" => "file", "PATH" => SITE_DIR."include/footer-banner.php"), false);?>
-					</div>
-					<a href="#" class="close-link" data-type="hide-banner-link">Скрыть</a>
-				</div>*/?>
+                <?$APPLICATION->ShowViewContent("channel_footer_desc");?>
 				<div class="footer-content">
                     <?$APPLICATION->IncludeComponent("bitrix:main.include", "", array("AREA_FILE_SHOW" => "file", "PATH" => SITE_DIR."include/footer-copyright.php"), false);?>
 				</div>
