@@ -64,7 +64,8 @@ if(intval($arResult["ID"])==0 || (!in_array($arResult['UF_CHANNEL_BASE_ID'], $ar
 $arResult["PROGS"] = array();
 $result = \Hawkart\Megatv\ProgExternalTable::getList(array(
     'filter' => array("UF_SERIAL.UF_CHANNEL_ID" => '%"'.$arResult['UF_CHANNEL_BASE_ID'].'"%'),
-    'select' => array("ID", "UF_TITLE", "UF_EXTERNAL_ID", "UF_THUMBNAIL_URL", "UF_JSON")
+    'select' => array("ID", "UF_TITLE", "UF_EXTERNAL_ID", "UF_THUMBNAIL_URL", "UF_JSON"),
+    'order' => array("UF_DATETIME" => "DESC")
 ));
 while ($row = $result->fetch())
 {

@@ -57,6 +57,9 @@ class ProgExternalTable extends Entity\DataManager
             'UF_THUMBNAIL_URL' => array(
 				'data_type' => 'string'
 			),
+            'UF_DATETIME' => array(
+				'data_type' => 'datetime'
+			),
 		);
 	}
     
