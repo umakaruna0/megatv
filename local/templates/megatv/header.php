@@ -1,4 +1,6 @@
 <?if(!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED!==true) die();
+
+require($_SERVER["DOCUMENT_ROOT"].SITE_TEMPLATE_PATH."/include/header-code.php");
 IncludeTemplateLangFile(__FILE__);
 ?>
 <!DOCTYPE html>
@@ -23,8 +25,6 @@ IncludeTemplateLangFile(__FILE__);
         $APPLICATION->ShowHeadStrings();
     	$APPLICATION->ShowHeadScripts();
         $APPLICATION->SetDirProperty("h1-hide", "hidden");
-        
-        require($_SERVER["DOCUMENT_ROOT"].SITE_TEMPLATE_PATH."/include/header-code.php");
         ?>
 		<title><?$APPLICATION->ShowTitle()?></title>
         <!-- Google Analytics -->
@@ -53,7 +53,7 @@ IncludeTemplateLangFile(__FILE__);
             <script type="text/x-config">
 				{
 					"bannersHideTime": 1,
-					"pathToSVGSprite": "<?=SITE_TEMPLATE_PATH?>/megatv/dist/img/sprites/svg_sprite.svg",
+					"pathToSVGSprite": "<?=SITE_TEMPLATE_PATH?>/megatv/public/img/sprites/svg_sprite.svg",
 					"playerURL": "<?=SITE_TEMPLATE_PATH?>/ajax/modals/player.php",
                     "playerLastPositionURL": "<?=SITE_TEMPLATE_PATH?>/ajax/player_last_position.php",
 					"shareURL": "<?=SITE_TEMPLATE_PATH?>/ajax/share.php",
@@ -62,12 +62,7 @@ IncludeTemplateLangFile(__FILE__);
 			</script>
                         
 			<header class="site-header">
-				<?/*<div class="fullsize-banner adv-styling-01<?if(strpos($_COOKIE['advertizing_hidden_banners'], "header-adv")!==false):?> hide<?endif;?>" data-type="advertizing" id="header-adv">
-					<div class="banner-content">
-                        <?$APPLICATION->IncludeComponent("bitrix:main.include", "", array("AREA_FILE_SHOW" => "file", "PATH" => SITE_DIR."include/header-banner.php"), false);?>
-					</div>
-					<a href="#" class="close-link" data-type="hide-banner-link">Скрыть</a>
-				</div>*/?>
+
 				<div class="top-panel">
                     <?if($APPLICATION->GetCurPage(false) === '/'):?>
 					   <span class="logo"></span>
@@ -76,28 +71,7 @@ IncludeTemplateLangFile(__FILE__);
                     <?endif;?>
                     
                     <?$APPLICATION->IncludeComponent("hawkart:city.list", "", Array(), false);?>
-                    
-                    <div class="lang-select" data-module="lang-select">
-                        <!-- Временно отображаем только русский язык для сервиса -->
-                        <div class="lang-select-value">
-                        Ru
-                        </div>
-						<?/*<script type="text/x-config">
-							{
-								"url": "<?=$APPLICATION->GetCurDir()?>",
-								"languages": [
-									{ "id": 0, "text": "Ru" },
-									{ "id": 1, "text": "En" }
-								]
-							}
-						</script>
-						<form action="" id="lang-select-form">
-							<input type="hidden" name="lang-id" value="" id="lang-select-value">
-							<select name="lang-select" id="lang-select">
-							</select>
-                            <?=bitrix_sessid_post()?>
-						</form>*/?>
-					</div>
+                    <?$APPLICATION->IncludeComponent("hawkart:lang.list", "", Array(), false);?>
                     
                     <?if($APPLICATION->GetCurDir()!="/personal/records/"):?>
                         <div class="calendar-carousel" data-module="calendar-carousel">

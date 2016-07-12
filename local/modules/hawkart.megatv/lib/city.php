@@ -10,7 +10,6 @@ Localization\Loc::loadMessages(__FILE__);
 class CityTable extends Entity\DataManager
 {
     public static $cacheDir = "city";
-    public static $defaultCityID = 2;
         
     public static function getTimezoneByCity()
     {
@@ -106,6 +105,20 @@ class CityTable extends Entity\DataManager
         }
     }
     
+    public static function getByFilterSelect($arFilter)
+    {
+        $arSelect = array("ID", "UF_TITLE", "UF_TIMEZONE", "UF_COUNTRY_ID", "COUNTRY_ISO" => "UF_COUNTRY.UF_ISO");
+        
+        $result = CityTable::getList(array(
+            'filter' => $arFilter,
+            'select' => $arSelect,
+            'limit' => 1
+        ));
+        
+        return $result->fetch();
+    } 
+    
+    
     /**
      * Get city by Geo
      * 
@@ -114,43 +127,47 @@ class CityTable extends Entity\DataManager
     public static function getGeoCity()
     {
         global $currentGeo;
-        $arSelect = array("ID", "UF_TITLE", "UF_TIMEZONE");
         
-        //unset($_SESSION["USER_GEO"]);
-        //unset($_COOKIE["city_select_data"]);
-        
-        //should be deleted after
-        //$result = self::getById(self::$defaultCityID);
-        //$_SESSION["USER_GEO"] = $result->fetch();
+        $arFilter = array(
+            "=UF_ACTIVE" => 1
+        );
         
         if(!$_SESSION["USER_GEO"] || empty($_SESSION["USER_GEO"]))
         {
             if($_COOKIE["city_select_data"])
             {
-                $result = self::getList(array(
-                    'filter' => array(
-                        "=UF_TITLE" => $_COOKIE["city_select_data"],
-                        "UF_ACTIVE" => 1
-                    ),
-                    'select' => $arSelect
-                ));
-                $_SESSION["USER_GEO"] = $result->fetch();
+                $arFilter["=UF_TITLE"] = $_COOKIE["city_select_data"];
+                $_SESSION["USER_GEO"] = self::getByFilterSelect($arFilter);
+                
+                if(empty($_SESSION["USER_GEO"]))
+                {
+                    unset($arFilter["=UF_TITLE"]);
+                    $arFilter["=UF_DEFAULT"] = 1;
+                    $_SESSION["USER_GEO"] = self::getByFilterSelect($arFilter);
+                }
             }else{
                 $arGeo = GeoCity::getInstance()->getRecord();
                 
                 if(!empty($arGeo))
                 {
+                    $arFilter["=UF_REGION"] = $arGeo["region"];
                     $result = self::getList(array(
-                        'filter' => array(
-                            "=UF_REGION" => $arGeo["region"],
-                            "UF_ACTIVE" => 1
-                        ),
+                        'filter' => $arFilter,
                         'select' => $arSelect
                     ));
                     $_SESSION["USER_GEO"] = $result->fetch();
+                    
+                    if(empty($_SESSION["USER_GEO"]))
+                    {
+                        unset($arFilter["=UF_REGION"]);
+                        $arFilter["=UF_DEFAULT"] = 1;
+                        $_SESSION["USER_GEO"] = self::getByFilterSelect($arFilter);
+                    }
+                    
                 }else{
-                    $result = self::getById(self::$defaultCityID);
-                    $_SESSION["USER_GEO"] = $result->fetch();
+                    unset($arFilter["=UF_REGION"]);
+                    $arFilter["=UF_DEFAULT"] = 1;
+                    $_SESSION["USER_GEO"] = self::getByFilterSelect($arFilter);
                 }
             }
         }
@@ -174,12 +191,10 @@ class CityTable extends Entity\DataManager
             
         if(intval($ID)>0)
         {
-            $result = self::getById($ID);
+            $_SESSION["USER_GEO"] = self::getByFilterSelect(array("=ID" => $ID));
         }else{
-            $result = self::getById(self::$defaultCityID);
+            $_SESSION["USER_GEO"] = self::getByFilterSelect(array("=UF_DEFAULT" => 1));
         }
-        
-        $_SESSION["USER_GEO"] = $result->fetch();
         
         $currentGeo = $_SESSION["USER_GEO"];
         
@@ -232,6 +247,10 @@ class CityTable extends Entity\DataManager
 			),
             'UF_TIMEZONE' => array(
 				'data_type' => 'string',
+			),
+            'UF_DEFAULT' => array(
+				'data_type' => 'boolean',
+				'values'    => array(0, 1)
 			),
 		);
 	}

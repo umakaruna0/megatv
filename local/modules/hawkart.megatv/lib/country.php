@@ -20,6 +20,25 @@ class CountryTable extends Entity\DataManager
 	{
 		return 'hw_country';
 	}
+    
+    public static function setCountry($country_id)
+    {
+        global $currentGeo;
+        $arSelect = array("ID", "UF_TITLE", "UF_TIMEZONE", "UF_COUNTRY_ID", "COUNTRY_ISO" => "UF_COUNTRY.UF_ISO");
+        
+        $result = CityTable::getList(array(
+            'filter' => array(
+                "=UF_COUNTRY_ID" => $country_id,
+                "=UF_ACTIVE" => 1,
+                "=UF_DEFAULT" => 1
+            ),
+            'select' => $arSelect,
+            'limit' => 1
+        ));
+        $currentGeo = $_SESSION["USER_GEO"] = $result->fetch();
+        
+        return $_SESSION["USER_GEO"];
+    }
 
 	/**
 	 * Returns entity map definition

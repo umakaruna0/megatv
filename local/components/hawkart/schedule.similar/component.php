@@ -13,7 +13,7 @@ if(empty($_REQUEST["event"]))
     $arFilter = array("=ID" => $_REQUEST["event"]);
 }
 $arSelect = array(
-    "ID", "UF_CATEGORY" => 'UF_PROG.UF_CATEGORY'
+    "ID", "UF_CATEGORY" => 'UF_PROG.UF_CATEGORY', "UF_SID" => "UF_PROG.UF_EPG_ID"
 );
 $result = \Hawkart\Megatv\ScheduleTable::getList(array(
     'filter' => $arFilter,
@@ -28,7 +28,6 @@ if ($arResult = $result->fetch())
 $arChannelsActive = \Hawkart\Megatv\ChannelTable::getActiveIdByCityByUser();
 
 //get channel by code
-$prog_ids = array();
 $arResult["PROGS"] = array();
 
 $arDate = \CTimeEx::getDateTimeFilter($arTime["SERVER_DATETIME"]);
@@ -37,7 +36,7 @@ $dateEnd = date("Y-m-d H:i:s", strtotime($arDate["DATE_TO"]));
 
 $arFilter = array(
     "!=ID" => $arResult["ID"],
-    "=UF_PROG.UF_CATEGORY" => $category,
+    "=UF_PROG.UF_EPG_ID" => $arResult["UF_SID"],
     "=UF_CHANNEL_ID" => $arChannelsActive,
     ">=UF_DATE_START" => new \Bitrix\Main\Type\DateTime($dateStart, 'Y-m-d H:i:s'),
     "<UF_DATE_START" => new \Bitrix\Main\Type\DateTime($dateEnd, 'Y-m-d H:i:s'),
@@ -54,10 +53,6 @@ $result = \Hawkart\Megatv\ScheduleTable::getList(array(
 ));
 while ($arSchedule = $result->fetch())
 {
-    if(in_array($arSchedule["UF_PROG_ID"], $prog_ids)) continue;
-    
-    $prog_ids[] = $arSchedule["UF_PROG_ID"];    //for unrepeat
-    
     $arSchedule["UF_DATE_START"] = $arSchedule["DATE_START"] = \CTimeEx::dateOffset($arSchedule['UF_DATE_START']->toString());
     $arSchedule["UF_DATE_END"] = $arSchedule["DATE_END"] = \CTimeEx::dateOffset($arSchedule['UF_DATE_END']->toString());
     $arSchedule["UF_DATE"] = $arSchedule["DATE"] = substr($arSchedule["DATE_START"], 0, 10);
@@ -66,6 +61,26 @@ while ($arSchedule = $result->fetch())
     $arSchedule["DETAIL_PAGE_URL"] = "/channels/".$arSchedule["UF_CHANNEL_CODE"]."/".$arSchedule["UF_ID"]."/?event=".$arSchedule["ID"];
     $arResult["PROGS"][] = $arSchedule;
 }
+
+
+//$arResult["PROGS"] = array();
+$result = \Hawkart\Megatv\ProgExternalTable::getList(array(
+    'filter' => array("=UF_SERIAL.UF_EPG_ID" => $arResult["UF_SID"]),
+    'select' => array("ID", "UF_TITLE", "UF_EXTERNAL_ID", "UF_THUMBNAIL_URL", "UF_JSON"),
+    'order' => array("UF_DATETIME" => "DESC")
+));
+while ($row = $result->fetch())
+{
+    if(strpos($row["UF_THUMBNAIL_URL"], "rutube")!==false)
+    {
+        $row["UF_THUMBNAIL_URL"].="?size=m";
+    }
+    $arResult["PROGS"][] = $row;
+}
+
+//\CDev::pre($arResult["PROGS"]);
+
+
 
 $this->IncludeComponentTemplate();
 ?>

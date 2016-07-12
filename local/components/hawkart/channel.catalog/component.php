@@ -49,6 +49,8 @@ if($arParams["SEF_MODE"] == "Y")
         $componentPage = "element";
     }
     
+    $_REQUEST["SCHEDULE_CODE"] = $arVariables["SCHEDULE_CODE"];
+    $_REQUEST["CHANNEL_CODE"] = $arVariables["CHANNEL_CODE"];
     
 	if(!$componentPage)
 	{

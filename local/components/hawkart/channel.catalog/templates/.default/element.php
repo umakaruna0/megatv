@@ -20,6 +20,7 @@ $this->setFrameMode(true);
 ), false);?>
 
 <?$APPLICATION->IncludeComponent("hawkart:schedule.similar", "", Array(
-    "ELEMENT_CODE" => $_REQUEST["SCHEDULE_CODE"], 
+    "CHANNEL_CODE" => $arResult["VARIABLES"]["CHANNEL_CODE"],
+    "ELEMENT_CODE" => $arResult["VARIABLES"]["SCHEDULE_CODE"], 
     "TITLE" => "Похожие передачи"
 ), false);?>

@@ -1,10 +1,29 @@
 <?
-global $USER;
+global $USER, $currentGeo;
 session_start();
+
 if(isset($_POST["city-id"]) && intval($_POST["city-id"])>0 && check_bitrix_sessid())
 {
-    \Hawkart\Megatv\CityTable::setGeoCity(intval($_POST["city-id"]));
-    header("Location: index.php");
+    $arGeo = \Hawkart\Megatv\CityTable::setGeoCity(intval($_POST["city-id"]));
+    $redirect_url = "http://".strtolower($arGeo["COUNTRY_ISO"])."."."tvguru.com";
+    if(strpos($redirect_url, $_SERVER['SERVER_NAME'])!==false)
+    {
+        header("Location: index.php");
+    }
+}
+else if(isset($_POST["lang-id"]) && intval($_POST["lang-id"])>0 && check_bitrix_sessid())
+{
+    $arGeo = \Hawkart\Megatv\CountryTable::setCountry(intval($_POST["lang-id"]));
+}
+else
+{
+    $arGeo = \Hawkart\Megatv\CityTable::getGeoCity();
+}
+
+$redirect_url = "http://".strtolower($arGeo["COUNTRY_ISO"])."."."tvguru.com";
+if(strpos($redirect_url, $_SERVER['SERVER_NAME'])===false)
+{
+    LocalRedirect($redirect_url); die();
 }
 
 if($USER->IsAuthorized())

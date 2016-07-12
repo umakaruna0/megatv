@@ -9,33 +9,33 @@ $arResult["ITEMS"] = array();
 $arResult["CUR_CITY"] = array();
 
 $arFilter = array(
-    "=UF_COUNTRY_ID" => $arResult["GEO"]["UF_COUNTRY_ID"],
-    "=UF_ACTIVE" => 1,
+    "=UF_ACTIVE" => 1
 );
-$arSelect = array("ID", "UF_TITLE");
+$arSelect = array("ID", "UF_TITLE", "UF_ISO");
 $obCache = new \CPHPCache;
-if( $obCache->InitCache(86400, serialize($arFilter).serialize($arSelect), "/cityList/"))
+if( $obCache->InitCache(86400, serialize($arFilter).serialize($arSelect), "/langList/"))
 {
 	$arResult["ITEMS"] = $obCache->GetVars();
 }
 elseif($obCache->StartDataCache())
 {
-    $result = \Hawkart\Megatv\CityTable::getList(array(
+    $result = \Hawkart\Megatv\CountryTable::getList(array(
         'filter' => $arFilter,
         'select' => $arSelect,
         'order' => array("UF_TITLE" => "ASC")
     ));
-    while ($arCity = $result->fetch())
+    while ($arLang = $result->fetch())
     {
-        $arResult["ITEMS"][] = $arCity;
+        $arResult["ITEMS"][] = $arLang;
     }
 	$obCache->EndDataCache($arResult["ITEMS"]); 
 }
-    
-foreach($arResult["ITEMS"] as $arCity)
+
+foreach($arResult["ITEMS"] as $arLang)
 {
-    if($arResult["GEO"]["ID"]==$arCity["ID"]) $arResult["CUR_CITY"] = $arCity;
+    if($arResult["GEO"]["UF_COUNTRY_ID"]==$arLang["ID"]) $arResult["CUR_LANG"] = $arLang;
 }
+
 
 $this->IncludeComponentTemplate();
 ?>
