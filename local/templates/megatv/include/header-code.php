@@ -2,11 +2,17 @@
 global $USER, $currentGeo;
 session_start();
 
+$host = $_SERVER['SERVER_NAME'];
+if(strpos($host, "http://")==false)
+{
+    $host = "http://".$host;
+}
+
 if(isset($_POST["city-id"]) && intval($_POST["city-id"])>0 && check_bitrix_sessid())
 {
     $arGeo = \Hawkart\Megatv\CityTable::setGeoCity(intval($_POST["city-id"]));
     $redirect_url = "http://".strtolower($arGeo["COUNTRY_ISO"])."."."tvguru.com";
-    if(strpos($redirect_url, $_SERVER['SERVER_NAME'])!==false)
+    if(strpos($redirect_url, $host)!==false)
     {
         header("Location: index.php");
     }
@@ -21,9 +27,9 @@ else
 }
 
 $redirect_url = "http://".strtolower($arGeo["COUNTRY_ISO"])."."."tvguru.com";
-if(strpos($redirect_url, $_SERVER['SERVER_NAME'])===false)
+if($redirect_url!=$host && !CSite::InDir('/vendor/'))
 {
-    LocalRedirect($redirect_url); die();
+    LocalRedirect($redirect_url.$APPLICATION->GetCurPage()); die();
 }
 
 if($USER->IsAuthorized())

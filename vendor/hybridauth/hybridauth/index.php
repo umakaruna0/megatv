@@ -13,8 +13,6 @@ try{
 	$adapter = $hybridauth->authenticate( $provider_name );
 	$userProfile = $adapter->getUserProfile();
     $userProfile = (array)$userProfile;
-    
-    //echo "<pre>"; print_r($adapter); echo "</pre>";die();
 }
 catch( Exception $e )
 {
@@ -32,7 +30,8 @@ if(!$USER_ID)
 
 if($USER_ID)
 {
-    $USER->Authorize($USER_ID);
+    //echo "<pre>"; print_r($userProfile); echo "</pre>";die();
+    $USER->Authorize($USER_ID, true);
     LocalRedirect("/");
 }
 die();

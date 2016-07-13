@@ -127,6 +127,8 @@ class CityTable extends Entity\DataManager
     public static function getGeoCity()
     {
         global $currentGeo;
+        //unset($_SESSION["USER_GEO"]);
+        //unset($_COOKIE["city_select_data"]);
         
         $arFilter = array(
             "=UF_ACTIVE" => 1
@@ -151,11 +153,7 @@ class CityTable extends Entity\DataManager
                 if(!empty($arGeo))
                 {
                     $arFilter["=UF_REGION"] = $arGeo["region"];
-                    $result = self::getList(array(
-                        'filter' => $arFilter,
-                        'select' => $arSelect
-                    ));
-                    $_SESSION["USER_GEO"] = $result->fetch();
+                    $_SESSION["USER_GEO"] = self::getByFilterSelect($arFilter);
                     
                     if(empty($_SESSION["USER_GEO"]))
                     {
@@ -171,6 +169,9 @@ class CityTable extends Entity\DataManager
                 }
             }
         }
+        
+        if(empty($_SESSION["USER_GEO"]["COUNTRY_ISO"]))
+            $_SESSION["USER_GEO"]["COUNTRY_ISO"] = "RU"; 
         
         $currentGeo = $_SESSION["USER_GEO"];
         

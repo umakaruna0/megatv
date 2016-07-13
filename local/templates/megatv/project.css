@@ -92,3 +92,15 @@
     min-width: 700px;
     padding-top: 50px;
 }
+
+.recommended-broadcasts>.block-header {
+    padding: 24px 29px 22px;
+    background-color: #ededed;
+}
+
+.recommended-broadcasts>.block-header .block-title{
+    margin: 0;
+    font-size: 1.8rem;
+    color: #383838;
+    text-transform: uppercase;
+}

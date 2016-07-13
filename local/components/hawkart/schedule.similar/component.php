@@ -44,7 +44,7 @@ $arFilter = array(
 $arSelect = array(
     "ID", "UF_CODE", "UF_DATE_START", "UF_DATE_END", "UF_DATE", "UF_CHANNEL_ID", "UF_PROG_ID",
     "UF_TITLE" => "UF_PROG.UF_TITLE", "UF_SUB_TITLE" => "UF_PROG.UF_SUB_TITLE", "UF_IMG_PATH" => "UF_PROG.UF_IMG.UF_PATH",
-    "UF_CHANNEL_CODE" => "UF_CHANNEL.UF_BASE.UF_CODE", "UF_ID" => "UF_PROG.UF_EPG_ID"
+    "UF_CHANNEL_CODE" => "UF_CHANNEL.UF_BASE.UF_CODE", "UF_ID" => "UF_PROG.UF_EPG_ID", "UF_CATEGORY" => "UF_PROG.UF_CATEGORY",
 );
 
 $result = \Hawkart\Megatv\ScheduleTable::getList(array(
@@ -63,11 +63,11 @@ while ($arSchedule = $result->fetch())
 }
 
 
-//$arResult["PROGS"] = array();
 $result = \Hawkart\Megatv\ProgExternalTable::getList(array(
     'filter' => array("=UF_SERIAL.UF_EPG_ID" => $arResult["UF_SID"]),
     'select' => array("ID", "UF_TITLE", "UF_EXTERNAL_ID", "UF_THUMBNAIL_URL", "UF_JSON"),
-    'order' => array("UF_DATETIME" => "DESC")
+    'order' => array("UF_DATETIME" => "DESC"),
+    'limit' => 10
 ));
 while ($row = $result->fetch())
 {
@@ -77,10 +77,6 @@ while ($row = $result->fetch())
     }
     $arResult["PROGS"][] = $row;
 }
-
-//\CDev::pre($arResult["PROGS"]);
-
-
 
 $this->IncludeComponentTemplate();
 ?>
