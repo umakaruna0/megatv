@@ -16,5 +16,8 @@ $APPLICATION->SetDirProperty("h1-hide", "");
 ?>
 
 <?$APPLICATION->IncludeComponent("hawkart:channel.detail", "", Array(
-    "ELEMENT_CODE" => $arResult["VARIABLES"]["CHANNEL_CODE"]
+    "ELEMENT_CODE" => $arResult["VARIABLES"]["CHANNEL_CODE"],
+    "AJAX" => $_REQUEST["AJAX"],
+    "LIST_URL" => $APPLICATION->GetCurDir(),
+    "NEWS_COUNT" => "18"
 ), false);?>

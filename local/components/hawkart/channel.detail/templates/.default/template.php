@@ -18,7 +18,7 @@ $this->setFrameMode(true);
         "recordingURL": "<?=SITE_TEMPLATE_PATH?>/ajax/to_record.php"
     }
     </script>
-    <div class="broadcasts-list">
+    <div class="broadcasts-list" data-url="<?=$arParams["LIST_URL"]?>" data-nop="<?=$arParams["NEWS_COUNT"]?>" data-activate="true">
         <?
         $notShow = array();
         foreach($arResult["ITEMS"] as $key=>$arVideo)
@@ -36,9 +36,7 @@ $this->setFrameMode(true);
         			</span>
                     
                 	<div class="item-header">
-                        <div class="meta">
-    						
-    					</div>
+                        <div class="meta"></div>
                         <div class="title">
                     		<a href="#"><?=$arVideo["UF_TITLE"]?></a>
                         </div>

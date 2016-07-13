@@ -22,5 +22,8 @@ $this->setFrameMode(true);
 <?$APPLICATION->IncludeComponent("hawkart:schedule.similar", "", Array(
     "CHANNEL_CODE" => $arResult["VARIABLES"]["CHANNEL_CODE"],
     "ELEMENT_CODE" => $arResult["VARIABLES"]["SCHEDULE_CODE"], 
-    "TITLE" => "Похожие передачи"
+    "TITLE" => "Похожие передачи",
+    "AJAX" => $_REQUEST["AJAX"],
+    "LIST_URL" => $APPLICATION->GetCurDir(),
+    "NEWS_COUNT" => "12"
 ), false);?>

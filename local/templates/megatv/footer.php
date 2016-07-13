@@ -16,6 +16,8 @@
         ?>
         <script src="<?=SITE_TEMPLATE_PATH?>/megatv/public/js/vendor.js"></script>
 		<script src="<?=SITE_TEMPLATE_PATH?>/megatv/public/js/plugins.js"></script>
+        <script src="<?=SITE_TEMPLATE_PATH?>/project.js"></script>
+        
         <?if(strpos($APPLICATION->GetCurDir(), "/channels/")!==false && !empty($_REQUEST["SCHEDULE_CODE"])):?>
             <script src="<?=SITE_TEMPLATE_PATH?>/megatv/public/js/broadcast-card.js"></script>
         <?elseif(strpos($APPLICATION->GetCurDir(), "/channels/")!==false && !empty($_REQUEST["CHANNEL_CODE"])):?>
@@ -30,7 +32,6 @@
         <?else:?> 
             <script src="<?=SITE_TEMPLATE_PATH?>/megatv/public/js/main.js"></script>
         <?endif;?>
-        <script src="<?=SITE_TEMPLATE_PATH?>/project.js"></script>
         
         <?if(intval($_REQUEST["record_id"])>0 && $_REQUEST["play"]=="yes"):?>
             <script>
@@ -40,7 +41,7 @@
         		});
             </script>
         <?endif;?>
-        
+                
         <!-- Yandex.Metrika counter -->
         <script type="text/javascript">
             (function (d, w, c) {

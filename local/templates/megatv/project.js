@@ -1,62 +1,145 @@
+(function($) 
+{
+    function icon(name, options) {
+    	var optionsz = options || {};
+    	var size	= optionsz.size ? 'is-' + optionsz.size : '';
+    	var klass	= 'icon ' + name + ' ' + size + '' + (optionsz.class || '');
+    
+    	var iconz	=	'<svg class="icon__cnt">' +
+    					'<use xlink:href="#' + name + '" />' +
+    					'</svg>';
+    
+    	var html =  '<div class="' + klass + '">' +
+    					wrapSpinner(iconz, klass) +
+    				'</div>';
+    
+    	return html;
+    }
+    function wrapSpinner(html, klass) 
+    {
+    	if (klass.indexOf('spinner') > -1) {
+    		return '<div class="icon__spinner">' + html + '</div>';
+    	} else {
+    		return html;
+    	}
+    }
+    function renderIcons() {
+    	var icons = document.querySelectorAll('[data-icon]');
+    
+    	for (var i = 0; i < icons.length; i++) {
+    		var currentIcon = icons[i];
+    		var name        = currentIcon.getAttribute('data-icon');
+    		var options = {
+    			class:  currentIcon.className,
+    			size:   currentIcon.getAttribute('data-size')
+    		};
+    
+    		currentIcon.insertAdjacentHTML('beforebegin', icon(name, options));
+    		currentIcon.parentNode.removeChild(currentIcon);
+    	}
+    }
+    
+    $.fn.scrollPagination = function(options) {
+		
+		var settings = { 
+			nop     : 10, // Количество запрашиваемых из БД записей
+			offset  : 0, // Начальное смещение в количестве запрашиваемых данных
+			delay   : 500, // Задержка перед загрузкой данных
+			scroll  : true // Если true то записи будут подгружаться при прокрутке странице, иначе только при нажатии на кнопку 
+		}
+		
+		// Включение опции для плагина
+		if(options) {
+			$.extend(settings, options);
+		}
+		
+		return this.each(function() {		
+			
+			$this = $(this);
+            $settings = settings;
+			var offset = $settings.offset;
+			var busy = false; // переменная для обозначения происходящего процесса
+            var finished = false;
+            
+            if($this.data("activate")===undefined || finished)
+                return false;
+            
+            if($this.data("nop")!==undefined)
+            {
+                $settings.nop = offset = $this.data("nop");
+            }
+            
+			// Функция AJAX запроса
+			function getData() {
+				
+				// Формируется POST запрос к ajax.php
+				$.post($this.data("url"), {	
+				    number        : $settings.nop,
+				    offset        : offset,
+                    AJAX          : "Y"
+					    
+				}, function(data) {
+					
+                    var $response = $(data);
+                    //console.log($response.find('.broadcasts-list [data-type="broadcast"]').length);
+                    
+					if($response.find('.broadcasts-list [data-type="broadcast"]').length!=0) 
+                    { 
+                        $this.append($response.find(".broadcasts-list").html());
+                        $('[data-type="broadcast"]').data('status-flag', false).data('play-flag', false);
+                        
+                        renderIcons();
+
+						// Смещение увеличивается
+					    offset = offset + $settings.nop; 
+						    
+						// Добавление полученных данных в DIV content
+					   	$this.find('.content').append(data);
+						
+						// Процесс завершен	
+						busy = false;
+					}else{
+                        
+                        //console.log("finished");
+                        finished = true;
+					}		
+				});	
+			}	
+			
+			//getData(); // Запуск функции загрузки данных в первый раз
+			
+			// Если прокрутка включена
+			if($settings.scroll == true) 
+            {
+				// .. и пользователь прокручивает страницу
+				$(window).scroll(function() {
+					
+					// Проверяем пользователя, находится ли он в нижней части страницы
+					if($(window).scrollTop() + $(window).height() > $this.height() && !busy) {
+						
+						// Идет процесс
+						busy = true;
+						
+						// Запустить функцию для выборки данных с установленной задержкой
+						// Это полезно, если у вас есть контент в футере
+						setTimeout(function() {
+							
+							getData();
+							
+						}, $settings.delay);
+							
+					}	
+				});
+			}
+						
+		});
+	}
+})(jQuery);
+
 $(document).on('ready', function(){
     
-    /*$('form#login-form').submit(function(){
-        var $this = $(this);
+    $('.recommended-broadcasts .broadcasts-list').scrollPagination();
         
-        $this.find(".email-container").removeClass("has-error");
-        $this.find(".email-container .form-control-message").remove();
-        
-        $.post($this.attr('action'), $this.serialize(), function(data){
-            $('input', $this).removeAttr('disabled');
-            if (data.type == 'error') 
-            {
-                $( '<span class="form-control-message">'+data.message+'</span>' ).insertAfter($this.find(".email-container").addClass("has-error").find("input"));
-            } else {
-                window.location.href = $this.data("redirect");
-            }
-        }, 'json');
-        return false;
-    });
-
-    $('form#register-form').on('submit', function(){
-        var $form = $(this);
-        var form_backurl = $(this).find('input[name="backurl"]').val();
-
-        $form.find("div").removeClass("has-error");
-        $form.find(".form-control-message").remove();
-        $form.find(".recovery-success").remove();
-
-        $.ajax({
-            type: "POST",
-            url: $(this).attr('action'),
-            data: $(this).serialize(),
-            error: function(request,error) {
-                alert('Error! Please try again!');
-            },
-            dataType: "json",
-            success: function(data) {
-                if(!data.status)
-                {
-                    errors = data.errors;
-                    $.each(errors, function(i, val) {
-                        if(i=="AGREE")
-                        {
-                            $form.find("input[name='"+i+"']").closest("div").addClass("has-error").find("input")
-                        }else{
-                            $( '<span class="form-control-message">'+val+'</span>' ).insertAfter($form.find("input[name='"+i+"']").closest("div").addClass("has-error").find("input"));
-                        }
-                    });
-                }else{
-                    //window.location.href = form_backurl;
-                    $( '<br /><div class="form-group recovery-success">'+data.message+'</div>' ).insertAfter($form.find(".btn.btn-primary"));
-                }
-            }
-        });
-
-        return false;
-    });
-    */
-    
     $('form.asd-prepaid-form').on('submit', function(){
         var $form = $(this);
 
@@ -78,111 +161,6 @@ $(document).on('ready', function(){
     });
     
     
-    
-    /*$('form#change-password-form').on('submit', function(){
-        var $form = $(this);
-        
-        $form.find("div").removeClass("has-error");
-        $form.find(".form-control-message").remove();
-
-        $.ajax({
-            type: "POST",
-            url: $(this).attr('action'),
-            data: $(this).serialize(),
-            error: function(request,error) {
-                alert('Error! Please try again!');
-            },
-            dataType: "json",
-            success: function(data) {
-                
-                if(!data.status)
-                {
-                    errors = data.errors;
-                    $.each(errors, function(i, val) {
-       
-                        $( '<span class="form-control-message">'+val+'</span>' ).insertAfter($form.find("input[name='"+i+"']").closest("div").addClass("has-error").find("input"));
-                        
-                    });
-                }else{
-                    $( '<div class="form-group recovery-success">'+data.message+'</div>' ).insertBefore($("#change-password-form"));
-          
-                    $(':input','#change-password-form')
-                      .not(':button, :submit, :reset, :hidden')
-                      .val('')
-                      .removeAttr('checked')
-                      .removeAttr('selected');
-                    
-                    setTimeout(function(){ $(".recovery-success").remove(); }, 2000);
-                }
-            }
-        });
-
-        return false;
-    });
-    
-    $('form.user-profile-form, form.user-passport-form').on('submit', function(e){
-        e.preventDefault();
-        var $form = $(this);
-        
-        $form.find("div").removeClass("has-error");
-        $form.find(".form-control-message").remove();
-
-        $.ajax({
-            type: "POST",
-            url: $(this).attr('action'),
-            data: $(this).serialize(),
-            error: function(request,error) {
-                alert('Error! Please try again!');
-            },
-            dataType: "json",
-            success: function(data) {
-                console.log(data);
-                if(!data.status)
-                {
-                    errors = data.errors;
-                    $.each(errors, function(i, val) {
-       
-                        $( '<span class="form-control-message">'+val+'</span>' ).insertAfter($form.find("input[name='"+i+"'], textarea[name='"+i+"']").closest("div").addClass("has-error").find("input, textarea"));
-                    });
-                }else{
-                    $( '<div class="form-group recovery-success">'+data.message+'</div>' ).insertBefore($form);
-          
-                    setTimeout(function(){ $(".recovery-success").remove(); }, 2000);
-                }
-            }
-        });
-
-        return false;
-    });*/
-    
-    
-    
-    /*
-    $('form#recovery-form').submit(function(){
-        var $this = $(this);
-        
-        $this.find(".email-container").removeClass("has-error");
-        $this.find(".email-container .form-control-message").remove();
-        
-        if($this.find(".recovery-success").length>0)
-        {
-            $this.find(".recovery-success").remove();
-        }
-        
-        $.post($this.attr('action'), $this.serialize(), function(data){
-            $('input', $this).removeAttr('disabled');
-            console.log(data);
-            if (!data.status)
-            {
-                $( '<span class="form-control-message">'+data.message+'</span>' ).insertAfter($this.find(".email-container").addClass("has-error").find("input"));
-            } else {
-                $( '<div class="form-group recovery-success">'+data.message+'</div>' ).insertBefore($this.find(".email-container"));
-            }
-        }, 'json');
-        return false;
-    });
-    */
-    
     $(".modal-nav li a").click(function(e){
         e.preventDefault();
         $(".modal-nav li").removeClass("active");
@@ -191,11 +169,6 @@ $(document).on('ready', function(){
         $(this).closest("li").addClass("active");
         $(str).addClass("in active");
     });
-    
-    /*$("#_id-city-select").change(function(){
-        $("#city-select-value").val($(this).val());
-        $("#city-select-form").submit();
-    });*/
     
     /*$('#comment-form .submit-btn').on('click', function(e){
         e.preventDefault();
@@ -280,46 +253,7 @@ $(document).on('ready', function(){
 
         return false;
     });*/
-    
-    function icon(name, options) {
-    	var optionsz = options || {};
-    	var size	= optionsz.size ? 'is-' + optionsz.size : '';
-    	var klass	= 'icon ' + name + ' ' + size + '' + (optionsz.class || '');
-    
-    	var iconz	=	'<svg class="icon__cnt">' +
-    					'<use xlink:href="#' + name + '" />' +
-    					'</svg>';
-    
-    	var html =  '<div class="' + klass + '">' +
-    					wrapSpinner(iconz, klass) +
-    				'</div>';
-    
-    	return html;
-    }
-    function wrapSpinner(html, klass) 
-    {
-    	if (klass.indexOf('spinner') > -1) {
-    		return '<div class="icon__spinner">' + html + '</div>';
-    	} else {
-    		return html;
-    	}
-    }
-    function renderIcons() {
-    	var icons = document.querySelectorAll('[data-icon]');
-    
-    	for (var i = 0; i < icons.length; i++) {
-    		var currentIcon = icons[i];
-    		var name        = currentIcon.getAttribute('data-icon');
-    		var options = {
-    			class:  currentIcon.className,
-    			size:   currentIcon.getAttribute('data-size')
-    		};
-    
-    		currentIcon.insertAdjacentHTML('beforebegin', icon(name, options));
-    		currentIcon.parentNode.removeChild(currentIcon);
-    	}
-    }
-    
+        
     $(".badge, .channel-online").on('click', function(e){
         e.preventDefault();
         channel_id = $(this).data("channel-id");

@@ -61,11 +61,19 @@ if(intval($arResult["ID"])==0 || (!in_array($arResult['UF_CHANNEL_BASE_ID'], $ar
     }
 }
 
+$offset = 0;
+if($_REQUEST["AJAX"]=="Y")
+{
+    $offset = $_REQUEST["offset"];
+}
+
 $arResult["PROGS"] = array();
 $result = \Hawkart\Megatv\ProgExternalTable::getList(array(
     'filter' => array("UF_SERIAL.UF_CHANNEL_ID" => '%"'.$arResult['UF_CHANNEL_BASE_ID'].'"%'),
     'select' => array("ID", "UF_TITLE", "UF_EXTERNAL_ID", "UF_THUMBNAIL_URL", "UF_JSON"),
-    'order' => array("UF_DATETIME" => "DESC")
+    'order' => array("UF_DATETIME" => "DESC"),
+    'limit' => $arParams["NEWS_COUNT"],
+    'offset' => $offset
 ));
 while ($row = $result->fetch())
 {

@@ -14,7 +14,7 @@ if(count($arResult["PROGS"])==0)
 		<h3 class="block-title"><?=$arParams["TITLE"]?></h3>
 	</div>
     <div class="block-body">
-	   <div class="broadcasts-list">
+	   <div class="broadcasts-list" data-url="<?=$arParams["LIST_URL"]?>" data-nop="<?=$arParams["NEWS_COUNT"]?>" data-activate="true">
 			<?
             foreach($arResult["PROGS"] as $key=>$arProg)
             {                
@@ -32,9 +32,7 @@ if(count($arResult["PROGS"])==0)
             			</span>
                         
                     	<div class="item-header">
-                            <div class="meta">
-        						
-        					</div>
+                            <div class="meta"></div>
                             <div class="title">
                         		<a href="#"><?=$arProg["UF_TITLE"]?></a>
                             </div>

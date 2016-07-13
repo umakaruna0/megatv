@@ -107,7 +107,7 @@ if($USER->IsAuthorized())
     
     if($countPerPage>count($arRecommendSorted["by_users"]))
         $countPerPage = count($arRecommendSorted["by_users"]);
-    
+        
     while($count<$countPerPage/* && $countPerPage<count($arRecommendSorted["by_users"])*/)
     {
         foreach(array("by_users", "by_records", "by_ganres") as $by_what)

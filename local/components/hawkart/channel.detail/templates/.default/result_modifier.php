@@ -1,0 +1,1 @@
+<?if($_REQUEST['AJAX']=='Y') $APPLICATION->RestartBuffer();?>
