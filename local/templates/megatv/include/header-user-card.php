@@ -19,7 +19,7 @@
         
         <div class="fill-disk-space" data-type="fill-disk-space" onclick="window.location.href='/personal/services/';" style="cursor: pointer;">
     		<div class="progress-holder" data-progress="<?=$filledPercent?>"></div>
-    		<span class="label">Занято <strong><?=round($arUser["UF_CAPACITY_BUSY"], 2);?> ГБ</strong></span>
+    		<span class="label"><?=GetMessage('BUSY')?> <strong><?=round($arUser["UF_CAPACITY_BUSY"], 2);?> <?=GetMessage('GB')?></strong></span>
     	</div>                
 
         <nav class="header-nav" data-module="user-navigation">
@@ -39,7 +39,7 @@
                 ?>
 				<div class="info-panel">
 					<a class="username" href="/personal/"><?=$USER->GetFullName()?></a>
-					<a href="<?=$urlExit?>" class="signout-link">Выйти</a>
+					<a href="<?=$urlExit?>" class="signout-link"><?=GetMessage('LOGOUT')?></a>
 				</div>
 			</div>
         </nav>
@@ -48,8 +48,8 @@
         ?>
         <nav class="header-nav" data-module="user-navigation">
             <ul class="user-actions">
-                <li><a href="#" class="signin-link" data-type="signin-overlay-toggle">Войти</a></li>
-    			<li><a href="#" class="signup-link" data-type="signup-overlay-toggle">Зарегистрироваться</a></li>
+                <li><a href="#" class="signin-link" data-type="signin-overlay-toggle"><?=GetMessage('LOGIN')?></a></li>
+    			<li><a href="#" class="signup-link" data-type="signup-overlay-toggle"><?=GetMessage('REGISTER')?></a></li>
             </ul>
         </nav>
         <?
@@ -72,16 +72,16 @@
         );?>
         <div class="authorize-overlay is-success-signup-overlay" data-module="success-signup-overlay">
     		<div class="overlay-content">
-    			<h4 class="overlay-title">Поздравляем вас</h4>
-    			<p>Вы успешно зарегистрировались на МЕГАТВ.</p>
-    			<a href="/" class="btn btn-primary btn-block">Начать пользоваться сервисом</a>
+    			<h4 class="overlay-title"><?=GetMessage('CONGRATULATIONS')?></h4>
+    			<p><?=GetMessage('CONGRATULATIONS_REGISTER_TEXT')?></p>
+    			<a href="/" class="btn btn-primary btn-block"><?=GetMessage('START_USE_SERVICE')?></a>
     		</div>
     	</div>
     	<div class="authorize-overlay is-success-reset-overlay" data-module="success-reset-overlay">
     		<div class="overlay-content">
-    			<h4 class="overlay-title">Пароль изменён</h4>
-    			<p>Вы успешно изменили пароль для входа в свой аккаунт на МЕГАТВ.</p>
-    			<a href="#" class="btn btn-primary btn-block" data-type="signin-handler-link">Авторизоваться</a>
+    			<h4 class="overlay-title"><?=GetMessage('PASSWORD_IS_CHANGED')?></h4>
+    			<p><?=GetMessage('PASSWORD_IS_CHANGED_SUCCESS')?></p>
+    			<a href="#" class="btn btn-primary btn-block" data-type="signin-handler-link"><?=GetMessage('AUTHORIZE')?></a>
     		</div>
     	</div>
     <?endif;?>

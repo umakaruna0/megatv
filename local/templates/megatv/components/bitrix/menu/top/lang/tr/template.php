@@ -1,0 +1,3 @@
+<?
+$MESS ['FROM'] = "itibaren";
+?>

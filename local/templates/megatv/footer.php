@@ -3,7 +3,7 @@
 			<footer class="site-footer">
                 <?$APPLICATION->ShowViewContent("channel_footer_desc");?>
 				<div class="footer-content">
-                    <?$APPLICATION->IncludeComponent("bitrix:main.include", "", array("AREA_FILE_SHOW" => "file", "PATH" => SITE_DIR."include/footer-copyright.php"), false);?>
+                    <?$APPLICATION->IncludeComponent("bitrix:main.include", "", array("AREA_FILE_SHOW" => "file", "PATH" => SITE_DIR."include/".LANGUAGE_ID."/footer-copyright.php"), false);?>
 				</div>
 			</footer>
 			<div class="drop-overlay"></div>

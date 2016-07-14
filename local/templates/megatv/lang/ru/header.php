@@ -1,14 +1,13 @@
 <?
-$MESS ['LEARNING_COURSE_DESCRIPTION'] = "Описание курса";
-$MESS ['LEARNING_FORWARD'] = "Вперед";
-$MESS ['LEARNING_BACK'] = "Назад";
-$MESS ['LEARNING_EXPAND'] = "Раскрыть главу";
-$MESS ['LEARNING_COLLAPSE'] = "Скрыть главу";
-$MESS ['LEARNING_PRINT_PAGE'] = "Версия для печати";
-$MESS ['LEARNING_ALL_COURSE_CONTENTS'] = "Все материалы курса";
-$MESS ['LEARNING_GRADEBOOK'] = "Журнал";
-$MESS ['LEARNING_LOGO_TEXT'] = "Учебный курс";
-$MESS ['LEARNING_PASS_TEST'] = "Пройти сертификацию";
-$MESS ['LEARNING_ALL_LESSONS'] = "Всего уроков";
-$MESS ['LEARNING_CURRENT_LESSON'] = "Пройдено уроков";
+$MESS ['BUSY'] = "Занято";
+$MESS ['GB'] = "ГБ";
+$MESS ['LOGOUT'] = "Выйти";
+$MESS ['LOGIN'] = "Войти";
+$MESS ['REGISTER'] = "Зарегистрироваться";
+$MESS ['CONGRATULATIONS'] = "Поздравляем вас";
+$MESS ['CONGRATULATIONS_REGISTER_TEXT'] = "Вы успешно зарегистрировались на МЕГАТВ.";
+$MESS ['START_USE_SERVICE'] = "Начать пользоваться сервисом";
+$MESS ['PASSWORD_IS_CHANGED'] = "Пароль изменён";
+$MESS ['PASSWORD_IS_CHANGED_SUCCESS'] = "Вы успешно изменили пароль для входа в свой аккаунт на МЕГАТВ."; 
+$MESS ['AUTHORIZE'] = "Авторизоваться";
 ?>

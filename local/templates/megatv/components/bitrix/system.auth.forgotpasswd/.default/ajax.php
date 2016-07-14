@@ -6,6 +6,10 @@ CModule::IncludeModule("iblock");
 CModule::IncludeModule("sale");
 CModule::IncludeModule("catalog");
 
+//include lang file
+CComponentUtil::__IncludeLang(dirname($_SERVER["SCRIPT_NAME"]), "/ajax.php");
+
+
 global $USER;
 if(!is_object($USER))
     $USER = new CUser;
@@ -21,7 +25,7 @@ if(!$USER->IsAuthorized())
     
     if (strlen($_POST['ajax_key']) && $_POST['ajax_key']!=md5('ajax_'.LICENSE_KEY) || htmlspecialcharsbx($_POST["TYPE"])!="SEND_PWD" || !check_bitrix_sessid()) 
     {
-        $html = "Сессия не действительна!";
+        $html = GetMessage('AUTH_ERROR_SESSION_EXPIRED');
     }
     
     $emailTo = trim(htmlspecialcharsbx($_POST['USER_EMAIL']));
@@ -29,7 +33,7 @@ if(!$USER->IsAuthorized())
     
     if(!CDev::check_email($emailTo) && !CDev::check_phone($phone))
     {
-        $result['errors']["USER_EMAIL"] = "Неверный формат данных";
+        $result['errors']["USER_EMAIL"] = GetMessage('AUTH_ERROR_DATA_FORMAT');
     }
     
     if(empty($html) && count($result['errors'])==0)
@@ -43,7 +47,7 @@ if(!$USER->IsAuthorized())
                 $arResult = $USER->SendPassword($arUser["LOGIN"], $arUser["EMAIL"]);
                 if($arResult["TYPE"] == "OK")
                 {
-                    $result['message'] = "<font style='color:green'>На ваш email придет сообщение с необходимыми данными.</font>";
+                    $result['message'] = "<font style='color:green'>".GetMessage('AUTH_RECOVERY_TEXT_1')."</font>";
                     
                     $PASS_1 = mb_substr(md5(uniqid(rand(),true)), 0, 8);
                     $cuser = new CUser;
@@ -51,14 +55,14 @@ if(!$USER->IsAuthorized())
                         "UF_PHONE_CHECKWORD" => $PASS_1
                     ));
                     
-                    $text = "Проверочное слово: ".$PASS_1;
+                    $text = GetMessage('AUTH_CHECKWORD').$PASS_1;
                     CEchogroupSmsru::Send($phone, $text);
                     
                     $result['status'] = "success";
                 }
 
             }else{
-                $result['errors']["USER_EMAIL"] = 'Пользователь с такие телефоном не найден.';
+                $result['errors']["USER_EMAIL"] = GetMessage('AUTH_ERROR_PHONE_NOT_EXIST');
             }
         }else{
             $rsUsers = CUser::GetList(($by="EMAIL"), ($order="desc"), Array("=EMAIL" =>$emailTo));
@@ -66,11 +70,11 @@ if(!$USER->IsAuthorized())
             {
                 $arResult = $USER->SendPassword($arUser["LOGIN"], $arUser["EMAIL"]);
                 if($arResult["TYPE"] == "OK")
-                    $result['message'] = "<font style='color:green'>На ваш email придет сообщение с необходимыми данными.</font>";
+                    $result['message'] = "<font style='color:green'>".GetMessage('AUTH_RECOVERY_TEXT_2')."</font>";
                     
                 $result['status'] = "success";
             }else{
-                $result['errors']["USER_EMAIL"] = 'Пользователь с такие e-mail адресом не найден.';
+                $result['errors']["USER_EMAIL"] = GetMessage('AUTH_ERROR_EMAIL_NOT_EXIST');
             }
         }
         
@@ -79,7 +83,7 @@ if(!$USER->IsAuthorized())
         $result['message'] = $html;
     }
 }else{
-    $result['message'] = 'Вы уже авторизованны.';
+    $result['message'] = GetMessage('AUTHORIZED');
 }
 
 exit(json_encode($result));

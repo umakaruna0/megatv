@@ -8,7 +8,7 @@ $aMenuLinks = Array(
 		"" 
 	),
 	Array(
-		"önerileri", 
+		"Tavsiyeler", 
 		"/recommendations/", 
 		Array(), 
 		Array(), 

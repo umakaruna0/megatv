@@ -7,8 +7,8 @@
     </script>
     <form action="#" class="search-form<?/*if($APPLICATION->GetCurDir()=="/personal/records/"):?> is-cabinet-search-form<?endif;*/?>">
     	<div class="form-group has-feedback" data-type="search-group">
-    		<label for="" class="sr-only">Название программы или сериала</label>
-    		<input type="text" data-type="search-field" name="q" id="" class="form-control" placeholder="Название программы или сериала">
+    		<label for="" class="sr-only"><?=GetMessage('PLACEHOLDER')?></label>
+    		<input type="text" data-type="search-field" name="q" id="" class="form-control" placeholder="<?=GetMessage('PLACEHOLDER')?>">
     		<span data-icon="icon-search"></span>
     	</div>
         <div class="search-close" data-type="close">

@@ -46,8 +46,6 @@ IncludeTemplateLangFile(__FILE__);
     >
         <div id="panel"><?$APPLICATION->ShowPanel();?></div>
         
-        <?//$APPLICATION->IncludeComponent("bitrix:main.include", "", array("AREA_FILE_SHOW" => "file", "PATH" => SITE_DIR."include/header-signin.php"), false);?>
-        
 		<div class="site-wrapper" data-module="page">
 
             <script type="text/x-config">
@@ -89,7 +87,7 @@ IncludeTemplateLangFile(__FILE__);
                     <?endif;?>
                     
                     <?$APPLICATION->IncludeComponent("hawkart:search", "", Array(), false);?>
-                    <?$APPLICATION->IncludeComponent("bitrix:menu","top",Array(
+                    <?$APPLICATION->IncludeComponent("bitrix:menu","top", Array(
                             "ROOT_MENU_TYPE" => "top_".LANGUAGE_ID, 
                             "MAX_LEVEL" => "1", 
                             "CHILD_MENU_TYPE" => "top_".LANGUAGE_ID, 
@@ -106,10 +104,6 @@ IncludeTemplateLangFile(__FILE__);
                     <?require($_SERVER["DOCUMENT_ROOT"].SITE_TEMPLATE_PATH."/include/header-user-card.php");?>
 
 				</div>
-                
-				<?/*<div class="bottom-panel">
-                    <?require($_SERVER["DOCUMENT_ROOT"].SITE_TEMPLATE_PATH."/include/header-calendar.php");?>
-				</div>*/?>
                 
 			</header>
 			<main class="site-content">

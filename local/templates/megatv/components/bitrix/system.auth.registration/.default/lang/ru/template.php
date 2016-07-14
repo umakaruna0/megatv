@@ -1,16 +1,12 @@
 <?
-$MESS["AUTH_REGISTER"]           = "Регистрация";
-$MESS["AUTH_NAME"]               = "Имя";
-$MESS["AUTH_LAST_NAME"]          = "Фамилия";
-$MESS["AUTH_LOGIN_MIN"]          = "Логин <small>(мин. 3 символа)</small>";
-$MESS["AUTH_CONFIRM"]            = "Подтверждение пароля";
-$MESS["CAPTCHA_REGF_PROMT"]      = "Cлово на картинке";
-$MESS["AUTH_REQ"]                = "Обязательные поля";
-$MESS["AUTH_AUTH"]               = "Авторизация";
-$MESS["AUTH_PASSWORD_REQ"]       = "Пароль <small>(мин. 6 символа)</small>";
-$MESS["AUTH_EMAIL_WILL_BE_SENT"] = "На указанный в форме e-mail придет запрос на подтверждение регистрации.";
-$MESS["AUTH_EMAIL_SENT"]         = "На указанный в форме e-mail было выслано письмо с информацией о подтверждении регистрации.";
-$MESS["AUTH_EMAIL"]              = "E-Mail";
-$MESS["AUTH_SECURE_NOTE"]        = "Перед отправкой формы пароль будет зашифрован в браузере. Это позволит избежать передачи пароля в открытом виде.";
-$MESS["AUTH_NONSECURE_NOTE"]     = "Пароль будет отправлен в открытом виде. Включите JavaScript в браузере, чтобы зашифровать пароль перед отправкой.";
+$MESS["AUTH_REGISTER"] = "Регистрация";
+$MESS["AUTH_OR"] = "или";
+$MESS["AUTH_PHONE_OR_EMAIL"] = "Телефон или эл. почта";
+$MESS["AUTH_AGREE"] = "Я принимаю условия";
+$MESS["AUTH_AGREE_OFERTA"] = "договора оферты";
+$MESS["AUTH_REGISTER_BUTTON"] = "Зарегистрироваться";
+$MESS["AUTH_CHECK_ENTER_DATA"] = "Проверьте введённые данные";
+$MESS["AUTH_ERROR_SERVER_CONNECT"] = "Ошибка соединения с сервером";
+$MESS["AUTH_RECOVERY_PASSWORD"] = "Восстановить пароль";
+$MESS["AUTH_CONFIRM_TEXT_1"] = "Зайдите на почту и перейдите по ссылке<br> или введите код активации здесь:";
 ?>

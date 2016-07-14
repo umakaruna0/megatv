@@ -8,10 +8,10 @@ foreach($arResult as $key=>$arItem):
 	if($arParams["MAX_LEVEL"] == 1 && $arItem["DEPTH_LEVEL"] > 1) 
 		continue;
 
-    if($arItem["TEXT"]=="Мои записи")
+    if($arItem["LINK"]=="/personal/records/")
     {
         $showMyRecs = true;
-        $myRecSelected = $arItem["SELECTED"];
+        $myRecSelected = $arItem;
         continue;
     }
     
@@ -23,7 +23,7 @@ foreach($arResult as $key=>$arItem):
 	
 <?endforeach?>
     <?if($showMyRecs):?>
-        <li class="<?if($arItem["SELECTED"]):?>active <?else:?><?endif;?>sections-menu-recordings"><a href="/personal/records/"><span data-icon="icon-film-collection"></span> <span>Мои записи<span class="count"><?=$APPLICATION->GetPageProperty("ar_record_in_rec")?> из <?=$APPLICATION->GetPageProperty("ar_record_total")?></span></span></a></li>
+        <li class="<?if($myRecSelected["SELECTED"]):?>active <?else:?><?endif;?>sections-menu-recordings"><a href="/personal/records/"><span data-icon="icon-film-collection"></span> <span><?=$myRecSelected["TEXT"]?><span class="count"><?=$APPLICATION->GetPageProperty("ar_record_in_rec")?> <?=GetMessage('FROM')?> <?=$APPLICATION->GetPageProperty("ar_record_total")?></span></span></a></li>
     <?endif;?>
 </ul>
 <?endif?>

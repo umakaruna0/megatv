@@ -33,7 +33,7 @@ if ($arResult["FORM_TYPE"] != "login")
     ?>
     <a href="<?=$arResult["urlToOwnProfile"]?>" class="view_form u_name"><?=$arResult["FULL_NAME"]?></a>
     <span class="separator">|</span>
-    <a href="<?=$url?>" class="view_form exit">Выйти</a>
+    <a href="<?=$url?>" class="view_form exit"><?=GetMessage('AUTH_LOGOUT')?></a>
     <? 
 } 
 else 
@@ -41,11 +41,11 @@ else
     ?>
     <div class="authorize-overlay is-signin-overlay" data-module="signin-overlay">
 		<div class="overlay-content">
-			<h4 class="overlay-title">Войти</h4>
+			<h4 class="overlay-title"><?=GetMessage('AUTH_LOGIN_BUTTON')?></h4>
             
             <?require($_SERVER["DOCUMENT_ROOT"].SITE_TEMPLATE_PATH."/include/social-auth.php");?>
             
-			<span class="divider"><span>или</span></span>
+			<span class="divider"><span><?=GetMessage('AUTH_OR')?></span></span>
             
 			<form action="<?= $templateFolder ?>/ajax.php" method="POST" target="_top" id="login-form" class="signin-form" data-redirect="<?=$arParams["PROFILE_URL"]?>">
             	<input type="hidden" name="AUTH_FORM" value="Y" />
@@ -56,14 +56,14 @@ else
                 <?=bitrix_sessid_post()?>
                 
         		<div class="form-group email-container" autocomplete="off">
-        			<label for="" class="sr-only">Телефон или эл. почта</label>
-        			<input type="text" name="USER_LOGIN" class="form-control" value="<?=$arResult["USER_EMAIL"]?>" placeholder="Телефон или эл. почта" autocomplete="off" data-type="adaptive-field" />
+        			<label for="" class="sr-only"><?=GetMessage('AUTH_PHONE_OR_EMAIL')?></label>
+        			<input type="text" name="USER_LOGIN" class="form-control" value="<?=$arResult["USER_EMAIL"]?>" placeholder="<?=GetMessage('AUTH_PHONE_OR_EMAIL')?>" autocomplete="off" data-type="adaptive-field" />
         		</div>
                 
 				<div class="form-group has-feedback" data-type="password-field-group">
-					<label for="" class="sr-only">Пароль</label>
-                    <input type="password" name="USER_PASSWORD" class="form-control" placeholder="Пароль" data-type="password-field" autocomplete="off">
-					<input type="text" class="form-control" data-type="password-visualizer" placeholder="Пароль">
+					<label for="" class="sr-only"><?=GetMessage('AUTH_PASSWORD')?></label>
+                    <input type="password" name="USER_PASSWORD" class="form-control" placeholder="<?=GetMessage('AUTH_PASSWORD')?>" data-type="password-field" autocomplete="off">
+					<input type="text" class="form-control" data-type="password-visualizer" placeholder="<?=GetMessage('AUTH_PASSWORD')?>">
 					<span class="form-control-feedback">
 						<a href="#" data-type="password-visibility-toggle"><span data-icon="icon-password-eye"></span></a>
 					</span>
@@ -71,12 +71,12 @@ else
                 
 				<div class="form-actions">
 					<button type="submit" name="Login" class="btn btn-primary btn-block btn-multistate" data-type="multistate-button">
-						<span class="default-state init-state">Войти</span>
-						<span class="done-state">Авторизую вас...</span>
-						<span class="fail-data-state"><span data-icon="icon-msbutton-cross-circle"></span>Проверьте введённые данные</span>
-						<span class="fail-network-state"><span data-icon="icon-msbutton-broken-network"></span>Ошибка соединения с сервером</span>
+						<span class="default-state init-state"><?=GetMessage('AUTH_LOGIN_BUTTON')?></span>
+						<span class="done-state"><?=GetMessage('AUTH_AUTHORIZING')?></span>
+						<span class="fail-data-state"><span data-icon="icon-msbutton-cross-circle"></span><?=GetMessage('AUTH_CHECK_ENTER_DATA')?></span>
+						<span class="fail-network-state"><span data-icon="icon-msbutton-broken-network"></span><?=GetMessage('AUTH_ERROR_SERVER_CONNECT')?></span>
 					</button>
-					<a href="#" class="form-subaction-link" data-type="reset-handler-link">Восстановить пароль</a>
+					<a href="#" class="form-subaction-link" data-type="reset-handler-link"><?=GetMessage('AUTH_RECOVERY_PASSWORD')?></a>
 				</div>
 			</form>
 		</div>

@@ -3,6 +3,9 @@ define('STOP_STATISTICS', true);
 require_once($_SERVER['DOCUMENT_ROOT'].'/bitrix/modules/main/include/prolog_before.php');
 $GLOBALS['APPLICATION']->RestartBuffer();
 
+//include lang file
+CComponentUtil::__IncludeLang(dirname($_SERVER["SCRIPT_NAME"]), "/ajax.php");
+
 global $USER;
 if(!is_object($USER))
     $USER = new CUser;
@@ -14,7 +17,7 @@ $result['errors'] = array();
 
 if (strlen($_POST['ajax_key']) && $_POST['ajax_key']!=md5('ajax_'.LICENSE_KEY) || htmlspecialcharsbx($_POST["TYPE"])!="REGISTRATION" || !check_bitrix_sessid()) 
 {
-    $result['errors']["USER_NAME"] = "Сессия не действительна!";
+    $result['errors']["USER_NAME"] = GetMessage('AUTH_ERROR_SESSION_EXPIRED');
 }
 
 if(!$USER->IsAuthorized() && count($result['errors'])==0)
@@ -24,14 +27,14 @@ if(!$USER->IsAuthorized() && count($result['errors'])==0)
     
     $phone = preg_replace("/[^0-9]/", '', $EMAIL);
 
-    if(!CDev::check_email($EMAIL) && !CDev::check_phone($phone))
+    if(!\CDev::check_email($EMAIL) && !\CDev::check_phone($phone))
     {
-        $result['errors']["USER_EMAIL"] = "Неверный формат данных";
+        $result['errors']["USER_EMAIL"] = GetMessage('AUTH_ERROR_DATA_FORMAT');
     }else{
         
-        if(CDev::check_phone($phone))
+        if(\CDev::check_phone($phone))
         {
-            $rsUsers = CUser::GetList(($by="EMAIL"), ($order="desc"), Array("PERSONAL_PHONE" =>$phone));
+            $rsUsers = \CUser::GetList(($by="EMAIL"), ($order="desc"), Array("PERSONAL_PHONE" =>$phone));
             if($arUser = $rsUsers->GetNext())
             {
                 if($arUser["ACTIVE"]=="N")
@@ -39,10 +42,10 @@ if(!$USER->IsAuthorized() && count($result['errors'])==0)
                     $result["status"] = "need_confirm";
                     exit(json_encode($result));
                 }
-                $result['errors']["USER_EMAIL"] = "Введенный телефон уже есть на сайте";
+                $result['errors']["USER_EMAIL"] = GetMessage('AUTH_ERROR_PHONE_EXIST');
             }
         }else{
-            $rsUsers = CUser::GetList(($by="EMAIL"), ($order="desc"), Array("=EMAIL" =>$EMAIL));
+            $rsUsers = \CUser::GetList(($by="EMAIL"), ($order="desc"), Array("=EMAIL" =>$EMAIL));
             if($arUser = $rsUsers->GetNext())
             {
                 if($arUser["ACTIVE"]!="Y")
@@ -50,14 +53,14 @@ if(!$USER->IsAuthorized() && count($result['errors'])==0)
                     $result["status"] = "need_confirm";
                     exit(json_encode($result));
                 }
-                $result['errors']["USER_EMAIL"] = "Введенный email уже есть на сайте";
+                $result['errors']["USER_EMAIL"] = GetMessage('AUTH_ERROR_EMAIL_EXIST');
             }
         }
     }
 
     if($AGREE!="on")
     {
-        $result['errors']["AGREE"] = "Примите условия договора оферты";
+        $result['errors']["AGREE"] = GetMessage('AUTH_ERROR_AGREE');
     }
     
     if(count($result['errors'])==0)
@@ -112,20 +115,20 @@ if(!$USER->IsAuthorized() && count($result['errors'])==0)
                     "UF_PHONE_CHECKWORD" => $checkword
                 ));
                 
-                $text = "Код активации для подтверждения рег-ции: ".$checkword;
+                $text = GetMessage('AUTH_ACTIVATE_CODE_TEXT').$checkword;
                 CEchogroupSmsru::Send($phone, $text);
-                
+                $result['message'] = "<font style='color:green'>".GetMessage('AUTH_REGISTER_SUCCESS_TEXT_1')."</font><br />";
             }else{
                 
                 //Для подтверждения регистрации перейдите по следующей ссылке:
                 //http://#SERVER_NAME#/auth/index.php?confirm_registration=yes&confirm_user_id=#USER_ID#&confirm_code=#CONFIRM_CODE#
                 
                 $event->SendImmediate("NEW_USER_CONFIRM", SITE_ID, $arFields);  //на почту письмо для подтверждения
+                $result['message'] = "<font style='color:green'>".GetMessage('AUTH_REGISTER_SUCCESS_TEXT_2')."</font><br />";
             }
         }
 
         $result['status'] = "success";
-        $result['message'] = "<font style='color:green'>На ваш email высланы регистрационные данные для подтверждения!!!</font><br />";
         
         CUserEx::capacityAdd($USER_ID, 1);   // за мэйл +1ГБ
         
