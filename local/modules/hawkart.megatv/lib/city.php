@@ -170,6 +170,8 @@ class CityTable extends Entity\DataManager
             }
         }
         
+        //\CDev::pre($arFilter);
+        
         if(empty($_SESSION["USER_GEO"]["COUNTRY_ISO"]))
             $_SESSION["USER_GEO"]["COUNTRY_ISO"] = "RU"; 
         

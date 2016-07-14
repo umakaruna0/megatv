@@ -21,6 +21,11 @@ class CountryTable extends Entity\DataManager
 		return 'hw_country';
 	}
     
+    /**
+	 * Set country & default city by country_id
+	 *
+	 * @return array
+	 */
     public static function setCountry($country_id)
     {
         global $currentGeo;
@@ -29,6 +34,30 @@ class CountryTable extends Entity\DataManager
         $result = CityTable::getList(array(
             'filter' => array(
                 "=UF_COUNTRY_ID" => $country_id,
+                "=UF_ACTIVE" => 1,
+                "=UF_DEFAULT" => 1
+            ),
+            'select' => $arSelect,
+            'limit' => 1
+        ));
+        $currentGeo = $_SESSION["USER_GEO"] = $result->fetch();
+        
+        return $_SESSION["USER_GEO"];
+    }
+    
+    /**
+	 * Set country & default city by country's iso
+	 *
+	 * @return array
+	 */
+    public static function setCountryByIso($iso)
+    {
+        global $currentGeo;
+        $arSelect = array("ID", "UF_TITLE", "UF_TIMEZONE", "UF_COUNTRY_ID", "COUNTRY_ISO" => "UF_COUNTRY.UF_ISO");
+        
+        $result = CityTable::getList(array(
+            'filter' => array(
+                "=UF_COUNTRY.UF_ISO" => $iso,
                 "=UF_ACTIVE" => 1,
                 "=UF_DEFAULT" => 1
             ),

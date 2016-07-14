@@ -89,11 +89,10 @@ IncludeTemplateLangFile(__FILE__);
                     <?endif;?>
                     
                     <?$APPLICATION->IncludeComponent("hawkart:search", "", Array(), false);?>
-                    
                     <?$APPLICATION->IncludeComponent("bitrix:menu","top",Array(
-                            "ROOT_MENU_TYPE" => "top", 
+                            "ROOT_MENU_TYPE" => "top_".LANGUAGE_ID, 
                             "MAX_LEVEL" => "1", 
-                            "CHILD_MENU_TYPE" => "top", 
+                            "CHILD_MENU_TYPE" => "top_".LANGUAGE_ID, 
                             "USE_EXT" => "Y",
                             "DELAY" => "N",
                             "ALLOW_MULTI_SELECT" => "Y",

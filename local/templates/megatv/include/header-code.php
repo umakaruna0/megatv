@@ -1,5 +1,5 @@
 <?
-global $USER, $currentGeo;
+global $USER;
 session_start();
 
 $host = $_SERVER['SERVER_NAME'];
@@ -8,28 +8,35 @@ if(strpos($host, "http://")==false)
     $host = "http://".$host;
 }
 
+//city change
 if(isset($_POST["city-id"]) && intval($_POST["city-id"])>0 && check_bitrix_sessid())
 {
     $arGeo = \Hawkart\Megatv\CityTable::setGeoCity(intval($_POST["city-id"]));
-    $redirect_url = "http://".strtolower($arGeo["COUNTRY_ISO"])."."."tvguru.com";
-    if(strpos($redirect_url, $host)!==false)
-    {
-        header("Location: index.php");
-    }
+    header("Location: ".$APPLICATION->GetCurPage());
 }
 else if(isset($_POST["lang-id"]) && intval($_POST["lang-id"])>0 && check_bitrix_sessid())
 {
     $arGeo = \Hawkart\Megatv\CountryTable::setCountry(intval($_POST["lang-id"]));
+    
+    if(strtoupper($arGeo["COUNTRY_ISO"])==LANGUAGE_DEFAULT) //if ru
+    {
+        $redirect_url = "http://tvguru.com";
+    }else{
+        $redirect_url = "http://".strtolower($arGeo["COUNTRY_ISO"])."."."tvguru.com";
+    }
+    
+    if(strtolower(LANGUAGE_ID) != strtolower($arGeo["COUNTRY_ISO"]))
+    {
+        LocalRedirect($redirect_url.$APPLICATION->GetCurPage()); die();
+    }
 }
 else
 {
     $arGeo = \Hawkart\Megatv\CityTable::getGeoCity();
-}
-
-$redirect_url = "http://".strtolower($arGeo["COUNTRY_ISO"])."."."tvguru.com";
-if($redirect_url!=$host && !CSite::InDir('/vendor/'))
-{
-    LocalRedirect($redirect_url.$APPLICATION->GetCurPage()); die();
+    if(strtolower(LANGUAGE_ID) != strtolower($arGeo["COUNTRY_ISO"]))
+    {
+        \Hawkart\Megatv\CountryTable::setCountryByIso(LANGUAGE_ID);
+    }
 }
 
 if($USER->IsAuthorized())
