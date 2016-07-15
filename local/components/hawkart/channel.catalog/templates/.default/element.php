@@ -24,6 +24,6 @@ $this->setFrameMode(true);
     "ELEMENT_CODE" => $arResult["VARIABLES"]["SCHEDULE_CODE"], 
     "TITLE" => "Похожие передачи",
     "AJAX" => $_REQUEST["AJAX"],
-    "LIST_URL" => $APPLICATION->GetCurDir(),
+    "LIST_URL" => $APPLICATION->GetCurPage(),
     "NEWS_COUNT" => "12"
 ), false);?>

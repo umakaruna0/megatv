@@ -123,9 +123,9 @@ $arFilter = array(
     "<UF_DATE_START" => new \Bitrix\Main\Type\DateTime($dateEnd, 'Y-m-d H:i:s'),
 );
 $arSelect = array(
-    "ID", "UF_CODE", "UF_DATE_START", "UF_DATE_END", "UF_DATE", "UF_CHANNEL_ID", "UF_PROG_ID",
+    "ID", "UF_DATE_START", "UF_DATE_END", "UF_DATE", "UF_CHANNEL_ID", "UF_PROG_ID",
     "UF_TITLE" => "UF_PROG.UF_TITLE", "UF_SUB_TITLE" => "UF_PROG.UF_SUB_TITLE", "UF_IMG_PATH" => "UF_PROG.UF_IMG.UF_PATH",
-    "UF_RATING" => "UF_PROG.UF_RATING", "UF_ID" => "UF_PROG.UF_EPG_ID"
+    "UF_RATING" => "UF_PROG.UF_RATING", "UF_PROG_CODE" => "UF_PROG.UF_CODE"
 );
 $obCache = new \CPHPCache;
 if( $obCache->InitCache(86400, serialize($arFilter).serialize($arSelect), "/index-schedules/"))
@@ -147,7 +147,7 @@ elseif($obCache->StartDataCache())
         $arSchedule["UF_DATE"] = $arSchedule["DATE"] = substr($arSchedule["DATE_START"], 0, 10);
         
         $arSchedule["PROG_ID"] = $arSchedule["UF_PROG_ID"];
-        $arSchedule["DETAIL_PAGE_URL"] = $arResult["CHANNELS"][$channel]["DETAIL_PAGE_URL"].$arSchedule["UF_ID"]."/?event=".$arSchedule["ID"];
+        $arSchedule["DETAIL_PAGE_URL"] = $arResult["CHANNELS"][$channel]["DETAIL_PAGE_URL"].$arSchedule["UF_PROG_CODE"]."/?event=".$arSchedule["ID"];
         $arResult["DATES"][$arSchedule["UF_DATE"]][$channel][] = $arSchedule;
     }
 	$obCache->EndDataCache($arResult["DATES"]); 

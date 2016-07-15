@@ -27,7 +27,7 @@ $result = \Hawkart\Megatv\ScheduleTable::getList(array(
     'select' => array(
         "ID", "UF_CODE", "UF_DATE_START", "UF_TITLE" => "UF_PROG.UF_TITLE",
         "UF_SUB_TITLE" => "UF_PROG.UF_SUB_TITLE", "UF_IMG_PATH" => "UF_PROG.UF_IMG.UF_PATH",
-        "UF_CHANNEL_CODE" => "UF_CHANNEL.UF_BASE.UF_CODE", "UF_ID" => "UF_PROG.UF_EPG_ID"
+        "UF_CHANNEL_CODE" => "UF_CHANNEL.UF_BASE.UF_CODE", "UF_ID" => "UF_PROG.UF_EPG_ID", "UF_PROG_CODE" => "UF_PROG.UF_CODE"
     ),
     'order' => array("UF_PROG.UF_RATING" => "DESC"),
 ));
@@ -57,7 +57,7 @@ while ($arSchedule = $result->fetch())
     }
         
     $arJson["tokens"] = array();
-    $arJson["link"] = "/channels/".$arSchedule["UF_CHANNEL_CODE"]."/".$arSchedule["UF_ID"]."/?event=".$arSchedule["ID"];
+    $arJson["link"] = "/channels/".$arSchedule["UF_CHANNEL_CODE"]."/".$arSchedule["UF_PROG_CODE"]."/?event=".$arSchedule["ID"];
     $arResult[] = $arJson;
 }
 

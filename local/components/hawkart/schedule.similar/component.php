@@ -8,7 +8,7 @@ $arTime =  \CTimeEx::getDatetime();
 //get channel by code
 if(empty($_REQUEST["event"]))
 {
-    $arFilter = array("=UF_PROG.UF_EPG_ID" => $arParams["ELEMENT_CODE"]);
+    $arFilter = array("=UF_PROG.UF_CODE" => $arParams["ELEMENT_CODE"]);
 }else{
     $arFilter = array("=ID" => $_REQUEST["event"]);
 }
@@ -27,7 +27,6 @@ if ($arResult = $result->fetch())
 
 //get channel by code
 $arResult["PROGS"] = array();
-
 $offset = 0;
 if($_REQUEST["AJAX"]=="Y")
 {
@@ -46,7 +45,7 @@ if($_REQUEST["AJAX"]=="Y")
         "<UF_DATE_START" => new \Bitrix\Main\Type\DateTime($dateEnd, 'Y-m-d H:i:s'),
     );
     $arSelect = array(
-        "ID", "UF_CODE", "UF_DATE_START", "UF_DATE_END", "UF_DATE", "UF_CHANNEL_ID", "UF_PROG_ID",
+        "ID", "UF_DATE_START", "UF_DATE_END", "UF_DATE", "UF_CHANNEL_ID", "UF_PROG_ID", "UF_PROG_CODE" => "UF_PROG.UF_CODE",
         "UF_TITLE" => "UF_PROG.UF_TITLE", "UF_SUB_TITLE" => "UF_PROG.UF_SUB_TITLE", "UF_IMG_PATH" => "UF_PROG.UF_IMG.UF_PATH",
         "UF_CHANNEL_CODE" => "UF_CHANNEL.UF_BASE.UF_CODE", "UF_ID" => "UF_PROG.UF_EPG_ID", "UF_CATEGORY" => "UF_PROG.UF_CATEGORY",
     );
@@ -63,7 +62,7 @@ if($_REQUEST["AJAX"]=="Y")
         $arSchedule["UF_DATE"] = $arSchedule["DATE"] = substr($arSchedule["DATE_START"], 0, 10);
         
         $arSchedule["PROG_ID"] = $arSchedule["UF_PROG_ID"];
-        $arSchedule["DETAIL_PAGE_URL"] = "/channels/".$arSchedule["UF_CHANNEL_CODE"]."/".$arSchedule["UF_ID"]."/?event=".$arSchedule["ID"];
+        $arSchedule["DETAIL_PAGE_URL"] = "/channels/".$arSchedule["UF_CHANNEL_CODE"]."/".$arSchedule["UF_PROG_CODE"]."/?event=".$arSchedule["ID"];
         $arResult["PROGS"][] = $arSchedule;
     }
 }

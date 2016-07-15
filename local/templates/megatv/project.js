@@ -1,5 +1,3 @@
-(function($) 
-{
     function icon(name, options) {
     	var optionsz = options || {};
     	var size	= optionsz.size ? 'is-' + optionsz.size : '';
@@ -38,7 +36,9 @@
     		currentIcon.parentNode.removeChild(currentIcon);
     	}
     }
-    
+
+(function($) 
+{    
     $.fn.scrollPagination = function(options) {
 		
 		var settings = { 

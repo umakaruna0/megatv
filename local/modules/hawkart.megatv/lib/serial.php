@@ -38,6 +38,10 @@ class SerialTable extends Entity\DataManager
 				'data_type' => 'string',
                 'required'  => true
 			),
+            'UF_CODE' => array(
+				'data_type' => 'string',
+                'required'  => true
+			),
 			'UF_DESC' => array(
 				'data_type' => 'text',
 				'title'     => Localization\Loc::getMessage('prog_entity_desc_field'),

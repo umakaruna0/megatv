@@ -40,7 +40,7 @@ class ProgTable extends Entity\DataManager
      * 
      * @return object 
      */
-    public static function onBeforeAdd(Entity\Event $event)
+    /*public static function onBeforeAdd(Entity\Event $event)
     {
         $result = new Entity\EventResult;
         $data = $event->getParameter("fields");
@@ -53,6 +53,45 @@ class ProgTable extends Entity\DataManager
         }
 
         return $result;
+    }*/
+    
+    public static function generateCodes()
+    {
+        $arProgs = array();
+        $codes = array();
+        $result = self::getList(array(
+            'filter' => array(),
+            'select' => array("ID", "UF_TITLE", "UF_CODE", "UF_EPG_ID")
+        ));
+        while ($row = $result->fetch())
+        {
+            $arParams = array("replace_space"=>"-", "replace_other"=>"-");
+            $code = \CDev::translit(trim($row["UF_TITLE"]), "ru", $arParams);
+            
+            if(!empty($row["UF_CODE"]))
+            {
+                $codes[$row["UF_TITLE"]] = $row;
+                continue;
+            }
+            
+            $arCode = $codes[$row["UF_TITLE"]];
+            if(!empty($arCode))
+            {
+                if($row["UF_EPG_ID"]!=$arCode["UF_EPG_ID"])
+                {
+                    $code.= "-".$row["ID"];
+                }else{
+                    $code = $arCode["UF_CODE"];
+                }
+            }
+            
+            self::update($row["ID"], array(
+                "UF_CODE" => $code
+            ));
+            
+            $row["UF_CODE"] = $code;
+            $codes[$row["UF_TITLE"]] = $row;
+        }
     }
 
 	/**
@@ -160,7 +199,7 @@ class ProgTable extends Entity\DataManager
             'UF_CODE' => array(
 				'data_type' => 'string',
 				'title'     => Localization\Loc::getMessage('prog_entity_code_field'),
-                'required'  => true
+                'required'  => false,
 			),
             'UF_IMG_ID' => array(
 				'data_type' => 'integer',

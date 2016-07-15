@@ -11,7 +11,7 @@ $arParams = $arParams + array(
 
 if(empty($_REQUEST["event"]))
 {
-    $arFilter = array("=UF_PROG.UF_EPG_ID" => $arParams["ELEMENT_CODE"]);
+    $arFilter = array("=UF_PROG.UF_CODE" => $arParams["ELEMENT_CODE"]);
 }else{
     $arFilter = array("=ID" => $_REQUEST["event"]);
 }

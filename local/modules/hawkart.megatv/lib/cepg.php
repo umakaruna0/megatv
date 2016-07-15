@@ -1054,6 +1054,8 @@ class CEpg
         //Make cut images for imported progs 
         self::addCropFiles($arProgCropIds);
         
+        ProgTable::generateCodes();
+        
         unset($arScheduleIdsNotDelete);
         unset($arProgCropIds);
         
