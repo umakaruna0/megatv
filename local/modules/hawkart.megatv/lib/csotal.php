@@ -16,8 +16,6 @@ class CSotal
     private static $token;
     private static $user_id;
     private static $subscriberToken;
-	private static $lastError = null;
-	private static $lastErrorCode = null;
     
     function __construct($USER_ID = false)
 	{
@@ -324,25 +322,25 @@ class CSotal
 			curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($data) );	
 		}
         
-        $log_file = "/logs/sotal/sotal_".date("d_m_Y_H").".txt";
+		$response = curl_exec($ch);
+		curl_close($ch);
+		$response = json_decode($response, true);
+        
+        if($response["result"])
+        {
+            $log_file = "/logs/sotal/sotal_".date("d_m_Y_H").".txt";
+        }else{
+            $log_file = "/logs/sotal/error_".date("d_m_Y_H").".txt";
+        }
         
         \CDev::log(array(
             "DATETIME" => date("d.m.Y H:i:s"),
             "METHOD"  => $method,
             "DATA"    => $data,
-            "SEND_METHOD" => $sendMethod
+            "SEND_METHOD" => $sendMethod,
+            "RESPONSE"  => $response,
+            "LINE" => "--------------------------------------------------------------"
         ), false, $log_file);
-        
-		$response = curl_exec($ch);
-        
-		curl_close($ch);
-
-		$response = json_decode($response, true);
-        
-        \CDev::log(array("RESPONSE"  => $response, "LINE"=>"--------------------------------------------------------------"), false, $log_file);
-        
-        //echo $method."<br />";
-        //echo "<pre>"; print_r($response); echo "</pre>";
         
 		if($response["result"])
 		{
@@ -367,14 +365,4 @@ class CSotal
 			AddMessage2Log(var_export($data,true));
 		}
     }
-    
-    public static function GetLastError()
-	{
-		return self::$lastError;
-	}
-
-	public static function GetLastErrorCode()
-	{
-		return self::$lastErrorCode;
-	}
 }

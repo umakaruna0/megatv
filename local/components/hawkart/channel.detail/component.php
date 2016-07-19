@@ -32,6 +32,9 @@ if ($arResult = $result->fetch())
     $arResult["ID"] = $arResult["UF_CHANNEL_ID"];
     $arResult["DETAIL_PAGE_URL"] = "/channels/".$arResult['UF_CODE']."/";
     $title = $arResult["UF_TITLE"]." -  телепрограмма на сегодня, программа телепередач канала ".$arResult["UF_H1"]." на МегаТВ";
+    if($arResult["UF_H1"]=="5 канал")
+        $title = str_replace("канала ", "", $title);
+    
     $APPLICATION->SetTitle($title);
     //$APPLICATION->SetPageProperty("keywords", $arResult["UF_KEYWORDS"]);
     $APPLICATION->SetPageProperty("description", TruncateText($arResult["UF_DESCRIPTION"], 256));

@@ -72,8 +72,8 @@ while($arUser = $rsUsers->GetNext())
                             "USER_EMAIL" => $arUser["EMAIL"],
                             "RECORD_ID" => $arRecord["ID"],
                             "RECORD_NAME" => $arRecord["NAME"],
-                            "PICTURE" => "http://megatv.su".$arRecord["PICTURE"]["SRC"],
-                            "URL" => "http://megatv.su/personal/records/?record_id=".$arRecord["ID"]."&play=yes"
+                            "PICTURE" => "http://tvguru.com".$arRecord["PICTURE"]["SRC"],
+                            "URL" => "http://tvguru.com/personal/records/?record_id=".$arRecord["ID"]."&play=yes"
                         ));
                         
                         \Hawkart\Megatv\RecordTable::update($arRecord["ID"], array("UF_URL" => $url, "UF_AFTER_NOTIFY" => 1));

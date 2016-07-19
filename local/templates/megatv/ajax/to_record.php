@@ -71,7 +71,7 @@ if($USER->IsAuthorized() && $prog_time>0)
             \CDev::log(array(
                 "ACTION"  => "PUT_TO_RECORD",
                 "DATA"    => array(
-                    "PROG_ID"    => $prog_time,
+                    "SCHEDULE_ID"    => $prog_time,
                     "DATE"       => date("d.m.Y H:i:s")
                 )
             ), false, $log_file);

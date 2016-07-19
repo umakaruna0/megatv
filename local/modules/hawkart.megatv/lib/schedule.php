@@ -108,6 +108,12 @@ class ScheduleTable extends Entity\DataManager
 				'data_type' => 'string',
 				'title'     => Localization\Loc::getMessage('schedule_entity_code_field'),
                 'required'  => true
+			),
+            'UF_DATETIME_CREATE' => array(
+				'data_type' => 'datetime'
+			),
+            'UF_DATETIME_EDIT' => array(
+				'data_type' => 'datetime'
 			)
 		);
 	}

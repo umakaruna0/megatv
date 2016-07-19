@@ -1001,7 +1001,8 @@ class CEpg
                             "UF_CHANNEL_ID" => (int)$arChannel["ID"],
                             "UF_PROG_ID" => (int)$prog_id,
                             "UF_EPG_ID" => $schedule_epg_id,
-                            "UF_CODE" => $title." - ". $arProg["@attributes"]["start"]
+                            "UF_CODE" => $title." - ". $arProg["@attributes"]["start"],
+                            "UF_DATETIME_CREATE" => new \Bitrix\Main\Type\Date(date("Y-m-d H:i:s"), 'Y-m-d H:i:s')
                         );
                         
                         $result = ScheduleTable::add($arFields);
@@ -1019,6 +1020,7 @@ class CEpg
                             "UF_DATE_START" => $dateStart,
                             "UF_DATE_END" => $dateEnd,
                             "UF_DATE" => $date,
+                            "UF_DATETIME_EDIT" => new \Bitrix\Main\Type\Date(date("Y-m-d H:i:s"), 'Y-m-d H:i:s')
                         );
                         
                         ScheduleTable::Update($schedule_id, $arFields);

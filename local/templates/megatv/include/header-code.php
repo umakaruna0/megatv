@@ -55,21 +55,25 @@ if($USER->IsAuthorized())
     {
         $shedule_id = $arRecord["UF_SCHEDULE_ID"];
         
-        if($arRecord["UF_WATCHED"]==1)
+        if(intval($shedule_id)>0)
         {
-            $countRecorded++;
-            $arStatusViewed[$shedule_id] = $arRecord;
+            if($arRecord["UF_WATCHED"]==1)
+            {
+                $countRecorded++;
+                $arStatusViewed[$shedule_id] = $arRecord;
+            }
+            else if(empty($arRecord["UF_URL"]))
+            {
+                $countInRec++;
+                $arStatusRecording[$shedule_id] = $arRecord;
+            }
+            else if(!empty($arRecord["UF_URL"]))
+            {
+                $countRecorded++;
+                $arStatusRecorded[$shedule_id] = $arRecord;
+            }
         }
-        else if(empty($arRecord["UF_URL"]))
-        {
-            $countInRec++;
-            $arStatusRecording[$shedule_id] = $arRecord;
-        }
-        else if(!empty($arRecord["UF_URL"]))
-        {
-            $countRecorded++;
-            $arStatusRecorded[$shedule_id] = $arRecord;
-        }
+        
         $count++;
     }
     $arRecordStatus = array(
