@@ -55,6 +55,13 @@ if($USER->IsAuthorized() && $prog_time>0)
         exit(json_encode(array("status"=>"error", "error"=> "Такая запись уже есть.")));
     }
     
+    //money check
+    $budget = \CUserEx::getBudget($user_id);
+    if($budget<0)
+    {
+        exit(json_encode(array("status"=>"error", "error"=> "Для записи передачи пополните счет.")));
+    }
+    
     //Провеим, хватит ли пространства!
     $duration = strtotime($arSchedule["UF_DATE_END"])-strtotime($arSchedule["UF_DATE_START"]);
     $minutes = ceil($duration/60);

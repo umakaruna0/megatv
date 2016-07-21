@@ -14,7 +14,7 @@ $status = htmlspecialcharsbx($_REQUEST["status"]);
 //get subcribe channel list
 $selectedChannels = array();
 $result = \Hawkart\Megatv\SubscribeTable::getList(array(
-    'filter' => array("=UF_USER_ID" => $USER->GetID()),
+    'filter' => array("=UF_USER_ID" => $USER->GetID(), ">UF_CHANNEL_ID" => 0),
     'select' => array("UF_CHANNEL_ID", "ID")
 ));
 while ($arSub = $result->fetch())

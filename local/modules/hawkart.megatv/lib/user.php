@@ -36,6 +36,8 @@ class UserTable extends Entity\DataManager
 	 */
 	public static function getMap()
 	{
+        //ALTER TABLE hw_user_stat MODIFY UF_RECOMMEND LONGTEXT;
+       
 		return array(
 			'ID' => array(
 				'data_type' => 'integer',

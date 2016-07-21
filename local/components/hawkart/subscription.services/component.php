@@ -11,7 +11,7 @@ $arServices = array();
 
 //get service subscribe list
 $result = \Hawkart\Megatv\SubscribeTable::getList(array(
-    'filter' => array("UF_ACTIVE"=>1, "=UF_USER_ID" => $USER->GetID()),
+    'filter' => array("UF_ACTIVE"=>1, "=UF_USER_ID" => $USER->GetID(), ">UF_SERVICE_ID" => 0),
     'select' => array("UF_SERVICE_ID")
 ));
 while ($arSub = $result->fetch())

@@ -25,7 +25,8 @@ class CSubscribe
         $data = array(
            'UF_USER_ID' => $USER_ID,
            'UF_DATE_FROM' => $dt,
-           'UF_ACTIVE' => 1
+           'UF_ACTIVE' => 1,
+           'UF_DATETIME_TO' => new \Bitrix\Main\Type\Datetime(date('Y-m-d 03:30:00', strtotime('+1 day')), 'Y-m-d H:i:s')
         );
         
         if($this->type=="CHANNEL")

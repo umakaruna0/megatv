@@ -58,6 +58,9 @@ class SubscribeTable extends Entity\DataManager
 				'data_type' => '\Hawkart\Megatv\ServiceTable',
 				'reference' => array('=this.UF_SERVICE_ID' => 'ref.ID'),
 			),
+            'UF_DATETIME_TO' => array(
+				'data_type' => 'datetime'
+			),
 		);
 	}
     

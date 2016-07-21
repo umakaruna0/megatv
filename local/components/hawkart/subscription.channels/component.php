@@ -8,7 +8,7 @@ $arChannels = array();
 
 //get subsribe channel list
 $result = \Hawkart\Megatv\SubscribeTable::getList(array(
-    'filter' => array("UF_ACTIVE"=>1, "=UF_USER_ID" => $USER->GetID()),
+    'filter' => array("UF_ACTIVE"=>1, "=UF_USER_ID" => $USER->GetID(), ">UF_CHANNEL_ID" => 0),
     'select' => array("UF_CHANNEL_ID")
 ));
 while ($arSub = $result->fetch())

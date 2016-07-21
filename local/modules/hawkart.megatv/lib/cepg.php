@@ -494,7 +494,7 @@ class CEpg
                     "UF_EPG_ID" => $epg_id,
                     "UF_TITLE" => $title,
                     "UF_ISO" => $iso,
-                    "UF_ACTIVE" => 1,
+                    "UF_ACTIVE" => 0,
                     "UF_EXIST" => 1,
                 );
                 $result = CountryTable::add($arFields);
