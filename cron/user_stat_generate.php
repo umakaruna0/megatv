@@ -20,27 +20,7 @@ while($arUser = $rsUsers->GetNext())
     );
     $json = json_encode($arRecommend);
     
-    $result = \Hawkart\Megatv\UserTable::getList(array(
-        'filter' => array(
-            "=UF_USER_ID" => $arUser["ID"], 
-        ),
-        'select' => array(
-            "ID"
-        )
-    ));
-    if($arUserTable = $result->fetch())
-    {
-        $arFields = array(
-            "UF_RECOMMEND" => $json
-        );
-        \Hawkart\Megatv\UserTable::Update($arUser["ID"], $arFields);
-    }else{
-        $arFields = array(
-            "UF_USER_ID" => $arUser["ID"],
-            "UF_RECOMMEND" => $json
-        );
-        \Hawkart\Megatv\UserTable::add($arFields);
-    }
+    \Hawkart\Megatv\CStat::saveRecommend($arUser["ID"], $json);
 }
 
 echo date("H:i:s")."\r\n";

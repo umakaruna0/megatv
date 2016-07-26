@@ -313,21 +313,16 @@ class CStat
         return $ids;
     }
     
+    public static function saveRecommend($user_id, $json)
+    {
+        $file = realpath(dirname(__FILE__) . '/../../../../../')."/statistic/".$user_id.".json";
+        file_put_contents($file, $json);
+    }
+    
     public static function getRecommend($user_id)
     {
-        //$rsUser = \CUser::GetByID($user_id);
-        //$arUser = $rsUser->Fetch();
-        
-        $result = \Hawkart\Megatv\UserTable::getList(array(
-            'filter' => array(
-                "=UF_USER_ID" => $user_id, 
-            ),
-            'select' => array(
-                "UF_RECOMMEND"
-            )
-        ));
-        $arUser = $result->fetch();
-        
-        return json_decode($arUser["UF_RECOMMEND"], true);
+        $file = realpath(dirname(__FILE__) . '/../../../../../')."/statistic/".$user_id.".json";
+        $data = file_get_contents($file, FILE_USE_INCLUDE_PATH);
+        return json_decode($data, true);
     }
 }
