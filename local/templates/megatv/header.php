@@ -62,11 +62,11 @@ IncludeTemplateLangFile(__FILE__);
 			<header class="site-header">
 
 				<div class="top-panel">
-                    <?if($APPLICATION->GetCurPage(false) === '/'):?>
+                    <?/*if($APPLICATION->GetCurPage(false) === '/'):?>
 					   <span class="logo"></span>
                     <?else:?>
                         <a href="/" class="logo"></a>
-                    <?endif;?>
+                    <?endif;*/?>
                     
                     <?$APPLICATION->IncludeComponent("hawkart:city.list", "", Array(), false);?>
                     <?$APPLICATION->IncludeComponent("hawkart:lang.list", "", Array(), false);?>
