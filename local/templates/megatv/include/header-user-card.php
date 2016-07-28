@@ -18,7 +18,7 @@
         <div class="box-userbar__userbar userbar">
             <div class="userbar__disk-space disk-space" data-type="fill-disk-space" onclick="window.location.href='/personal/services/';" style="cursor: pointer;">
         		<div class="disk-space__progress-holder progress-holder" data-progress="<?=$filledPercent?>"></div>
-        		<span class="disk-space__label"><?=GetMessage('BUSY')?> <strong class="disk-space__strong"><?=round($arUser["UF_CAPACITY_BUSY"], 2);?> ГБ<?=GetMessage('GB')?></strong></span>
+        		<span class="disk-space__label"><?=GetMessage('BUSY')?> <strong class="disk-space__strong"><?=round($arUser["UF_CAPACITY_BUSY"], 2);?> <?=GetMessage('GB')?></strong></span>
         	</div>                
 
             <nav class="box-userbar__usernav usernav" data-module="user-navigation">
