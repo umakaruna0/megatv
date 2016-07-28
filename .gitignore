@@ -38,4 +38,9 @@ syslog
 
 /local/config/config.php
 pass.php
-/local/*/node_modules
+*�����
+/local/templates/megatv/node_modules/
+/local/templates/megatv/stylesheets/scss/
+/local/templates/megatv/stylesheets/partials/
+/local/templates/megatv/javascripts/include/
+*копия*

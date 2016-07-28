@@ -8,9 +8,6 @@
 var Core = function () {
 
     var runMainScript = function(){
-        // CustomFunctions.js - Кастомные функции ядра
-        // Вызов $.cf.<function>
-        CustomFunctions.init();
     };
     
     // Delayed Animations

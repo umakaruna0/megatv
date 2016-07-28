@@ -30,7 +30,7 @@ $APPLICATION->SetDirProperty("h1-hide", "");
 </div>
 <?endif;?>
 
-<div class="app-mobile">
+<div class="app-mobile hidden">
     <div class="app-mobile__wrap">
         <div class="app-mobile__left">
             <img src="/local/templates/megatv/img/iphone.png" alt="" class="app-mobile__image">

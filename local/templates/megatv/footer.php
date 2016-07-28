@@ -14,9 +14,10 @@
         //$APPLICATION->AddHeadScript(SITE_TEMPLATE_PATH.'/js/plugins.js');
         //$APPLICATION->AddHeadScript(SITE_TEMPLATE_PATH.'/js/main.js');
         ?>
-        <script src="<?=SITE_TEMPLATE_PATH?>/megatv/public/js/vendor.js"></script>
-		<script src="<?=SITE_TEMPLATE_PATH?>/megatv/public/js/plugins.js"></script>
         <script src="<?=SITE_TEMPLATE_PATH?>/javascripts/complete/main.js"></script>
+        <?if($APPLICATION->GetCurDir()=="/personal/records/"):?>
+        <script src="<?=SITE_TEMPLATE_PATH?>/javascripts/include/components/player.js"></script>
+        <?endif;?>
         <?if(strpos($APPLICATION->GetCurDir(), "/channels/")!==false && isset($_REQUEST["SCHEDULE_CODE"])):?>
             <script src="<?=SITE_TEMPLATE_PATH?>/project.js"></script>
             <script src="<?=SITE_TEMPLATE_PATH?>/megatv/public/js/broadcast-card.js"></script>
