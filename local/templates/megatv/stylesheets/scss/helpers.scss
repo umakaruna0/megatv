@@ -1,0 +1,90 @@
+//
+// Helpers
+//
+
+// External global classes
+@import "helpers/g-text-manipulation";
+@import "helpers/g-icon";
+@import "helpers/g-btn";
+@import "helpers/g-margins";
+
+// Floats
+.g-clearfix{
+	@include clearfix(b);
+}
+.g-push-left{
+	float: left $im;
+}
+.g-push-right{
+	float: right $im;
+}
+
+// Toggling content
+.g-hidden{
+	display: none $im;
+}
+.g-visible{
+	display: block $im;
+}
+
+// For Affix plugin
+.affix {
+	position: fixed;
+}
+
+// Divider
+.divider{
+  margin: 20px 0 10px;
+  text-align: center;
+  position: relative;
+  &:after{
+    content: "";
+    display: block;
+    height: 2px;
+    background: $blue_c;
+    position: absolute;
+    width: 100%;
+    top: 50%;
+    margin-top: -2px;
+  }
+  &__span{
+    background: #f4f3f3;
+    border-radius: 50%;
+    width: 38px;
+    height: 38px;
+    padding: 8px 0 12px;
+    display: inline-block;
+    z-index: 1;
+    position: relative;
+    border: 2px solid $blue_c;
+    vertical-align: text-bottom;
+    font-size: 13px;
+    color: $blue_c;
+  }
+}
+
+// Social auth list
+.social-authorize-list{
+  overflow: hidden;
+  display: flex;
+  padding: 0;
+  justify-content: center;
+  &__li-social{ 
+    color: #ffba00;
+  }
+  &__link{
+    overflow: hidden;
+    padding: 0 13px;
+    color: $blue_c;
+    display: block;
+    transition: $transition02;
+    &:hover{
+      color: #ffba00;
+    }
+  }
+}
+
+// Other settings
+.g-list-none{
+  list-style-type: none $im;
+}

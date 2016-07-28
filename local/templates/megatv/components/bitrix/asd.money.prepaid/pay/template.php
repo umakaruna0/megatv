@@ -13,7 +13,7 @@ CUtil::InitJSCore(array('jquery'));
 				<h3 class="modal-title">Пополнение баланса</h3>
 				<div class="paymethod-modal-balance"><span data-icon="icon-balance" data-size="small"></span> На счету: <?= round($arAccount['CURRENT_BUDGET'], 0)?> <span data-icon="icon-ruble"></span></div>
 			</div>
-			<a href="#" class="close-link" data-dismiss="modal"><span data-icon="icon-times"></span></a>
+			<a href="#" onmouseup="$(document.body).removeClass('payment-opened')" class="close-link" data-dismiss="modal"><span data-icon="icon-times"></span></a>
             
             <?
             //POST_FORM_ACTION_URI

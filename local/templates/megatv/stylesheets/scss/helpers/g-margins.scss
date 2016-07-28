@@ -1,0 +1,20 @@
+$i: 100;
+@while $i > 0 {
+  .g-mt-#{$i} { margin-top: #{$i}px; }
+  .g-mb-#{$i} { margin-bottom: #{$i}px; }
+  .g-ml-#{$i} { margin-left: #{$i}px; }
+  .g-mr-#{$i} { margin-right: #{$i}px; }
+  $i: $i - 5;
+}
+.g-mt-0{
+	margin-top: 0;	
+}
+.g-mb-0{
+	margin-bottom: 0;	
+}
+.g-ml-0{
+	margin-left: 0;	
+}
+.g-mr-0{
+	margin-right: 0;	
+}

@@ -13,7 +13,12 @@
 $this->setFrameMode(true);
 global $USER;
 ?>
+<<<<<<< HEAD
+
+<div class="lang-select box-left__box-lang box-lang" data-module="lang-select">
+=======
 <div class="lang-select" data-module="lang-select">
+>>>>>>> 23cd50036497da64b44e0bc4c24882eeb021600e
     <script type="text/x-config">
 		{
 			"url": "<?=$arResult["URL"]?>",

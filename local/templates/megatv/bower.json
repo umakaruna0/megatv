@@ -1,0 +1,23 @@
+{
+  "name": "gERYH",
+  "version": "2.0.0",
+  "authors": [
+    "gERYH <geryh213921@gmail.com>"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "normalize.css": "*",
+    "jquery": "2.*"
+  },
+  "homepage": "https://github.com/Kremonit/megatv",
+  "description": "gERYH Bower Components",
+  "main": "",
+  "private": true
+}

@@ -1,0 +1,9 @@
+//
+// BORDER-LINE
+//
+@mixin line($p){
+	border: 1px solid #000;
+	@if($p == 1) {
+		padding: 10px;
+	}
+}

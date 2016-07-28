@@ -1,4 +1,3 @@
-<div class="header-user">
     <?
     if($USER->IsAuthorized())
     {           
@@ -16,60 +15,65 @@
         $APPLICATION->AddViewContent('user_filled_space', round($arUser["UF_CAPACITY_BUSY"], 2));
         $APPLICATION->AddViewContent('user_filled_space_percent', $filledPercent);  
         ?>
-        
-        <div class="fill-disk-space" data-type="fill-disk-space" onclick="window.location.href='/personal/services/';" style="cursor: pointer;">
-    		<div class="progress-holder" data-progress="<?=$filledPercent?>"></div>
-    		<span class="label"><?=GetMessage('BUSY')?> <strong><?=round($arUser["UF_CAPACITY_BUSY"], 2);?> <?=GetMessage('GB')?></strong></span>
-    	</div>                
+        <div class="box-userbar__userbar userbar">
+            <div class="userbar__disk-space disk-space" data-type="fill-disk-space" onclick="window.location.href='/personal/services/';" style="cursor: pointer;">
+        		<div class="disk-space__progress-holder progress-holder" data-progress="<?=$filledPercent?>"></div>
+        		<span class="disk-space__label"><?=GetMessage('BUSY')?> <strong class="disk-space__strong"><?=round($arUser["UF_CAPACITY_BUSY"], 2);?> ГБ<?=GetMessage('GB')?></strong></span>
+        	</div>                
 
-        <nav class="header-nav" data-module="user-navigation">
-            <div class="user-card">
-				<a href="/personal/" class="user-avatar<?if(!$arUser["PERSONAL_PHOTO"]):?> is-empty<?endif;?>" data-type="avatar-holder">
-                    <?if($arUser["PERSONAL_PHOTO"]):?>
-                        <img src="<?=\CFile::GetPath($arUser["PERSONAL_PHOTO"])?>" alt="<?=$USER->GetFullName()?>" width="50" height="50">
-                    <?endif;?>
-                </a>
-                <?
-                if(strpos($APPLICATION->GetCurDir(), "personal")===false)
-                {
-                    $urlExit = $APPLICATION->GetCurPageParam("logout=yes", array("logout"));
-                }else{
-                    $urlExit = "/?logout=yes";
-                }
-                ?>
-				<div class="info-panel">
-					<a class="username" href="/personal/"><?=$USER->GetFullName()?></a>
-					<a href="<?=$urlExit?>" class="signout-link"><?=GetMessage('LOGOUT')?></a>
-				</div>
-			</div>
-        </nav>
+            <nav class="box-userbar__usernav usernav" data-module="user-navigation">
+                <div class="usernav__user-card">
+    				<a href="/personal/" class="usernav__user-avatar<?if(!$arUser["PERSONAL_PHOTO"]):?> usernav__user-avatar--empty<?endif;?>" data-type="avatar-holder">
+                        <?if($arUser["PERSONAL_PHOTO"]):?>
+                            <img class="usernav__user-image" src="<?=\CFile::GetPath($arUser["PERSONAL_PHOTO"])?>" alt="<?=$USER->GetFullName()?>" width="50" height="50">
+                        <?endif;?>
+                    </a>
+                    <?
+                    if(strpos($APPLICATION->GetCurDir(), "personal")===false)
+                    {
+                        $urlExit = $APPLICATION->GetCurPageParam("logout=yes", array("logout"));
+                    }else{
+                        $urlExit = "/?logout=yes";
+                    }
+                    ?>
+    				<div class="usernav__info-panel">
+    					<a class="usernav__username" href="/personal/"><?=$USER->GetFullName()?></a>
+    					<a href="<?=$urlExit?>" class="usernav__signout-link"><?=GetMessage('LOGOUT')?></a>
+    				</div>
+    			</div>
+            </nav>
+        </div>
         <?
     }else{
         ?>
-        <nav class="header-nav" data-module="user-navigation">
-            <ul class="user-actions">
-                <li><a href="#" class="signin-link" data-type="signin-overlay-toggle"><?=GetMessage('LOGIN')?></a></li>
-    			<li><a href="#" class="signup-link" data-type="signup-overlay-toggle"><?=GetMessage('REGISTER')?></a></li>
-            </ul>
+        <nav class="box-userbar box-right__box-userbar" data-module="user-navigation">
+            <a href="#" data-module="modal" data-modal="authURL" data-type="openModal" class="g-btn g-btn--primary box-userbar__btn-auth js-btnModalInit"><span><?=GetMessage('LOGIN')?></span></a>
+            <a href="#" data-module="modal" data-modal="registerURL" data-type="openModal" class="g-btn box-userbar__btn-register js-btnModalInit"><span><?=GetMessage('REGISTER')?></span></a>
         </nav>
         <?
     }
     ?>
     
     <?if(!$USER->IsAuthorized()):?>
-        <?$APPLICATION->IncludeComponent("bitrix:system.auth.form", "auth_ajax",Array(
-             "REGISTER_URL" => "register.php",
-             "FORGOT_PASSWORD_URL" => "",
-             "PROFILE_URL" => "/",
-             "SHOW_ERRORS" => "Y" 
-             )
-        );?>
-        <?$APPLICATION->IncludeComponent("bitrix:system.auth.registration","",Array());?>
-        <?$APPLICATION->IncludeComponent(
-            "bitrix:system.auth.forgotpasswd",
-            ".default",
-            Array()
-        );?>
+        <?
+        // $APPLICATION->IncludeComponent("bitrix:system.auth.form", "auth_ajax",Array(
+        //      "REGISTER_URL" => "register.php",
+        //      "FORGOT_PASSWORD_URL" => "",
+        //      "PROFILE_URL" => "/",
+        //      "SHOW_ERRORS" => "Y" 
+        //      )
+        // );
+        ?>
+        <?
+        //$APPLICATION->IncludeComponent("bitrix:system.auth.registration","",Array());
+        ?>
+        <?
+        // $APPLICATION->IncludeComponent(
+        //     "bitrix:system.auth.forgotpasswd",
+        //     ".default",
+        //     Array()
+        // );
+        ?>
         <div class="authorize-overlay is-success-signup-overlay" data-module="success-signup-overlay">
     		<div class="overlay-content">
     			<h4 class="overlay-title"><?=GetMessage('CONGRATULATIONS')?></h4>
@@ -85,4 +89,3 @@
     		</div>
     	</div>
     <?endif;?>
-</div>

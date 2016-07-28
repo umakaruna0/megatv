@@ -1,3 +1,10 @@
+var configScript = Box.DOM.query(document, "#globalConfig");
+try{
+	var config = JSON.parse($(configScript).text());
+}catch(e){
+	if(e) throw new Error("Undefined global config!");
+}
+Box.Application.setGlobalConfig(config);
 /* global Box */
 Box.Application.addService('icon-loader', function () {
 	'use strict';
@@ -1462,6 +1469,7 @@ Box.Application.addModule('city-select', function (context) {
 				popover.hide();
 				clearTimeout(popoverShowTimer);
 			}).on('select2:select', function (event) {
+
 				cookieService.set(DATA_KEY, event.params.data.text, {
 					expires: 365
 				});
@@ -1604,7 +1612,6 @@ Box.Application.addModule('lang-select', function (context) {
 /* global Box */
 Box.Application.addModule('search', function (context) {
 	'use strict';
-
 	// --------------------------------------------------------------------------
 	// Private
 	// --------------------------------------------------------------------------
@@ -1658,6 +1665,14 @@ Box.Application.addModule('search', function (context) {
 
 						resultHTML += '<span class="info-col"><span class="publish-date">' + data.date + '</span><h5 class="result-title">' + data.title + '</h5></span></a>';
 
+						// if (data.thumbnail === null) {
+						// 	resultHTML += '<span class="form-search__image-holder is-empty"></span>';
+						// } else {
+						// 	resultHTML += '<span class="form-search__image-holder"><img alt="' + data.title + '" width="60" height="60" src="' + data.thumbnail + '"></span>';
+						// }
+
+						// resultHTML += '<span class="form-search__info-col"><span class="publish-date">' + data.date + '</span><h5 class="result-title">' + data.title + '</h5></span></a>';
+
 						return resultHTML;
 					}
 				}
@@ -1686,7 +1701,7 @@ Box.Application.addModule('search', function (context) {
 				setTimeout(function() {
 					searchField.focus();
 				}, 500);
-			} else if (elementType === 'close') {
+			} else if(elementType === "close") {
 				body.removeClass('search-opened');
 			}
 		},
@@ -1698,6 +1713,55 @@ Box.Application.addModule('search', function (context) {
 	};
 });
 
+
+/* global Box */
+Box.Application.addModule('modal', function (context) {
+	'use strict';
+	// --------------------------------------------------------------------------
+	// Private
+	// --------------------------------------------------------------------------
+	var $ = context.getGlobal('jQuery');
+	var el = $(context.element);
+	var type = el.data("modal");
+	var urlModal = context.getGlobalConfig(type);
+	var body = $("body");
+	var $modal = $('.js-ModalWindow');
+
+    function runEvents(){
+	    var $modalOverlay = $('.ModalWindow__overlay');
+	    var $offsetBlock = $('.header');
+
+    	body.on("mouseup.closeModal",function(e) {
+          if ($modalOverlay.has(e.target).length === 0 && $offsetBlock.has(e.target).length === 0) {
+            $modal.modalHeader('hide');
+          }
+        });
+    }
+
+	return {
+		init: function () {
+
+		},
+		onclick: function (event, element, elementType) {
+	        if(elementType === "openModal"){
+	        	$.getDataFromLink({
+		            link: urlModal,
+		            callback: function(data){
+            			body.off("mouseup.closeModal");
+		                $modal.modalHeader('init',{
+		                    content: data,
+		                    delay: 500
+		                });
+		            }
+		        });
+		        setTimeout(function(){
+		        	runEvents();
+		        }, 1000);
+	        }
+            event.preventDefault();
+		}
+	}
+});
 
 /* global Box, alert */
 Box.Application.addModule('broadcasts-categories', function (context) {
@@ -2760,6 +2824,8 @@ Box.Application.addModule('signin-overlay', function (context) {
 	// --------------------------------------------------------------------------
 	var $ = context.getGlobal('jQuery');
 	var moduleEl;
+	var sessid = context.getGlobalConfig("sessid");
+	var ajax_key = context.getGlobalConfig("ajax_key");
 	var pageModule;
 	var passwordVisualizer;
 	var adaptiveField;
@@ -2767,6 +2833,9 @@ Box.Application.addModule('signin-overlay', function (context) {
 	var submitButton;
 	var msSubmitButton;
 	var form;
+	var validForm;
+	$("body").find('input[name="sessid"]').val(sessid);
+	$("body").find('input[name="ajax_key"]').val(ajax_key);
 
 	function showOverlay() {
 		$(moduleEl).addClass('is-visible');
@@ -2842,7 +2911,6 @@ Box.Application.addModule('signin-overlay', function (context) {
 			form = $(moduleEl).find('form');
 			msbuttonService = context.getService('multistate-button');
 			adaptiveField = $(moduleEl).find('[data-type="adaptive-field"]');
-			passwordVisualizer = $(moduleEl).find('[data-type="password-visualizer"]');
 			submitButton = $(moduleEl).find('button:submit[data-type="multistate-button"]');
 			msSubmitButton = msbuttonService.create(submitButton, {
 				states: ['default-state', 'done-state', 'fail-data-state', 'fail-network-state']
@@ -2850,7 +2918,6 @@ Box.Application.addModule('signin-overlay', function (context) {
 		},
 		destroy: function () {
 			moduleEl = null;
-			passwordVisualizer = null;
 			adaptiveField = null;
 			submitButton = null;
 			msbuttonService = null;
@@ -2871,10 +2938,17 @@ Box.Application.addModule('signin-overlay', function (context) {
 			}
 		},
 		onclick: function (event, element, elementType) {
-			if (elementType === 'password-visibility-toggle') {
+			if (elementType === 'password-show-toggle') {
+                var $this = $(element);
+                var passInput = $this.siblings('.js-password-field');
+                if(passInput.attr('type') == "password") {
+                    passInput.attr('type', 'text');
+                    $this.addClass('password-show-toggle--show');
+                }else{
+                    passInput.attr('type', 'password');
+                    $this.removeClass('password-show-toggle--show');
+                }
 				event.preventDefault();
-				passwordVisualizer.toggleClass('is-visible');
-				$(element).toggleClass('active');
 			} else if (elementType === 'social-signin-link') {
 				msSubmitButton.changeState('done-state');
 			} else if (elementType === 'reset-handler-link') {
@@ -2884,16 +2958,23 @@ Box.Application.addModule('signin-overlay', function (context) {
 			}
 		},
 		onkeyup: function (event, element, elementType) {
-			if (elementType === 'password-field') {
-				$(moduleEl).find('[data-type="password-visualizer"]').val($(element).val());
-			}
-			if (elementType === 'password-visualizer') {
-				$(moduleEl).find('[data-type="password-field"]').val($(element).val());
-			}
+			// if (elementType === 'password-show-toggle') {
+   //              var $this = $(element);
+   //              var passInput = $this.siblings('.js-password-field');
+   //              if(passInput.attr('type') == "password") {
+   //                  passInput.attr('type', 'text');
+   //                  $this.addClass('password-show-toggle--show');
+   //              }else{
+   //                  passInput.attr('type', 'password');
+   //                  $this.removeClass('password-show-toggle--show');
+   //              }
+			// 	event.preventDefault();
+			// }
 		},
 		onsubmit: function (event) {
 			event.preventDefault();
-			sendForm();
+			validForm = form.formValid();
+			if(validForm) sendForm();
 		}
 	};
 });
@@ -2908,7 +2989,12 @@ Box.Application.addModule('signup-overlay', function (context) {
 	// --------------------------------------------------------------------------
 	var $ = context.getGlobal('jQuery');
 	var moduleEl;
+	var sessid = context.getGlobalConfig("sessid");
+	var ajax_key = context.getGlobalConfig("ajax_key");
 	var pageModule;
+	var msgBlock;
+	var validForm;
+	var msgBlockRegister;
 	var adaptiveField;
 	var msbuttonService;
 	var submitButton;
@@ -2919,6 +3005,8 @@ Box.Application.addModule('signup-overlay', function (context) {
 	var steps;
 	var codeField;
 	var adaptiveFieldHidden;
+	$("body").find('input[name="sessid"]').val(sessid);
+	$("body").find('input[name="ajax_key"]').val(ajax_key);
 
 	function showOverlay() {
 		$(moduleEl).addClass('is-visible');
@@ -2937,6 +3025,8 @@ Box.Application.addModule('signup-overlay', function (context) {
 		}
 	}
 	function sendForm() {
+		var email = $('.js-user-email').val();
+		if(email != "") $('.js-user-email-paste').val(email);
 		$.ajax({
 			type: 'POST',
 			dataType: 'json',
@@ -2984,11 +3074,13 @@ Box.Application.addModule('signup-overlay', function (context) {
 						});
 					}
 					var errors = data.errors;
-					$.each(errors, function (key, value) {
-						$('<span class="form-control-message">' + value + '</span>')
-							.insertAfter($(moduleEl).find('input[name="' + key + '"]').closest('.form-group').addClass('has-error').find('.form-control'));
-					});
-				} else if (data.status === 'need_confirm') {
+					var returnVal = false;
+					var msgBlockRender = context.getService("msgBlock");
+					if(!$.isEmptyObject(errors)){
+						if(form.data('type') !== 'signup-code-form') returnVal = msgBlockRender.create( errors, msgBlockRegister );
+						else returnVal = msgBlockRender.create( errors, msgBlock );	
+					}
+				} else if (data.status === 'need_confirm') { 
 					if (form.data('type') !== 'signup-code-form') {
 						msSubmitButton.changeState('default-state').enable();
 						showNextStep();
@@ -3014,22 +3106,21 @@ Box.Application.addModule('signup-overlay', function (context) {
 		Box.Application.broadcast('hidesigninoverlay');
 	}
 	function showNextStep() {
-		var activeItem = steps.find('.step.active');
-		activeItem.removeClass('in');
+		var activeItem = steps.find('.step--active');
 		setTimeout(function () {
-			activeItem.removeClass('active');
-			activeItem.next('.step').addClass('active in');
+			activeItem.removeClass('step--active').slideUp();
+			activeItem.next('.js-step').addClass('step--active').slideDown();
 			codeField.trigger('focus');
 			reinit();
 		}, 300);
 	}
 	function reinit() {
-		form = steps.find('.step.active').find('form');
+		form = steps.find('.step--active').find('form');
 	}
 	function resetOverlay() {
 		adaptiveFieldHidden.val('');
-		steps.find('.step').removeClass('in active').first().addClass('in active');
-		form = steps.find('.step.active form');
+		steps.find('.js-step').removeClass('step--active').slideUp().first().addClass('step--active').slideDown();
+		form = steps.find('.step--active form');
 	}
 
 	// --------------------------------------------------------------------------
@@ -3044,13 +3135,15 @@ Box.Application.addModule('signup-overlay', function (context) {
 			moduleEl = context.getElement();
 			pageModule = $('[data-module="page"]').get(0);
 			steps = $(moduleEl).find('.steps');
-			form = steps.find('.step.active').find('form');
+			form = steps.find('.step--active').find('form');
+			msgBlockRegister = steps.find('#register-form').find('.js-msg-block');
+			msgBlock = steps.find('#signup-code-form').find('.js-msg-block');
 			msbuttonService = context.getService('multistate-button');
 			adaptiveField = $(moduleEl).find('[data-type="adaptive-field"]');
 			adaptiveFieldHidden = $(moduleEl).find('[data-type="adaptive-field-hidden"]');
 			codeField = $(moduleEl).find('[data-type="code-field"]');
-			submitButton = $(moduleEl).find('form:not([data-type="signup-code-form"]) button:submit[data-type="multistate-button"]');
-			submitCodeButton = $(moduleEl).find('form[data-type="signup-code-form"] button:submit[data-type="multistate-button"]');
+			submitButton = $(moduleEl).find('#register-form button:submit[data-type="multistate-button"]');
+			submitCodeButton = $(moduleEl).find('#signup-code-form button:submit[data-type="multistate-button"]');
 			msSubmitButton = msbuttonService.create(submitButton, {
 				states: ['default-state', 'fail-data-state', 'fail-network-state']
 			});
@@ -3098,11 +3191,33 @@ Box.Application.addModule('signup-overlay', function (context) {
 		},
 		onsubmit: function (event) {
 			event.preventDefault();
-			sendForm();
+			console.log(form);
+			validForm = form.formValid();
+			if(validForm) sendForm();
 		}
 	};
 });
 
+Box.Application.addService("msgBlock", function(app){
+	return {
+		create: function(errors, msgBlock){
+	      if(msgBlock !== false) {
+	        msgBlock.html('');
+	      } else if(msgBlock === false) {
+	        msgBlock = $(document.createElement("div")).addClass("js-msg-block form__msg-block msg-block");
+	        form.prepend(msgBlock);
+	      }
+	      msgBlock.slideUp(function(){
+	        var This = $(this);
+	        This.addClass('msg-block--error');
+	        $.each(errors, function(key, val){
+	          This.append(val);
+	        });
+	        This.slideDown();
+	      }); 
+		}
+	}
+});
 
 /* global Box */
 Box.Application.addModule('reset-overlay', function (context) {
@@ -3113,9 +3228,14 @@ Box.Application.addModule('reset-overlay', function (context) {
 	// --------------------------------------------------------------------------
 	var $ = context.getGlobal('jQuery');
 	var moduleEl;
+	var sessid = context.getGlobalConfig("sessid");
+	var ajax_key = context.getGlobalConfig("ajax_key");
 	var pageModule;
 	var adaptiveField;
 	var codeField;
+	var msgBlockReset;
+	var msgBlock;
+	var validForm;
 	var msbuttonService;
 	var submitButton;
 	var submitCodeButton;
@@ -3126,6 +3246,8 @@ Box.Application.addModule('reset-overlay', function (context) {
 	var passwordVisualizer;
 	var passwordField;
 	var adaptiveFieldHidden;
+	$("body").find('input[name="sessid"]').val(sessid);
+	$("body").find('input[name="ajax_key"]').val(ajax_key);
 
 	function showOverlay() {
 		$(moduleEl).addClass('is-visible');
@@ -3136,6 +3258,8 @@ Box.Application.addModule('reset-overlay', function (context) {
 		$(moduleEl).removeClass('is-visible');
 	}
 	function sendForm() {
+		var email = $('.js-user-email').val();
+		if(email != "") $('.js-user-email-paste').val(email);
 		$.ajax({
 			type: 'POST',
 			dataType: 'json',
@@ -3183,10 +3307,12 @@ Box.Application.addModule('reset-overlay', function (context) {
 						});
 					}
 					var errors = data.errors;
-					$.each(errors, function (key, value) {
-						$('<span class="form-control-message">' + value + '</span>')
-							.insertAfter($(moduleEl).find('input[name="' + key + '"]').closest('.form-group').addClass('has-error').find('.form-control'));
-					});
+					var returnVal = false;
+					var msgBlockRender = context.getService("msgBlock");
+					if(!$.isEmptyObject(errors)){
+						if(form.data('type') !== 'reset-code-form') returnVal = msgBlockRender.create( errors, msgBlockReset );
+						else returnVal = msgBlockRender.create( errors, msgBlock );	
+					}
 				} else {
 					if (form.data('type') !== 'reset-code-form') {
 						msSubmitButton.changeState('default-state').enable();
@@ -3208,22 +3334,21 @@ Box.Application.addModule('reset-overlay', function (context) {
 		Box.Application.broadcast('hidesignupoverlay');
 	}
 	function showNextStep() {
-		var activeItem = steps.find('.step.active');
-		activeItem.removeClass('in');
+		var activeItem = steps.find('.step--active');
 		setTimeout(function () {
-			activeItem.removeClass('active');
-			activeItem.next('.step').addClass('active in');
+			activeItem.removeClass('step--active').slideUp();
+			activeItem.next('.js-step').addClass('step--active').slideDown();
 			codeField.trigger('focus');
 			reinit();
 		}, 300);
 	}
 	function reinit() {
-		form = steps.find('.step.active').find('form');
+		form = steps.find('.step--active').find('form');
 	}
 	function resetOverlay() {
 		adaptiveFieldHidden.val('');
-		steps.find('.step').removeClass('in active').first().addClass('in active');
-		form = steps.find('.step.active form');
+		steps.find('.js-step').removeClass('step--active').slideUp().first().addClass('step--active').slideDown();
+		form = steps.find('.step--active form');
 
 		if (form.data('type') === 'reset-code-form') {
 			adaptiveField.val('');
@@ -3242,15 +3367,17 @@ Box.Application.addModule('reset-overlay', function (context) {
 			moduleEl = context.getElement();
 			pageModule = $('[data-module="page"]').get(0);
 			steps = $(moduleEl).find('.steps');
-			form = steps.find('.step.active').find('form');
+			form = steps.find('.step--active').find('form');
+			msgBlockReset = steps.find('#restore-pass-form').find('.js-msg-block');
+			msgBlock = steps.find('#have-code').find('.js-msg-block');
 			msbuttonService = context.getService('multistate-button');
 			adaptiveField = $(moduleEl).find('[data-type="adaptive-field"]');
 			adaptiveFieldHidden = $(moduleEl).find('[data-type="adaptive-field-hidden"]');
 			codeField = $(moduleEl).find('[data-type="code-field"]');
 			passwordVisualizer = $(moduleEl).find('[data-type="password-visualizer"]');
 			passwordField = $(moduleEl).find('[data-type="password-field"]');
-			submitButton = $(moduleEl).find('form:not([data-type="reset-code-form"]) button:submit[data-type="multistate-button"]');
-			submitCodeButton = $(moduleEl).find('form[data-type="reset-code-form"] button:submit[data-type="multistate-button"]');
+			submitButton = $(moduleEl).find('#restore-pass-form button:submit[data-type="multistate-button"]');
+			submitCodeButton = $(moduleEl).find('#have-code button:submit[data-type="multistate-button"]');
 			msSubmitButton = msbuttonService.create(submitButton, {
 				states: ['default-state', 'fail-data-state', 'fail-network-state']
 			});
@@ -3279,10 +3406,17 @@ Box.Application.addModule('reset-overlay', function (context) {
 			}
 		},
 		onclick: function (event, element, elementType) {
-			if (elementType === 'password-visibility-toggle') {
+			if (elementType === 'password-show-toggle') {
+                var $this = $(element);
+                var passInput = $this.siblings('.js-password-field');
+                if(passInput.attr('type') == "password") {
+                    passInput.attr('type', 'text');
+                    $this.addClass('password-show-toggle--show');
+                }else{
+                    passInput.attr('type', 'password');
+                    $this.removeClass('password-show-toggle--show');
+                }
 				event.preventDefault();
-				passwordVisualizer.toggleClass('is-visible');
-				$(element).toggleClass('active');
 			} else if (elementType === 'signin-handler-link') {
 				event.preventDefault();
 				hideOverlay();
@@ -3298,16 +3432,12 @@ Box.Application.addModule('reset-overlay', function (context) {
 			}
 		},
 		onkeyup: function (event, element, elementType) {
-			if (elementType === 'password-field') {
-				passwordVisualizer.val($(element).val());
-			}
-			if (elementType === 'password-visualizer') {
-				passwordField.val($(element).val());
-			}
+
 		},
 		onsubmit: function (event) {
 			event.preventDefault();
-			sendForm();
+			validForm = form.formValid();
+			if(validForm) sendForm();
 		}
 	};
 });

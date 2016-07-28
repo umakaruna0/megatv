@@ -1,0 +1,73 @@
+Options -Indexes 
+ErrorDocument 404 /404.php
+
+<IfModule mod_php5.c>
+    php_flag allow_call_time_pass_reference 1
+    php_flag session.use_trans_sid off
+    php_flag session.use_trans_sid off
+    php_value display_errors 0
+    php_value mbstring.internal_encoding UTF-8
+    php_value mbstring.func_overload 2
+    php_flag register_globals off
+    php_flag apc.cache_by_default Off
+    php_value allow_url_fopen Off
+    php_value auto_prepend_file "/home/d/daotel/MEGATV/public_html/bitrix/modules/security/tools/start.php
+    php_flag mail.add_x_header Off
+</IfModule>
+
+<IfModule mod_rewrite.c>
+    
+    Options +FollowSymLinks
+    RewriteEngine On
+    RewriteCond %{REQUEST_URI} !^/robots.txt [NC]
+    
+    #from megatv to tvguru
+    RewriteCond %{HTTP_HOST} ^megatv\.su$ [NC]
+    RewriteRule ^(.*)$ http://tvguru.com/$1 [R=301,L]
+    
+    Redirect 301 /channels/rossiya-2/ /channels/match/
+    
+    #from index.php to /
+    RewriteCond %{THE_REQUEST} /(.*)index.php.*$
+    RewriteCond %{THE_REQUEST} !bitrix/admin/
+    RewriteRule .* /%1 [R=301,L]
+    
+    #from /ntv to /ntv/ version 2
+    #RewriteCond %{REQUEST_FILENAME} !-f
+    #RewriteCond %{REQUEST_FILENAME} !-l
+    #RewriteCond %{REQUEST_FILENAME} !-d
+    #RewriteCond %{REQUEST_URI} ^(.*/[^/\.]+)$
+    #RewriteRule ^(.*)$ http://%{HTTP_HOST}/$1/ [R=301,L]
+    
+	Options +FollowSymLinks
+	RewriteEngine On
+	RewriteCond %{REQUEST_FILENAME} !-f
+	RewriteCond %{REQUEST_FILENAME} !-l
+	RewriteCond %{REQUEST_FILENAME} !-d
+	RewriteCond %{REQUEST_FILENAME} !/bitrix/urlrewrite.php$
+	RewriteRule ^(.*)$ /bitrix/urlrewrite.php [L]
+	RewriteRule .* - [E=REMOTE_USER:%{HTTP:Authorization}]
+    
+    #from /ntv to /ntv/
+    RewriteCond %{REQUEST_URI} !\?
+    RewriteCond %{REQUEST_URI} !\&
+    RewriteCond %{REQUEST_URI} !\=
+    RewriteCond %{REQUEST_URI} !\.
+    RewriteCond %{REQUEST_URI} !\/$
+    RewriteRule ^(.*[^\/])$ /$1/ [R=301,L]
+       
+</IfModule>
+
+<IfModule mod_dir.c>
+	DirectoryIndex index.php index.html
+</IfModule>
+
+<IfModule mod_expires.c>
+	ExpiresActive on
+	ExpiresByType image/jpeg "access plus 3 day"
+	ExpiresByType image/gif "access plus 3 day"
+</IfModule>
+
+<FilesMatch ".(flv|gif|jpg|jpeg|png|ico|swf|js|css|pdf)$">
+    Header set Cache-Control "max-age=1209600"
+</FilesMatch>

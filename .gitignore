@@ -37,3 +37,5 @@ syslog
 #/vendor/
 
 /local/config/config.php
+pass.php
+/local/*/node_modules

@@ -1,0 +1,41 @@
+.ModalWindow{
+  height: 100%;
+  width: 100%;
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 10;
+  padding-top: 74px;
+  overflow: hidden;
+  display: none;
+  &__content{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 350px;
+    transition: all 0.5s ease-in-out;
+  }
+  &__overlay{
+    overflow: hidden;
+    position: relative;
+    background: rgba(244, 243, 243, 0.98);
+    border-bottom: 5px solid #1e6edc;
+    box-shadow: 0px 0px 80px rgba(0, 0, 0, 1);
+    display: none;
+  }
+  &:after {
+    content: "";
+    display: block;
+    position: relative;
+    height: 100%;
+    cursor: pointer;
+    background: rgba(30, 110, 220, 0.8);
+  }
+  &__loader{
+    background: url(#{$path_to_imgs}loader.gif);
+    background-repeat: no-repeat;
+    width: 120px;
+    height: 120px;
+    margin: 70px 0;
+  }
+}

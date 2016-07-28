@@ -1,0 +1,17 @@
+/*
+* Mixins
+* -------------------------------------------------- */
+
+/* Utilities */
+@import "mixins/hide-text";
+
+/* Components */
+@import "mixins/buttons";
+@import "mixins/forms";
+
+/* Skins */
+@import "mixins/border-radius";
+@import "mixins/placeholder";
+
+/* Layout */
+@import "mixins/clearfix";

@@ -13,19 +13,32 @@ IncludeTemplateLangFile(__FILE__);
 		<link rel="icon" href="/favicon.png">
 		<meta name='yandex-verification' content='6b022e42074ebaca' />
         <?/*<meta name="author" content="http://hawkart.ru, разработка и поддержка интернет-проектов и информационных систем"/>*/?>
+        <script id="globalConfig" type="text/x-config">
+            {
+                "authURL" : "<?=SITE_TEMPLATE_PATH;?>/ajax/modals/auth.php",
+                "registerURL" : "<?=SITE_TEMPLATE_PATH;?>/ajax/modals/register.php",
+                "restorePassURL" : "<?=SITE_TEMPLATE_PATH;?>/ajax/modals/restore-password.php",
+                "haveCodeRestorePassURL" : "<?=SITE_TEMPLATE_PATH;?>/ajax/modals/have-code-for-restore-pass.php",
+                "sessid" : "<?=preg_replace("/sessid\=/","",bitrix_sessid_get());?>",
+                "ajax_key" : "<?=md5('ajax_'.LICENSE_KEY)?>"
+            }
+        </script>
         <?
         echo '<meta http-equiv="Content-Type" content="text/html; charset='.LANG_CHARSET.'"'.(true ? ' /':'').'>'."\n";
+
         $APPLICATION->ShowMeta("robots", false, true);
         $APPLICATION->ShowMeta("keywords", false, true);
         $APPLICATION->ShowMeta("description", false, true);
         $APPLICATION->ShowCSS(true, true);
-        
+
         $APPLICATION->SetAdditionalCSS(SITE_TEMPLATE_PATH.'/megatv/public/css/main.css');
         $APPLICATION->SetAdditionalCSS(SITE_TEMPLATE_PATH.'/project.css');
+        $APPLICATION->SetAdditionalCSS(SITE_TEMPLATE_PATH.'/stylesheets/complete/main.css');
         $APPLICATION->ShowHeadStrings();
     	$APPLICATION->ShowHeadScripts();
         $APPLICATION->SetDirProperty("h1-hide", "hidden");
         ?>
+
 		<title><?$APPLICATION->ShowTitle()?></title>
         <!-- Google Analytics -->
         <script>
@@ -33,7 +46,7 @@ IncludeTemplateLangFile(__FILE__);
           (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
           m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
           })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
-        
+
           ga('create', 'UA-75224044-1', 'auto');
           ga('send', 'pageview');
         
@@ -45,7 +58,10 @@ IncludeTemplateLangFile(__FILE__);
         <?if($APPLICATION->GetCurDir()=="/recommendations/"):?> class="page-recommendations"<?endif;?>
     >
         <div id="panel"><?$APPLICATION->ShowPanel();?></div>
-        
+
+        <?//$APPLICATION->IncludeComponent("bitrix:main.include", "", array("AREA_FILE_SHOW" => "file", "PATH" => SITE_DIR."include/header-signin.php"), false);?>
+        <? //require($_SERVER["DOCUMENT_ROOT"].SITE_TEMPLATE_PATH."/include/svg.php"); ?>
+
 		<div class="site-wrapper" data-module="page">
 
             <script type="text/x-config">
@@ -54,23 +70,26 @@ IncludeTemplateLangFile(__FILE__);
 					"pathToSVGSprite": "<?=SITE_TEMPLATE_PATH?>/megatv/public/img/sprites/svg_sprite.svg",
 					"playerURL": "<?=SITE_TEMPLATE_PATH?>/ajax/modals/player.php",
                     "playerLastPositionURL": "<?=SITE_TEMPLATE_PATH?>/ajax/player_last_position.php",
-					"shareURL": "<?=SITE_TEMPLATE_PATH?>/ajax/share.php",
+                    "shareURL": "<?=SITE_TEMPLATE_PATH?>/ajax/share.php",
                     "authentication" : <?=($USER->IsAuthorized()) ? "true" : "false"?>
-				}
+                }
 			</script>
-                        
-			<header class="site-header">
 
-				<div class="top-panel">
-                    <?/*if($APPLICATION->GetCurPage(false) === '/'):?>
-					   <span class="logo"></span>
-                    <?else:?>
-                        <a href="/" class="logo"></a>
-                    <?endif;*/?>
-                    
-                    <?$APPLICATION->IncludeComponent("hawkart:city.list", "", Array(), false);?>
-                    <?$APPLICATION->IncludeComponent("hawkart:lang.list", "", Array(), false);?>
-                    
+	        <header class="site-wrapper__header header g-clearfix">
+	            <div class="header__box-left box-left">
+	                <div class="box-left__box-logo">
+	                    <?if($APPLICATION->GetCurPage(false) === '/'):?>
+						   <span class="box-logo__link-logo link-logo"><span class="link-logo__logo logo"></span></span>
+	                    <?else:?>
+	                        <a class="box-logo__link-logo link-logo" href="/"><span class="link-logo__logo logo"></span></a>
+	                    <?endif;?>
+	                </div>
+                    <?
+                    	$APPLICATION->IncludeComponent("hawkart:city.list", "", Array(), false);
+                        $APPLICATION->IncludeComponent("hawkart:lang.list", "", Array(), false);
+                    ?>
+	            </div>
+	            <div class="header__box-right box-right">
                     <?if($APPLICATION->GetCurDir()!="/personal/records/"):?>
                         <div class="calendar-carousel" data-module="calendar-carousel">
                     		<script type="text/x-config">
@@ -103,8 +122,25 @@ IncludeTemplateLangFile(__FILE__);
                     
                     <?require($_SERVER["DOCUMENT_ROOT"].SITE_TEMPLATE_PATH."/include/header-user-card.php");?>
 
-				</div>
-                
-			</header>
+	             <!--    <div class="box-right__box-menu">
+	                    <a class="box-menu__link" href="/channels/"><span class="box-menu__icon g-icon"><svg class="g-icon__icon-cnt"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#icon-channels"></use></svg></span><span class="box-menu__title">Каналы</span></a>
+	                    <a class="box-menu__link" href="/recommendations/"><span class="box-menu__icon g-icon"><svg class="g-icon__icon-cnt"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#icon-recommendations"></use></svg></span><span class="box-menu__title">Рекомендации</span></a>
+	                </div> -->
+	                <!-- <div class="box-userbar box-right__box-userbar">
+	                    <a href="<?=SITE_TEMPLATE_PATH."/ajax/tmpl/";?>auth" class="g-btn g-btn--primary box-userbar__btn-auth js-btnModalInit"><span>Войти</span></a>
+	                    <a href="<?=SITE_TEMPLATE_PATH."/ajax/tmpl/";?>register" class="g-btn box-userbar__btn-register js-btnModalInit"><span>Зарегистрироваться</span></a>
+	                </div> -->
+	            </div>
+	        </header>
+	        <div class="ModalWindow js-ModalWindow">
+	            <div class="ModalWindow__overlay js-ModalOverlay">
+	                <div class="ModalWindow__content js-ModalContent">
+	                    <div class="ModalWindow__loader"></div>
+	                </div>
+	            </div>
+	            <div class="ModalWindow__blueBackground" data-type="closeModal"></div>
+	        </div>
+            
+
 			<main class="site-content">
                 <section class="section-h1 <?$APPLICATION->ShowProperty("h1-hide");?>"><h1><?$APPLICATION->ShowProperty("h1");?></h1></section>

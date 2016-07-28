@@ -1,0 +1,19 @@
+//
+//  Clearfix
+//
+
+@mixin clearfix($display){
+	clear: both;
+	&:after, &:before{
+		content: " ";
+		clear: both;
+		@if $display == b {
+			display: block;
+		} @else if $display == i{
+			display: inline;
+		} @else if $display == ib{
+			display: inline-block;
+		}
+	}
+	
+}

@@ -17,4 +17,4 @@
     <div class="search-trigger" data-type="open">
 		<span data-icon="icon-search"></span>
 	</div>
-</div>			
+</div>		

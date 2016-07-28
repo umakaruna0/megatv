@@ -12,17 +12,17 @@
 /** @var CBitrixComponent $component */
 $this->setFrameMode(true);
 ?>     
-<div class="city-select" data-module="city-select">
+<div class="city-select box-left__box-city" data-module="city-select">
     <script type="text/x-config">
-		{
-			"url": "<?=$arResult["URL"]?>",
-			"cities": [
+        {
+            "url": "<?=$arResult["URL"]?>",
+            "cities": [
                 <?foreach($arResult["ITEMS"] as $key=>$arItem):?>
-				    { "id": <?=$arItem["ID"]?>, "text": "<?=$arItem["UF_TITLE"]?>" }<?if($key<count($arResult["ITEMS"])-1):?>,<?endif;?>
+                    { "id": <?=$arItem["ID"]?>, "text": "<?=$arItem["UF_TITLE"]?>" }<?if($key<count($arResult["ITEMS"])-1):?>,<?endif;?>
                 <?endforeach;?>
-			],
-			"showCityRequestPopover": false
-		}
+            ],
+            "showCityRequestPopover": false
+        }
     </script>
     <form action="<?=$arResult["URL"]?>" method="POST" id="city-select-form">
         <select name="city-select" id="_id-city-select">

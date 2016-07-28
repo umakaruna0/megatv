@@ -1,0 +1,47 @@
+.g-btn{
+	font-size: 15px;
+    text-decoration: none;
+    background: #888888;
+    padding: 8px 14px;
+	color: #fff;
+	border: none;
+	cursor: pointer;
+    transition: $transition02;
+	&:hover{
+		background: #444444;
+    	color: #FFF;
+	}
+	&--primary{
+		background: $blue_c;
+		&:hover{
+			background: #154C9A;
+		}
+	}
+	&--danger{
+		background: #ed3131;
+		&:hover{
+			background: #BB2727;
+		}
+	}
+	&--info{
+		background: #00a6ff;
+		&:hover{
+			background: #007497;
+		}
+	}
+	&--warning{
+		background: #ff7c35;
+		&:hover{
+			background: #C76129;
+		}
+	}
+	&--success{
+		background: #1ce000;
+		&:hover{
+			background: #149700;
+		}
+	}
+	&--stop-events{
+		pointer-events: none;
+	}
+}

@@ -16,9 +16,9 @@
         ?>
         <script src="<?=SITE_TEMPLATE_PATH?>/megatv/public/js/vendor.js"></script>
 		<script src="<?=SITE_TEMPLATE_PATH?>/megatv/public/js/plugins.js"></script>
-        <script src="<?=SITE_TEMPLATE_PATH?>/project.js"></script>
-        
-        <?if(strpos($APPLICATION->GetCurDir(), "/channels/")!==false && !empty($_REQUEST["SCHEDULE_CODE"])):?>
+        <script src="<?=SITE_TEMPLATE_PATH?>/javascripts/complete/main.js"></script>
+        <?if(strpos($APPLICATION->GetCurDir(), "/channels/")!==false && isset($_REQUEST["SCHEDULE_CODE"])):?>
+            <script src="<?=SITE_TEMPLATE_PATH?>/project.js"></script>
             <script src="<?=SITE_TEMPLATE_PATH?>/megatv/public/js/broadcast-card.js"></script>
         <?elseif(strpos($APPLICATION->GetCurDir(), "/channels/")!==false && !empty($_REQUEST["CHANNEL_CODE"])):?>
             <?/*<script src="<?=SITE_TEMPLATE_PATH?>/megatv/public/js/channel-card.js"></script>*/?>

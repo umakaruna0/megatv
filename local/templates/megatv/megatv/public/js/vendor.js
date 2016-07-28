@@ -10277,8 +10277,8 @@ Box.Context = (function() {
 		 * @returns {*} config value or the entire configuration JSON object
 		 *                if no name is specified (null if either not found)
 		 */
-		getConfig: function(name) {
-			return this.application.getModuleConfig(this.element, name);
+		getConfig: function(name, outerConfig) {
+			return this.application.getModuleConfig(this.element, name, outerConfig || false);
 		},
 
 		/**
@@ -10882,7 +10882,7 @@ Box.Application = (function() {
 		 */
 		startAll: function(root) {
 			var moduleElements = Box.DOM.queryAll(root, MODULE_SELECTOR);
-
+			
 			for (var i = 0, len = moduleElements.length; i < len; i++) {
 				this.start(moduleElements[i]);
 			}
@@ -10938,7 +10938,7 @@ Box.Application = (function() {
 		 * @returns {*} config value or the entire configuration JSON object
 		 *                if no name is specified (null if either not found)
 		 */
-		getModuleConfig: function(element, name) {
+		getModuleConfig: function(element, name, outerConfig) {
 
 			var instanceData = getInstanceDataByElement(element);
 			var moduleConfig = null;
@@ -10948,7 +10948,11 @@ Box.Application = (function() {
 				moduleConfig = instanceData.config;
 			} else {
 				// Read the special script element that stores module configuration in the markup
-				var configElement = Box.DOM.query(element, 'script[type="text/x-config"]');
+				var configElement;
+
+				if(outerConfig === false) {
+					configElement = Box.DOM.query(element, 'script[type="text/x-config"]');
+				} else configElement = Box.DOM.query(document, outerConfig);
 
 				// <script> tag supports .text property
 				if (configElement) {
@@ -16590,7 +16594,6 @@ var SemiCircle = function SemiCircle(container, options) {
     this._pathTemplate =
         'M 50,50 m -{radius},0' +
         ' a {radius},{radius} 0 1 1 {2radius},0';
-
     Shape.apply(this, arguments);
 };
 

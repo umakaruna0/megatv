@@ -1,0 +1,195 @@
+.form{
+	overflow: hidden;
+	&__form-group{
+		position: relative;
+	} 
+	&__form-control{
+		width: 100%;
+		padding: 14px 17px;
+		line-height: 1.3;
+		border: 2px solid $grey_c;
+		margin-bottom: 15px;
+    	transition: $transition02;
+		&:focus{ 
+			box-shadow: none;
+			outline: 0;
+			border-color: $blue_c;
+		}
+		&--error{
+			border-color: #e76969;
+		}
+	}
+	&__form-actions{
+		text-align: center;
+	}
+	&__btn{
+		width: 100%;
+		padding: 16px;
+		font-size: 16px;
+	}
+	&__state{
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	    position: absolute;
+	    top: 0;
+	    left: 0;
+	    z-index: 2;
+	    width: 100%;
+		padding: 15px 20px;
+		&.active{
+		    animation: .3s showActiveButtonState cubic-bezier(.63, .15, .45, .9)!important;
+		    animation-fill-mode: forwards!important
+		}
+		&--show{
+			display: inline-block;
+		}
+	}
+	&__subaction-link{
+		display: inline-block;
+		margin-top: 20px;
+		color: $darkgrey_c;
+		border-bottom: 1px dotted;
+		padding-bottom: 1px;
+		text-decoration: none;
+		&:hover{
+			border: none;
+			padding-bottom: 2px;
+		}
+	}
+	&__checkbox{
+	    opacity: 0;
+	    position: absolute;
+	    z-index: 1;
+	    width: 20px;
+	    height: 20px;
+	    cursor: pointer;
+		&:checked + .form__label > .form__checkbox-imitation:after{
+			opacity: 1;
+		}
+		&:checked + .form__label > .form__checkbox-imitation{
+			border-color: $blue_c;
+		}
+	}
+	&__label{
+		display: flex;
+		align-items: center;
+		margin-bottom: 25px;
+	}
+	&__label-title{
+		display: block;
+		color: #4f4f4f;
+	}
+	&__checkbox-imitation{
+		background: #fff;
+		width: 20px;
+		height: 20px;
+		display: block;
+		border: 2px solid $grey_c;
+		margin-right: 10px;
+		position: relative;
+    	transition: $transition02;
+		&:after{
+			background: url(#{$path_to_imgs}checkbox-mark.svg) no-repeat center/10px 7px;
+			content: "";
+			position: absolute;
+			top: 0;
+			left: 0;
+			width: 100%;
+			height: 100%;
+			opacity: 0;
+    		transition: $transition02;
+		}
+	}
+	&__msg-block{
+		display: none;
+	}
+}
+.msg-block{
+	padding: 15px;
+	color: #fff;
+	text-align: center;
+	&--error{
+		background: #e76969;
+	}
+	&--success{
+		background: #6ed72d;
+	}
+	&__p{
+		margin: 0 0 10px 0;
+	}
+	&__p:last-child{
+		margin: 0;
+	}
+}
+.password-show-toggle{
+	position: absolute;
+	top: 14px;
+	right: 14px;
+	color: $grey_c;
+	&--show{
+		color: $blue_c;
+	}
+}
+
+.btn-multistate {
+    position: relative;
+    min-height: 50px;
+    padding: 0;
+    overflow: hidden;
+    &:before {
+	    position: absolute;
+	    top: 0;
+	    right: 0;
+	    bottom: 0;
+	    left: 0;
+	    content: '';
+	    opacity: 0;
+	    transition: opacity .3s linear, background-color .3s linear;
+	}
+
+	& [class*=state]{
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	    position: absolute;
+	    top: 0;
+	    left: 0;
+	    z-index: 2;
+	    width: 100%;
+		padding: 15px 20px;
+		&.active{
+		    animation: .3s showActiveButtonState cubic-bezier(.63, .15, .45, .9)!important;
+		    animation-fill-mode: forwards!important
+		}
+		&.init-state {
+		    animation: none!important
+		}
+		&.init-state~[class*=state] {
+		    opacity: 0;
+		    transform: translateY(-100%);
+		}
+	}
+
+	&[class*=is-inited] [class*=state] {
+	    animation: .3s hideButtonState cubic-bezier(.63, .15, .45, .9);
+	    animation-fill-mode: forwards
+	}
+
+	&.is-done-state,
+	&.is-fail-data-state,
+	&.is-fail-network-state {
+	    opacity: 1;
+	    animation: .3s showAltButtonStateBefore cubic-bezier(.63, .15, .45, .9);
+	    animation-fill-mode: forwards
+	}
+
+	&.is-done-state {
+	    background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAZAAAAGQBAMAAABykSv/AAAAG1BMVEUhhOInjOUkiOQiheIni+Umi+UihOIkiOMlieRO1IJvAAADKklEQVR4AezYN17DYBBE8SHWxAs4tQ4VJZnavgAZWiqfgIODZC28JfXzY9Xpe9Xf2aMXNdfsZPfjOui3R89eRVc3zdHG4PPodNKcbA+8ig6WwAF9d+JVtHsaOKKbe6+iUAYOt16FzIw2KxlnfPM31Kc0kMPvL715k71Kc7YIXDCHzalZSbiM9ioJl9Fe5YQ4og/MyoA4ok+9imbEEd33KtogjuiJV5GII9qsvFtegQParEg6Ag5os6IvuI1BoM1K4AKKn5ZeBbjTSUKbFeJG0h2YXkV88d1sA21WxP9ZS6LNSsYRbVZqaaylsZbGWhpraaylsZbGWhpraayl8R8tjXe/rHmHI6+i7V/WvMWNV5Hu5sABbVak7SFwQJsVZRzRXkXEYZy/kVkJHNe8QFsV4E4nGe1ViIs1L9BWZYXjZge0U+lwec0LtFPJuDA2Z2allsa/y1u7diACAAAAAMjfepE17tJYGktjaSyNpbE0lsbS+DQ+jU/j0/g0Po1P49P4ND6NT2NpLI2lsTSWxtJYGktjaSyNT+PT+DQ+jU/j0/g0Po1P49NYGktjaSyNpbE0lsbSWBpL49P4ND6NT+PT+DQ+jU/j0/g0lsbSWBpLY2ksjaWxNJbG0vg0Po1P49P4ND6NT+PT+DQ+jaWxNJbG0lgaS2NpLI2lsTQ+jU/j0/g0Po1P49P4ND6NT+PTWBpLY2ksjaWxNJbG0lgaS+PT+DQ+jU/j0/g0Po1P49P4NJbG0lgaS2NpLI2lsTSWxtL4ND6NT+PT+DQ+jU/j0/g0Po2lsTSWxtJYGktjaSyNpbE0Po1P49P4ND6NT+PT+DQ+jU9jaSyNpbE0lsbSWBpLY2ksjU/j0/g0Po1P49P4ND6NT+PT+DSWxtJYGktjaSyNpbE0lsbS+DQ+jU/j0/g0Po1P49P4ND6NpbE0lsbSWBpLY2ksjaWxND6NT+PT+DQ+jU/j0/g0Po1PY2ksjaWxNJbG0lgaS2NpLI1P49P4ND6NT+PT+DQ+jU/j01gaS2NpLI2lsTSWxtJYGkvj0/g0Po1P49P4ND6NT+PT+DQ+jaWxNJbG0lgaS2NpBPtDi6P2IJofAAAAAElFTkSuQmCC) 0 -25px #1675f8;
+	}
+
+	&.is-fail-data-state,
+	&.is-fail-network-state {
+	    background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAZAAAAGQBAMAAABykSv/AAAAG1BMVEXydnDwcWnwcWrxc2zydm/xdG3xc23wcGnydW+yJWdfAAADUUlEQVR4AezYNV7DQRBH8UH72UVanDLa4zXaI+ECOQMHR2Yj779cgB+fjWde9Y1nbOA/h2PD4S1GWaysxSjdYbIfo75WMSu4k+VgGINDpcKn5KWLTn2xEkrggNYqYNZorWJm6wsn0OcmVn4ur35Dx2ZipcYRLVWIe6nRSoW4kxqtVLo4osVKF/dGtFaxO+KI3tAqdkwc0Q9axRJxRO9rFXPggF5/cK1iDhzQN/suVioc0GLFPT3NcUCfuouVHxx+TgItVnzK11vqF3Q4tQq2EYPFz/tAixVsI9bcC3oj0GKlg8tEi5UOrkIrlf+8adzENk+ntE1j2zS2TWPbNP7F0jaNbdPYNo1t0zgmjugrrWL5HDig1wdaxbzgPoJFtGsV8x3igHatYu5cEBEtVty3iQNarPgucUSLlQoHtFjh623qqb9Ea5WA7JxjZwe0VInZO3Z2QEuVGOUZLhMtVspsXHAVWqp8tWsHQwAAAADC/K0ziGDvDLoxjUyj0+g0Oo1Oo9PoNDqNTiPTyDQyjUwj08g0Mo1bmEamkWlkGplGp9FpdBqdRqfRaXQanUamkWlkGplGppFpZBqZRqaRaWQamUan0Wl0Gp1Gp9FpdBqdRqaRaWQamUamkWlkGplGppFpZBqZRqbRaXQanUan0Wl0Gp1GppFpZBqZRqaRaWQamUamkWlkGplGptFpdBqdRqfRaXQanUankWlkGplGppFpZBqZRqaRaWQamUam0Wl0Gp1Gp9FpdBqdRqeRaWQamUamkWlkGplGppFpZBqZRqbRaXQanUan0Wl0Gp1Gp5FpZBqZRqaRaWQamUamkWlkGplGppFpdBqdRqfRaXQanUankWlkGplGppFpZBqZRqaRaWQamUamkWl0Gp1Gp9FpdBqdRqfRaWQamUamkWlkGplGppFpZBqZRqaRaXQanUan0Wl0Gp1Gp9FpZBqZRqaRaWQamUamkWlkGplGppFpdBqdRqfRaXQanUan0WlkGplGppFpZBqZRqaRaWQamUamkWlkGp1Gp9FpdBqdRqfRaWQamUamkWlkGplGppFpZBqZRqaRaWQanUan0Wl0Gp1Gp9FpdBqZRqaRaWQamUamkWlkGplGppFpZBqdRqfRaXQanUanMSnky0onBWtzAAAAAElFTkSuQmCC) 0 -25px #ee5e59
+	}
+}

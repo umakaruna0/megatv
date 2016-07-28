@@ -1,0 +1,70 @@
+/* ------- DropDownJS ------- */
+.DropDownJS-init {
+    width: auto;
+    &--open {
+        border-color: #1e6edc;
+    }
+    &--open 
+    .js-DropDownJS-container {
+        opacity: 1;
+        margin-top: 0;
+        border-color: #1e6edc;
+    }
+}
+
+.js-DropDownJS-container {
+    position: absolute;
+    width: 100%;
+    top: 100%;
+    border: 2px solid #fff;
+    left: -2px;
+    margin-top: -20px;
+    opacity: 0;
+    box-sizing: content-box;
+    transition: all 0.2s ease-in-out;
+}
+
+.DropDownJS-search {
+    background: #1e6edc;
+    padding: 5px;
+    &__input {
+        width: 100%;
+        padding: 5px;
+    }
+}
+
+.DropDownJS-options {
+    padding: 0;
+    list-style-type: none;
+    margin: 0;
+    max-height: 200px;
+    overflow: scroll;
+}
+
+.langdd-init__titledd {
+    padding-left: 10px;
+}
+
+.langdd-container 
+.DropDownJS-options {
+    overflow: auto;
+}
+
+.DropDownJS-option__a {
+    background: #fff;
+    display: block;
+    padding: 10px;
+    text-decoration: none;
+    color: #333;
+    transition: background 0.2s ease-in-out;
+    &--highlight {
+        background: #1855ac;
+        color: #fff;
+        font-weight: 600;
+    }
+    &:hover {
+        background: #1e6edc;
+        color: #fff;
+        font-weight: 600;
+    }
+}
