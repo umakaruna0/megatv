@@ -1,4 +1,4 @@
-# bitrix core
+﻿# bitrix core
 /bitrix/
 /test/
 
@@ -42,3 +42,4 @@ pass.php
 /local/templates/megatv/assets/dist/
 *копия*
 .htaccess.restore
+/local/templates/megatv/gulpfile.js
