@@ -4,12 +4,12 @@
 *   Developer: gERYH (Eugeniy Genov) 
 *************************************** */
 'use strict';
-
+ 
 var Core = function () {
 
     var runMainScript = function(){
-    };
-    
+    }; 
+
     // Delayed Animations
     var runAnimations = function () {
 

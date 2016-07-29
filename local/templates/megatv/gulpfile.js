@@ -24,8 +24,8 @@ var path = {
         style: 'stylesheets/scss/main.scss',
     },
     watch: { 
-        js: 'javascripts/include/*.js',
-        style: 'stylesheets/**/*.scss'
+        js: '**/**/*.js',
+        style: '*.scss'
     },
     clean: './stylesheets'
 };
@@ -33,7 +33,7 @@ var path = {
 gulp.task('js:build', function () {
     gulp.src(path.src.js) //Найдем наш main файл
         .pipe(rigger()) //Прогоним через rigger
-        .pipe(uglify()) //Сожмем наш js
+        //.pipe(uglify()) //Сожмем наш js
         .pipe(gulp.dest(path.build.js)) //Выплюнем готовый файл в build
         .pipe(reload({stream: true})); //И перезагрузим сервер
 });

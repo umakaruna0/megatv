@@ -18,7 +18,7 @@
 //= include/plugins/bootstrap.tooltip.js
 //= include/plugins/bootstrap.collapse.js
 //= include/plugins/bootstrap.popover.js
-
+ 
 //jQuery
 
 //= include/plugins/jquery.kinetic.js

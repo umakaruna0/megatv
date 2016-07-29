@@ -349,7 +349,6 @@ Box.Application.addService('cookies', function (context) {
 });
 
 /* global Box */
-/*jshint -W030 */
 Box.Application.addService('modal', function () {
 	'use strict';
 
@@ -2446,6 +2445,7 @@ Box.Application.addModule('broadcast-results', function (context) {
 
 	};
 });
+
 /* global Box */
 Box.Application.addModule('recomended-broadcasts', function (context) {
 	'use strict';
@@ -3198,6 +3198,7 @@ Box.Application.addModule('signup-overlay', function (context) {
 	};
 });
 
+/* global Box */
 Box.Application.addService("msgBlock", function(app){
 	return {
 		create: function(errors, msgBlock){
