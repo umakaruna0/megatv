@@ -1389,7 +1389,6 @@ Box.Application.addModule('lang-select', function (context) {
 /* global Box */
 Box.Application.addModule('search', function (context) {
 	'use strict';
-
 	// --------------------------------------------------------------------------
 	// Private
 	// --------------------------------------------------------------------------
@@ -1443,6 +1442,14 @@ Box.Application.addModule('search', function (context) {
 
 						resultHTML += '<span class="info-col"><span class="publish-date">' + data.date + '</span><h5 class="result-title">' + data.title + '</h5></span></a>';
 
+						// if (data.thumbnail === null) {
+						// 	resultHTML += '<span class="form-search__image-holder is-empty"></span>';
+						// } else {
+						// 	resultHTML += '<span class="form-search__image-holder"><img alt="' + data.title + '" width="60" height="60" src="' + data.thumbnail + '"></span>';
+						// }
+
+						// resultHTML += '<span class="form-search__info-col"><span class="publish-date">' + data.date + '</span><h5 class="result-title">' + data.title + '</h5></span></a>';
+
 						return resultHTML;
 					}
 				}
@@ -1471,7 +1478,7 @@ Box.Application.addModule('search', function (context) {
 				setTimeout(function() {
 					searchField.focus();
 				}, 500);
-			} else if (elementType === 'close') {
+			} else if(elementType === "close") {
 				body.removeClass('search-opened');
 			}
 		},
@@ -1481,6 +1488,56 @@ Box.Application.addModule('search', function (context) {
 			}
 		}
 	};
+});
+
+
+/* global Box */
+Box.Application.addModule('modal', function (context) {
+	'use strict';
+	// --------------------------------------------------------------------------
+	// Private
+	// --------------------------------------------------------------------------
+	var $ = context.getGlobal('jQuery');
+	var el = $(context.element);
+	var type = el.data("modal");
+	var urlModal = context.getGlobalConfig(type);
+	var body = $("body");
+	var $modal = $('.js-ModalWindow');
+
+    function runEvents(){
+	    var $modalOverlay = $('.ModalWindow__overlay');
+	    var $offsetBlock = $('.header');
+
+    	body.on("mouseup.closeModal",function(e) {
+          if ($modalOverlay.has(e.target).length === 0 && $offsetBlock.has(e.target).length === 0) {
+            $modal.modalHeader('hide');
+          }
+        });
+    }
+
+	return {
+		init: function () {
+
+		},
+		onclick: function (event, element, elementType) {
+	        if(elementType === "openModal"){
+	        	$.getDataFromLink({
+		            link: urlModal,
+		            callback: function(data){
+            			body.off("mouseup.closeModal");
+		                $modal.modalHeader('init',{
+		                    content: data,
+		                    delay: 500
+		                });
+		            }
+		        });
+		        setTimeout(function(){
+		        	runEvents();
+		        }, 1000);
+	        }
+            event.preventDefault();
+		}
+	}
 });
 
 

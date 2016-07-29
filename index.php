@@ -18,7 +18,8 @@ $APPLICATION->SetDirProperty("h1-hide", "");
 
 <?/*$APPLICATION->IncludeComponent("hawkart:recommendations", "index", Array("NOT_SHOW_CHANNEL"=>"Y", "TEMPLATE" => "MAIN_PAGE"),
 	false
-);*/?>
+);*/
+?>
 
 <?if(strtolower(LANGUAGE_ID)=="ru"):?>
 <div class="channel-desc">
@@ -29,4 +30,32 @@ $APPLICATION->SetDirProperty("h1-hide", "");
 </div>
 <?endif;?>
 
-<?require($_SERVER["DOCUMENT_ROOT"]."/bitrix/footer.php");?>
+<div class="app-mobile hidden">
+    <div class="app-mobile__wrap">
+        <div class="app-mobile__left">
+            <img src="/local/templates/megatv/img/iphone.png" alt="" class="app-mobile__image">
+            <div class="app-mobile__titles">
+                <div class="app-mobile__title1">
+                    <ul class="app-mobile__crumbs">
+                        <li class="crumbs__logo-foo g-list-none"><span data-icon="icon-logo-footer" class="crumbs__logo"></span></li>
+                        <li class="crumbs__title">На iPhone</li>
+                    </ul>
+                </div>
+                <div class="app-mobile__title2">Планируйте свою ТВ-программу</div>
+            </div>
+        </div>
+        <div class="app-mobile__right">
+            <button class="g-btn g-btn--info btn-appmob">
+                <span data-icon="icon-iphone" class="g-icon icon-iphone btn-appmob__icon"></span>
+                <span class="btn-appmob__titles">
+                    <i class="btn-appmob__title-small">Скачать МЕГАТВ в</i>
+                    <i class="btn-appmob__title-big">App Store</i>
+                </span>
+            </button>
+        </div>
+    </div>
+</div>
+
+<?
+    require($_SERVER["DOCUMENT_ROOT"]."/bitrix/footer.php");
+?>

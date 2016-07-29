@@ -3,15 +3,12 @@ define('STOP_STATISTICS', true);
 require_once($_SERVER['DOCUMENT_ROOT'].'/bitrix/modules/main/include/prolog_before.php');
 $GLOBALS['APPLICATION']->RestartBuffer();
 global $USER;
-
 $arResult = array();
 $query = htmlspecialcharsbx($_REQUEST["query"]);
-
 $arFilter = array(
     "=UF_PROG.UF_ACTIVE" => 1,
     '%UF_PROG.UF_TITLE' => strtolower($query)
 );
-
 //User subscribe channel list
 if($USER->IsAuthorized())
 { 
@@ -19,9 +16,7 @@ if($USER->IsAuthorized())
 }else{
     $arFilter["=UF_CHANNEL_ID"] = \Hawkart\Megatv\ChannelTable::getActiveIdByCity();
 }
-
 $arExclude = array();
-
 $result = \Hawkart\Megatv\ScheduleTable::getList(array(
     'filter' => $arFilter,
     'select' => array(
@@ -60,8 +55,6 @@ while ($arSchedule = $result->fetch())
     $arJson["link"] = "/channels/".$arSchedule["UF_CHANNEL_CODE"]."/".$arSchedule["UF_PROG_CODE"]."/?event=".$arSchedule["ID"];
     $arResult[] = $arJson;
 }
-
 exit(json_encode($arResult));
-
 require($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/include/epilog_after.php");
 ?>

@@ -21,7 +21,7 @@
 					<label for="" class="sr-only">Новый пароль</label>
 					<input type="text" name="new-password2" id="" class="form-control" placeholder="Новый пароль">
 				</div>
-				<button type="submit" class="btn btn-primary btn-block btn-multistate" data-type="multistates-button"><span class="default-state init-state">Сменить пароль</span><span class="done-state"><span data-icon="icon-msbutton-checkmark"></span>Пароль изменён</span></button>
+				<button type="submit" class="btn btn-primary btn-block btn-multistate" data-type="multistate-button"><span class="default-state init-state">Сменить пароль</span><span class="done-state"><span data-icon="icon-msbutton-checkmark"></span>Пароль изменён</span></button>
 			</div>
 		</form>
 	</div>

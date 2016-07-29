@@ -773,7 +773,6 @@
 
   $(document).on('click.bs.collapse.data-api', '[data-toggle="collapse"]', function (e) {
     var $this   = $(this)
-
     if (!$this.attr('data-target')) e.preventDefault()
 
     var $target = getTargetFromTrigger($this)
@@ -3492,7 +3491,8 @@ S2.define('select2/results',[
 
         return;
       }
-
+      var dataEv = $._data(self, "events");
+      
       self.trigger('select', {
         originalEvent: evt,
         data: data
@@ -3505,7 +3505,7 @@ S2.define('select2/results',[
 
       self.getHighlightedResults()
           .removeClass('select2-results__option--highlighted');
-
+      
       self.trigger('results:focus', {
         data: data,
         element: $(this)
@@ -9091,6 +9091,17 @@ S2.define('jquery.select2',[
             cursor: "tt-cursor",
             highlight: "tt-highlight"
         };
+        // wrapper: "form-search__wrap",
+        // input: "form-search__input-search",
+        // hint: "form-search__hint",
+        // menu: "form-search__menu",
+        // dataset: "form-search__dataset",
+        // suggestion: "form-search__suggestion",
+        // selectable: "form-search__suggestion--selectable",
+        // empty: "form-search__menu--empty",
+        // open: "form-search__menu--open",
+        // cursor: "form-search__cursor",
+        // highlight: "form-search__highlight"
         return build;
         function build(o) {
             var www, classes;
