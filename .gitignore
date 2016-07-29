@@ -37,3 +37,8 @@ syslog
 #/vendor/
 
 /local/config/config.php
+pass.php
+/local/templates/megatv/node_modules/
+/local/templates/megatv/assets/dist/
+*копия*
+.htaccess.restore
