@@ -1,4 +1,5 @@
 <?
+    $auth = true;
 	require("include/header.php");
 ?>
 

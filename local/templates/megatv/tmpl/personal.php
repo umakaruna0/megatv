@@ -1,4 +1,7 @@
-<?require("include/header.php");?>
+<?
+	$auth = true;
+	require("include/header.php");
+?>
 
 <main class="site-content">
     <section class="section-h1 hidden">
@@ -245,8 +248,7 @@
 
 <?
 	$js = [
-		"js/user-profile.js",
-		"js/player.js"
+		"js/user-profile.js"
 	];
 	require("include/footer.php");
 ?>

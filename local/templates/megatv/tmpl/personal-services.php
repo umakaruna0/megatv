@@ -1,5 +1,13 @@
-<?require("include/header.php");?>
+<?
+    $auth = true;
+    require("include/header.php");
+?>
 
 
 
-<?require("include/footer.php");?>
+<?
+	$js = [
+		"js/user-services.js"
+	];
+	require("include/footer.php");
+?>

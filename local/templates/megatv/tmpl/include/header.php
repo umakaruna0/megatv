@@ -21,9 +21,7 @@
     <? 
     if(!isset($css)) 
     $css = [
-        "css/main2.css",
         "css/main.css",
-        "css/project.css"
     ];
     foreach( $css as $val ){ ?>
         <link href="<?=$val;?>" type="text/css" rel="stylesheet" />
@@ -163,7 +161,8 @@
                     </a> 
                 </div>
 
-                <div class="box-userbar__userbar userbar hidden">
+                <? if(isset($auth)): ?>
+                <div class="box-userbar__userbar userbar">
 
                     <div class="userbar__disk-space disk-space" data-type="fill-disk-space" onclick="location='personal-services.php'" style="cursor: pointer;">
                         <div class="disk-space__progress-holder progress-holder" data-progress="0"></div>
@@ -180,6 +179,7 @@
                     </nav>
 
                 </div>
+                <? endif; ?>
 
                 <!-- <div class="box-right__box-menu"> 
                     <a class="box-menu__link" href="/channels/">
@@ -195,13 +195,14 @@
                         <span class="box-menu__title">Рекомендации</span>
                     </a> 
                 </div> -->
-
+                <? if(!isset($auth)): ?>
                 <!-- BOX-USERBAR -->
                 <nav class="box-userbar box-right__box-userbar" data-module="user-navigation">
                     <a href="#" data-module="modal" data-modal="authURL" data-type="openModal" class="g-btn g-btn--primary box-userbar__btn-auth js-btnModalInit"><span>Войти</span></a>
                     <a href="#" data-module="modal" data-modal="registerURL" data-type="openModal" class="g-btn box-userbar__btn-register js-btnModalInit"><span>Зарегистрироваться</span></a>
                 </nav>
                 <!-- END BOX-USERBAR -->
+                <? endif; ?>
 
             </div>
             <!-- END BOX-RIGHT -->

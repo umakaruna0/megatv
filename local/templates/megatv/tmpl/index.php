@@ -38,6 +38,7 @@
             <a class="category-logo" href="/channels/rossiya-k/" data-channel-id="79">
                 <span data-icon="icon-rtr-kultura-eng-channel"></span>
             </a>
+            <!-- ===================== ДОБАВИТЬ ===================== -->
             <a class="category-logo" href="#link" data-channel-id="999">
                 <span data-icon="icon-pjatnica-channel"></span>
             </a>
@@ -47,6 +48,7 @@
             <a class="category-logo" href="#link" data-channel-id="99999">
             	<span data-icon="icon-domashnii2-channel"></span>
             </a>
+            <!-- =================== ! ДОБАВИТЬ ! =================== -->
         </div>
 
         <a href="#" class="prev-button" data-type="prev-button"><span class="sticky-wrapp">
