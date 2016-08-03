@@ -17,10 +17,13 @@
                         <img src="<?=CFile::GetPath($arResult["USER"]["PERSONAL_PHOTO"])?>" alt="<?=$USER->GetFullName()?>">
                     <?endif;?>
 				</div>
-				<span class="load-avatar-text-holder"><span><?if($arResult["USER"]["PERSONAL_PHOTO"]):?>Обновить аватар<?else:?>Загрузить аватар<?endif;?></span></span>
+				<span class="load-avatar-text-holder load-avatar"><?if($arResult["USER"]["PERSONAL_PHOTO"]):?><span data-icon="icon-replace-avatar" class="load-avatar__icon"></span><span class="load-avatar__title">Обновить аватар</span><?else:?><span>Загрузить аватар</span><?endif;?></span>
 			</div>
 			<span class="user-name"><?=trim($arResult["USER"]["NAME"]." ".$arResult["USER"]["LAST_NAME"])?></span>
-			<span class="user-city"><?=$arParams["CITY_GEO"]["UF_TITLE"]?></span>
+            <span class="user-city">
+				<strong class="user-city__strong">Город: </strong>
+				<span class="user-city__span"><?=$arParams["CITY_GEO"]["UF_TITLE"]?></span>
+            </span>
 		</div>
         
         <form action="<?= $templateFolder ?>/ajax.php" class="user-profile-form" data-module="user-profile-form">

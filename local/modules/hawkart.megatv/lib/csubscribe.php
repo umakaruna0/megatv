@@ -84,7 +84,7 @@ class CSubscribe
             
         if($this->type=="CHANNEL")
         {
-            $result = \Hawkart\Megatv\ChannelTable::getById($SUBSCRIBE_TO);
+            $result = \Hawkart\Megatv\ChannelBaseTable::getById($SUBSCRIBE_TO);
             if ($arService = $result->fetch())
             {
                 $price = IntVal($arService["UF_PRICE_H24"]);

@@ -31,9 +31,9 @@ IncludeTemplateLangFile(__FILE__);
         $APPLICATION->ShowMeta("description", false, true);
         $APPLICATION->ShowCSS(true, true);
 
-        $APPLICATION->SetAdditionalCSS(SITE_TEMPLATE_PATH.'/megatv/public/css/main.css');
+        $APPLICATION->SetAdditionalCSS(SITE_TEMPLATE_PATH.'/tmpl/css/main.css');
         $APPLICATION->SetAdditionalCSS(SITE_TEMPLATE_PATH.'/project.css');
-        $APPLICATION->SetAdditionalCSS(SITE_TEMPLATE_PATH.'/assets/stylesheets/main.css');
+        
         $APPLICATION->ShowHeadStrings();
     	$APPLICATION->ShowHeadScripts();
         $APPLICATION->SetDirProperty("h1-hide", "hidden");

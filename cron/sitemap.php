@@ -30,7 +30,7 @@ while ($arChannel = $result->fetch())
 {
     $html.='<li><a href="http://tvguru.com/channels/'.$arChannel["UF_CODE"].'/">'.$arChannel["UF_TITLE"].'</a><ul>';
     
-    $ids = array();
+    /*$ids = array();
     
     $result_sh = \Hawkart\Megatv\ScheduleTable::getList(array(
         'filter' => array(
@@ -49,7 +49,7 @@ while ($arChannel = $result->fetch())
         
         $ids[] = $arSchedule["UF_ID"];
     }
-    unset($ids);
+    unset($ids);*/
     $html.="</ul></li>";
 }
 

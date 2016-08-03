@@ -10,29 +10,41 @@
 		</div><!-- /.site-wrapper -->
         
         <?
-        //$APPLICATION->AddHeadScript(SITE_TEMPLATE_PATH.'/js/vendor.js');
-        //$APPLICATION->AddHeadScript(SITE_TEMPLATE_PATH.'/js/plugins.js');
-        //$APPLICATION->AddHeadScript(SITE_TEMPLATE_PATH.'/js/main.js');
+        if($APPLICATION->GetCurDir() == "/personal/"){
+            $js = array(
+                "tmpl/js/user-profile.js"
+            );
+        }elseif($APPLICATION->GetCurDir() == "/personal/records/"){
+            $js = array(
+                "tmpl/js/user-records.js",
+                "tmpl/js/player.js"
+            );
+        }elseif($APPLICATION->GetCurDir() == "/personal/services/"){
+            $js = array(
+                "tmpl/js/user-services.js"
+            );
+        }
+        elseif(strpos($APPLICATION->GetCurDir(), "/channels/")!==false && isset($_REQUEST["SCHEDULE_CODE"])){
+            $js = array(
+                "tmpl/js/broadcast-card.js",
+                "tmpl/js/player.js",
+                "project.js",
+            );
+        }elseif(strpos($APPLICATION->GetCurDir(), "/channels/")!==false && !empty($_REQUEST["CHANNEL_CODE"])){
+            $js = array(
+                "tmpl/js/channel-card.js",
+                "tmpl/js/player.js"
+            );
+        }else{
+            $js = array(
+                "tmpl/js/main.js"
+            );
+        }
+        foreach($js as $path)
+        {
+            ?><script src="<?=SITE_TEMPLATE_PATH?>/<?=$path?>"></script><?
+        }
         ?>
-        <script src="<?=SITE_TEMPLATE_PATH?>/assets/javascripts/main.js"></script>
-        <?if($APPLICATION->GetCurDir()=="/personal/records/"):?>
-        <script src="<?=SITE_TEMPLATE_PATH?>/javascripts/include/components/player.js"></script>
-        <?endif;?>
-        <?if(strpos($APPLICATION->GetCurDir(), "/channels/")!==false && isset($_REQUEST["SCHEDULE_CODE"])):?>
-            <script src="<?=SITE_TEMPLATE_PATH?>/project.js"></script>
-            <script src="<?=SITE_TEMPLATE_PATH?>/megatv/public/js/broadcast-card.js"></script>
-        <?elseif(strpos($APPLICATION->GetCurDir(), "/channels/")!==false && !empty($_REQUEST["CHANNEL_CODE"])):?>
-            <?/*<script src="<?=SITE_TEMPLATE_PATH?>/megatv/public/js/channel-card.js"></script>*/?>
-            <script src="<?=SITE_TEMPLATE_PATH?>/megatv/public/js/main.js"></script>
-        <?elseif($APPLICATION->GetCurDir() == "/personal/"):?>
-            <script src="<?=SITE_TEMPLATE_PATH?>/megatv/public/js/user-profile.js"></script>
-        <?elseif($APPLICATION->GetCurDir() == "/personal/services/"):?>
-            <script src="<?=SITE_TEMPLATE_PATH?>/megatv/public/js/user-services.js"></script>
-        <?elseif($APPLICATION->GetCurDir() == "/personal/records/"):?>
-            <script src="<?=SITE_TEMPLATE_PATH?>/megatv/public/js/user-records.js"></script>
-        <?else:?> 
-            <script src="<?=SITE_TEMPLATE_PATH?>/megatv/public/js/main.js"></script>
-        <?endif;?>
         
         <?if(intval($_REQUEST["record_id"])>0 && $_REQUEST["play"]=="yes"):?>
             <script>

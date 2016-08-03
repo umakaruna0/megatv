@@ -27,7 +27,7 @@ if(!$USER->IsAuthorized())
     
     $emailTo = trim(htmlspecialcharsbx($_POST['USER_EMAIL']));
     $phone = preg_replace("/[^0-9]/", '', $emailTo);
-    $chekword = htmlspecialcharsbx($_POST["checkword"]);
+    $checkword = htmlspecialcharsbx($_POST["checkword"]);
     $password = htmlspecialcharsbx($_POST["password"]);
     
     if(!CDev::check_email($emailTo) && !CDev::check_phone($phone))
@@ -42,7 +42,7 @@ if(!$USER->IsAuthorized())
             $rsUsers = CUser::GetList(($by="EMAIL"), ($order="desc"), Array("PERSONAL_PHONE" =>$phone), array("SELECT"=>array("UF_PHONE_CHECKWORD", "ID")));
             if($arUser = $rsUsers->GetNext())
             {
-                if($arUser["UF_PHONE_CHECKWORD"]==$chekword && !empty($arUser["UF_PHONE_CHECKWORD"]))
+                if($arUser["UF_PHONE_CHECKWORD"]==$checkword && !empty($arUser["UF_PHONE_CHECKWORD"]))
                 {
                     $cuser = new CUser;
                     $cuser->Update($arUser["ID"], array(
@@ -61,7 +61,7 @@ if(!$USER->IsAuthorized())
             $rsUsers = CUser::GetList(($by="EMAIL"), ($order="desc"), Array("=EMAIL" =>$emailTo));
             if($arUser = $rsUsers->GetNext())
             {
-                $arResult = $USER->ChangePassword($arUser["LOGIN"], $chekword, $password, $password);
+                $arResult = $USER->ChangePassword($arUser["LOGIN"], $checkword, $password, $password);
                 if($arResult["TYPE"] == "OK")
                 {
                     $result['message'] = "Пароль успешно сменен.";

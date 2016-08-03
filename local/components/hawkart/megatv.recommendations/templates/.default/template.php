@@ -36,10 +36,19 @@
     <div class="broadcasts-list">
         <?
         $notShow = array();
-        foreach($arResult["PROGS"] as $key=>$arProg)
+        if(count($arResult["PROGS"])>0)
         {
-            $arProg["CAT_CODE"] = $arResult["CATEGORIES"][$arProg["UF_CATEGORY"]];
-            echo \Hawkart\Megatv\CScheduleTemplate::getProgInfoRecommend($arProg);
+            foreach($arResult["PROGS"] as $key=>$arProg)
+            {
+                $arProg["CAT_CODE"] = $arResult["CATEGORIES"][$arProg["UF_CATEGORY"]];
+                echo \Hawkart\Megatv\CScheduleTemplate::getProgInfoRecommend($arProg);
+            }
+        }else{
+            ?>
+            <div class="empty-content">
+	    		<h1 class="empty-content__title">Список рекомендаций пуст...</h1>
+	    	</div>
+            <?
         }
         ?>
     </div>

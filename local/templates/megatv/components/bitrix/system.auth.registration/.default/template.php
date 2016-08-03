@@ -1,49 +1,49 @@
 <?if(!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED!==true)die();
 ?>
 
-<div class="authorize-overlay is-signup-overlay" data-module="signup-overlay">
-	<div class="overlay-content">
-		<h4 class="overlay-title"><?=GetMessage('AUTH_REGISTER')?></h4>
-
-        <?require($_SERVER["DOCUMENT_ROOT"].SITE_TEMPLATE_PATH."/include/social-auth.php");?>
-        
-		<span class="divider"><span><?=GetMessage('AUTH_OR')?></span></span>
-		<div class="steps">
-			<div class="step fade in active">
-				<form action="<?= $templateFolder ?>/ajax.php" method="post">
-                    <?if (strlen($arResult["BACKURL"]) > 0):?>
-                		<input type="hidden" name="backurl" value="<?= $arResult["BACKURL"] ?>"/>
-                	<?endif;?>
-                    <input type="hidden" name="AUTH_FORM" value="Y"/>
-                	<input type="hidden" name="TYPE" value="REGISTRATION"/>
-                    <input type="hidden" name="ajax_key" value="<?=md5('ajax_'.LICENSE_KEY)?>" />
-                    <?=bitrix_sessid_post()?>
-                    
-					<div class="form-group">
-						<label for="" class="sr-only"><?=GetMessage('AUTH_PHONE_OR_EMAIL')?></label>
-						<input type="text" name="USER_EMAIL" id="" class="form-control" placeholder="<?=GetMessage('AUTH_PHONE_OR_EMAIL')?>" data-type="adaptive-field">
+<div class="standart-form" data-module="signup-overlay">
+	<h3 class="form-title standart-form__form-title"><?=GetMessage('AUTH_REGISTER')?></h3>
+    <?require($_SERVER["DOCUMENT_ROOT"].SITE_TEMPLATE_PATH."/include/social-auth.php");?>
+    <div class="divider"><span class="divider__span"><?=GetMessage('AUTH_OR')?></span></div>
+	<div class="steps">
+		<div class="steps__step js-step step--active" style="display:block">
+			<form action="<?= $templateFolder ?>/ajax.php" method="POST" target="_top" id="register-form" class="form" data-redirect="/">
+                <div class="js-msg-block form__msg-block msg-block"></div>
+                <?if (strlen($arResult["BACKURL"]) > 0):?>
+            		<input type="hidden" name="backurl" value="<?= $arResult["BACKURL"] ?>"/>
+            	<?endif;?>
+                <input type="hidden" name="AUTH_FORM" value="Y"/>
+            	<input type="hidden" name="TYPE" value="REGISTRATION"/>
+                <input type="hidden" name="ajax_key" value="<?=md5('ajax_'.LICENSE_KEY)?>" />
+                <?=bitrix_sessid_post()?>
+                
+                <div class="form__form-group form__login g-mt-15" autocomplete="off">
+			        <input type="text" name="USER_EMAIL" data-validation="phone_and_email" class="form__form-control js-user-email" value="" placeholder="<?=GetMessage('AUTH_PHONE_OR_EMAIL')?>" autocomplete="off" data-type="adaptive-field">
+			    </div>
+                
+                <div class="form__form-group form__agree">
+			        <div class="form__group-checkbox">
+						<input id="checkbox-agree" data-validation="agree" value="on" type="checkbox" name="AGREE" class="form__checkbox checkbox-agree"><label for="checkbox-agree" class="form__label"><span class="form__checkbox-imitation"></span><span class="form__label-title"><?=GetMessage('AUTH_AGREE')?> <a href="#"><?=GetMessage('AUTH_AGREE_OFERTA')?></a></span></label>
 					</div>
-					<div class="checkbox">
-						<label for="_id-singup--chackbox"><input type="checkbox" name="AGREE" id="_id-singup--chackbox"><span><?=GetMessage('AUTH_AGREE')?> <a href="#"><?=GetMessage('AUTH_AGREE_OFERTA')?></a></span></label>
-					</div>
-					<div class="form-actions">
-						<button type="submit" class="btn btn-primary btn-block btn-multistate" data-type="multistate-button">
-							<span class="default-state init-state"><?=GetMessage('AUTH_REGISTER_BUTTON')?></span>
-							<span class="fail-data-state"><span data-icon="icon-msbutton-cross-circle"></span><?=GetMessage('AUTH_CHECK_ENTER_DATA')?></span>
-							<span class="fail-network-state"><span data-icon="icon-msbutton-broken-network"></span><?=GetMessage('AUTH_ERROR_SERVER_CONNECT')?></span>
-						</button>
-						<a href="#" class="form-subaction-link" data-type="reset-handler-link"><?=GetMessage('AUTH_RECOVERY_PASSWORD')?></a>
-					</div>
-				</form>
-			</div>
-			<div class="step fade">
-				<p><?=GetMessage('AUTH_CONFIRM_TEXT_1')?></p>
-                <?$APPLICATION->IncludeComponent(
-                    "bitrix:system.auth.confirmation",
-                    ".default",
-                    Array()
-                );?>
-			</div>
+			    </div>
+                
+                <div class="form__form-actions">
+			        <button type="submit" name="submit" class="form__btn g-btn g-btn--primary btn-multistate js-btn-multistate" data-type="multistate-button">
+			            <span class="init-state default-state"><?=GetMessage('AUTH_REGISTER_BUTTON')?></span>
+			            <span class="fail-data-state"><div class="g-icon g-icon--small icon-msbutton-cross-circle"><svg class="g-icon__icon-cnt"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#icon-msbutton-cross-circle"></use></svg></div><?=GetMessage('AUTH_CHECK_ENTER_DATA')?></span>
+			            <span class="fail-network-state"><div class="g-icon g-icon--small icon-msbutton-broken-network"><svg class="g-icon__icon-cnt"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#icon-msbutton-broken-network"></use></svg></div><?=GetMessage('AUTH_ERROR_SERVER_CONNECT')?></span>
+			        </button>
+			        <a href="#" data-module="modal" data-modal="restorePassURL" data-type="openModal" class="form__subaction-link js-btnModalInit"><?=GetMessage('AUTH_RECOVERY_PASSWORD')?></a>
+			    </div>
+			</form>
+		</div>
+		<div class="steps__step js-step">
+			<p class="g-mt-20 text-center"><?=GetMessage('AUTH_CONFIRM_TEXT_1')?></p>
+            <?$APPLICATION->IncludeComponent(
+                "bitrix:system.auth.confirmation",
+                ".default",
+                Array()
+            );?>
 		</div>
 	</div>
 </div>

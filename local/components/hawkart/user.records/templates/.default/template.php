@@ -39,6 +39,21 @@ if(count($arResult["RECORDS"])==0)
 		}
 	</script>
     
+    <script type="text/x-config">
+        { 
+        	"remoteUrl" : "<?=SITE_TEMPLATE_PATH?>/ajax/delete_record.php",
+        	"viewMoreUrl" : "/personal/records/",
+        	"countMax" : 15,
+            "lang":{
+                "delete_title": "Удалить",
+                "view_title": "Посмотреть",
+                "warn_msg_delete": "Вы уверены, что хотите удалить данную передачу навсегда?",
+                "confirm_delete_btn": "Да, хочу",
+                "cancel_btn": "Отменить"
+            }
+        }
+    </script>
+    
 	<div class="broadcasts-list">
         <?
         foreach($arResult["RECORDS"] as $arRecord)
