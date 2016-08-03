@@ -245,7 +245,6 @@
     </div>
     <!-- /.user-profile-middle-row -->
 </main>
-
 <?
 	$js = [
 		"js/user-profile.js"
