@@ -183,6 +183,15 @@ class ChannelBaseTable extends Entity\DataManager
             'UF_DESCRIPTION' => array(
 				'data_type' => 'string',
 			),
+            'UF_DEFAULT_SHOW' => array(
+				'data_type' => 'boolean',
+			),
+            'UF_PROMO' => array(
+				'data_type' => 'boolean',
+			),
+            'UF_SUPERPROMO' => array(
+				'data_type' => 'integer',
+			),
 		);
 	}
     

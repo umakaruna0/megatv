@@ -50,7 +50,7 @@ if ($arResult = $result->fetch())
 //redirect if error
 if(intval($arResult["ID"])==0)
 {
-    if(!empty($arFilter["=UF_PROG.UF_EPG_ID"]))
+    if(!empty($arFilter["=UF_PROG.UF_CODE"]))
     {
         CHTTP::SetStatus("404 Not Found");
         @define("ERROR_404", "Y");

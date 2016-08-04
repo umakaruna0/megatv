@@ -34,16 +34,10 @@ if(count($arResult["RECORDS"])==0)
 
 <section class="broadcasts" data-module="user-recorded-broadcasts">
     <script type="text/x-config">
-		{
-			"url": "<?=SITE_TEMPLATE_PATH?>/ajax/delete_record.php"
-		}
-	</script>
-    
-    <script type="text/x-config">
         { 
         	"remoteUrl" : "<?=SITE_TEMPLATE_PATH?>/ajax/delete_record.php",
-        	"viewMoreUrl" : "/personal/records/",
-        	"countMax" : 15,
+        	"viewMoreUrl" : "/personal/records/?AJAX=Y",
+        	"countMax" : <?=intval($arParams["NEWS_COUNT"])?>,
             "lang":{
                 "delete_title": "Удалить",
                 "view_title": "Посмотреть",
