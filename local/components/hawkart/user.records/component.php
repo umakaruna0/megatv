@@ -36,8 +36,8 @@ while ($arRecord = $result->fetch())
     if(!empty($arRecord["UF_CATEGORY"]))
         $arCats[] = $arRecord["UF_CATEGORY"];
     
-    if($_REQUEST["categoryID"]!=$arRecord["UF_CATEGORY"] && !empty($_REQUEST["categoryID"]))
-            continue;
+    if($_REQUEST["categoryID"]!=$arRecord["UF_CATEGORY"] && !empty($_REQUEST["categoryID"]) && $_REQUEST["categoryID"]!="Все" && $_REQUEST["categoryID"]!="false")
+        continue;
     
     if($key>=$offset && $key<($offset+intval($arParams["NEWS_COUNT"])))
     {  
