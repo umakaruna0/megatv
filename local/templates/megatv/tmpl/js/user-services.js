@@ -37812,7 +37812,7 @@ Box.Application.addModule('modal', function (context) {
 
     function initModal(link){
     	var icon = $("<span data-icon='icon-close'></span>");
-    	var exit = $("<div class='form__exit closeModal'></div>");
+    	var exit = $("<div class='form__exit btnCloseModal'></div>");
     	exit.append(icon);
     	$.getDataFromLink({
             link: link,
@@ -37823,13 +37823,15 @@ Box.Application.addModule('modal', function (context) {
                     delay: 500,
                     postInit: function(el){
                     	$(".js-ModalContent > div",el).first().append(exit);
+                    	setTimeout(function(){
+                    		iconLoaderService.renderIcons();
+                    	},700);
                     }
                 });
             }
         });
         setTimeout(function(){
         	runEvents();
-        	iconLoaderService.renderIcons();
         }, 1000);
     }
 
