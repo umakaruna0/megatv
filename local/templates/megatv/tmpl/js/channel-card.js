@@ -38282,7 +38282,7 @@ Box.Application.addModule('modal', function (context) {
             $modal.modalHeader('hide');
           }
         });
-        body.on("click.btnCloseModal",function(){
+        body.on("click.btnCloseModal",".btnCloseModal",function(){
             $modal.modalHeader('hide');
         });
     }
