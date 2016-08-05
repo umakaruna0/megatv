@@ -37862,7 +37862,7 @@ Box.Application.addModule('modal', function (context) {
                     	$(".js-ModalContent > div",el).first().append(exit);
                     	setTimeout(function(){
                     		iconLoaderService.renderIcons();
-                    	},700);
+                    	},500);
                     }
                 });
             }
