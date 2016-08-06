@@ -17,7 +17,7 @@
         }elseif($APPLICATION->GetCurDir() == "/personal/records/"){
             $js = array(
                 "tmpl/js/user-records.js",
-                "tmpl/js/player.js"
+               // "tmpl/js/player.js"
             );
         }elseif($APPLICATION->GetCurDir() == "/personal/services/"){
             $js = array(
@@ -27,19 +27,27 @@
         elseif(strpos($APPLICATION->GetCurDir(), "/channels/")!==false && isset($_REQUEST["SCHEDULE_CODE"])){
             $js = array(
                 "tmpl/js/broadcast-card.js",
-                "tmpl/js/player.js",
-                "project.js",
+                //"tmpl/js/player.js"
             );
         }elseif(strpos($APPLICATION->GetCurDir(), "/channels/")!==false && !empty($_REQUEST["CHANNEL_CODE"])){
             $js = array(
                 "tmpl/js/channel-card.js",
-                "tmpl/js/player.js"
+                //"tmpl/js/player.js"
             );
         }else{
             $js = array(
                 "tmpl/js/main.js"
             );
         }
+        if(!$USER->IsAuthorized())
+        {
+            $js = array(
+                "tmpl/js/main.js"
+            );
+        }
+        $js[] = "tmpl/js/player.js";
+        $js[] = "project.js";
+        
         foreach($js as $path)
         {
             ?><script src="<?=SITE_TEMPLATE_PATH?>/<?=$path?>"></script><?

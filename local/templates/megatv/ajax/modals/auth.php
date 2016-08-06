@@ -5,7 +5,7 @@ $GLOBALS['APPLICATION']->RestartBuffer();
 ?>
 
 <?
-$APPLICATION->IncludeComponent("bitrix:system.auth.form", "auth_ajax", Array(
+$APPLICATION->IncludeComponent("bitrix:system.auth.form", "", Array(
     "REGISTER_URL" => "register.php",
     "FORGOT_PASSWORD_URL" => "",
     "PROFILE_URL" => "/",

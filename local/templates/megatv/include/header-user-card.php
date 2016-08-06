@@ -1,4 +1,5 @@
     <?
+    global $USER;
     if($USER->IsAuthorized())
     {           
         $budget = floatval(\CUserEx::getBudget());
@@ -55,25 +56,6 @@
     ?>
     
     <?if(!$USER->IsAuthorized()):?>
-        <?
-        // $APPLICATION->IncludeComponent("bitrix:system.auth.form", "auth_ajax",Array(
-        //      "REGISTER_URL" => "register.php",
-        //      "FORGOT_PASSWORD_URL" => "",
-        //      "PROFILE_URL" => "/",
-        //      "SHOW_ERRORS" => "Y" 
-        //      )
-        // );
-        ?>
-        <?
-        //$APPLICATION->IncludeComponent("bitrix:system.auth.registration","",Array());
-        ?>
-        <?
-        // $APPLICATION->IncludeComponent(
-        //     "bitrix:system.auth.forgotpasswd",
-        //     ".default",
-        //     Array()
-        // );
-        ?>
         <div class="authorize-overlay is-success-signup-overlay" data-module="success-signup-overlay">
     		<div class="overlay-content">
     			<h4 class="overlay-title"><?=GetMessage('CONGRATULATIONS')?></h4>

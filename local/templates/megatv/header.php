@@ -67,7 +67,7 @@ IncludeTemplateLangFile(__FILE__);
             <script type="text/x-config">
 				{
 					"bannersHideTime": 1,
-					"pathToSVGSprite": "<?=SITE_TEMPLATE_PATH?>/megatv/public/img/sprites/svg_sprite.svg",
+					"pathToSVGSprite": "<?=SITE_TEMPLATE_PATH?>/tmpl/img/sprites/svg_sprite.svg",
 					"playerURL": "<?=SITE_TEMPLATE_PATH?>/ajax/modals/player.php",
                     "playerLastPositionURL": "<?=SITE_TEMPLATE_PATH?>/ajax/player_last_position.php",
                     "shareURL": "<?=SITE_TEMPLATE_PATH?>/ajax/share.php",
