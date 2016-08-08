@@ -94,6 +94,13 @@ class CSotal
         {
             return true;
         }else{
+            
+            $cUser = new \CUser;
+            $cUser->Update($arUser["ID"], array(
+                "UF_SOTAL_LOGIN" => "",
+                "UF_SOTAL_PASS" => ""
+            ));
+            
             return false;
         }
     }

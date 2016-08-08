@@ -36287,94 +36287,95 @@ Copyright (c) 2016 by gERYH
 ********************************** */
 +function ($) {
   'use strict';
+ 
+  var MODAL_WINDOW_CLASS = "ModalWindow",
+      MODAL_SHOW_WINDOW_CLASS = "ModalWindow--show",
+      MODAL_LOADER_WINDOW_CLASS = "ModalWindow--loader",
+      MODAL_LOADER_CLASS = "ModalWindow__loader",
+      MODAL_CONTENT_CLASS = "ModalWindow__content",
+      MODAL_JS_CONTENT_CLASS = "js-ModalContent",
+      MODAL_JS_OVERLAY_CLASS = "js-ModalOverlay",
+      MODAL_OVERLAY_CLASS = "ModalWindow__overlay";
+
 
   var Modal = function (options) {
     var self = this;
     $.each(options, function(key, value){
       self[key] = value;
     });
+    this.model = {
+      self: self.el,
+      overlay: self.el.find("." + MODAL_JS_OVERLAY_CLASS),
+      content: self.el.find("." + MODAL_JS_CONTENT_CLASS)
+    };
   }
 
-  Modal.prototype.init = function(){
-    var $this = this.el,
-        type = this.type,
-        $modalOverlay = $(document.createElement('div')).addClass('ModalWindow__overlay js-ModalOverlay '),
-        $modalContent = $(document.createElement('div')).addClass('ModalWindow__content js-ModalContent'),
-        $modalLoader = $(document.createElement('div')).addClass('ModalWindow__loader'),
-        $modalContentCurrent = $this.find('.js-ModalContent'),
-        modalContentHTML = "",
-        height = $modalContentCurrent.height(),
-        content = this.content,
-        delay = this.delay;
-  
-    $modalContent.html($modalLoader);
-    $modalOverlay.html($modalContent);
-    if(height > 1) $modalContent.height(height);
-    $this.html($modalOverlay);
-    
-    if(!$this.hasClass('js-ModalWindow--show')){
-      $this.fadeIn(delay);
-      $modalOverlay[type](delay);
-      $this.addClass('js-ModalWindow--show');
-    }else $modalOverlay.show();
+  Modal.prototype = {
 
-    if(content !== "" && content !== "undefined") this.show();
+    init: function(){
+      var self = this,  
+          content = this.content,
+          isShown = self.isShown();
+      
+      if(!isShown){
+        self.model.self
+        .addClass(MODAL_SHOW_WINDOW_CLASS)
+        .addClass(MODAL_LOADER_WINDOW_CLASS);
+      }
 
-  };
+      if(content !== "" && content !== "undefined")
+        self.show();
+    },
 
-  Modal.prototype.show = function(){
-    var $this = this.el,
-        self = this,  
-        $modalOverlay = $this.find('.js-ModalOverlay'),
-        $modalContent = $this.find('.js-ModalContent'),
-        content = this.content;
-    if(content == "") {
-      console.error("Exception: Content empty!");
-      return;
-    }
-    var height = this.temporaryBlockHeight(content);
-    self.preInit($this);
-    $modalContent.animate({ 
-      opacity: 0,
-      height: height
-    },500,function(){
-      $(this).animate({opacity:1},200).html(content);
+    show: function(){
+      var self = this,  
+          content = this.content;
+
+      if(content == "") {
+        console.error("Exception: Content empty!");
+        return;
+      }
+
+      self.preInit(self.model);
+      self.model.content.html(content);
+      self.model.overlay.css({
+        maxHeight: self.model.content.height()
+      });
+      self.model.self.removeClass(MODAL_LOADER_WINDOW_CLASS);
       setTimeout(function(){
-        $modalContent.height("auto");
-      },1000);
-      self.postInit($this);
-    });
-  };
-  Modal.prototype.temporaryBlockHeight = function(content){
-    content = content.replace(/[\<]script[\>](.*\s*)*[\<\/]script[\>]/,"");
-    var div = $('<div/>').html(content);
-    div.addClass('hiddenBlock').css({
-      position: "absolute",
-      opacity: 0
-    });
-    $("body").prepend(div);
-    var height = div[0].offsetHeight;
-    $('.hiddenBlock').remove();
-    return height;
-  };
+        self.postInit(self.model);
+        self.model.overlay.attr("style","");
+      },200);
+    },
 
-  Modal.prototype.hide = function(){
-    var $this = this.el,
-        $modalOverlay = $this.find('.js-ModalOverlay'),
-        $modalContent = $this.find('.js-ModalContent'),
-        content = this.content,
-        type = this.type,
-        delay = this.delay;
+    hide: function(){
+      var $this = this.el;
+      this.showLoader("hide");
+    },
 
-    $modalOverlay[type](delay);
-    $this.removeClass('js-ModalWindow--show').fadeOut(delay);
+    showLoader: function(type){
+      var loader = $('<div class="' + MODAL_LOADER_CLASS + '" />');
+      var self = this;
+      self.model.self.addClass(MODAL_LOADER_WINDOW_CLASS);
+      self.model.self[type === "hide" ? "removeClass" : "addClass"](MODAL_SHOW_WINDOW_CLASS);
+      setTimeout(function(){
+        self.model.overlay.attr("style","");
+        self.model.content.html(loader);
+      },0);
+    },
+
+    isShown: function(){
+      var $modal = $("body").find(MODAL_SHOW_WINDOW_CLASS);
+      if($modal.length > 0){
+        return true;
+      }else return false;
+    }
+
   };
 
   $.fn.modalHeader = function(method, options) {
 
       var options = $.extend({
-          type: "slideFadeToggle",
-          delay: "slow",
           content: "",
           preInit: function(){},
           postInit: function(){}
@@ -36417,17 +36418,11 @@ Box.Application.addService('icon-loader', function () {
 	var contextIcons;
 
 	function icon(name, options) {
-		var optionsz = options || {};
-		var size    = optionsz.size ? 'is-' + optionsz.size : '';
-		var klass   = 'icon ' + name + ' ' + size + '' + (optionsz.class || '');
-
-		var iconz   =	'<svg class="icon__cnt">' +
-						'<use xlink:href="#' + name + '" />' +
-						'</svg>';
-
-		var html =  '<div class="' + klass + '">' +
-						wrapSpinner(iconz, klass) +
-					'</div>';
+		var optionsz = (options) ? options : {};
+		var size    = ((optionsz["size"]) ? ('is-' + optionsz["size"]) : '');
+		var klass   = 'icon ' + name + ' ' + size + '' + ((optionsz['class']) ? optionsz['class'] : '');
+		var iconz   =	'<svg class="icon__cnt">' + '<use xlink:href="#' + name + '" />' + '</svg>';
+		var html =  '<div class="' + klass + '">' + wrapSpinner(iconz, klass) + '</div>';
 
 		return html;
 	}
@@ -36456,8 +36451,8 @@ Box.Application.addService('icon-loader', function () {
 				var currentIcon = icons[i];
 				var name        = currentIcon.getAttribute('data-icon');
 				var options = {
-					class:  currentIcon.className,
-					size:   currentIcon.getAttribute('data-size')
+					"class":  currentIcon.className,
+					"size":   currentIcon.getAttribute('data-size')
 				};
 
 				currentIcon.insertAdjacentHTML('beforebegin', icon(name, options));
@@ -37220,6 +37215,7 @@ Box.Application.addBehavior('load-broadcast-player', function (context) {
 		}
 	}
 	function savePlayerPosition() {
+		if(!$("#player")[0]) return false;
 		player = jwplayer('player');
 		playerPos = player.getPosition();
 		playerDur = player.getDuration();
@@ -37245,7 +37241,8 @@ Box.Application.addBehavior('load-broadcast-player', function (context) {
 		}
 	}
 	function play() {
-		jwplayer('player').play();
+		if($("#player")[0])
+			jwplayer('player').play();
 	}
 
 	// --------------------------------------------------------------------------
@@ -37808,24 +37805,24 @@ Box.Application.addModule('modal', function (context) {
     function stopEvents(){
         body.off("mouseup.closeModal");
         body.off("click.btnCloseModal");
-    }
+    } 
 
     function initModal(link){
     	var icon = $("<span data-icon='icon-close'></span>");
     	var exit = $("<div class='form__exit btnCloseModal'></div>");
     	exit.append(icon);
+        $modal.modalHeader('showLoader');
     	$.getDataFromLink({
             link: link,
             callback: function(data){
             	stopEvents();
                 $modal.modalHeader('init',{
                     content: data,
-                    delay: 500,
                     postInit: function(el){
-                    	$(".js-ModalContent > div",el).first().append(exit);
+                    	$(" > div",el.content).first().append(exit);
                     	setTimeout(function(){
                     		iconLoaderService.renderIcons();
-                    	},700);
+                    	},300);
                     }
                 });
             }
@@ -38065,6 +38062,20 @@ Box.Application.addModule('user-balance', function (context) {
 	var modalService;
 	var paymethodModal;
 	var showSuccessModal;
+	var sendForm;
+
+	function errorsView(form){
+		var errors = {};
+		var amount = form.find("#bx-asd-amount");
+		var methodPay = form.find("[name=pay_system]");
+		if((amount.val()).match("/^[0-9]{1,10}$/")){
+			errors["amount"] = context.getConfig("errors").incorrect_val_amount;
+		}
+		if(!methodPay.prop("checked")){
+			errors["paymethod"] = context.getConfig("errors").incorrect_paymethod;
+		}
+		return errors;
+	}
 
 	// --------------------------------------------------------------------------
 	// Public
@@ -38074,11 +38085,34 @@ Box.Application.addModule('user-balance', function (context) {
 
 		init: function () {
 			moduleEl = context.getElement();
+			sendForm = false;
 			modalService = context.getService('modal');
 			showSuccessModal = context.getConfig('showSuccessModal');
 			paymethodModal = modalService.create($('#paymethod-modal'), {
 				backdropClass: 'modal-backdrop paymethod-backdrop',
 				container: $('.site-content')
+			});
+
+			$("body").on("submit",".asd-prepaid-form",function(){
+				var $this = $(this);
+				var errors = errorsView($this);
+				var returnVal;
+
+				if (!sendForm) {
+					$(moduleEl).find('[data-type="paymethod-submit"]').attr('disabled', true);
+					sendForm = true;
+					return false;
+				}
+
+				if(!errors){
+					var msgBlock = context.getService("msgBlock");
+					if(!$.isEmptyObject(errors)){
+						$(moduleEl).find(".form-actions").before('<div class="js-msg-block g-mb-10 g-clearfix form__msg-block msg-block"></div>');
+						msgBlockEl = $(moduleEl).find(".js-msg-block");
+						returnVal = msgBlock.create( errors, msgBlockEl );	
+					}
+				}
+				return false;
 			});
 
 			if (typeof showSuccessModal !== 'undefined' && showSuccessModal === true) {
@@ -38098,7 +38132,7 @@ Box.Application.addModule('user-balance', function (context) {
 				event.preventDefault();
 				paymethodModal.show();
 				$("body").addClass('payment-opened');
-			}
+			};
 		},
 		onkeyup: function (event, element, elementType) {
 			if (elementType === 'paymethod-field') {

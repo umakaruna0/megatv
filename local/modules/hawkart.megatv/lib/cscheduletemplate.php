@@ -103,8 +103,12 @@ class CScheduleTemplate
         <?endif;?>
         
         <?if($status == "recordable"):?>
+            <?if($USER->IsAuthorized()):?>
             <span class="item-status-icon">
-				<span data-icon="icon-recordit"></span>
+            <?else:?>
+            <span class="item-status-icon js-btnModalInit" data-module="modal" data-modal="authURL" data-type="openModal">        
+            <?endif;?>
+                <span data-icon="icon-recordit"></span>
                 <span class="status-desc">Записать</span>
 			</span>
 			<?/*<div class="recording-notify">

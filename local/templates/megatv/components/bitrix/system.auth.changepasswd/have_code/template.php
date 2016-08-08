@@ -12,7 +12,7 @@
             <?=bitrix_sessid_post()?>
 
 	        <div class="form__form-group email-container" autocomplete="off">
-	            <input data-validation="auth_login" data-type="adaptive-field" type="text" name="USER_LOGIN" class="form__form-control" placeholder="Телефон или эл. почта" autocomplete="off" value="<?=$_GET['USER_LOGIN']?>">
+	            <input data-validation="auth_login" data-type="adaptive-field" type="text" name="USER_LOGIN" class="form__form-control" placeholder="Телефон или эл. почта" autocomplete="off" value="<?=htmlspecialchars_decode($_GET['USER_LOGIN'])?>">
 	        </div>
 	        
             <div class="form__form-group code-container" autocomplete="off">

@@ -8,6 +8,7 @@ $arParams = $arParams + array(
     "LIST_URL" => $APPLICATION->GetCurDir(),
 );
 
+
 //get channel by code
 $arFilter = array(
     "=UF_CHANNEL.UF_BASE.UF_ACTIVE" => 1,
@@ -21,29 +22,37 @@ $arSelect = array(
     'UF_DESC' => 'UF_CHANNEL.UF_BASE.UF_DESC', 'UF_H1' => 'UF_CHANNEL.UF_BASE.UF_H1',
     'UF_DESCRIPTION' => 'UF_CHANNEL.UF_BASE.UF_DESCRIPTION', 'UF_KEYWORDS' => 'UF_CHANNEL.UF_BASE.UF_KEYWORDS'
 );
-$arSort = array("UF_CHANNEL.UF_BASE.UF_SORT" => "ASC");
-$result = \Hawkart\Megatv\ChannelCityTable::getList(array(
-    'filter' => $arFilter,
-    'select' => $arSelect,
-    'limit' => 1,
-));
-if ($arResult = $result->fetch())
+$obCache = new \CPHPCache;
+if( $obCache->InitCache(86400, serialize($arFilter).serialize($arSelect), "/channel-detail/"))
 {
-    $arResult["ID"] = $arResult["UF_CHANNEL_ID"];
-    $arResult["DETAIL_PAGE_URL"] = "/channels/".$arResult['UF_CODE']."/";
-    $title = $arResult["UF_TITLE"]." -  телепрограмма на сегодня, программа телепередач канала ".$arResult["UF_H1"]." на МегаТВ";
-    if($arResult["UF_H1"]=="5 канал")
-        $title = str_replace("канала ", "", $title);
-    
-    $APPLICATION->SetTitle($title);
-    //$APPLICATION->SetPageProperty("keywords", $arResult["UF_KEYWORDS"]);
-    $APPLICATION->SetPageProperty("description", TruncateText($arResult["UF_DESCRIPTION"], 256));
-    $APPLICATION->SetDirProperty("h1", $arResult["UF_H1"] ? $arResult["UF_H1"] : $arResult["UF_TITLE"]);
+	$arResult = $obCache->GetVars();
 }
+elseif($obCache->StartDataCache())
+{
+    $arResult = array();
+    $result = \Hawkart\Megatv\ChannelCityTable::getList(array(
+        'filter' => $arFilter,
+        'select' => $arSelect,
+        'limit' => 1,
+    ));
+    if ($arResult = $result->fetch())
+    {
+        $arResult["ID"] = $arResult["UF_CHANNEL_ID"];
+        $arResult["DETAIL_PAGE_URL"] = "/channels/".$arResult['UF_CODE']."/";
+        $title = $arResult["UF_TITLE"]." -  телепрограмма на сегодня, программа телепередач канала ".$arResult["UF_H1"]." на МегаТВ";
+        if($arResult["UF_H1"]=="5 канал")
+            $title = str_replace("канала ", "", $title);
+        
+        $arResult["PAGE_TITLE"] = $title;
+    }
+    $obCache->EndDataCache($arResult); 
+}
+
 
 //get subscription list
 $arSubscriptionChannels = $APPLICATION->GetPageProperty("ar_subs_channels");
 $arResult["CHANNELS_SHOW"] = json_decode($arSubscriptionChannels, true);
+
 
 //show error page SEO
 if(intval($arResult["ID"])==0 || (!in_array($arResult['UF_CHANNEL_BASE_ID'], $arResult["CHANNELS_SHOW"]) && $USER->IsAuthorized()))
@@ -51,6 +60,10 @@ if(intval($arResult["ID"])==0 || (!in_array($arResult['UF_CHANNEL_BASE_ID'], $ar
     CHTTP::SetStatus("404 Not Found");
     @define("ERROR_404", "Y");
 }else{
+    
+    $APPLICATION->SetTitle($arResult["PAGE_TITLE"]);
+    $APPLICATION->SetPageProperty("description", TruncateText($arResult["UF_DESCRIPTION"], 256));
+    $APPLICATION->SetDirProperty("h1", $arResult["UF_H1"] ? $arResult["UF_H1"] : $arResult["UF_TITLE"]);
     
     //FOR SEO
     $url_params = parse_url($_SERVER["REQUEST_URI"]);

@@ -64,6 +64,12 @@ if($arParams["SEF_MODE"] == "Y")
 			$b404 = true;
 	}
     
+    $parts = explode("/", $_SERVER["REQUEST_URI"]);
+    if(count($parts)>5)
+    {
+        $b404 = true;
+    }
+    
 	if($b404 && CModule::IncludeModule('iblock'))
 	{
 		$folder404 = str_replace("\\", "/", $arParams["SEF_FOLDER"]);

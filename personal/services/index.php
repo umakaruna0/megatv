@@ -25,6 +25,15 @@ global $USER;
             		</div>
             	</div>
             </div>
+        <?else:?>
+            <script type="text/x-config">
+                {
+                    "errors": {
+                        "incorrect_val_amount": "Некорректное значение для поля с суммой!",
+                        "incorrect_paymethod": "Вы не выбрали метод оплаты!"
+                    }
+                }
+            </script>
         <?endif;?>
         
         <?$APPLICATION->IncludeComponent(

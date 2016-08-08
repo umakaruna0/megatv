@@ -15,36 +15,39 @@ if(empty($_REQUEST["event"]))
 }else{
     $arFilter = array("=ID" => $_REQUEST["event"]);
 }
+$arSelect = array(
+    "ID", "UF_DATE_START", "UF_DATE_END", "UF_DATE", "UF_CHANNEL_ID", "UF_PROG_ID",
+    "UF_TITLE" => "UF_PROG.UF_TITLE", "UF_SUB_TITLE" => "UF_PROG.UF_SUB_TITLE", "UF_IMG_PATH" => "UF_PROG.UF_IMG.UF_PATH",
+    "UF_RATING" => "UF_PROG.UF_RATING" , "UF_DESC" => "UF_PROG.UF_DESC", "UF_SUB_DESC" => "UF_PROG.UF_SUB_DESC",
+    "UF_TOPIC" => "UF_PROG.UF_GANRE", "UF_YEAR_LIMIT" => "UF_PROG.UF_YEAR_LIMIT", "UF_COUNTRY" => "UF_PROG.UF_COUNTRY",
+    "UF_YEAR" => "UF_PROG.UF_YEAR", "UF_DIRECTOR" => "UF_PROG.UF_DIRECTOR", "UF_PRESENTER" => "UF_PROG.UF_PRESENTER",
+    "UF_ACTOR" => "UF_PROG.UF_ACTOR", "UF_ICON" => "UF_CHANNEL.UF_BASE.UF_ICON", "UF_CATEGORY" => "UF_PROG.UF_CATEGORY"
+);
  
-//get channel by code
-$result = \Hawkart\Megatv\ScheduleTable::getList(array(
-    'filter' => $arFilter,
-    'select' => array(
-        "ID", "UF_DATE_START", "UF_DATE_END", "UF_DATE", "UF_CHANNEL_ID", "UF_PROG_ID",
-        "UF_TITLE" => "UF_PROG.UF_TITLE", "UF_SUB_TITLE" => "UF_PROG.UF_SUB_TITLE", "UF_IMG_PATH" => "UF_PROG.UF_IMG.UF_PATH",
-        "UF_RATING" => "UF_PROG.UF_RATING" , "UF_DESC" => "UF_PROG.UF_DESC", "UF_SUB_DESC" => "UF_PROG.UF_SUB_DESC",
-        "UF_TOPIC" => "UF_PROG.UF_GANRE", "UF_YEAR_LIMIT" => "UF_PROG.UF_YEAR_LIMIT", "UF_COUNTRY" => "UF_PROG.UF_COUNTRY",
-        "UF_YEAR" => "UF_PROG.UF_YEAR", "UF_DIRECTOR" => "UF_PROG.UF_DIRECTOR", "UF_PRESENTER" => "UF_PROG.UF_PRESENTER",
-        "UF_ACTOR" => "UF_PROG.UF_ACTOR", "UF_ICON" => "UF_CHANNEL.UF_BASE.UF_ICON", "UF_CATEGORY" => "UF_PROG.UF_CATEGORY"
-    ),
-    'limit' => 1
-));
-if ($arResult = $result->fetch())
+$obCache = new \CPHPCache;
+if( $obCache->InitCache(86400, serialize($arFilter).serialize($arSelect), "/schedule-detail/"))
 {
-    $arResult["UF_DATE_START"] = $arResult["DATE_START"] = \CTimeEx::dateOffset($arResult['UF_DATE_START']->toString());
-    $arResult["UF_DATE_END"] = $arResult["DATE_END"] = \CTimeEx::dateOffset($arResult['UF_DATE_END']->toString());
-    $arResult["UF_DATE"] = $arResult["DATE"] = substr($arResult["DATE_START"], 0, 10);
-    $arResult["PICTURE"]["SRC"] = \Hawkart\Megatv\CFile::getCropedPath($arResult["UF_IMG_PATH"], array(600, 600));
-    
-    $keywords[] = $arResult["UF_CATEGORY"];
-    $keywords[] = $arResult["UF_TOPIC"];
-    $APPLICATION->SetTitle($arResult["UF_TITLE"]);
-    $APPLICATION->SetPageProperty("title", trim($arResult["UF_TITLE"]. " ".$arResult["UF_SUB_TITLE"]));
-    $APPLICATION->SetPageProperty("keywords", implode(", ", $keywords));
-    $APPLICATION->SetPageProperty("description", TruncateText($arResult["UF_DESC"], 256));
-    
-    $APPLICATION->SetDirProperty('og_image', $arResult["PICTURE"]["SRC"]);
-    $APPLICATION->SetDirProperty('og_type', 'album');
+	$arResult = $obCache->GetVars();
+}
+elseif($obCache->StartDataCache())
+{
+    //get channel by code
+    $result = \Hawkart\Megatv\ScheduleTable::getList(array(
+        'filter' => $arFilter,
+        'select' => $arSelect,
+        'limit' => 1
+    ));
+    if ($arResult = $result->fetch())
+    {
+        $arResult["UF_DATE_START"] = $arResult["DATE_START"] = \CTimeEx::dateOffset($arResult['UF_DATE_START']->toString());
+        $arResult["UF_DATE_END"] = $arResult["DATE_END"] = \CTimeEx::dateOffset($arResult['UF_DATE_END']->toString());
+        $arResult["UF_DATE"] = $arResult["DATE"] = substr($arResult["DATE_START"], 0, 10);
+        $arResult["PICTURE"]["SRC"] = \Hawkart\Megatv\CFile::getCropedPath($arResult["UF_IMG_PATH"], array(600, 600));
+        $sec = strtotime($arResult["DATE_END"]) - strtotime($arResult["DATE_START"]);
+        $arResult["DURATION"] = \CTimeEx::secToStr($sec);
+        $arResult["KEYWORDS"] = array($arResult["UF_CATEGORY"], $arResult["UF_TOPIC"]);
+    }
+    $obCache->EndDataCache($arResult); 
 }
 
 //redirect if error
@@ -70,6 +73,14 @@ if(intval($arResult["ID"])==0)
     }
 }
 
+//SEO
+$APPLICATION->SetTitle($arResult["UF_TITLE"]);
+$APPLICATION->SetPageProperty("title", trim($arResult["UF_TITLE"]. " ".$arResult["UF_SUB_TITLE"]));
+$APPLICATION->SetPageProperty("keywords", implode(", ", $arResult["KEYWORDS"]));
+$APPLICATION->SetPageProperty("description", TruncateText($arResult["UF_DESC"], 256));
+$APPLICATION->SetDirProperty('og_image', $arResult["PICTURE"]["SRC"]);
+$APPLICATION->SetDirProperty('og_type', 'album');
+
 //get status schedule
 $arResult["STATUS"] = \Hawkart\Megatv\CScheduleTemplate::status(array(
     "ID" => $arResult["ID"],
@@ -77,11 +88,6 @@ $arResult["STATUS"] = \Hawkart\Megatv\CScheduleTemplate::status(array(
     "DATE_START" => $arResult["DATE_START"],
     "DATE_END" => $arResult["DATE_END"]
 ));
-
-//CDev::pre($arResult);
-
-$sec = strtotime($arResult["DATE_END"]) - strtotime($arResult["DATE_START"]);
-$arResult["DURATION"] = \CTimeEx::secToStr($sec);
 
 /**
  * Add data to statistics
