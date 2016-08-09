@@ -139,11 +139,35 @@
 $(document).on('ready', function(){
     
     $('.recommended-broadcasts .broadcasts-list').scrollPagination();
+    
+    function errorsView(form){
+        var errors = false;
+        var amount = form.find("#bx-asd-amount");
+        var methodPay = form.find("[name=pay_system]:checked");
+        var methodsPay = form.find("[name=pay_system]");
+
+        if(!(amount.val()).match(/^[0-9]{1,10}$/)){
+            errors = true;
+            amount.parents(".form-group").addClass("has-error");
+            setTimeout(function(){
+                amount.parents(".form-group").removeClass("has-error");
+            },2000);
+        }
+        if(!methodPay[0]){
+            errors = true;
+            methodsPay.parents(".radio-group").addClass("incorrect");
+            setTimeout(function(){
+                methodsPay.parents(".radio-group").removeClass("incorrect");
+            },2000);
+        }
+        return errors;
+    }
         
     $('form.asd-prepaid-form').on('submit', function(){
         var $form = $(this);
+        var errors = errorsView($form);
 
-        $.ajax({
+        if(!errors) $.ajax({
             type: "POST",
             url: $(this).attr('action'),
             data: $(this).serialize(),

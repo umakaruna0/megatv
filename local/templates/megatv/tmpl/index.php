@@ -1,4 +1,4 @@
-<?
+<? 
     require("include/header.php");
 ?>
 
@@ -10,7 +10,7 @@
     
     <section class="broadcast-results" data-module="broadcast-results">
         <script type="text/x-config">
-            { "recordingURL": "<?=SITE_TEMPLATE_PATH?>/tmpl/ajax/to_record.php", "fetchResultsURL" : "/", "page": "2", "ajaxType": "CHANNELS", "dates" : [ { "dayReq": "30.07.2016", "dayMark": "Суббота. 30 июля" }, { "dayReq": "31.07.2016", "dayMark": "Воскресенье. 31 июля" }, { "dayReq": "01.08.2016", "dayMark": "Понедельник. 01 августа" }, { "dayReq": "02.08.2016", "dayMark": "Вторник. 02 августа" }, { "dayReq": "03.08.2016", "dayMark": "Среда. 03 августа" }, { "dayReq": "04.08.2016", "dayMark": "Четверг. 04 августа" }, { "dayReq": "05.08.2016", "dayMark": "Пятница. 05 августа" }, { "dayReq": "06.08.2016", "dayMark": "Суббота. 06 августа" }, { "dayReq": "07.08.2016", "dayMark": "Воскресенье. 07 августа" }, { "dayReq": "08.08.2016", "dayMark": "Понедельник. 08 августа" }, { "dayReq": "09.08.2016", "dayMark": "Вторник. 09 августа" } ] }
+            { "recordingURL": "<?=SITE_TEMPLATE_PATH;?>/ajax/to_record.php", "fetchResultsURL" : "/", "page": "2", "ajaxType": "CHANNELS", "dates" : [ { "dayReq": "30.07.2016", "dayMark": "Суббота. 30 июля" }, { "dayReq": "31.07.2016", "dayMark": "Воскресенье. 31 июля" }, { "dayReq": "01.08.2016", "dayMark": "Понедельник. 01 августа" }, { "dayReq": "02.08.2016", "dayMark": "Вторник. 02 августа" }, { "dayReq": "03.08.2016", "dayMark": "Среда. 03 августа" }, { "dayReq": "04.08.2016", "dayMark": "Четверг. 04 августа" }, { "dayReq": "05.08.2016", "dayMark": "Пятница. 05 августа" }, { "dayReq": "06.08.2016", "dayMark": "Суббота. 06 августа" }, { "dayReq": "07.08.2016", "dayMark": "Воскресенье. 07 августа" }, { "dayReq": "08.08.2016", "dayMark": "Понедельник. 08 августа" }, { "dayReq": "09.08.2016", "dayMark": "Вторник. 09 августа" } ] }
         </script>
 
         <div class="categories-logos">
@@ -179,7 +179,7 @@
 
                             <span class="badge" data-channel-id="44">в эфире</span>
 
-                            <span class="item-status-icon">
+                            <span class="item-status-icon js-btnModalInit" data-module="modal" data-modal="authURL" data-type="openModal">
                                 <span data-icon="icon-recordit"></span>
                                 <span class="status-desc">Записать</span>
                             </span>
@@ -189,12 +189,12 @@
                                 <a href="/channels/rossiya-1/rasplata-za-lyubov/?event=49449">Расплата за любовь</a>
                             </div>
                         </div>
-                        <div class="item status-recordable" data-type="broadcast" data-broadcast-id="49450">
+                        <div class="item status-recordable" data-type="openModal" data-type="broadcast" data-broadcast-id="49450">
                             <div class="item-image-holder">
                                 <img data-src="http://tvguru.com.images.1c-bitrix-cdn.ru/upload/epg_cut/387512_576_288.jpg" alt="">
                             </div>
 
-                            <span class="item-status-icon">
+                            <span class="item-status-icon js-btnModalInit" data-module="modal" data-modal="authURL" data-type="openModal">
                                 <span data-icon="icon-recordit"></span>
                                 <span class="status-desc">Записать</span>
                             </span>
@@ -204,12 +204,12 @@
                                 <a href="/channels/rossiya-1/khozyayka-bolshogo-goroda/?event=49450">Хозяйка большого города</a>
                             </div>
                         </div>
-                        <div class="item status-recordable" data-type="broadcast" data-broadcast-id="49451">
+                        <div class="item status-recordable" data-type="openModal" data-type="broadcast" data-broadcast-id="49451">
                             <div class="item-image-holder">
                                 <img data-src="http://tvguru.com.images.1c-bitrix-cdn.ru/upload/epg_cut/387512_576_288.jpg" alt="">
                             </div>
 
-                            <span class="item-status-icon">
+                            <span class="item-status-icon js-btnModalInit" data-module="modal" data-modal="authURL" data-type="openModal">
                                 <span data-icon="icon-recordit"></span>
                                 <span class="status-desc">Записать</span>
                             </span>
@@ -219,12 +219,12 @@
                                 <a href="/channels/rossiya-1/vesti/?event=49451">Вести</a>
                             </div>
                         </div>
-                        <div class="item status-recordable" data-type="broadcast" data-broadcast-id="49452">
+                        <div class="item status-recordable" data-type="openModal" data-type="broadcast" data-broadcast-id="49452">
                             <div class="item-image-holder">
                                 <img data-src="http://tvguru.com.images.1c-bitrix-cdn.ru/upload/epg_cut/387512_576_288.jpg" alt="">
                             </div>
 
-                            <span class="item-status-icon">
+                            <span class="item-status-icon js-btnModalInit" data-module="modal" data-modal="authURL" data-type="openModal">
                                 <span data-icon="icon-recordit"></span>
                                 <span class="status-desc">Записать</span>
                             </span>
@@ -234,12 +234,12 @@
                                 <a href="/channels/rossiya-1/mestnoe-vremya-vesti-moskva/?event=49452">Местное время. Вести-Москва</a>
                             </div>
                         </div>
-                        <div class="item status-recordable" data-type="broadcast" data-broadcast-id="49453">
+                        <div class="item status-recordable" data-type="openModal" data-type="broadcast" data-broadcast-id="49453">
                             <div class="item-image-holder">
                                 <img data-src="http://tvguru.com.images.1c-bitrix-cdn.ru/upload/epg_cut/387512_576_288.jpg" alt="">
                             </div>
 
-                            <span class="item-status-icon">
+                            <span class="item-status-icon js-btnModalInit" data-module="modal" data-modal="authURL" data-type="openModal">
                                 <span data-icon="icon-recordit"></span>
                                 <span class="status-desc">Записать</span>
                             </span>
@@ -249,12 +249,12 @@
                                 <a href="/channels/rossiya-1/khozyayka-bolshogo-goroda/?event=49453">Хозяйка большого города</a>
                             </div>
                         </div>
-                        <div class="item status-recordable" data-type="broadcast" data-broadcast-id="49454">
+                        <div class="item status-recordable" data-type="openModal" data-type="broadcast" data-broadcast-id="49454">
                             <div class="item-image-holder">
                                 <img data-src="http://tvguru.com.images.1c-bitrix-cdn.ru/upload/epg_cut/387512_576_288.jpg" alt="">
                             </div>
 
-                            <span class="item-status-icon">
+                            <span class="item-status-icon js-btnModalInit" data-module="modal" data-modal="authURL" data-type="openModal">
                                 <span data-icon="icon-recordit"></span>
                                 <span class="status-desc">Записать</span>
                             </span>
@@ -264,12 +264,12 @@
                                 <a href="/channels/rossiya-1/yubileynyy-kontsert-igorya-krutogo/?event=49454">Юбилейный концерт Игоря Крутого</a>
                             </div>
                         </div>
-                        <div class="item status-recordable" data-type="broadcast" data-broadcast-id="49455">
+                        <div class="item status-recordable" data-type="openModal" data-type="broadcast" data-broadcast-id="49455">
                             <div class="item-image-holder">
                                 <img data-src="http://tvguru.com.images.1c-bitrix-cdn.ru/upload/epg_cut/387512_576_288.jpg" alt="">
                             </div>
 
-                            <span class="item-status-icon">
+                            <span class="item-status-icon js-btnModalInit" data-module="modal" data-modal="authURL" data-type="openModal">
                                 <span data-icon="icon-recordit"></span>
                                 <span class="status-desc">Записать</span>
                             </span>
@@ -279,12 +279,12 @@
                                 <a href="/channels/rossiya-1/vesti/?event=49455">Вести</a>
                             </div>
                         </div>
-                        <div class="item status-recordable" data-type="broadcast" data-broadcast-id="49456">
+                        <div class="item status-recordable" data-type="openModal" data-type="broadcast" data-broadcast-id="49456">
                             <div class="item-image-holder">
                                 <img data-src="http://tvguru.com.images.1c-bitrix-cdn.ru/upload/epg_cut/387512_576_288.jpg" alt="">
                             </div>
 
-                            <span class="item-status-icon">
+                            <span class="item-status-icon js-btnModalInit" data-module="modal" data-modal="authURL" data-type="openModal">
                                 <span data-icon="icon-recordit"></span>
                                 <span class="status-desc">Записать</span>
                             </span>
@@ -413,7 +413,7 @@
 
                             <span class="badge" data-channel-id="44">в эфире</span>
 
-                            <span class="item-status-icon">
+                            <span class="item-status-icon js-btnModalInit" data-module="modal" data-modal="authURL" data-type="openModal">
                                 <span data-icon="icon-recordit"></span>
                                 <span class="status-desc">Записать</span>
                             </span>
@@ -423,12 +423,12 @@
                                 <a href="/channels/rossiya-1/rasplata-za-lyubov/?event=49449">Расплата за любовь</a>
                             </div>
                         </div>
-                        <div class="item status-recordable" data-type="broadcast" data-broadcast-id="49450">
+                        <div class="item status-recordable" data-type="openModal" data-type="broadcast" data-broadcast-id="49450">
                             <div class="item-image-holder">
                                 <img data-src="http://tvguru.com.images.1c-bitrix-cdn.ru/upload/epg_cut/387512_576_288.jpg" alt="">
                             </div>
 
-                            <span class="item-status-icon">
+                            <span class="item-status-icon js-btnModalInit" data-module="modal" data-modal="authURL" data-type="openModal">
                                 <span data-icon="icon-recordit"></span>
                                 <span class="status-desc">Записать</span>
                             </span>
@@ -438,12 +438,12 @@
                                 <a href="/channels/rossiya-1/khozyayka-bolshogo-goroda/?event=49450">Хозяйка большого города</a>
                             </div>
                         </div>
-                        <div class="item status-recordable" data-type="broadcast" data-broadcast-id="49451">
+                        <div class="item status-recordable" data-type="openModal" data-type="broadcast" data-broadcast-id="49451">
                             <div class="item-image-holder">
                                 <img data-src="http://tvguru.com.images.1c-bitrix-cdn.ru/upload/epg_cut/387512_576_288.jpg" alt="">
                             </div>
 
-                            <span class="item-status-icon">
+                            <span class="item-status-icon js-btnModalInit" data-module="modal" data-modal="authURL" data-type="openModal">
                                 <span data-icon="icon-recordit"></span>
                                 <span class="status-desc">Записать</span>
                             </span>
@@ -453,12 +453,12 @@
                                 <a href="/channels/rossiya-1/vesti/?event=49451">Вести</a>
                             </div>
                         </div>
-                        <div class="item status-recordable" data-type="broadcast" data-broadcast-id="49452">
+                        <div class="item status-recordable" data-type="openModal" data-type="broadcast" data-broadcast-id="49452">
                             <div class="item-image-holder">
                                 <img data-src="http://tvguru.com.images.1c-bitrix-cdn.ru/upload/epg_cut/387512_576_288.jpg" alt="">
                             </div>
 
-                            <span class="item-status-icon">
+                            <span class="item-status-icon js-btnModalInit" data-module="modal" data-modal="authURL" data-type="openModal">
                                 <span data-icon="icon-recordit"></span>
                                 <span class="status-desc">Записать</span>
                             </span>
@@ -468,12 +468,12 @@
                                 <a href="/channels/rossiya-1/mestnoe-vremya-vesti-moskva/?event=49452">Местное время. Вести-Москва</a>
                             </div>
                         </div>
-                        <div class="item status-recordable" data-type="broadcast" data-broadcast-id="49453">
+                        <div class="item status-recordable" data-type="openModal" data-type="broadcast" data-broadcast-id="49453">
                             <div class="item-image-holder">
                                 <img data-src="http://tvguru.com.images.1c-bitrix-cdn.ru/upload/epg_cut/387512_576_288.jpg" alt="">
                             </div>
 
-                            <span class="item-status-icon">
+                            <span class="item-status-icon js-btnModalInit" data-module="modal" data-modal="authURL" data-type="openModal">
                                 <span data-icon="icon-recordit"></span>
                                 <span class="status-desc">Записать</span>
                             </span>
@@ -483,12 +483,12 @@
                                 <a href="/channels/rossiya-1/khozyayka-bolshogo-goroda/?event=49453">Хозяйка большого города</a>
                             </div>
                         </div>
-                        <div class="item status-recordable" data-type="broadcast" data-broadcast-id="49454">
+                        <div class="item status-recordable" data-type="openModal" data-type="broadcast" data-broadcast-id="49454">
                             <div class="item-image-holder">
                                 <img data-src="http://tvguru.com.images.1c-bitrix-cdn.ru/upload/epg_cut/387512_576_288.jpg" alt="">
                             </div>
 
-                            <span class="item-status-icon">
+                            <span class="item-status-icon js-btnModalInit" data-module="modal" data-modal="authURL" data-type="openModal">
                                 <span data-icon="icon-recordit"></span>
                                 <span class="status-desc">Записать</span>
                             </span>
@@ -498,12 +498,12 @@
                                 <a href="/channels/rossiya-1/yubileynyy-kontsert-igorya-krutogo/?event=49454">Юбилейный концерт Игоря Крутого</a>
                             </div>
                         </div>
-                        <div class="item status-recordable" data-type="broadcast" data-broadcast-id="49455">
+                        <div class="item status-recordable" data-type="openModal" data-type="broadcast" data-broadcast-id="49455">
                             <div class="item-image-holder">
                                 <img data-src="http://tvguru.com.images.1c-bitrix-cdn.ru/upload/epg_cut/387512_576_288.jpg" alt="">
                             </div>
 
-                            <span class="item-status-icon">
+                            <span class="item-status-icon js-btnModalInit" data-module="modal" data-modal="authURL" data-type="openModal">
                                 <span data-icon="icon-recordit"></span>
                                 <span class="status-desc">Записать</span>
                             </span>
@@ -513,12 +513,12 @@
                                 <a href="/channels/rossiya-1/vesti/?event=49455">Вести</a>
                             </div>
                         </div>
-                        <div class="item status-recordable" data-type="broadcast" data-broadcast-id="49456">
+                        <div class="item status-recordable" data-type="openModal" data-type="broadcast" data-broadcast-id="49456">
                             <div class="item-image-holder">
                                 <img data-src="http://tvguru.com.images.1c-bitrix-cdn.ru/upload/epg_cut/387512_576_288.jpg" alt="">
                             </div>
 
-                            <span class="item-status-icon">
+                            <span class="item-status-icon js-btnModalInit" data-module="modal" data-modal="authURL" data-type="openModal">
                                 <span data-icon="icon-recordit"></span>
                                 <span class="status-desc">Записать</span>
                             </span>
@@ -647,7 +647,7 @@
 
                             <span class="badge" data-channel-id="44">в эфире</span>
 
-                            <span class="item-status-icon">
+                            <span class="item-status-icon js-btnModalInit" data-module="modal" data-modal="authURL" data-type="openModal">
                                 <span data-icon="icon-recordit"></span>
                                 <span class="status-desc">Записать</span>
                             </span>
@@ -657,12 +657,12 @@
                                 <a href="/channels/rossiya-1/rasplata-za-lyubov/?event=49449">Расплата за любовь</a>
                             </div>
                         </div>
-                        <div class="item status-recordable" data-type="broadcast" data-broadcast-id="49450">
+                        <div class="item status-recordable" data-type="openModal" data-type="broadcast" data-broadcast-id="49450">
                             <div class="item-image-holder">
                                 <img data-src="http://tvguru.com.images.1c-bitrix-cdn.ru/upload/epg_cut/387512_576_288.jpg" alt="">
                             </div>
 
-                            <span class="item-status-icon">
+                            <span class="item-status-icon js-btnModalInit" data-module="modal" data-modal="authURL" data-type="openModal">
                                 <span data-icon="icon-recordit"></span>
                                 <span class="status-desc">Записать</span>
                             </span>
@@ -672,12 +672,12 @@
                                 <a href="/channels/rossiya-1/khozyayka-bolshogo-goroda/?event=49450">Хозяйка большого города</a>
                             </div>
                         </div>
-                        <div class="item status-recordable" data-type="broadcast" data-broadcast-id="49451">
+                        <div class="item status-recordable" data-type="openModal" data-type="broadcast" data-broadcast-id="49451">
                             <div class="item-image-holder">
                                 <img data-src="http://tvguru.com.images.1c-bitrix-cdn.ru/upload/epg_cut/387512_576_288.jpg" alt="">
                             </div>
 
-                            <span class="item-status-icon">
+                            <span class="item-status-icon js-btnModalInit" data-module="modal" data-modal="authURL" data-type="openModal">
                                 <span data-icon="icon-recordit"></span>
                                 <span class="status-desc">Записать</span>
                             </span>
@@ -687,12 +687,12 @@
                                 <a href="/channels/rossiya-1/vesti/?event=49451">Вести</a>
                             </div>
                         </div>
-                        <div class="item status-recordable" data-type="broadcast" data-broadcast-id="49452">
+                        <div class="item status-recordable" data-type="openModal" data-type="broadcast" data-broadcast-id="49452">
                             <div class="item-image-holder">
                                 <img data-src="http://tvguru.com.images.1c-bitrix-cdn.ru/upload/epg_cut/387512_576_288.jpg" alt="">
                             </div>
 
-                            <span class="item-status-icon">
+                            <span class="item-status-icon js-btnModalInit" data-module="modal" data-modal="authURL" data-type="openModal">
                                 <span data-icon="icon-recordit"></span>
                                 <span class="status-desc">Записать</span>
                             </span>
@@ -702,12 +702,12 @@
                                 <a href="/channels/rossiya-1/mestnoe-vremya-vesti-moskva/?event=49452">Местное время. Вести-Москва</a>
                             </div>
                         </div>
-                        <div class="item status-recordable" data-type="broadcast" data-broadcast-id="49453">
+                        <div class="item status-recordable" data-type="openModal" data-type="broadcast" data-broadcast-id="49453">
                             <div class="item-image-holder">
                                 <img data-src="http://tvguru.com.images.1c-bitrix-cdn.ru/upload/epg_cut/387512_576_288.jpg" alt="">
                             </div>
 
-                            <span class="item-status-icon">
+                            <span class="item-status-icon js-btnModalInit" data-module="modal" data-modal="authURL" data-type="openModal">
                                 <span data-icon="icon-recordit"></span>
                                 <span class="status-desc">Записать</span>
                             </span>
@@ -717,12 +717,12 @@
                                 <a href="/channels/rossiya-1/khozyayka-bolshogo-goroda/?event=49453">Хозяйка большого города</a>
                             </div>
                         </div>
-                        <div class="item status-recordable" data-type="broadcast" data-broadcast-id="49454">
+                        <div class="item status-recordable" data-type="openModal" data-type="broadcast" data-broadcast-id="49454">
                             <div class="item-image-holder">
                                 <img data-src="http://tvguru.com.images.1c-bitrix-cdn.ru/upload/epg_cut/387512_576_288.jpg" alt="">
                             </div>
 
-                            <span class="item-status-icon">
+                            <span class="item-status-icon js-btnModalInit" data-module="modal" data-modal="authURL" data-type="openModal">
                                 <span data-icon="icon-recordit"></span>
                                 <span class="status-desc">Записать</span>
                             </span>
@@ -732,12 +732,12 @@
                                 <a href="/channels/rossiya-1/yubileynyy-kontsert-igorya-krutogo/?event=49454">Юбилейный концерт Игоря Крутого</a>
                             </div>
                         </div>
-                        <div class="item status-recordable" data-type="broadcast" data-broadcast-id="49455">
+                        <div class="item status-recordable" data-type="openModal" data-type="broadcast" data-broadcast-id="49455">
                             <div class="item-image-holder">
                                 <img data-src="http://tvguru.com.images.1c-bitrix-cdn.ru/upload/epg_cut/387512_576_288.jpg" alt="">
                             </div>
 
-                            <span class="item-status-icon">
+                            <span class="item-status-icon js-btnModalInit" data-module="modal" data-modal="authURL" data-type="openModal">
                                 <span data-icon="icon-recordit"></span>
                                 <span class="status-desc">Записать</span>
                             </span>
@@ -747,12 +747,12 @@
                                 <a href="/channels/rossiya-1/vesti/?event=49455">Вести</a>
                             </div>
                         </div>
-                        <div class="item status-recordable" data-type="broadcast" data-broadcast-id="49456">
+                        <div class="item status-recordable" data-type="openModal" data-type="broadcast" data-broadcast-id="49456">
                             <div class="item-image-holder">
                                 <img data-src="http://tvguru.com.images.1c-bitrix-cdn.ru/upload/epg_cut/387512_576_288.jpg" alt="">
                             </div>
 
-                            <span class="item-status-icon">
+                            <span class="item-status-icon js-btnModalInit" data-module="modal" data-modal="authURL" data-type="openModal">
                                 <span data-icon="icon-recordit"></span>
                                 <span class="status-desc">Записать</span>
                             </span>
@@ -881,7 +881,7 @@
 
                             <span class="badge" data-channel-id="44">в эфире</span>
 
-                            <span class="item-status-icon">
+                            <span class="item-status-icon js-btnModalInit" data-module="modal" data-modal="authURL" data-type="openModal">
 				                <span data-icon="icon-recordit"></span>
                             	<span class="status-desc">Записать</span>
                             </span>
@@ -891,12 +891,12 @@
                                 <a href="/channels/rossiya-1/rasplata-za-lyubov/?event=49449">Расплата за любовь</a>
                             </div>
                         </div>
-                        <div class="item status-recordable" data-type="broadcast" data-broadcast-id="49450">
+                        <div class="item status-recordable" data-type="openModal" data-type="broadcast" data-broadcast-id="49450">
                             <div class="item-image-holder">
                                 <img data-src="http://tvguru.com.images.1c-bitrix-cdn.ru/upload/epg_cut/387512_576_288.jpg" alt="">
                             </div>
 
-                            <span class="item-status-icon">
+                            <span class="item-status-icon js-btnModalInit" data-module="modal" data-modal="authURL" data-type="openModal">
 				                <span data-icon="icon-recordit"></span>
                             	<span class="status-desc">Записать</span>
                             </span>
@@ -906,12 +906,12 @@
                                 <a href="/channels/rossiya-1/khozyayka-bolshogo-goroda/?event=49450">Хозяйка большого города</a>
                             </div>
                         </div>
-                        <div class="item status-recordable" data-type="broadcast" data-broadcast-id="49451">
+                        <div class="item status-recordable" data-type="openModal" data-type="broadcast" data-broadcast-id="49451">
                             <div class="item-image-holder">
                                 <img data-src="http://tvguru.com.images.1c-bitrix-cdn.ru/upload/epg_cut/387512_576_288.jpg" alt="">
                             </div>
 
-                            <span class="item-status-icon">
+                            <span class="item-status-icon js-btnModalInit" data-module="modal" data-modal="authURL" data-type="openModal">
 				                <span data-icon="icon-recordit"></span>
                             	<span class="status-desc">Записать</span>
                             </span>
@@ -921,12 +921,12 @@
                                 <a href="/channels/rossiya-1/vesti/?event=49451">Вести</a>
                             </div>
                         </div>
-                        <div class="item status-recordable" data-type="broadcast" data-broadcast-id="49452">
+                        <div class="item status-recordable" data-type="openModal" data-type="broadcast" data-broadcast-id="49452">
                             <div class="item-image-holder">
                                 <img data-src="http://tvguru.com.images.1c-bitrix-cdn.ru/upload/epg_cut/387512_576_288.jpg" alt="">
                             </div>
 
-                            <span class="item-status-icon">
+                            <span class="item-status-icon js-btnModalInit" data-module="modal" data-modal="authURL" data-type="openModal">
 				                <span data-icon="icon-recordit"></span>
                             	<span class="status-desc">Записать</span>
                             </span>
@@ -936,12 +936,12 @@
                                 <a href="/channels/rossiya-1/mestnoe-vremya-vesti-moskva/?event=49452">Местное время. Вести-Москва</a>
                             </div>
                         </div>
-                        <div class="item status-recordable" data-type="broadcast" data-broadcast-id="49453">
+                        <div class="item status-recordable" data-type="openModal" data-type="broadcast" data-broadcast-id="49453">
                             <div class="item-image-holder">
                                 <img data-src="http://tvguru.com.images.1c-bitrix-cdn.ru/upload/epg_cut/387512_576_288.jpg" alt="">
                             </div>
 
-                            <span class="item-status-icon">
+                            <span class="item-status-icon js-btnModalInit" data-module="modal" data-modal="authURL" data-type="openModal">
 				                <span data-icon="icon-recordit"></span>
                             	<span class="status-desc">Записать</span>
                             </span>
@@ -951,12 +951,12 @@
                                 <a href="/channels/rossiya-1/khozyayka-bolshogo-goroda/?event=49453">Хозяйка большого города</a>
                             </div>
                         </div>
-                        <div class="item status-recordable" data-type="broadcast" data-broadcast-id="49454">
+                        <div class="item status-recordable" data-type="openModal" data-type="broadcast" data-broadcast-id="49454">
                             <div class="item-image-holder">
                                 <img data-src="http://tvguru.com.images.1c-bitrix-cdn.ru/upload/epg_cut/387512_576_288.jpg" alt="">
                             </div>
 
-                            <span class="item-status-icon">
+                            <span class="item-status-icon js-btnModalInit" data-module="modal" data-modal="authURL" data-type="openModal">
 				                <span data-icon="icon-recordit"></span>
                             	<span class="status-desc">Записать</span>
                             </span>
@@ -966,12 +966,12 @@
                                 <a href="/channels/rossiya-1/yubileynyy-kontsert-igorya-krutogo/?event=49454">Юбилейный концерт Игоря Крутого</a>
                             </div>
                         </div>
-                        <div class="item status-recordable" data-type="broadcast" data-broadcast-id="49455">
+                        <div class="item status-recordable" data-type="openModal" data-type="broadcast" data-broadcast-id="49455">
                             <div class="item-image-holder">
                                 <img data-src="http://tvguru.com.images.1c-bitrix-cdn.ru/upload/epg_cut/387512_576_288.jpg" alt="">
                             </div>
 
-                            <span class="item-status-icon">
+                            <span class="item-status-icon js-btnModalInit" data-module="modal" data-modal="authURL" data-type="openModal">
 				                <span data-icon="icon-recordit"></span>
                             	<span class="status-desc">Записать</span>
                             </span>
@@ -981,12 +981,12 @@
                                 <a href="/channels/rossiya-1/vesti/?event=49455">Вести</a>
                             </div>
                         </div>
-                        <div class="item status-recordable" data-type="broadcast" data-broadcast-id="49456">
+                        <div class="item status-recordable" data-type="openModal" data-type="broadcast" data-broadcast-id="49456">
                             <div class="item-image-holder">
                                 <img data-src="http://tvguru.com.images.1c-bitrix-cdn.ru/upload/epg_cut/387512_576_288.jpg" alt="">
                             </div>
 
-                            <span class="item-status-icon">
+                            <span class="item-status-icon js-btnModalInit" data-module="modal" data-modal="authURL" data-type="openModal">
 				                <span data-icon="icon-recordit"></span>
                             	<span class="status-desc">Записать</span>
                             </span>
@@ -1128,14 +1128,14 @@
                                 <a href="/channels/pervyy-kanal/novosti-164/?event=49557">Новости</a>
                             </div>
                         </div>
-                        <div class="item status-recordable" data-type="broadcast" data-broadcast-id="49558">
+                        <div class="item status-recordable" data-type="openModal" data-type="broadcast" data-broadcast-id="49558">
                             <div class="item-image-holder">
                                 <img data-src="http://tvguru.com.images.1c-bitrix-cdn.ru/upload/epg_cut/387512_576_288.jpg" alt="">
                             </div>
 
                             <span class="badge" data-channel-id="57">в эфире</span>
 
-                            <span class="item-status-icon">
+                            <span class="item-status-icon js-btnModalInit" data-module="modal" data-modal="authURL" data-type="openModal">
 				                <span data-icon="icon-recordit"></span>
                             	<span class="status-desc">Записать</span>
                             </span>
@@ -1145,12 +1145,12 @@
                                 <a href="/channels/pervyy-kanal/idealnyy-remont/?event=49558">Идеальный ремонт</a>
                             </div>
                         </div>
-                        <div class="item status-recordable" data-type="broadcast" data-broadcast-id="49559">
+                        <div class="item status-recordable" data-type="openModal" data-type="broadcast" data-broadcast-id="49559">
                             <div class="item-image-holder">
                                 <img data-src="http://tvguru.com.images.1c-bitrix-cdn.ru/upload/epg_cut/387512_576_288.jpg" alt="">
                             </div>
 
-                            <span class="item-status-icon">
+                            <span class="item-status-icon js-btnModalInit" data-module="modal" data-modal="authURL" data-type="openModal">
 				                <span data-icon="icon-recordit"></span>
                             	<span class="status-desc">Записать</span>
                             </span>
@@ -1160,12 +1160,12 @@
                                 <a href="/channels/pervyy-kanal/na-10-let-molozhe/?event=49559">На 10 лет моложе</a>
                             </div>
                         </div>
-                        <div class="item status-recordable" data-type="broadcast" data-broadcast-id="49560">
+                        <div class="item status-recordable" data-type="openModal" data-type="broadcast" data-broadcast-id="49560">
                             <div class="item-image-holder">
                                 <img data-src="http://tvguru.com.images.1c-bitrix-cdn.ru/upload/epg_cut/387512_576_288.jpg" alt="">
                             </div>
 
-                            <span class="item-status-icon">
+                            <span class="item-status-icon js-btnModalInit" data-module="modal" data-modal="authURL" data-type="openModal">
 				                <span data-icon="icon-recordit"></span>
                             	<span class="status-desc">Записать</span>
                             </span>
@@ -1175,12 +1175,12 @@
                                 <a href="/channels/pervyy-kanal/dorogoy-moy-chelovek/?event=49560">Дорогой мой человек</a>
                             </div>
                         </div>
-                        <div class="item status-recordable" data-type="broadcast" data-broadcast-id="49561">
+                        <div class="item status-recordable" data-type="openModal" data-type="broadcast" data-broadcast-id="49561">
                             <div class="item-image-holder">
                                 <img data-src="http://tvguru.com.images.1c-bitrix-cdn.ru/upload/epg_cut/387512_576_288.jpg" alt="">
                             </div>
 
-                            <span class="item-status-icon">
+                            <span class="item-status-icon js-btnModalInit" data-module="modal" data-modal="authURL" data-type="openModal">
 				                <span data-icon="icon-recordit"></span>
                             	<span class="status-desc">Записать</span>
                             </span>
@@ -1190,12 +1190,12 @@
                                 <a href="/channels/pervyy-kanal/aleksey-batalov-ya-ne-torguyus-s-sudboy/?event=49561">Алексей Баталов. Я не торгуюсь с судьбой</a>
                             </div>
                         </div>
-                        <div class="item status-recordable" data-type="broadcast" data-broadcast-id="49562">
+                        <div class="item status-recordable" data-type="openModal" data-type="broadcast" data-broadcast-id="49562">
                             <div class="item-image-holder">
                                 <img data-src="http://tvguru.com.images.1c-bitrix-cdn.ru/upload/epg_cut/387512_576_288.jpg" alt="">
                             </div>
 
-                            <span class="item-status-icon">
+                            <span class="item-status-icon js-btnModalInit" data-module="modal" data-modal="authURL" data-type="openModal">
 				                <span data-icon="icon-recordit"></span>
                             	<span class="status-desc">Записать</span>
                             </span>
@@ -1205,12 +1205,12 @@
                                 <a href="/channels/pervyy-kanal/kto-khochet-stat-millionerom/?event=49562">Кто хочет стать миллионером?</a>
                             </div>
                         </div>
-                        <div class="item status-recordable" data-type="broadcast" data-broadcast-id="49563">
+                        <div class="item status-recordable" data-type="openModal" data-type="broadcast" data-broadcast-id="49563">
                             <div class="item-image-holder">
                                 <img data-src="http://tvguru.com.images.1c-bitrix-cdn.ru/upload/epg_cut/387512_576_288.jpg" alt="">
                             </div>
 
-                            <span class="item-status-icon">
+                            <span class="item-status-icon js-btnModalInit" data-module="modal" data-modal="authURL" data-type="openModal">
 				                <span data-icon="icon-recordit"></span>
                             	<span class="status-desc">Записать</span>
                             </span>
@@ -1220,12 +1220,12 @@
                                 <a href="/channels/pervyy-kanal/vechernie-novosti/?event=49563">Вечерние новости</a>
                             </div>
                         </div>
-                        <div class="item status-recordable" data-type="broadcast" data-broadcast-id="49564">
+                        <div class="item status-recordable" data-type="openModal" data-type="broadcast" data-broadcast-id="49564">
                             <div class="item-image-holder">
                                 <img data-src="http://tvguru.com.images.1c-bitrix-cdn.ru/upload/epg_cut/387512_576_288.jpg" alt="">
                             </div>
 
-                            <span class="item-status-icon">
+                            <span class="item-status-icon js-btnModalInit" data-module="modal" data-modal="authURL" data-type="openModal">
 				                <span data-icon="icon-recordit"></span>
                             	<span class="status-desc">Записать</span>
                             </span>
@@ -1235,12 +1235,12 @@
                                 <a href="/channels/pervyy-kanal/zhara/?event=49564">Жара</a>
                             </div>
                         </div>
-                        <div class="item status-recordable" data-type="broadcast" data-broadcast-id="49565">
+                        <div class="item status-recordable" data-type="openModal" data-type="broadcast" data-broadcast-id="49565">
                             <div class="item-image-holder">
                                 <img data-src="http://tvguru.com.images.1c-bitrix-cdn.ru/upload/epg_cut/387512_576_288.jpg" alt="">
                             </div>
 
-                            <span class="item-status-icon">
+                            <span class="item-status-icon js-btnModalInit" data-module="modal" data-modal="authURL" data-type="openModal">
 				                <span data-icon="icon-recordit"></span>
                             	<span class="status-desc">Записать</span>
                             </span>
@@ -1250,12 +1250,12 @@
                                 <a href="/channels/pervyy-kanal/vremya/?event=49565">Время</a>
                             </div>
                         </div>
-                        <div class="item status-recordable" data-type="broadcast" data-broadcast-id="52701">
+                        <div class="item status-recordable" data-type="openModal" data-type="broadcast" data-broadcast-id="52701">
                             <div class="item-image-holder">
                                 <img data-src="http://tvguru.com.images.1c-bitrix-cdn.ru/upload/epg_cut/387512_576_288.jpg" alt="">
                             </div>
 
-                            <span class="item-status-icon">
+                            <span class="item-status-icon js-btnModalInit" data-module="modal" data-modal="authURL" data-type="openModal">
 				                <span data-icon="icon-recordit"></span>
                             	<span class="status-desc">Записать</span>
                             </span>
@@ -1265,12 +1265,12 @@
                                 <a href="/channels/pervyy-kanal/segodnya-vecherom/?event=52701">Сегодня вечером | Народная артистка СССР...</a>
                             </div>
                         </div>
-                        <div class="item status-recordable" data-type="broadcast" data-broadcast-id="49567">
+                        <div class="item status-recordable" data-type="openModal" data-type="broadcast" data-broadcast-id="49567">
                             <div class="item-image-holder">
                                 <img data-src="http://tvguru.com.images.1c-bitrix-cdn.ru/upload/epg_cut/387512_576_288.jpg" alt="">
                             </div>
 
-                            <span class="item-status-icon">
+                            <span class="item-status-icon js-btnModalInit" data-module="modal" data-modal="authURL" data-type="openModal">
 				                <span data-icon="icon-recordit"></span>
                             	<span class="status-desc">Записать</span>
                             </span>
@@ -1322,14 +1322,14 @@
                                 <a href="/channels/ntv/zakon-i-poryadok-otdel-operativnykh-rassledovaniy/?event=54553">Закон и порядок. Отдел оперативных рассл...</a>
                             </div>
                         </div>
-                        <div class="item status-recordable" data-type="broadcast" data-broadcast-id="53123">
+                        <div class="item status-recordable" data-type="openModal" data-type="broadcast" data-broadcast-id="53123">
                             <div class="item-image-holder">
                                 <img data-src="http://tvguru.com.images.1c-bitrix-cdn.ru/upload/epg_cut/387512_576_288.jpg" alt="">
                             </div>
 
                             <span class="badge" data-channel-id="58">в эфире</span>
 
-                            <span class="item-status-icon">
+                            <span class="item-status-icon js-btnModalInit" data-module="modal" data-modal="authURL" data-type="openModal">
 				                <span data-icon="icon-recordit"></span>
                             	<span class="status-desc">Записать</span>
                             </span>
@@ -1439,14 +1439,14 @@
                                 <a href="/channels/ntv/eda-zhivaya-i-myertvaya/?event=49590">Еда живая и мёртвая</a>
                             </div>
                         </div>
-                        <div class="item status-recordable" data-type="broadcast" data-broadcast-id="49591">
+                        <div class="item status-recordable" data-type="openModal" data-type="broadcast" data-broadcast-id="49591">
                             <div class="item-image-holder">
                                 <img data-src="http://tvguru.com.images.1c-bitrix-cdn.ru/upload/epg_cut/387512_576_288.jpg" alt="">
                             </div>
 
                             <span class="badge" data-channel-id="58">в эфире</span>
 
-                            <span class="item-status-icon">
+                            <span class="item-status-icon js-btnModalInit" data-module="modal" data-modal="authURL" data-type="openModal">
 				                <span data-icon="icon-recordit"></span>
                             	<span class="status-desc">Записать</span>
                             </span>
@@ -1466,12 +1466,12 @@
                                 <a href="/channels/ntv/segodnya/?event=58545">Сегодня</a>
                             </div>
                         </div>
-                        <div class="item status-recordable" data-type="broadcast" data-broadcast-id="49592">
+                        <div class="item status-recordable" data-type="openModal" data-type="broadcast" data-broadcast-id="49592">
                             <div class="item-image-holder">
                                 <img data-src="http://tvguru.com.images.1c-bitrix-cdn.ru/upload/epg_cut/387512_576_288.jpg" alt="">
                             </div>
 
-                            <span class="item-status-icon">
+                            <span class="item-status-icon js-btnModalInit" data-module="modal" data-modal="authURL" data-type="openModal">
 				                <span data-icon="icon-recordit"></span>
                             	<span class="status-desc">Записать</span>
                             </span>
@@ -1482,12 +1482,12 @@
                             </div>
                         </div>
                         <div class="pair-container">
-                            <div class="item status-recordable" data-type="broadcast" data-broadcast-id="54557">
+                            <div class="item status-recordable" data-type="openModal" data-type="broadcast" data-broadcast-id="54557">
                                 <div class="item-image-holder">
                                     <img data-src="http://tvguru.com.images.1c-bitrix-cdn.ru/upload/epg_cut/387512_576_288.jpg" alt="">
                                 </div>
 
-                                <span class="item-status-icon">
+                                <span class="item-status-icon js-btnModalInit" data-module="modal" data-modal="authURL" data-type="openModal">
 					                <span data-icon="icon-recordit"></span>
 	                                <span class="status-desc">Записать</span>
                                 </span>
@@ -1497,12 +1497,12 @@
                                     <a href="/channels/ntv/novaya-zhizn-syshchika-gurova-prodolzhenie/?event=54557">Новая жизнь сыщика Гурова. Продолжение |...</a>
                                 </div>
                             </div>
-                            <div class="item status-recordable" data-type="broadcast" data-broadcast-id="54558">
+                            <div class="item status-recordable" data-type="openModal" data-type="broadcast" data-broadcast-id="54558">
                                 <div class="item-image-holder">
                                     <img data-src="http://tvguru.com.images.1c-bitrix-cdn.ru/upload/epg_cut/387512_576_288.jpg" alt="">
                                 </div>
 
-                                <span class="item-status-icon">
+                                <span class="item-status-icon js-btnModalInit" data-module="modal" data-modal="authURL" data-type="openModal">
 					                <span data-icon="icon-recordit"></span>
 	                                <span class="status-desc">Записать</span>
                                 </span>
@@ -1514,12 +1514,12 @@
                             </div>
                         </div>
                         <div class="pair-container">
-                            <div class="item status-recordable" data-type="broadcast" data-broadcast-id="49595">
+                            <div class="item status-recordable" data-type="openModal" data-type="broadcast" data-broadcast-id="49595">
                                 <div class="item-image-holder">
                                     <img data-src="http://tvguru.com.images.1c-bitrix-cdn.ru/upload/epg_cut/387512_576_288.jpg" alt="">
                                 </div>
 
-                                <span class="item-status-icon">
+                                <span class="item-status-icon js-btnModalInit" data-module="modal" data-modal="authURL" data-type="openModal">
 					                <span data-icon="icon-recordit"></span>
 	                                <span class="status-desc">Записать</span>
                                 </span>
@@ -1529,12 +1529,12 @@
                                     <a href="/channels/ntv/segodnya/?event=49595">Сегодня</a>
                                 </div>
                             </div>
-                            <div class="item status-recordable" data-type="broadcast" data-broadcast-id="54559">
+                            <div class="item status-recordable" data-type="openModal" data-type="broadcast" data-broadcast-id="54559">
                                 <div class="item-image-holder">
                                     <img data-src="http://tvguru.com.images.1c-bitrix-cdn.ru/upload/epg_cut/387512_576_288.jpg" alt="">
                                 </div>
 
-                                <span class="item-status-icon">
+                                <span class="item-status-icon js-btnModalInit" data-module="modal" data-modal="authURL" data-type="openModal">
 					                <span data-icon="icon-recordit"></span>
 	                                <span class="status-desc">Записать</span>
                                 </span>
@@ -1546,12 +1546,12 @@
                             </div>
                         </div>
                         <div class="pair-container">
-                            <div class="item status-recordable" data-type="broadcast" data-broadcast-id="54560">
+                            <div class="item status-recordable" data-type="openModal" data-type="broadcast" data-broadcast-id="54560">
                                 <div class="item-image-holder">
                                     <img data-src="http://tvguru.com.images.1c-bitrix-cdn.ru/upload/epg_cut/387512_576_288.jpg" alt="">
                                 </div>
 
-                                <span class="item-status-icon">
+                                <span class="item-status-icon js-btnModalInit" data-module="modal" data-modal="authURL" data-type="openModal">
 					                <span data-icon="icon-recordit"></span>
 	                                <span class="status-desc">Записать</span>
                                 </span>
@@ -1561,12 +1561,12 @@
                                     <a href="/channels/ntv/novaya-zhizn-syshchika-gurova-prodolzhenie/?event=54560">Новая жизнь сыщика Гурова. Продолжение |...</a>
                                 </div>
                             </div>
-                            <div class="item status-recordable" data-type="broadcast" data-broadcast-id="49598">
+                            <div class="item status-recordable" data-type="openModal" data-type="broadcast" data-broadcast-id="49598">
                                 <div class="item-image-holder">
                                     <img data-src="http://tvguru.com.images.1c-bitrix-cdn.ru/upload/epg_cut/387512_576_288.jpg" alt="">
                                 </div>
 
-                                <span class="item-status-icon">
+                                <span class="item-status-icon js-btnModalInit" data-module="modal" data-modal="authURL" data-type="openModal">
 					                <span data-icon="icon-recordit"></span>
 	                                <span class="status-desc">Записать</span>
                                 </span>
@@ -1578,12 +1578,12 @@
                             </div>
                         </div>
                         <div class="pair-container">
-                            <div class="item status-recordable" data-type="broadcast" data-broadcast-id="49599">
+                            <div class="item status-recordable" data-type="openModal" data-type="broadcast" data-broadcast-id="49599">
                                 <div class="item-image-holder">
                                     <img data-src="http://tvguru.com.images.1c-bitrix-cdn.ru/upload/epg_cut/387512_576_288.jpg" alt="">
                                 </div>
 
-                                <span class="item-status-icon">
+                                <span class="item-status-icon js-btnModalInit" data-module="modal" data-modal="authURL" data-type="openModal">
 					                <span data-icon="icon-recordit"></span>
 	                                <span class="status-desc">Записать</span>
                                 </span>
@@ -1593,12 +1593,12 @@
                                     <a href="/channels/ntv/segodnya/?event=49599">Сегодня</a>
                                 </div>
                             </div>
-                            <div class="item status-recordable" data-type="broadcast" data-broadcast-id="49600">
+                            <div class="item status-recordable" data-type="openModal" data-type="broadcast" data-broadcast-id="49600">
                                 <div class="item-image-holder">
                                     <img data-src="http://tvguru.com.images.1c-bitrix-cdn.ru/upload/epg_cut/387512_576_288.jpg" alt="">
                                 </div>
 
-                                <span class="item-status-icon">
+                                <span class="item-status-icon js-btnModalInit" data-module="modal" data-modal="authURL" data-type="openModal">
 					                <span data-icon="icon-recordit"></span>
 	                                <span class="status-desc">Записать</span>
                                 </span>
@@ -1610,12 +1610,12 @@
                             </div>
                         </div>
                         <div class="pair-container">
-                            <div class="item status-recordable" data-type="broadcast" data-broadcast-id="54561">
+                            <div class="item status-recordable" data-type="openModal" data-type="broadcast" data-broadcast-id="54561">
                                 <div class="item-image-holder">
                                     <img data-src="http://tvguru.com.images.1c-bitrix-cdn.ru/upload/epg_cut/387512_576_288.jpg" alt="">
                                 </div>
 
-                                <span class="item-status-icon">
+                                <span class="item-status-icon js-btnModalInit" data-module="modal" data-modal="authURL" data-type="openModal">
 					                <span data-icon="icon-recordit"></span>
 	                                <span class="status-desc">Записать</span>
                                 </span>
@@ -1625,12 +1625,12 @@
                                     <a href="/channels/ntv/pyes/?event=54561">Пёс | Бессонница</a>
                                 </div>
                             </div>
-                            <div class="item status-recordable" data-type="broadcast" data-broadcast-id="54562">
+                            <div class="item status-recordable" data-type="openModal" data-type="broadcast" data-broadcast-id="54562">
                                 <div class="item-image-holder">
                                     <img data-src="http://tvguru.com.images.1c-bitrix-cdn.ru/upload/epg_cut/387512_576_288.jpg" alt="">
                                 </div>
 
-                                <span class="item-status-icon">
+                                <span class="item-status-icon js-btnModalInit" data-module="modal" data-modal="authURL" data-type="openModal">
 					                <span data-icon="icon-recordit"></span>
 	                                <span class="status-desc">Записать</span>
                                 </span>
@@ -1642,12 +1642,12 @@
                             </div>
                         </div>
                         <div class="pair-container">
-                            <div class="item status-recordable" data-type="broadcast" data-broadcast-id="54563">
+                            <div class="item status-recordable" data-type="openModal" data-type="broadcast" data-broadcast-id="54563">
                                 <div class="item-image-holder">
                                     <img data-src="http://tvguru.com.images.1c-bitrix-cdn.ru/upload/epg_cut/387512_576_288.jpg" alt="">
                                 </div>
 
-                                <span class="item-status-icon">
+                                <span class="item-status-icon js-btnModalInit" data-module="modal" data-modal="authURL" data-type="openModal">
 					                <span data-icon="icon-recordit"></span>
 	                                <span class="status-desc">Записать</span>
                                 </span>
@@ -1657,12 +1657,12 @@
                                     <a href="/channels/ntv/pyes/?event=54563">Пёс | Водобоязнь</a>
                                 </div>
                             </div>
-                            <div class="item status-recordable" data-type="broadcast" data-broadcast-id="54564">
+                            <div class="item status-recordable" data-type="openModal" data-type="broadcast" data-broadcast-id="54564">
                                 <div class="item-image-holder">
                                     <img data-src="http://tvguru.com.images.1c-bitrix-cdn.ru/upload/epg_cut/387512_576_288.jpg" alt="">
                                 </div>
 
-                                <span class="item-status-icon">
+                                <span class="item-status-icon js-btnModalInit" data-module="modal" data-modal="authURL" data-type="openModal">
 					                <span data-icon="icon-recordit"></span>
 	                                <span class="status-desc">Записать</span>
                                 </span>
@@ -1825,14 +1825,14 @@
                                 <a href="/channels/tnt/odnazhdy-v-rossii/?event=50501">Однажды в России</a>
                             </div>
                         </div>
-                        <div class="item status-recordable" data-type="broadcast" data-broadcast-id="50502">
+                        <div class="item status-recordable" data-type="openModal" data-type="broadcast" data-broadcast-id="50502">
                             <div class="item-image-holder">
                                 <img data-src="http://tvguru.com.images.1c-bitrix-cdn.ru/upload/epg_cut/387512_576_288.jpg" alt="">
                             </div>
 
                             <span class="badge" data-channel-id="115">в эфире</span>
 
-                            <span class="item-status-icon">
+                            <span class="item-status-icon js-btnModalInit" data-module="modal" data-modal="authURL" data-type="openModal">
 				                <span data-icon="icon-recordit"></span>
                             	<span class="status-desc">Записать</span>
                             </span>
@@ -1842,12 +1842,12 @@
                                 <a href="/channels/tnt/takoe-kino/?event=50502">Такое Кино!</a>
                             </div>
                         </div>
-                        <div class="item status-recordable" data-type="broadcast" data-broadcast-id="50503">
+                        <div class="item status-recordable" data-type="openModal" data-type="broadcast" data-broadcast-id="50503">
                             <div class="item-image-holder">
                                 <img data-src="http://tvguru.com.images.1c-bitrix-cdn.ru/upload/epg_cut/387512_576_288.jpg" alt="">
                             </div>
 
-                            <span class="item-status-icon">
+                            <span class="item-status-icon js-btnModalInit" data-module="modal" data-modal="authURL" data-type="openModal">
 				                <span data-icon="icon-recordit"></span>
                             	<span class="status-desc">Записать</span>
                             </span>
@@ -1857,12 +1857,12 @@
                                 <a href="/channels/tnt/comedy-woman/?event=50503">Comedy Woman</a>
                             </div>
                         </div>
-                        <div class="item status-recordable" data-type="broadcast" data-broadcast-id="50504">
+                        <div class="item status-recordable" data-type="openModal" data-type="broadcast" data-broadcast-id="50504">
                             <div class="item-image-holder">
                                 <img data-src="http://tvguru.com.images.1c-bitrix-cdn.ru/upload/epg_cut/387512_576_288.jpg" alt="">
                             </div>
 
-                            <span class="item-status-icon">
+                            <span class="item-status-icon js-btnModalInit" data-module="modal" data-modal="authURL" data-type="openModal">
 				                <span data-icon="icon-recordit"></span>
                             	<span class="status-desc">Записать</span>
                             </span>
@@ -1872,12 +1872,12 @@
                                 <a href="/channels/tnt/comedy-woman/?event=50504">Comedy Woman</a>
                             </div>
                         </div>
-                        <div class="item status-recordable" data-type="broadcast" data-broadcast-id="50505">
+                        <div class="item status-recordable" data-type="openModal" data-type="broadcast" data-broadcast-id="50505">
                             <div class="item-image-holder">
                                 <img data-src="http://tvguru.com.images.1c-bitrix-cdn.ru/upload/epg_cut/387512_576_288.jpg" alt="">
                             </div>
 
-                            <span class="item-status-icon">
+                            <span class="item-status-icon js-btnModalInit" data-module="modal" data-modal="authURL" data-type="openModal">
 				                <span data-icon="icon-recordit"></span>
                             	<span class="status-desc">Записать</span>
                             </span>
@@ -1887,12 +1887,12 @@
                                 <a href="/channels/tnt/comedy-woman/?event=50505">Comedy Woman</a>
                             </div>
                         </div>
-                        <div class="item status-recordable" data-type="broadcast" data-broadcast-id="50506">
+                        <div class="item status-recordable" data-type="openModal" data-type="broadcast" data-broadcast-id="50506">
                             <div class="item-image-holder">
                                 <img data-src="http://tvguru.com.images.1c-bitrix-cdn.ru/upload/epg_cut/387512_576_288.jpg" alt="">
                             </div>
 
-                            <span class="item-status-icon">
+                            <span class="item-status-icon js-btnModalInit" data-module="modal" data-modal="authURL" data-type="openModal">
 				                <span data-icon="icon-recordit"></span>
                             	<span class="status-desc">Записать</span>
                             </span>
@@ -1902,12 +1902,12 @@
                                 <a href="/channels/tnt/comedy-woman/?event=50506">Comedy Woman</a>
                             </div>
                         </div>
-                        <div class="item status-recordable" data-type="broadcast" data-broadcast-id="50507">
+                        <div class="item status-recordable" data-type="openModal" data-type="broadcast" data-broadcast-id="50507">
                             <div class="item-image-holder">
                                 <img data-src="http://tvguru.com.images.1c-bitrix-cdn.ru/upload/epg_cut/387512_576_288.jpg" alt="">
                             </div>
 
-                            <span class="item-status-icon">
+                            <span class="item-status-icon js-btnModalInit" data-module="modal" data-modal="authURL" data-type="openModal">
 				                <span data-icon="icon-recordit"></span>
                             	<span class="status-desc">Записать</span>
                             </span>
@@ -1917,12 +1917,12 @@
                                 <a href="/channels/tnt/comedy-woman/?event=50507">Comedy Woman</a>
                             </div>
                         </div>
-                        <div class="item status-recordable" data-type="broadcast" data-broadcast-id="50508">
+                        <div class="item status-recordable" data-type="openModal" data-type="broadcast" data-broadcast-id="50508">
                             <div class="item-image-holder">
                                 <img data-src="http://tvguru.com.images.1c-bitrix-cdn.ru/upload/epg_cut/387512_576_288.jpg" alt="">
                             </div>
 
-                            <span class="item-status-icon">
+                            <span class="item-status-icon js-btnModalInit" data-module="modal" data-modal="authURL" data-type="openModal">
 				                <span data-icon="icon-recordit"></span>
                             	<span class="status-desc">Записать</span>
                             </span>
@@ -1933,12 +1933,12 @@
                             </div>
                         </div>
                         <div class="pair-container">
-                            <div class="item status-recordable" data-type="broadcast" data-broadcast-id="50509">
+                            <div class="item status-recordable" data-type="openModal" data-type="broadcast" data-broadcast-id="50509">
                                 <div class="item-image-holder">
                                     <img data-src="http://tvguru.com.images.1c-bitrix-cdn.ru/upload/epg_cut/387512_576_288.jpg" alt="">
                                 </div>
 
-                                <span class="item-status-icon">
+                                <span class="item-status-icon js-btnModalInit" data-module="modal" data-modal="authURL" data-type="openModal">
 					                <span data-icon="icon-recordit"></span>
 	                                <span class="status-desc">Записать</span>
                                 </span>
@@ -1948,12 +1948,12 @@
                                     <a href="/channels/tnt/comedy-woman/?event=50509">Comedy Woman</a>
                                 </div>
                             </div>
-                            <div class="item status-recordable" data-type="broadcast" data-broadcast-id="50510">
+                            <div class="item status-recordable" data-type="openModal" data-type="broadcast" data-broadcast-id="50510">
                                 <div class="item-image-holder">
                                     <img data-src="http://tvguru.com.images.1c-bitrix-cdn.ru/upload/epg_cut/387512_576_288.jpg" alt="">
                                 </div>
 
-                                <span class="item-status-icon">
+                                <span class="item-status-icon js-btnModalInit" data-module="modal" data-modal="authURL" data-type="openModal">
 					                <span data-icon="icon-recordit"></span>
 	                                <span class="status-desc">Записать</span>
                                 </span>
@@ -1965,12 +1965,12 @@
                             </div>
                         </div>
                         <div class="pair-container">
-                            <div class="item status-recordable" data-type="broadcast" data-broadcast-id="50511">
+                            <div class="item status-recordable" data-type="openModal" data-type="broadcast" data-broadcast-id="50511">
                                 <div class="item-image-holder">
                                     <img data-src="http://tvguru.com.images.1c-bitrix-cdn.ru/upload/epg_cut/387512_576_288.jpg" alt="">
                                 </div>
 
-                                <span class="item-status-icon">
+                                <span class="item-status-icon js-btnModalInit" data-module="modal" data-modal="authURL" data-type="openModal">
 					                <span data-icon="icon-recordit"></span>
 	                                <span class="status-desc">Записать</span>
                                 </span>
@@ -1980,12 +1980,12 @@
                                     <a href="/channels/tnt/ya-robot/?event=50511">Я, робот</a>
                                 </div>
                             </div>
-                            <div class="item status-recordable" data-type="broadcast" data-broadcast-id="50512">
+                            <div class="item status-recordable" data-type="openModal" data-type="broadcast" data-broadcast-id="50512">
                                 <div class="item-image-holder">
                                     <img data-src="http://tvguru.com.images.1c-bitrix-cdn.ru/upload/epg_cut/387512_576_288.jpg" alt="">
                                 </div>
 
-                                <span class="item-status-icon">
+                                <span class="item-status-icon js-btnModalInit" data-module="modal" data-modal="authURL" data-type="openModal">
 					                <span data-icon="icon-recordit"></span>
 	                                <span class="status-desc">Записать</span>
                                 </span>
@@ -2265,14 +2265,14 @@
                             </div>
                         </div>
                         <div class="pair-container">
-                            <div class="item status-recordable" data-type="broadcast" data-broadcast-id="50557">
+                            <div class="item status-recordable" data-type="openModal" data-type="broadcast" data-broadcast-id="50557">
                                 <div class="item-image-holder">
                                     <img data-src="http://tvguru.com.images.1c-bitrix-cdn.ru/upload/epg_cut/387512_576_288.jpg" alt="">
                                 </div>
 
                                 <span class="badge" data-channel-id="124">в эфире</span>
 
-                                <span class="item-status-icon">
+                                <span class="item-status-icon js-btnModalInit" data-module="modal" data-modal="authURL" data-type="openModal">
 					                <span data-icon="icon-recordit"></span>
 	                                <span class="status-desc">Записать</span>
                                 </span>
@@ -2282,12 +2282,12 @@
                                     <a href="/channels/pyatyy-kanal/sled/?event=50557">След | Куда уехал цирк</a>
                                 </div>
                             </div>
-                            <div class="item status-recordable" data-type="broadcast" data-broadcast-id="50558">
+                            <div class="item status-recordable" data-type="openModal" data-type="broadcast" data-broadcast-id="50558">
                                 <div class="item-image-holder">
                                     <img data-src="http://tvguru.com.images.1c-bitrix-cdn.ru/upload/epg_cut/387512_576_288.jpg" alt="">
                                 </div>
 
-                                <span class="item-status-icon">
+                                <span class="item-status-icon js-btnModalInit" data-module="modal" data-modal="authURL" data-type="openModal">
 					                <span data-icon="icon-recordit"></span>
 	                                <span class="status-desc">Записать</span>
                                 </span>
@@ -2299,12 +2299,12 @@
                             </div>
                         </div>
                         <div class="pair-container">
-                            <div class="item status-recordable" data-type="broadcast" data-broadcast-id="50559">
+                            <div class="item status-recordable" data-type="openModal" data-type="broadcast" data-broadcast-id="50559">
                                 <div class="item-image-holder">
                                     <img data-src="http://tvguru.com.images.1c-bitrix-cdn.ru/upload/epg_cut/387512_576_288.jpg" alt="">
                                 </div>
 
-                                <span class="item-status-icon">
+                                <span class="item-status-icon js-btnModalInit" data-module="modal" data-modal="authURL" data-type="openModal">
 					                <span data-icon="icon-recordit"></span>
 	                                <span class="status-desc">Записать</span>
                                 </span>
@@ -2314,12 +2314,12 @@
                                     <a href="/channels/pyatyy-kanal/sled/?event=50559">След | Девушка на мосту</a>
                                 </div>
                             </div>
-                            <div class="item status-recordable" data-type="broadcast" data-broadcast-id="50560">
+                            <div class="item status-recordable" data-type="openModal" data-type="broadcast" data-broadcast-id="50560">
                                 <div class="item-image-holder">
                                     <img data-src="http://tvguru.com.images.1c-bitrix-cdn.ru/upload/epg_cut/387512_576_288.jpg" alt="">
                                 </div>
 
-                                <span class="item-status-icon">
+                                <span class="item-status-icon js-btnModalInit" data-module="modal" data-modal="authURL" data-type="openModal">
 					                <span data-icon="icon-recordit"></span>
 	                                <span class="status-desc">Записать</span>
                                 </span>
@@ -2331,12 +2331,12 @@
                             </div>
                         </div>
                         <div class="pair-container">
-                            <div class="item status-recordable" data-type="broadcast" data-broadcast-id="50561">
+                            <div class="item status-recordable" data-type="openModal" data-type="broadcast" data-broadcast-id="50561">
                                 <div class="item-image-holder">
                                     <img data-src="http://tvguru.com.images.1c-bitrix-cdn.ru/upload/epg_cut/387512_576_288.jpg" alt="">
                                 </div>
 
-                                <span class="item-status-icon">
+                                <span class="item-status-icon js-btnModalInit" data-module="modal" data-modal="authURL" data-type="openModal">
 					                <span data-icon="icon-recordit"></span>
 	                                <span class="status-desc">Записать</span>
                                 </span>
@@ -2346,12 +2346,12 @@
                                     <a href="/channels/pyatyy-kanal/sled/?event=50561">След | Не детское время</a>
                                 </div>
                             </div>
-                            <div class="item status-recordable" data-type="broadcast" data-broadcast-id="50562">
+                            <div class="item status-recordable" data-type="openModal" data-type="broadcast" data-broadcast-id="50562">
                                 <div class="item-image-holder">
                                     <img data-src="http://tvguru.com.images.1c-bitrix-cdn.ru/upload/epg_cut/387512_576_288.jpg" alt="">
                                 </div>
 
-                                <span class="item-status-icon">
+                                <span class="item-status-icon js-btnModalInit" data-module="modal" data-modal="authURL" data-type="openModal">
 					                <span data-icon="icon-recordit"></span>
 	                                <span class="status-desc">Записать</span>
                                 </span>
@@ -2363,12 +2363,12 @@
                             </div>
                         </div>
                         <div class="pair-container">
-                            <div class="item status-recordable" data-type="broadcast" data-broadcast-id="50563">
+                            <div class="item status-recordable" data-type="openModal" data-type="broadcast" data-broadcast-id="50563">
                                 <div class="item-image-holder">
                                     <img data-src="http://tvguru.com.images.1c-bitrix-cdn.ru/upload/epg_cut/387512_576_288.jpg" alt="">
                                 </div>
 
-                                <span class="item-status-icon">
+                                <span class="item-status-icon js-btnModalInit" data-module="modal" data-modal="authURL" data-type="openModal">
 					                <span data-icon="icon-recordit"></span>
 	                                <span class="status-desc">Записать</span>
                                 </span>
@@ -2378,12 +2378,12 @@
                                     <a href="/channels/pyatyy-kanal/sled/?event=50563">След | Долгая сказка на ночь</a>
                                 </div>
                             </div>
-                            <div class="item status-recordable" data-type="broadcast" data-broadcast-id="50564">
+                            <div class="item status-recordable" data-type="openModal" data-type="broadcast" data-broadcast-id="50564">
                                 <div class="item-image-holder">
                                     <img data-src="http://tvguru.com.images.1c-bitrix-cdn.ru/upload/epg_cut/387512_576_288.jpg" alt="">
                                 </div>
 
-                                <span class="item-status-icon">
+                                <span class="item-status-icon js-btnModalInit" data-module="modal" data-modal="authURL" data-type="openModal">
 					                <span data-icon="icon-recordit"></span>
 	                                <span class="status-desc">Записать</span>
                                 </span>
@@ -2395,12 +2395,12 @@
                             </div>
                         </div>
                         <div class="pair-container">
-                            <div class="item status-recordable" data-type="broadcast" data-broadcast-id="50565">
+                            <div class="item status-recordable" data-type="openModal" data-type="broadcast" data-broadcast-id="50565">
                                 <div class="item-image-holder">
                                     <img data-src="http://tvguru.com.images.1c-bitrix-cdn.ru/upload/epg_cut/387512_576_288.jpg" alt="">
                                 </div>
 
-                                <span class="item-status-icon">
+                                <span class="item-status-icon js-btnModalInit" data-module="modal" data-modal="authURL" data-type="openModal">
 					                <span data-icon="icon-recordit"></span>
 	                                <span class="status-desc">Записать</span>
                                 </span>
@@ -2410,12 +2410,12 @@
                                     <a href="/channels/pyatyy-kanal/gorod-osobogo-naznacheniya/?event=50565">Город особого назначения</a>
                                 </div>
                             </div>
-                            <div class="item status-recordable" data-type="broadcast" data-broadcast-id="50566">
+                            <div class="item status-recordable" data-type="openModal" data-type="broadcast" data-broadcast-id="50566">
                                 <div class="item-image-holder">
                                     <img data-src="http://tvguru.com.images.1c-bitrix-cdn.ru/upload/epg_cut/387512_576_288.jpg" alt="">
                                 </div>
 
-                                <span class="item-status-icon">
+                                <span class="item-status-icon js-btnModalInit" data-module="modal" data-modal="authURL" data-type="openModal">
 					                <span data-icon="icon-recordit"></span>
 	                                <span class="status-desc">Записать</span>
                                 </span>
@@ -2427,12 +2427,12 @@
                             </div>
                         </div>
                         <div class="pair-container">
-                            <div class="item status-recordable" data-type="broadcast" data-broadcast-id="50567">
+                            <div class="item status-recordable" data-type="openModal" data-type="broadcast" data-broadcast-id="50567">
                                 <div class="item-image-holder">
                                     <img data-src="http://tvguru.com.images.1c-bitrix-cdn.ru/upload/epg_cut/387512_576_288.jpg" alt="">
                                 </div>
 
-                                <span class="item-status-icon">
+                                <span class="item-status-icon js-btnModalInit" data-module="modal" data-modal="authURL" data-type="openModal">
 					                <span data-icon="icon-recordit"></span>
 	                                <span class="status-desc">Записать</span>
                                 </span>
@@ -2442,12 +2442,12 @@
                                     <a href="/channels/pyatyy-kanal/gorod-osobogo-naznacheniya/?event=50567">Город особого назначения</a>
                                 </div>
                             </div>
-                            <div class="item status-recordable" data-type="broadcast" data-broadcast-id="50568">
+                            <div class="item status-recordable" data-type="openModal" data-type="broadcast" data-broadcast-id="50568">
                                 <div class="item-image-holder">
                                     <img data-src="http://tvguru.com.images.1c-bitrix-cdn.ru/upload/epg_cut/387512_576_288.jpg" alt="">
                                 </div>
 
-                                <span class="item-status-icon">
+                                <span class="item-status-icon js-btnModalInit" data-module="modal" data-modal="authURL" data-type="openModal">
 					                <span data-icon="icon-recordit"></span>
 	                                <span class="status-desc">Записать</span>
                                 </span>
@@ -2459,12 +2459,12 @@
                             </div>
                         </div>
                         <div class="pair-container">
-                            <div class="item status-recordable" data-type="broadcast" data-broadcast-id="50569">
+                            <div class="item status-recordable" data-type="openModal" data-type="broadcast" data-broadcast-id="50569">
                                 <div class="item-image-holder">
                                     <img data-src="http://tvguru.com.images.1c-bitrix-cdn.ru/upload/epg_cut/387512_576_288.jpg" alt="">
                                 </div>
 
-                                <span class="item-status-icon">
+                                <span class="item-status-icon js-btnModalInit" data-module="modal" data-modal="authURL" data-type="openModal">
 					                <span data-icon="icon-recordit"></span>
 	                                <span class="status-desc">Записать</span>
                                 </span>
@@ -2474,12 +2474,12 @@
                                     <a href="/channels/pyatyy-kanal/gorod-osobogo-naznacheniya/?event=50569">Город особого назначения</a>
                                 </div>
                             </div>
-                            <div class="item status-recordable" data-type="broadcast" data-broadcast-id="50570">
+                            <div class="item status-recordable" data-type="openModal" data-type="broadcast" data-broadcast-id="50570">
                                 <div class="item-image-holder">
                                     <img data-src="http://tvguru.com.images.1c-bitrix-cdn.ru/upload/epg_cut/387512_576_288.jpg" alt="">
                                 </div>
 
-                                <span class="item-status-icon">
+                                <span class="item-status-icon js-btnModalInit" data-module="modal" data-modal="authURL" data-type="openModal">
 					                <span data-icon="icon-recordit"></span>
 	                                <span class="status-desc">Записать</span>
                                 </span>
@@ -2592,14 +2592,14 @@
                                 <a href="/channels/sts/uspet-za-24-chasa/?event=50523">Успеть за 24 часа</a>
                             </div>
                         </div>
-                        <div class="item status-recordable" data-type="broadcast" data-broadcast-id="50524">
+                        <div class="item status-recordable" data-type="openModal" data-type="broadcast" data-broadcast-id="50524">
                             <div class="item-image-holder">
                                 <img data-src="http://tvguru.com.images.1c-bitrix-cdn.ru/upload/epg_cut/387512_576_288.jpg" alt="">
                             </div>
 
                             <span class="badge" data-channel-id="123">в эфире</span>
 
-                            <span class="item-status-icon">
+                            <span class="item-status-icon js-btnModalInit" data-module="modal" data-modal="authURL" data-type="openModal">
 				                <span data-icon="icon-recordit"></span>
                             	<span class="status-desc">Записать</span>
                             </span>
@@ -2609,12 +2609,12 @@
                                 <a href="/channels/sts/priklyucheniya-tintina-tayna-edinoroga/?event=50524">Приключения Тинтина. Тайна «Единорога»</a>
                             </div>
                         </div>
-                        <div class="item status-recordable" data-type="broadcast" data-broadcast-id="50525">
+                        <div class="item status-recordable" data-type="openModal" data-type="broadcast" data-broadcast-id="50525">
                             <div class="item-image-holder">
                                 <img data-src="http://tvguru.com.images.1c-bitrix-cdn.ru/upload/epg_cut/387512_576_288.jpg" alt="">
                             </div>
 
-                            <span class="item-status-icon">
+                            <span class="item-status-icon js-btnModalInit" data-module="modal" data-modal="authURL" data-type="openModal">
 				                <span data-icon="icon-recordit"></span>
                             	<span class="status-desc">Записать</span>
                             </span>
@@ -2624,12 +2624,12 @@
                                 <a href="/channels/sts/chego-khotyat-zhenshchiny/?event=50525">Чего хотят женщины</a>
                             </div>
                         </div>
-                        <div class="item status-recordable" data-type="broadcast" data-broadcast-id="50526">
+                        <div class="item status-recordable" data-type="openModal" data-type="broadcast" data-broadcast-id="50526">
                             <div class="item-image-holder">
                                 <img data-src="http://tvguru.com.images.1c-bitrix-cdn.ru/upload/epg_cut/387512_576_288.jpg" alt="">
                             </div>
 
-                            <span class="item-status-icon">
+                            <span class="item-status-icon js-btnModalInit" data-module="modal" data-modal="authURL" data-type="openModal">
 				                <span data-icon="icon-recordit"></span>
                             	<span class="status-desc">Записать</span>
                             </span>
@@ -2639,12 +2639,12 @@
                                 <a href="/channels/sts/shou-uralskikh-pelmeney/?event=50526">Шоу «Уральских пельменей» | Любимое</a>
                             </div>
                         </div>
-                        <div class="item status-recordable" data-type="broadcast" data-broadcast-id="50527">
+                        <div class="item status-recordable" data-type="openModal" data-type="broadcast" data-broadcast-id="50527">
                             <div class="item-image-holder">
                                 <img data-src="http://tvguru.com.images.1c-bitrix-cdn.ru/upload/epg_cut/387512_576_288.jpg" alt="">
                             </div>
 
-                            <span class="item-status-icon">
+                            <span class="item-status-icon js-btnModalInit" data-module="modal" data-modal="authURL" data-type="openModal">
 				                <span data-icon="icon-recordit"></span>
                             	<span class="status-desc">Записать</span>
                             </span>
@@ -2654,12 +2654,12 @@
                                 <a href="/channels/sts/shou-uralskikh-pelmeney/?event=50527">Шоу «Уральских пельменей» | Ура! Стипенс...</a>
                             </div>
                         </div>
-                        <div class="item status-recordable" data-type="broadcast" data-broadcast-id="50528">
+                        <div class="item status-recordable" data-type="openModal" data-type="broadcast" data-broadcast-id="50528">
                             <div class="item-image-holder">
                                 <img data-src="http://tvguru.com.images.1c-bitrix-cdn.ru/upload/epg_cut/387512_576_288.jpg" alt="">
                             </div>
 
-                            <span class="item-status-icon">
+                            <span class="item-status-icon js-btnModalInit" data-module="modal" data-modal="authURL" data-type="openModal">
 				                <span data-icon="icon-recordit"></span>
                             	<span class="status-desc">Записать</span>
                             </span>
@@ -2669,12 +2669,12 @@
                                 <a href="/channels/sts/gadkiy-ya/?event=50528">Гадкий Я</a>
                             </div>
                         </div>
-                        <div class="item status-recordable" data-type="broadcast" data-broadcast-id="50529">
+                        <div class="item status-recordable" data-type="openModal" data-type="broadcast" data-broadcast-id="50529">
                             <div class="item-image-holder">
                                 <img data-src="http://tvguru.com.images.1c-bitrix-cdn.ru/upload/epg_cut/387512_576_288.jpg" alt="">
                             </div>
 
-                            <span class="item-status-icon">
+                            <span class="item-status-icon js-btnModalInit" data-module="modal" data-modal="authURL" data-type="openModal">
 				                <span data-icon="icon-recordit"></span>
                             	<span class="status-desc">Записать</span>
                             </span>
@@ -2684,12 +2684,12 @@
                                 <a href="/channels/sts/gadkiy-ya-2/?event=50529">Гадкий Я-2</a>
                             </div>
                         </div>
-                        <div class="item status-recordable" data-type="broadcast" data-broadcast-id="50530">
+                        <div class="item status-recordable" data-type="openModal" data-type="broadcast" data-broadcast-id="50530">
                             <div class="item-image-holder">
                                 <img data-src="http://tvguru.com.images.1c-bitrix-cdn.ru/upload/epg_cut/387512_576_288.jpg" alt="">
                             </div>
 
-                            <span class="item-status-icon">
+                            <span class="item-status-icon js-btnModalInit" data-module="modal" data-modal="authURL" data-type="openModal">
 				                <span data-icon="icon-recordit"></span>
                             	<span class="status-desc">Записать</span>
                             </span>
@@ -2699,12 +2699,12 @@
                                 <a href="/channels/sts/angely-charli/?event=50530">Ангелы Чарли</a>
                             </div>
                         </div>
-                        <div class="item status-recordable" data-type="broadcast" data-broadcast-id="50531">
+                        <div class="item status-recordable" data-type="openModal" data-type="broadcast" data-broadcast-id="50531">
                             <div class="item-image-holder">
                                 <img data-src="http://tvguru.com.images.1c-bitrix-cdn.ru/upload/epg_cut/387512_576_288.jpg" alt="">
                             </div>
 
-                            <span class="item-status-icon">
+                            <span class="item-status-icon js-btnModalInit" data-module="modal" data-modal="authURL" data-type="openModal">
 				                <span data-icon="icon-recordit"></span>
                             	<span class="status-desc">Записать</span>
                             </span>
@@ -2919,14 +2919,14 @@
                             </div>
                         </div>
                         <div class="pair-container">
-                            <div class="item status-recordable" data-type="broadcast" data-broadcast-id="50238">
+                            <div class="item status-recordable" data-type="openModal" data-type="broadcast" data-broadcast-id="50238">
                                 <div class="item-image-holder">
                                     <img data-src="http://tvguru.com.images.1c-bitrix-cdn.ru/upload/epg_cut/387512_576_288.jpg" alt="">
                                 </div>
 
                                 <span class="badge" data-channel-id="98">в эфире</span>
 
-                                <span class="item-status-icon">
+                                <span class="item-status-icon js-btnModalInit" data-module="modal" data-modal="authURL" data-type="openModal">
 					                <span data-icon="icon-recordit"></span>
 	                                <span class="status-desc">Записать</span>
                                 </span>
@@ -2936,12 +2936,12 @@
                                     <a href="/channels/karusel/smeshariki-novye-priklyucheniya/?event=50238">Смешарики. Новые приключения</a>
                                 </div>
                             </div>
-                            <div class="item status-recordable" data-type="broadcast" data-broadcast-id="50239">
+                            <div class="item status-recordable" data-type="openModal" data-type="broadcast" data-broadcast-id="50239">
                                 <div class="item-image-holder">
                                     <img data-src="http://tvguru.com.images.1c-bitrix-cdn.ru/upload/epg_cut/387512_576_288.jpg" alt="">
                                 </div>
 
-                                <span class="item-status-icon">
+                                <span class="item-status-icon js-btnModalInit" data-module="modal" data-modal="authURL" data-type="openModal">
 					                <span data-icon="icon-recordit"></span>
 	                                <span class="status-desc">Записать</span>
                                 </span>
@@ -2953,12 +2953,12 @@
                             </div>
                         </div>
                         <div class="pair-container">
-                            <div class="item status-recordable" data-type="broadcast" data-broadcast-id="50240">
+                            <div class="item status-recordable" data-type="openModal" data-type="broadcast" data-broadcast-id="50240">
                                 <div class="item-image-holder">
                                     <img data-src="http://tvguru.com.images.1c-bitrix-cdn.ru/upload/epg_cut/387512_576_288.jpg" alt="">
                                 </div>
 
-                                <span class="item-status-icon">
+                                <span class="item-status-icon js-btnModalInit" data-module="modal" data-modal="authURL" data-type="openModal">
 					                <span data-icon="icon-recordit"></span>
 	                                <span class="status-desc">Записать</span>
                                 </span>
@@ -2968,12 +2968,12 @@
                                     <a href="/channels/karusel/porosyenok/?event=50240">Поросёнок</a>
                                 </div>
                             </div>
-                            <div class="item status-recordable" data-type="broadcast" data-broadcast-id="50241">
+                            <div class="item status-recordable" data-type="openModal" data-type="broadcast" data-broadcast-id="50241">
                                 <div class="item-image-holder">
                                     <img data-src="http://tvguru.com.images.1c-bitrix-cdn.ru/upload/epg_cut/387512_576_288.jpg" alt="">
                                 </div>
 
-                                <span class="item-status-icon">
+                                <span class="item-status-icon js-btnModalInit" data-module="modal" data-modal="authURL" data-type="openModal">
 					                <span data-icon="icon-recordit"></span>
 	                                <span class="status-desc">Записать</span>
                                 </span>
@@ -2985,12 +2985,12 @@
                             </div>
                         </div>
                         <div class="pair-container">
-                            <div class="item status-recordable" data-type="broadcast" data-broadcast-id="50242">
+                            <div class="item status-recordable" data-type="openModal" data-type="broadcast" data-broadcast-id="50242">
                                 <div class="item-image-holder">
                                     <img data-src="http://tvguru.com.images.1c-bitrix-cdn.ru/upload/epg_cut/387512_576_288.jpg" alt="">
                                 </div>
 
-                                <span class="item-status-icon">
+                                <span class="item-status-icon js-btnModalInit" data-module="modal" data-modal="authURL" data-type="openModal">
 					                <span data-icon="icon-recordit"></span>
 	                                <span class="status-desc">Записать</span>
                                 </span>
@@ -3000,12 +3000,12 @@
                                     <a href="/channels/karusel/svinka-peppa/?event=50242">Свинка Пеппа</a>
                                 </div>
                             </div>
-                            <div class="item status-recordable" data-type="broadcast" data-broadcast-id="50243">
+                            <div class="item status-recordable" data-type="openModal" data-type="broadcast" data-broadcast-id="50243">
                                 <div class="item-image-holder">
                                     <img data-src="http://tvguru.com.images.1c-bitrix-cdn.ru/upload/epg_cut/387512_576_288.jpg" alt="">
                                 </div>
 
-                                <span class="item-status-icon">
+                                <span class="item-status-icon js-btnModalInit" data-module="modal" data-modal="authURL" data-type="openModal">
 					                <span data-icon="icon-recordit"></span>
 	                                <span class="status-desc">Записать</span>
                                 </span>
@@ -3017,12 +3017,12 @@
                             </div>
                         </div>
                         <div class="pair-container">
-                            <div class="item status-recordable" data-type="broadcast" data-broadcast-id="50244">
+                            <div class="item status-recordable" data-type="openModal" data-type="broadcast" data-broadcast-id="50244">
                                 <div class="item-image-holder">
                                     <img data-src="http://tvguru.com.images.1c-bitrix-cdn.ru/upload/epg_cut/387512_576_288.jpg" alt="">
                                 </div>
 
-                                <span class="item-status-icon">
+                                <span class="item-status-icon js-btnModalInit" data-module="modal" data-modal="authURL" data-type="openModal">
 					                <span data-icon="icon-recordit"></span>
 	                                <span class="status-desc">Записать</span>
                                 </span>
@@ -3032,12 +3032,12 @@
                                     <a href="/channels/karusel/spokoynoy-nochi-malyshi/?event=50244">Спокойной ночи, малыши!</a>
                                 </div>
                             </div>
-                            <div class="item status-recordable" data-type="broadcast" data-broadcast-id="50245">
+                            <div class="item status-recordable" data-type="openModal" data-type="broadcast" data-broadcast-id="50245">
                                 <div class="item-image-holder">
                                     <img data-src="http://tvguru.com.images.1c-bitrix-cdn.ru/upload/epg_cut/387512_576_288.jpg" alt="">
                                 </div>
 
-                                <span class="item-status-icon">
+                                <span class="item-status-icon js-btnModalInit" data-module="modal" data-modal="authURL" data-type="openModal">
 					                <span data-icon="icon-recordit"></span>
 	                                <span class="status-desc">Записать</span>
                                 </span>
@@ -3049,12 +3049,12 @@
                             </div>
                         </div>
                         <div class="pair-container">
-                            <div class="item status-recordable" data-type="broadcast" data-broadcast-id="50246">
+                            <div class="item status-recordable" data-type="openModal" data-type="broadcast" data-broadcast-id="50246">
                                 <div class="item-image-holder">
                                     <img data-src="http://tvguru.com.images.1c-bitrix-cdn.ru/upload/epg_cut/387512_576_288.jpg" alt="">
                                 </div>
 
-                                <span class="item-status-icon">
+                                <span class="item-status-icon js-btnModalInit" data-module="modal" data-modal="authURL" data-type="openModal">
 					                <span data-icon="icon-recordit"></span>
 	                                <span class="status-desc">Записать</span>
                                 </span>
@@ -3064,12 +3064,12 @@
                                     <a href="/channels/karusel/kolybelnye-mira/?event=50246">Колыбельные мира</a>
                                 </div>
                             </div>
-                            <div class="item status-recordable" data-type="broadcast" data-broadcast-id="50247">
+                            <div class="item status-recordable" data-type="openModal" data-type="broadcast" data-broadcast-id="50247">
                                 <div class="item-image-holder">
                                     <img data-src="http://tvguru.com.images.1c-bitrix-cdn.ru/upload/epg_cut/387512_576_288.jpg" alt="">
                                 </div>
 
-                                <span class="item-status-icon">
+                                <span class="item-status-icon js-btnModalInit" data-module="modal" data-modal="authURL" data-type="openModal">
 					                <span data-icon="icon-recordit"></span>
 	                                <span class="status-desc">Записать</span>
                                 </span>
@@ -3139,7 +3139,7 @@
 
                             <span class="badge" data-channel-id="79">в эфире</span>
 
-                            <span class="item-status-icon">
+                            <span class="item-status-icon js-btnModalInit" data-module="modal" data-modal="authURL" data-type="openModal">
 				                <span data-icon="icon-recordit"></span>
                             	<span class="status-desc">Записать</span>
                             </span>
@@ -3154,7 +3154,7 @@
                                 <img data-src="http://tvguru.com.images.1c-bitrix-cdn.ru/upload/epg_cut/387512_576_288.jpg" alt="">
                             </div>
 
-                            <span class="item-status-icon">
+                            <span class="item-status-icon js-btnModalInit" data-module="modal" data-modal="authURL" data-type="openModal">
 				                <span data-icon="icon-recordit"></span>
                             	<span class="status-desc">Записать</span>
                             </span>
@@ -3169,7 +3169,7 @@
                                 <img data-src="http://tvguru.com.images.1c-bitrix-cdn.ru/upload/epg_cut/387512_576_288.jpg" alt="">
                             </div>
 
-                            <span class="item-status-icon">
+                            <span class="item-status-icon js-btnModalInit" data-module="modal" data-modal="authURL" data-type="openModal">
 				                <span data-icon="icon-recordit"></span>
                             	<span class="status-desc">Записать</span>
                             </span>
@@ -3184,7 +3184,7 @@
                                 <img data-src="http://tvguru.com.images.1c-bitrix-cdn.ru/upload/epg_cut/387512_576_288.jpg" alt="">
                             </div>
 
-                            <span class="item-status-icon">
+                            <span class="item-status-icon js-btnModalInit" data-module="modal" data-modal="authURL" data-type="openModal">
 				                <span data-icon="icon-recordit"></span>
                             	<span class="status-desc">Записать</span>
                             </span>
@@ -3199,7 +3199,7 @@
                                 <img data-src="http://tvguru.com.images.1c-bitrix-cdn.ru/upload/epg_cut/387512_576_288.jpg" alt="">
                             </div>
 
-                            <span class="item-status-icon">
+                            <span class="item-status-icon js-btnModalInit" data-module="modal" data-modal="authURL" data-type="openModal">
 				                <span data-icon="icon-recordit"></span>
                             	<span class="status-desc">Записать</span>
                             </span>
@@ -3214,7 +3214,7 @@
                                 <img data-src="http://tvguru.com.images.1c-bitrix-cdn.ru/upload/epg_cut/387512_576_288.jpg" alt="">
                             </div>
 
-                            <span class="item-status-icon">
+                            <span class="item-status-icon js-btnModalInit" data-module="modal" data-modal="authURL" data-type="openModal">
 				                <span data-icon="icon-recordit"></span>
                             	<span class="status-desc">Записать</span>
                             </span>
@@ -3224,12 +3224,12 @@
                                 <a href="/channels/rossiya-k/zolotaya-kollektsiya-zima-leto/?event=50042">Золотая коллекция «Зима-Лето»</a>
                             </div>
                         </div>
-                        <div class="item status-recordable" data-type="broadcast" data-broadcast-id="50043">
+                        <div class="item status-recordable" data-type="openModal" data-type="broadcast" data-broadcast-id="50043">
                             <div class="item-image-holder">
                                 <img data-src="http://tvguru.com.images.1c-bitrix-cdn.ru/upload/epg_cut/387512_576_288.jpg" alt="">
                             </div>
 
-                            <span class="item-status-icon">
+                            <span class="item-status-icon js-btnModalInit" data-module="modal" data-modal="authURL" data-type="openModal">
 				                <span data-icon="icon-recordit"></span>
                             	<span class="status-desc">Записать</span>
                             </span>
@@ -3244,7 +3244,7 @@
                                 <img data-src="http://tvguru.com.images.1c-bitrix-cdn.ru/upload/epg_cut/387512_576_288.jpg" alt="">
                             </div>
 
-                            <span class="item-status-icon">
+                            <span class="item-status-icon js-btnModalInit" data-module="modal" data-modal="authURL" data-type="openModal">
 				                <span data-icon="icon-recordit"></span>
                             	<span class="status-desc">Записать</span>
                             </span>

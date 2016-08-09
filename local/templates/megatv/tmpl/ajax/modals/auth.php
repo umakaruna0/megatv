@@ -1,3 +1,4 @@
+<? sleep(1); ?>
 <div class="standart-form" data-module="signin-overlay">
 	<h3 class="form-title standart-form__form-title">Войти</h3>
 
