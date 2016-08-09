@@ -19,7 +19,7 @@ IncludeTemplateLangFile(__FILE__);
                 "registerURL" : "<?=SITE_TEMPLATE_PATH;?>/ajax/modals/register.php",
                 "restorePassURL" : "<?=SITE_TEMPLATE_PATH;?>/ajax/modals/restore-password.php",
                 "haveCodeRestorePassURL" : "<?=SITE_TEMPLATE_PATH;?>/ajax/modals/have-code-for-restore-pass.php",
-                "sessid" : "<?=preg_replace("/sessid\=/","",bitrix_sessid_get());?>",
+                "sessid" : "<?=preg_replace("/sessid\=/","", bitrix_sessid_get());?>",
                 "ajax_key" : "<?=md5('ajax_'.LICENSE_KEY)?>"
             }
         </script>
@@ -58,9 +58,6 @@ IncludeTemplateLangFile(__FILE__);
         <?if($APPLICATION->GetCurDir()=="/recommendations/"):?> class="page-recommendations"<?endif;?>
     >
         <div id="panel"><?$APPLICATION->ShowPanel();?></div>
-
-        <?//$APPLICATION->IncludeComponent("bitrix:main.include", "", array("AREA_FILE_SHOW" => "file", "PATH" => SITE_DIR."include/header-signin.php"), false);?>
-        <? //require($_SERVER["DOCUMENT_ROOT"].SITE_TEMPLATE_PATH."/include/svg.php"); ?>
 
 		<div class="site-wrapper" data-module="page">
 
@@ -123,17 +120,9 @@ IncludeTemplateLangFile(__FILE__);
                     );?>
                     
                     <?require($_SERVER["DOCUMENT_ROOT"].SITE_TEMPLATE_PATH."/include/header-user-card.php");?>
-
-	             <!--    <div class="box-right__box-menu">
-	                    <a class="box-menu__link" href="/channels/"><span class="box-menu__icon g-icon"><svg class="g-icon__icon-cnt"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#icon-channels"></use></svg></span><span class="box-menu__title">Каналы</span></a>
-	                    <a class="box-menu__link" href="/recommendations/"><span class="box-menu__icon g-icon"><svg class="g-icon__icon-cnt"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#icon-recommendations"></use></svg></span><span class="box-menu__title">Рекомендации</span></a>
-	                </div> -->
-	                <!-- <div class="box-userbar box-right__box-userbar">
-	                    <a href="<?=SITE_TEMPLATE_PATH."/ajax/tmpl/";?>auth" class="g-btn g-btn--primary box-userbar__btn-auth js-btnModalInit"><span>Войти</span></a>
-	                    <a href="<?=SITE_TEMPLATE_PATH."/ajax/tmpl/";?>register" class="g-btn box-userbar__btn-register js-btnModalInit"><span>Зарегистрироваться</span></a>
-	                </div> -->
 	            </div>
 	        </header>
+            
 	        <div class="ModalWindow js-ModalWindow">
 	            <div class="ModalWindow__overlay js-ModalOverlay">
 	                <div class="ModalWindow__content js-ModalContent">
@@ -142,7 +131,6 @@ IncludeTemplateLangFile(__FILE__);
 	            </div>
 	            <div class="ModalWindow__blueBackground" data-type="closeModal"></div>
 	        </div>
-            
 
 			<main class="site-content">
                 <section class="section-h1 <?$APPLICATION->ShowProperty("h1-hide");?>"><h1><?$APPLICATION->ShowProperty("h1");?></h1></section>

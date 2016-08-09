@@ -140,25 +140,27 @@ $(document).on('ready', function(){
     
     $('.recommended-broadcasts .broadcasts-list').scrollPagination();
         
-    $('form.asd-prepaid-form').on('submit', function(){
+    /*$('form.asd-prepaid-form').on('submit', function(){
         var $form = $(this);
-
-        $.ajax({
-            type: "POST",
-            url: $(this).attr('action'),
-            data: $(this).serialize(),
-            error: function(request,error) {
-                alert('Error! Please try again!');
-            },
-            success: function(data) 
-            {
-                $("#form-pay-request").html(data);
-                $("#form-pay-request form").submit();
-            }
-        });
-
+        
+        if(parseInt($("#bx-asd-amount").val())>0)
+        {
+            $.ajax({
+                type: "POST",
+                url: $(this).attr('action'),
+                data: $(this).serialize(),
+                error: function(request,error) {
+                    alert('Error! Please try again!');
+                },
+                success: function(data) 
+                {
+                    $("#form-pay-request").html(data);
+                    $("#form-pay-request form").submit();
+                }
+            });
+        }
         return false;
-    });
+    });*/
     
     
     $(".modal-nav li a").click(function(e){

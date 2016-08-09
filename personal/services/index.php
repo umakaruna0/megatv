@@ -1,6 +1,6 @@
 <?
 require($_SERVER["DOCUMENT_ROOT"]."/bitrix/header.php");
-$APPLICATION->SetTitle("MegaTV");
+$APPLICATION->SetTitle("Подписки и услуги");
 global $USER;
 ?>
 <div class="flex-row user-services-top-row">
@@ -12,6 +12,10 @@ global $USER;
         <?if(isset($_GET["pay-status"]) && htmlspecialchars($_GET["pay-status"])=="success"):?>
             <script type="text/x-config">
             	{
+                    "errors": {
+                        "incorrect_val_amount": "Некорректное значение для поля с суммой!",
+                        "incorrect_paymethod": "Вы не выбрали метод оплаты!"
+                    },
             		"showSuccessModal": true
             	}
             </script>

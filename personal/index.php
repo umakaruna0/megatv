@@ -1,6 +1,6 @@
 <?
 require($_SERVER["DOCUMENT_ROOT"]."/bitrix/header.php");
-$APPLICATION->SetTitle("MegaTV");
+$APPLICATION->SetTitle("Персональные данные");
 global $USER;
 ?>
 
