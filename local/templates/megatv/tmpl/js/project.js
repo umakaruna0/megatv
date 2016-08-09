@@ -183,6 +183,10 @@ $(document).on('ready', function(){
                 }
             });
         }
+        
+        if(!sendForm){
+            $form.find('[data-type="paymethod-submit"]').attr('disabled', true);
+        }
 
         return false;
     });
