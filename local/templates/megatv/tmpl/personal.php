@@ -2,7 +2,6 @@
 	$auth = true;
 	require("include/header.php");
 ?>
-
 <main class="site-content">
     <section class="section-h1 hidden">
         <h1></h1></section>
