@@ -1,3 +1,4 @@
+<? define("SITE_TEMPLATE_PATH","/local/templates/megatv"); ?>
 <!DOCTYPE html>
 <html lang="ru">
 
@@ -9,10 +10,10 @@
     <title>Программа телепередач на сегодня - ТВ программа в Москве на МегаТВ, записи телепередач онлайн</title>
     <script id="globalConfig" type="text/x-config">
         { 
-            "authURL" : "ajax/modals/auth.php", 
-            "registerURL" : "ajax/modals/register.php", 
-            "restorePassURL" : "ajax/modals/restore-password.php", 
-            "haveCodeRestorePassURL" : "ajax/modals/have-code-for-restore-pass.php", 
+            "authURL" : "<?=SITE_TEMPLATE_PATH?>/tmpl/ajax/modals/auth.php", 
+            "registerURL" : "<?=SITE_TEMPLATE_PATH?>/tmpl/ajax/modals/register.php", 
+            "restorePassURL" : "<?=SITE_TEMPLATE_PATH?>/tmpl/ajax/modals/restore-password.php", 
+            "haveCodeRestorePassURL" : "<?=SITE_TEMPLATE_PATH?>/tmpl/ajax/modals/have-code-for-restore-pass.php", 
             "sessid" : "adc9cde57e19cda2a39d08c0a39faa3d", 
             "ajax_key" : "76ce095374bbc723b7dde2bd46987d2c"
         }
@@ -21,7 +22,7 @@
     <? 
     if(!isset($css)) 
     $css = [
-        "css/main.css",
+        "css/main.css"
     ];
     foreach( $css as $val ){ ?>
         <link href="<?=$val;?>" type="text/css" rel="stylesheet" />
@@ -36,10 +37,10 @@
         <script type="text/x-config">
             {
                 "bannersHideTime": 1,
-                "pathToSVGSprite": "img/sprites/svg_sprite.svg",
-                "playerURL": "ajax/modals/player.php",
-                "playerLastPositionURL": "ajax/player_last_position.php",
-                "shareURL": "ajax/share.php",
+                "pathToSVGSprite": "<?=SITE_TEMPLATE_PATH;?>/tmpl/img/sprites/svg_sprite.svg",
+                "playerURL": "<?=SITE_TEMPLATE_PATH;?>/tmpl/ajax/modals/player.php",
+                "playerLastPositionURL": "<?=SITE_TEMPLATE_PATH;?>/tmpl/ajax/player_last_position.php",
+                "shareURL": "<?=SITE_TEMPLATE_PATH;?>/tmpl/ajax/share.php",
                 "authentication" : false
             }
         </script>
@@ -50,55 +51,56 @@
             <!-- BOX-LEFT -->
             <div class="header__box-left box-left">
                 <div class="box-left__box-logo"> </div>
-                <div class="city-select box-left__box-city" data-module="city-select">
-
-                    <script type="text/x-config">
-                        {  
-                           "url":"/",
-                           "cities":[  
-                              { "id":22, "text":"Абакан"},
-                              { "id":83, "text":"Анадырь"},
-                              { "id":35, "text":"Архангельск"},
-                              { "id":36, "text":"Астрахань"},
-                              { "id":25, "text":"Барнаул" },
-                              { "id":37, "text":"Белгород" },
-                              { "id":80, "text":"Биробиджан" },
-                              { "id":34, "text":"Благовещенск" },
-                              { "id":38, "text":"Брянск" }
-                           ],
-                           "showCityRequestPopover":false
-                        }
-                    </script>
-
-                    <form action="/" method="POST" id="city-select-form">
-                        <select name="city-select" id="_id-city-select">
-                            <option value="2" selected> Москва </option>
-                        </select>
-                        <input type="hidden" name="city-id" value="" id="city-select-value" />
-                        <input type="hidden" name="sessid" id="sessid" value="adc9cde57e19cda2a39d08c0a39faa3d" /> 
-                    </form>
+                <div class="box-left__box-city">
+                    <div class="js-citydd-init selectdd" data-class="citydd-container" data-module="city-select">
+                        <script class="js-citydd-json" type="text/x-config">
+                            {
+                               "url":"/",
+                               "cities":[  
+                                  { "id":22, "text":"Абакан" },
+                                  { "id":83, "text":"Анадырь" },
+                                  { "id":35, "text":"Архангельск" },
+                                  { "id":36, "text":"Астрахань" },
+                                  { "id":25, "text":"Барнаул" },
+                                  { "id":37, "text":"Белгород" },
+                                  { "id":80, "text":"Биробиджан" },
+                                  { "id":34, "text":"Благовещенск" },
+                                  { "id":38, "text":"Брянск" }
+                               ],
+                               "showCityRequestPopover":false
+                            }
+                        </script>
+                        <form action="/" method="POST" class="js-city-select-form">
+                            <div class="selectdd__titledd js-jdd-open citydd">
+                                <span class="selectdd__name js-jdd-title">Москва</span>
+                                <span class="selectdd__corner"></span>
+                            </div>
+                            <input type="hidden" name="city-id" value="" class="js-city-select-value">
+                            <input type="hidden" name="sessid" value="">
+                        </form>
+                    </div>
                 </div>
-
-                <div class="lang-select box-left__box-lang box-lang" data-module="lang-select">
-
-                    <script type="text/x-config">
-                        {
-                            "url": "/",
-                            "languages":
-                            [
-                                { "id": 15, "text": "RU" },
-                                { "id": 70, "text": "TR" }
-                            ]
-                        }
-                    </script>
-
-                    <form action="" id="lang-select-form" method="POST">
-                        <input type="hidden" name="lang-id" value="" id="lang-select-value">
-                        <select name="lang-select" id="lang-select">
-                            <option value="15" selected> RU </option>
-                        </select>
-                        <input type="hidden" name="sessid" id="sessid_1" value="adc9cde57e19cda2a39d08c0a39faa3d" />
-                    </form>
+                <div class="box-left__box-lang box-lang">
+                    <div class="js-langdd-init selectdd langdd-init" data-module="lang-select" data-class="langdd-container">
+                        <script type="text/x-config">
+                            {
+                                "url": "/",
+                                "languages":
+                                [
+                                    { "id": 15, "text": "RU" },
+                                    { "id": 70, "text": "TR" }
+                                ]  
+                            }
+                        </script>
+                        <form action="/" method="POST" class="js-lang-select-form">
+                            <div class="selectdd__titledd js-jdd-open langdd-init__titledd">
+                                <span class="selectdd__name">RU</span>
+                                <span class="selectdd__corner"></span>
+                            </div>
+                            <input type="hidden" name="lang-id" value="" class="js-lang-select-value">
+                            <input type="hidden" name="sessid" value="">
+                        </form>
+                    </div>
                 </div>
 
             </div>
@@ -157,7 +159,7 @@
                     </a>
                     <a class="box-menu__link menu-link item-recording" href="personal-records.php">
                         <span data-icon="icon-film-collection" class="menu-link__icon g-icon"></span>
-                        <span class="box-menu__title"><span class="item-recording__count">0 из 0</span> Мои записи</span>
+                        <div class="box-menu__title"><div class="item-recording__count">0 из 0</div> Мои записи</div>
                     </a> 
                 </div>
 
@@ -217,6 +219,5 @@
                     <div class="ModalWindow__loader"></div>
                 </div>
             </div>
-            <div class="ModalWindow__blueBackground" data-type="closeModal"></div>
         </div>
         <!-- END MODAL -->

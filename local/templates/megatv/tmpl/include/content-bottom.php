@@ -4,11 +4,11 @@
     <p>Если вы хотите узнать, будут ли сегодня показывать ваш любимый фильм, введите его название в строке поиска на нашем сайте. С помощью поиска можно быстро узнать время эфира передачи или выпуска новостей. </p>
     <p>Если вам понравился конкретный фильм, вы можете найти похожие в ТВ программе. Для этого откройте страницу фильма и посмотрите рекомендации к нему. Точно так же можно сделать с понравившейся передачей.</p>
 </div>
-
+<?///print_r($_SERVER);?>
 <div class="app-mobile hidden">
     <div class="app-mobile__wrap">
         <div class="app-mobile__left">
-            <img src="/local/templates/megatv/img/iphone.png" alt="" class="app-mobile__image">
+            <img src="<?=SITE_TEMPLATE_PATH;?>/img/iphone.png" alt="" class="app-mobile__image">
             <div class="app-mobile__titles">
                 <div class="app-mobile__title1">
                     <ul class="app-mobile__crumbs">

@@ -16,7 +16,6 @@
     <? foreach( $js as $val ){ ?>
         <script src="<?=$val;?>"></script>
     <? } ?>
-    <!-- <script src="js/main2.js"></script> -->
 
 </body>
 </html>
