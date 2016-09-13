@@ -1,0 +1,57 @@
+body {
+    min-width: 800px;
+}
+
+@media(max-width: 1050px){
+  .header{
+    display: none;
+  }
+  .block-header{
+    background-color: #1e6edc !important;
+  }
+  .block-title{
+    color: #fff !important;
+    text-align: center;
+  }
+  .block-body{
+    width: 100%;
+    max-width: 100% !important;
+    display: flex;
+    justify-content: center;
+  }
+  .user-info-subscriptions-list{
+    width: 100%;
+  }
+  .user-profile-middle-row{
+    flex-direction: column !important;
+    width: 100%;
+    text-align: center;
+  }
+  .user-attached-socials > .block-body{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .attached-socials-list{
+    height: 190px;
+    align-items: baseline !important;
+  }
+  .reset-password{
+    flex-basis: inherit;
+    padding-bottom: 40px;
+  }
+  .load-avatar{
+    opacity: 1 !important;
+  }
+  .fixed-header{
+    position: fixed;
+    width: 100%;
+    z-index: 100;
+    height: 60px;
+    bottom: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: rgba(227, 227, 227, 0.9);
+  }
+}

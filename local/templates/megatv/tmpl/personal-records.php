@@ -2,6 +2,7 @@
     $auth = true;
 	require("include/header.php");
 ?>
+
 <main class="site-content">
     <section class="section-h1 hidden">
         <h1></h1></section>
@@ -34,8 +35,8 @@
         <!-- ============== Заменено ============== -->
         <script type="text/x-config">
             { 
-            	"remoteUrl" : "ajax/delete_record.php",
-            	"viewMoreUrl" : "/local/templates/megatv/tmpl/ajax/load_records.php",
+            	"remoteUrl" : "<?=SITE_TEMPLATE_PATH?>/tmpl/ajax/modals/delete_record.php",
+            	"viewMoreUrl" : "<?=SITE_TEMPLATE_PATH?>/tmpl/ajax/load_records.php",
             	"countMax" : 15,
                 "lang":{
                     "delete_title": "Удалить",

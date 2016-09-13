@@ -15,14 +15,16 @@
             "restorePassURL" : "<?=SITE_TEMPLATE_PATH?>/tmpl/ajax/modals/restore-password.php", 
             "haveCodeRestorePassURL" : "<?=SITE_TEMPLATE_PATH?>/tmpl/ajax/modals/have-code-for-restore-pass.php", 
             "sessid" : "adc9cde57e19cda2a39d08c0a39faa3d", 
-            "ajax_key" : "76ce095374bbc723b7dde2bd46987d2c"
+            "ajax_key" : "76ce095374bbc723b7dde2bd46987d2c",
+            "auth" : false
         }
     </script>
     <meta name="description" content="Программа телепередач российских каналов на сайте TVguru. Эфиры ТНТ, СТС, Первого канала, России-1 и др. с описанием фильмов, сериалов, развлекательных шоу, аналитических, научно-популярных и других передач." />
     <? 
     if(!isset($css)) 
     $css = [
-        "css/main.css"
+        "css/main.css",
+        "css/responsible.css"
     ];
     foreach( $css as $val ){ ?>
         <link href="<?=$val;?>" type="text/css" rel="stylesheet" />

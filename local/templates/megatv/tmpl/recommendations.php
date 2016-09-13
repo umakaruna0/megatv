@@ -2,6 +2,7 @@
 	$items = true;
 	require("include/header.php");
 ?>
+
 <main class="site-content">
     <section class="section-h1 hidden">
         <h1></h1></section>
@@ -9,19 +10,19 @@
         <script type="text/x-config">
             { "url": "/recommendations/" }
         </script>
-        <div class="items">
-            <a href="#" class="item active" data-type="item" data-category="all">
+        <div class="categories-broadcasts">
+            <a href="#" class="category-broadcasts category-broadcasts--active" data-type="category-broadcasts" data-category="all">
 			Все
 		</a>
-            <a href="#novosti" class="item" data-type="item" data-category="novosti">
+            <a href="#novosti" class="category-broadcasts" data-type="category-broadcasts" data-category="novosti">
     			Новости    		</a>
-            <a href="#d-s" class="item" data-type="item" data-category="d-s">
+            <a href="#d-s" class="category-broadcasts" data-type="category-broadcasts" data-category="d-s">
     			Д/с    		</a>
-            <a href="#sketch-shou" class="item" data-type="item" data-category="sketch-shou">
+            <a href="#sketch-shou" class="category-broadcasts" data-type="category-broadcasts" data-category="sketch-shou">
     			Скетч-шоу    		</a>
-            <a href="#tok-shou" class="item" data-type="item" data-category="tok-shou">
+            <a href="#tok-shou" class="category-broadcasts" data-type="category-broadcasts" data-category="tok-shou">
     			Ток-шоу    		</a>
-            <a href="#t-s" class="item" data-type="item" data-category="t-s">
+            <a href="#t-s" class="category-broadcasts" data-type="category-broadcasts" data-category="t-s">
     			Т/с    		</a>
         </div>
         <div class="more" data-type="more">
@@ -32,12 +33,14 @@
         </div>
     </div>
 
-    <section class="recommended-broadcasts" data-offset="0" data-date="<?=date("d\.m\.Y");?>" data-module="recomended-broadcasts"><!-- "viewMoreUrl" : "/recommendations/?AJAX=Y", -->
+    <link rel="stylesheet" href="css/recommendations.css">
+
+    <section class="main-broadcasts main-broadcasts--static" data-offset="0" data-date="<?=date("d\.m\.Y");?>" data-module="recomended-broadcasts"><!-- "viewMoreUrl" : "/recommendations/?AJAX=Y", -->
             <script type="text/x-config">
 	        { 
 	        	"viewMoreUrl" : "/local/templates/megatv/tmpl/ajax/load_recommendations.php",
 	        	"recordingURL": "/local/templates/megatv/ajax/to_record.php",
-	        	"countMax" : 12,
+	        	"countMax" : 9,
 	            "lang":{
 	                "record_title": "Записать",
 	                "msg_out_of_space": "У Вас закончилось свободное место на облачном хранилище МЕГА.ДИСК",
@@ -45,7 +48,7 @@
 	            }
 	        }
 	    </script>
-        <div class="broadcasts-list">
+        <div class="broadcasts-list main-broadcasts__broadcasts broadcasts">
 	    	<? if(!$items){ ?>
 	    	<!-- ========================= Если рекоммендаций нет  ========================= -->
 	    	<div class="empty-content">
@@ -53,356 +56,262 @@
 	    	</div>
 	    	<!-- ======================= ! Если рекоммендаций нет !  ======================= -->
 	    	<? }else{ ?>
-            <div class="item status-recordable" data-type="broadcast" data-broadcast-id="70186" data-category="novosti">
-                <div class="inner">
-                    <div class="item-image-holder" style="background-image: url(/upload/epg_cut/53804_288_288.jpg)"></div>
-
-                    <span class="item-status-icon js-btnModalInit" data-module="modal" data-modal="authURL" data-type="openModal">        
-                            <span data-icon="icon-recordit"></span>
-                    <span class="status-desc">Записать</span>
-                    </span>
-                    <div class="extend-drive-notify">
-                        <div class="extend-drive-notify-text-wrap">
-                            <span data-icon="icon-storage"></span>
-                            <p>У Вас закончилось свободное место на облачном хранилище МЕГА.ДИСК</p>
-                            <p><a href="/personal/services/">Заказать дополнительную емкость</a></p>
+            <div class="broadcasts__broadcast broadcast broadcast--recordable" data-type="broadcast" data-broadcast-id="70186" data-category="sketch-shou">
+                <img class="broadcast__image broadcast-image" height="350" src="img/324640.jpg">
+                <span class="broadcast__status js-btnModalInit" data-module="modal" data-modal="authURL" data-type="openModal">   
+                    <span data-icon="icon-recordit"></span>
+                    <span class="bs-status__title">Записать</span>
+                </span>
+                <!--<div class="extend-drive-notify">
+                    <div class="extend-drive-notify-text-wrap">
+                        <span data-icon="icon-storage"></span>
+                        <p>У Вас закончилось свободное место на облачном хранилище МЕГА.ДИСК</p>
+                        <p><a href="/personal/services/">Заказать дополнительную емкость</a></p>
+                    </div>
+                </div>-->
+                <div class="broadcast__info broadcast__info--full broadcast-info">
+                    <div class="g-flexbox">
+                        <div class="broadcast__time broadcast-time">20:00</div>
+                        <div class="broadcast__date broadcast-date">12.12.2016</div>
+                        <div class="broadcast__title broadcast-title">
+                            <a class="broadcast__category-link category-broadcasts-link" data-type="category" href="#">Первый</a>
                         </div>
                     </div>
-
-                    <div class="item-header">
-                        <div class="meta">
-                            <div class="time">14:00</div>
-                            <div class="date">10.08.2016</div>
-                            <div class="category"><a href="#" data-type="category">Новости</a></div>
-                        </div>
-                        <div class="title">
-                            <a href="/channels/rossiya-1/vesti/?event=70186">
-                            Вести                        </a>
-                        </div>
-                    </div>
+                    <a class="broadcast__link broadcast-link" href="#">Мистер Олимпия 2016</a>
                 </div>
             </div>
-            <div class="item status-recordable" data-type="broadcast" data-broadcast-id="70491" data-category="novosti">
-                <div class="inner">
-                    <div class="item-image-holder" style="background-image: url(/upload/epg_cut/186225_288_288.jpg)"></div>
-
-                    <span class="item-status-icon js-btnModalInit" data-module="modal" data-modal="authURL" data-type="openModal">        
-                            <span data-icon="icon-recordit"></span>
-                    <span class="status-desc">Записать</span>
-                    </span>
-                    <div class="extend-drive-notify">
-                        <div class="extend-drive-notify-text-wrap">
-                            <span data-icon="icon-storage"></span>
-                            <p>У Вас закончилось свободное место на облачном хранилище МЕГА.ДИСК</p>
-                            <p><a href="/personal/services/">Заказать дополнительную емкость</a></p>
+            <div class="broadcasts__broadcast broadcast broadcast--viewed" data-type="broadcast" data-broadcast-id="70186" data-category="sketch-shou">
+                <img class="broadcast__image broadcast-image" height="350" src="img/324640.jpg">
+                <span class='broadcast__status'>
+                    <span data-icon='icon-viewed'></span>
+                    <span class='bs-status__title'>Просмотрено</span>
+                </span>
+                <div class="broadcast__info broadcast__info--full broadcast-info">
+                    <div class="g-flexbox">
+                        <div class="broadcast__time broadcast-time">20:00</div>
+                        <div class="broadcast__date broadcast-date">12.12.2016</div>
+                        <div class="broadcast__title broadcast-title">
+                            <a class="broadcast__category-link category-broadcasts-link" data-type="category" href="#">Первый</a>
                         </div>
                     </div>
-
-                    <div class="item-header">
-                        <div class="meta">
-                            <div class="time">18:00</div>
-                            <div class="date">10.08.2016</div>
-                            <div class="category"><a href="#" data-type="category">Новости</a></div>
-                        </div>
-                        <div class="title">
-                            <a href="/channels/pervyy-kanal/vechernie-novosti/?event=70491">
-                            Вечерние новости                        </a>
-                        </div>
-                    </div>
+                    <a class="broadcast__link broadcast-link" href="#">Мистер Олимпия 2016</a>
                 </div>
             </div>
-            <div class="item status-recordable" data-type="broadcast" data-broadcast-id="72799" data-category="d-s">
-                <div class="inner">
-                    <div class="item-image-holder" style="background-image: url(/upload/epg_cut/77826_288_288.jpg)"></div>
-
-                    <span class="item-status-icon js-btnModalInit" data-module="modal" data-modal="authURL" data-type="openModal">        
-                            <span data-icon="icon-recordit"></span>
-                    <span class="status-desc">Записать</span>
-                    </span>
-                    <div class="extend-drive-notify">
-                        <div class="extend-drive-notify-text-wrap">
-                            <span data-icon="icon-storage"></span>
-                            <p>У Вас закончилось свободное место на облачном хранилище МЕГА.ДИСК</p>
-                            <p><a href="/personal/services/">Заказать дополнительную емкость</a></p>
+            <div class="broadcasts__broadcast broadcast broadcast--recorded" data-type="broadcast" data-broadcast-id="70186" data-category="sketch-shou">
+                <img class="broadcast__image broadcast-image" height="350" src="img/324640.jpg">
+                <span class='broadcast__status'>
+                    <span data-icon='icon-recorded'></span>
+                    <span class='bs-status__title'>Смотреть</span>
+                </span>
+                <div class="broadcast__info broadcast__info--full broadcast-info">
+                    <div class="g-flexbox">
+                        <div class="broadcast__time broadcast-time">20:00</div>
+                        <div class="broadcast__date broadcast-date">12.12.2016</div>
+                        <div class="broadcast__title broadcast-title">
+                            <a class="broadcast__category-link category-broadcasts-link" data-type="category" href="#">Первый</a>
                         </div>
                     </div>
-
-                    <div class="item-header">
-                        <div class="meta">
-                            <div class="time">16:00</div>
-                            <div class="date">10.08.2016</div>
-                            <div class="category"><a href="#" data-type="category">Д/с</a></div>
-                        </div>
-                        <div class="title">
-                            <a href="/channels/tv3/gadalka/?event=72799">
-                            Гадалка | Кукла на смерть                        </a>
-                        </div>
-                    </div>
+                    <a class="broadcast__link broadcast-link" href="#">Мистер Олимпия 2016</a>
                 </div>
             </div>
-            <div class="item status-recordable" data-type="broadcast" data-broadcast-id="72903" data-category="sketch-shou">
-                <div class="inner">
-                    <div class="item-image-holder" style="background-image: url(/upload/epg_cut/196069_288_288.jpg)"></div>
-
-                    <span class="item-status-icon js-btnModalInit" data-module="modal" data-modal="authURL" data-type="openModal">        
-                            <span data-icon="icon-recordit"></span>
-                    <span class="status-desc">Записать</span>
-                    </span>
-                    <div class="extend-drive-notify">
-                        <div class="extend-drive-notify-text-wrap">
-                            <span data-icon="icon-storage"></span>
-                            <p>У Вас закончилось свободное место на облачном хранилище МЕГА.ДИСК</p>
-                            <p><a href="/personal/services/">Заказать дополнительную емкость</a></p>
+            <div class="broadcasts__broadcast broadcast broadcast--in-recording" data-type="broadcast" data-broadcast-id="70186" data-category="novosti">
+                <img class="broadcast__image broadcast-image" height="350" src="img/324640.jpg">
+                <span class='broadcast__status'>
+                    <span data-icon='icon-recording'></span>
+                    <span class='bs-status__title'>В записи</span>
+                </span>
+                <div class="broadcast__info broadcast__info--full broadcast-info">
+                    <div class="g-flexbox">
+                        <div class="broadcast__time broadcast-time">20:00</div>
+                        <div class="broadcast__date broadcast-date">12.12.2016</div>
+                        <div class="broadcast__title broadcast-title">
+                            <a class="broadcast__category-link category-broadcasts-link" data-type="category" href="#">Первый</a>
                         </div>
                     </div>
-
-                    <div class="item-header">
-                        <div class="meta">
-                            <div class="time">18:00</div>
-                            <div class="date">10.08.2016</div>
-                            <div class="category"><a href="#" data-type="category">Скетч-шоу</a></div>
-                        </div>
-                        <div class="title">
-                            <a href="/channels/domashniy/6-kadrov/?event=72903">
-                            6 кадров                        </a>
-                        </div>
-                    </div>
+                    <a class="broadcast__link broadcast-link" href="#">Мистер Олимпия 2016</a>
                 </div>
             </div>
-            <div class="item status-recordable" data-type="broadcast" data-broadcast-id="70187" data-category="novosti">
-                <div class="inner">
-                    <div class="item-image-holder" style="background-image: url(/upload/epg_cut/198215_288_288.jpg)"></div>
-
-                    <span class="item-status-icon js-btnModalInit" data-module="modal" data-modal="authURL" data-type="openModal">        
-                            <span data-icon="icon-recordit"></span>
-                    <span class="status-desc">Записать</span>
-                    </span>
-                    <div class="extend-drive-notify">
-                        <div class="extend-drive-notify-text-wrap">
-                            <span data-icon="icon-storage"></span>
-                            <p>У Вас закончилось свободное место на облачном хранилище МЕГА.ДИСК</p>
-                            <p><a href="/personal/services/">Заказать дополнительную емкость</a></p>
+            <div class="broadcasts__broadcast broadcast broadcast--proccess-recording" data-type="broadcast" data-broadcast-id="70186" data-category="novosti">
+                <img class="broadcast__image broadcast-image" height="350" src="img/324640.jpg">
+                <span class="broadcast__status">
+                    <div data-icon="recording-notify-icon"></div>
+                    <span class="bs-status__title">Ваша любимая передача<br> поставлена на запись</span>
+                </span>
+                <div class="broadcast__info broadcast__info--full broadcast-info">
+                    <div class="g-flexbox">
+                        <div class="broadcast__time broadcast-time">20:00</div>
+                        <div class="broadcast__date broadcast-date">12.12.2016</div>
+                        <div class="broadcast__title broadcast-title">
+                            <a class="broadcast__category-link category-broadcasts-link" data-type="category" href="#">Первый</a>
                         </div>
                     </div>
-
-                    <div class="item-header">
-                        <div class="meta">
-                            <div class="time">14:30</div>
-                            <div class="date">10.08.2016</div>
-                            <div class="category"><a href="#" data-type="category">Новости</a></div>
-                        </div>
-                        <div class="title">
-                            <a href="/channels/rossiya-1/mestnoe-vremya-vesti-moskva/?event=70187">
-                            Местное время. Вести-Москва                        </a>
-                        </div>
-                    </div>
+                    <a class="broadcast__link broadcast-link" href="#">Мистер Олимпия 2016</a>
                 </div>
             </div>
-            <div class="item status-recordable" data-type="broadcast" data-broadcast-id="70193" data-category="tok-shou">
-                <div class="inner">
-                    <div class="item-image-holder" style="background-image: url(/upload/epg_cut/198277_288_288.jpg)"></div>
-
-                    <span class="item-status-icon js-btnModalInit" data-module="modal" data-modal="authURL" data-type="openModal">        
-                            <span data-icon="icon-recordit"></span>
-                    <span class="status-desc">Записать</span>
-                    </span>
-                    <div class="extend-drive-notify">
-                        <div class="extend-drive-notify-text-wrap">
-                            <span data-icon="icon-storage"></span>
-                            <p>У Вас закончилось свободное место на облачном хранилище МЕГА.ДИСК</p>
-                            <p><a href="/personal/services/">Заказать дополнительную емкость</a></p>
+            <div class="broadcasts__broadcast broadcast broadcast--recordable" data-type="broadcast" data-broadcast-id="70186" data-category="novosti">
+                <img class="broadcast__image broadcast-image" height="350" src="img/324640.jpg">
+                <span class="broadcast__status js-btnModalInit" data-module="modal" data-modal="authURL" data-type="openModal">
+                    <div data-icon="icon-recordit"></div>
+                    <span class="bs-status__title">Записать</span>
+                </span>
+                <div class="broadcast__info broadcast__info--full broadcast-info">
+                    <div class="g-flexbox">
+                        <div class="broadcast__time broadcast-time">20:00</div>
+                        <div class="broadcast__date broadcast-date">12.12.2016</div>
+                        <div class="broadcast__title broadcast-title">
+                            <a class="broadcast__category-link category-broadcasts-link" data-type="category" href="#">Первый</a>
                         </div>
                     </div>
-
-                    <div class="item-header">
-                        <div class="meta">
-                            <div class="time">18:15</div>
-                            <div class="date">10.08.2016</div>
-                            <div class="category"><a href="#" data-type="category">Ток-шоу</a></div>
-                        </div>
-                        <div class="title">
-                            <a href="/channels/rossiya-1/pryamoy-efir/?event=70193">
-                            Прямой эфир                        </a>
-                        </div>
-                    </div>
+                    <a class="broadcast__link broadcast-link" href="#">Мистер Олимпия 2016</a>
                 </div>
             </div>
-            <div class="item status-recordable" data-type="broadcast" data-broadcast-id="70427" data-category="d-s">
-                <div class="inner">
-                    <div class="item-image-holder" style="background-image: url(/upload/epg_cut/195772_288_288.jpg)"></div>
-
-                    <span class="item-status-icon js-btnModalInit" data-module="modal" data-modal="authURL" data-type="openModal">        
-                            <span data-icon="icon-recordit"></span>
-                    <span class="status-desc">Записать</span>
-                    </span>
-                    <div class="extend-drive-notify">
-                        <div class="extend-drive-notify-text-wrap">
-                            <span data-icon="icon-storage"></span>
-                            <p>У Вас закончилось свободное место на облачном хранилище МЕГА.ДИСК</p>
-                            <p><a href="/personal/services/">Заказать дополнительную емкость</a></p>
+            <div class="broadcasts__broadcast broadcast broadcast--recordable" data-type="broadcast" data-broadcast-id="70186" data-category="novosti">
+                <img class="broadcast__image broadcast-image" height="350" src="img/324640.jpg">
+                <span class="broadcast__status js-btnModalInit" data-module="modal" data-modal="authURL" data-type="openModal">
+                    <div data-icon="icon-recordit"></div>
+                    <span class="bs-status__title">Записать</span>
+                </span>
+                <div class="broadcast__info broadcast__info--full broadcast-info">
+                    <div class="g-flexbox">
+                        <div class="broadcast__time broadcast-time">20:00</div>
+                        <div class="broadcast__date broadcast-date">12.12.2016</div>
+                        <div class="broadcast__title broadcast-title">
+                            <a class="broadcast__category-link category-broadcasts-link" data-type="category" href="#">Первый</a>
                         </div>
                     </div>
-
-                    <div class="item-header">
-                        <div class="meta">
-                            <div class="time">18:00</div>
-                            <div class="date">10.08.2016</div>
-                            <div class="category"><a href="#" data-type="category">Д/с</a></div>
-                        </div>
-                        <div class="title">
-                            <a href="/channels/ren-tv/samye-shokiruyushchie-gipotezy/?event=70427">
-                            Самые шокирующие гипотезы                        </a>
-                        </div>
-                    </div>
+                    <a class="broadcast__link broadcast-link" href="#">Мистер Олимпия 2016</a>
                 </div>
             </div>
-            <div class="item status-recordable" data-type="broadcast" data-broadcast-id="70487" data-category="tok-shou">
-                <div class="inner">
-                    <div class="item-image-holder" style="background-image: url(/upload/epg_cut/172515_288_288.jpg)"></div>
-
-                    <span class="item-status-icon js-btnModalInit" data-module="modal" data-modal="authURL" data-type="openModal">        
-                            <span data-icon="icon-recordit"></span>
-                    <span class="status-desc">Записать</span>
-                    </span>
-                    <div class="extend-drive-notify">
-                        <div class="extend-drive-notify-text-wrap">
-                            <span data-icon="icon-storage"></span>
-                            <p>У Вас закончилось свободное место на облачном хранилище МЕГА.ДИСК</p>
-                            <p><a href="/personal/services/">Заказать дополнительную емкость</a></p>
+            <div class="broadcasts__broadcast broadcast broadcast--recordable" data-type="broadcast" data-broadcast-id="70186" data-category="novosti">
+                <img class="broadcast__image broadcast-image" height="350" src="img/324640.jpg">
+                <span class="broadcast__status js-btnModalInit" data-module="modal" data-modal="authURL" data-type="openModal"> 
+                    <div data-icon="icon-recordit"></div>
+                    <span class="bs-status__title">Записать</span>
+                </span>
+                <div class="broadcast__info broadcast__info--full broadcast-info">
+                    <div class="g-flexbox">
+                        <div class="broadcast__time broadcast-time">20:00</div>
+                        <div class="broadcast__date broadcast-date">12.12.2016</div>
+                        <div class="broadcast__title broadcast-title">
+                            <a class="broadcast__category-link category-broadcasts-link" data-type="category" href="#">Первый</a>
                         </div>
                     </div>
-
-                    <div class="item-header">
-                        <div class="meta">
-                            <div class="time">14:35</div>
-                            <div class="date">10.08.2016</div>
-                            <div class="category"><a href="#" data-type="category">Ток-шоу</a></div>
-                        </div>
-                        <div class="title">
-                            <a href="/channels/pervyy-kanal/muzhskoe-zhenskoe/?event=70487">
-                            Мужское/Женское                        </a>
-                        </div>
-                    </div>
+                    <a class="broadcast__link broadcast-link" href="#">Мистер Олимпия 2016</a>
                 </div>
             </div>
-            <div class="item status-recordable" data-type="broadcast" data-broadcast-id="70493" data-category="tok-shou">
-                <div class="inner">
-                    <div class="item-image-holder" style="background-image: url(/upload/epg_cut/172550_288_288.jpg)"></div>
-
-                    <span class="item-status-icon js-btnModalInit" data-module="modal" data-modal="authURL" data-type="openModal">        
-                            <span data-icon="icon-recordit"></span>
-                    <span class="status-desc">Записать</span>
-                    </span>
-                    <div class="extend-drive-notify">
-                        <div class="extend-drive-notify-text-wrap">
-                            <span data-icon="icon-storage"></span>
-                            <p>У Вас закончилось свободное место на облачном хранилище МЕГА.ДИСК</p>
-                            <p><a href="/personal/services/">Заказать дополнительную емкость</a></p>
+            <div class="broadcasts__broadcast broadcast broadcast--recordable" data-type="broadcast" data-broadcast-id="70186" data-category="novosti">
+                <img class="broadcast__image broadcast-image" height="350" src="img/324640.jpg">
+                <span class="broadcast__status js-btnModalInit" data-module="modal" data-modal="authURL" data-type="openModal">
+                    <div data-icon="icon-recordit"></div>
+                    <span class="bs-status__title">Записать</span>
+                </span>
+                <div class="broadcast__info broadcast__info--full broadcast-info">
+                    <div class="g-flexbox">
+                        <div class="broadcast__time broadcast-time">20:00</div>
+                        <div class="broadcast__date broadcast-date">12.12.2016</div>
+                        <div class="broadcast__title broadcast-title">
+                            <a class="broadcast__category-link category-broadcasts-link" data-type="category" href="#">Первый</a>
                         </div>
                     </div>
-
-                    <div class="item-header">
-                        <div class="meta">
-                            <div class="time">19:50</div>
-                            <div class="date">10.08.2016</div>
-                            <div class="category"><a href="#" data-type="category">Ток-шоу</a></div>
-                        </div>
-                        <div class="title">
-                            <a href="/channels/pervyy-kanal/pust-govoryat/?event=70493">
-                            Пусть говорят                        </a>
-                        </div>
-                    </div>
+                    <a class="broadcast__link broadcast-link" href="#">Мистер Олимпия 2016</a>
                 </div>
             </div>
-            <div class="item status-recordable" data-type="broadcast" data-broadcast-id="72800" data-category="d-s">
-                <div class="inner">
-                    <div class="item-image-holder" style="background-image: url(/upload/epg_cut/77825_288_288.jpg)"></div>
-
-                    <span class="item-status-icon js-btnModalInit" data-module="modal" data-modal="authURL" data-type="openModal">        
-                            <span data-icon="icon-recordit"></span>
-                    <span class="status-desc">Записать</span>
-                    </span>
-                    <div class="extend-drive-notify">
-                        <div class="extend-drive-notify-text-wrap">
-                            <span data-icon="icon-storage"></span>
-                            <p>У Вас закончилось свободное место на облачном хранилище МЕГА.ДИСК</p>
-                            <p><a href="/personal/services/">Заказать дополнительную емкость</a></p>
+            <div class="broadcasts__broadcast broadcast broadcast--recordable" data-type="broadcast" data-broadcast-id="70186" data-category="novosti">
+                <img class="broadcast__image broadcast-image" height="350" src="img/324640.jpg">
+                <span class="broadcast__status js-btnModalInit" data-module="modal" data-modal="authURL" data-type="openModal">
+                    <div data-icon="icon-recordit"></div>
+                    <span class="bs-status__title">Записать</span>
+                </span>
+                <div class="broadcast__info broadcast__info--full broadcast-info">
+                    <div class="g-flexbox">
+                        <div class="broadcast__time broadcast-time">20:00</div>
+                        <div class="broadcast__date broadcast-date">12.12.2016</div>
+                        <div class="broadcast__title broadcast-title">
+                            <a class="broadcast__category-link category-broadcasts-link" data-type="category" href="#">Первый</a>
                         </div>
                     </div>
-
-                    <div class="item-header">
-                        <div class="meta">
-                            <div class="time">16:30</div>
-                            <div class="date">10.08.2016</div>
-                            <div class="category"><a href="#" data-type="category">Д/с</a></div>
-                        </div>
-                        <div class="title">
-                            <a href="/channels/tv3/gadalka/?event=72800">
-                            Гадалка | Замолчи                        </a>
-                        </div>
-                    </div>
+                    <a class="broadcast__link broadcast-link" href="#">Мистер Олимпия 2016</a>
                 </div>
             </div>
-            <div class="item status-recordable" data-type="broadcast" data-broadcast-id="72801" data-category="d-s">
-                <div class="inner">
-                    <div class="item-image-holder" style="background-image: url(/upload/epg_cut/77824_288_288.jpg)"></div>
-
-                    <span class="item-status-icon js-btnModalInit" data-module="modal" data-modal="authURL" data-type="openModal">        
-                            <span data-icon="icon-recordit"></span>
-                    <span class="status-desc">Записать</span>
-                    </span>
-                    <div class="extend-drive-notify">
-                        <div class="extend-drive-notify-text-wrap">
-                            <span data-icon="icon-storage"></span>
-                            <p>У Вас закончилось свободное место на облачном хранилище МЕГА.ДИСК</p>
-                            <p><a href="/personal/services/">Заказать дополнительную емкость</a></p>
+            <div class="broadcasts__broadcast broadcast broadcast--recordable" data-type="broadcast" data-broadcast-id="70186" data-category="novosti">
+                <img class="broadcast__image broadcast-image" height="350" src="img/324640.jpg">
+                <span class="broadcast__status js-btnModalInit" data-module="modal" data-modal="authURL" data-type="openModal">
+                    <div data-icon="icon-recordit"></div>
+                    <span class="bs-status__title">Записать</span>
+                </span>
+                <div class="broadcast__info broadcast__info--full broadcast-info">
+                    <div class="g-flexbox">
+                        <div class="broadcast__time broadcast-time">20:00</div>
+                        <div class="broadcast__date broadcast-date">12.12.2016</div>
+                        <div class="broadcast__title broadcast-title">
+                            <a class="broadcast__category-link category-broadcasts-link" data-type="category" href="#">Первый</a>
                         </div>
                     </div>
-
-                    <div class="item-header">
-                        <div class="meta">
-                            <div class="time">17:00</div>
-                            <div class="date">10.08.2016</div>
-                            <div class="category"><a href="#" data-type="category">Д/с</a></div>
-                        </div>
-                        <div class="title">
-                            <a href="/channels/tv3/gadalka/?event=72801">
-                            Гадалка | Повар для Веры                        </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="item status-recordable" data-type="broadcast" data-broadcast-id="72937" data-category="t-s">
-                <div class="inner">
-                    <div class="item-image-holder" style="background-image: url(/upload/epg_cut/384304_288_288.jpg)"></div>
-
-                    <span class="item-status-icon js-btnModalInit" data-module="modal" data-modal="authURL" data-type="openModal">        
-                            <span data-icon="icon-recordit"></span>
-                    <span class="status-desc">Записать</span>
-                    </span>
-                    <div class="extend-drive-notify">
-                        <div class="extend-drive-notify-text-wrap">
-                            <span data-icon="icon-storage"></span>
-                            <p>У Вас закончилось свободное место на облачном хранилище МЕГА.ДИСК</p>
-                            <p><a href="/personal/services/">Заказать дополнительную емкость</a></p>
-                        </div>
-                    </div>
-
-                    <div class="item-header">
-                        <div class="meta">
-                            <div class="time">18:00</div>
-                            <div class="date">10.08.2016</div>
-                            <div class="category"><a href="#" data-type="category">Т/с</a></div>
-                        </div>
-                        <div class="title">
-                            <a href="/channels/sts/kukhnya/?event=72937">
-                            Кухня                        </a>
-                        </div>
-                    </div>
+                    <a class="broadcast__link broadcast-link" href="#">Мистер Олимпия 2016</a>
                 </div>
             </div>
             <? } ?>
         </div>
+        <script type="text/x-template" id="broadcastFullTmpl">
+            <div class="broadcasts__broadcast broadcast broadcast--full <%- status %>" data-type="broadcast" data-broadcast-id="<%- id %>" data-category="<%- categoryLink %>">
+                <img class="broadcast__image broadcast-image" height="350" src="<%- image %>">
+                <%= placeholder %>
+                <div class="broadcast__alert bs-alert bs-alert--extend-drive">
+                    <span data-icon="icon-storage"></span>
+                    <p class="g-mt-5">У Вас закончилось свободное место на облачном хранилище МЕГА.ДИСК</p>
+                    <p><a class="msg" href="/personal/services/">Заказать дополнительную емкость</a></p>
+                </div>
+                <div class="broadcast__info broadcast__info--full broadcast-info">
+                    <div class="g-flexbox">
+                        <div class="broadcast__time broadcast-time"><%- time %></div>
+                        <div class="broadcast__date broadcast-date"><%- date %></div>
+                        <div class="broadcast__title broadcast-title">
+                            <a class="broadcast__category-link category-broadcasts-link" data-type="category" href="<%- categoryLink %>"><%- categoryName %></a>
+                        </div>
+                    </div>
+                    <a class="broadcast__link broadcast-link" href="<%- link %>"><%- name %></a>
+                </div>
+            </div>
+        </script>
+        <script id="nonAuthTmpl" type="text/x-template">
+            <span class="broadcast__status" data-module="modal" data-modal="authURL" data-type="openModal">
+                <span data-icon="icon-recordit"></span>
+                <span class="bs-status__title">Записать</span>
+            </span>
+        </script>
+        <script id="status-recordableTmpl" type="text/x-template">
+            <span class="broadcast__status">
+                <span data-icon="icon-recordit"></span>
+                <span class="bs-status__title">Записать</span>
+            </span>
+        </script>
+        <script id="status-viewedTmpl" type="text/x-template">
+            <span class="broadcast__status">
+                <span data-icon="icon-viewed"></span>
+                <span class="bs-status__title">Просмотрено</span>
+            </span>
+        </script>
+        <script id="status-recordedTmpl" type="text/x-template">
+            <span class='broadcast__status'>
+                <span data-icon='icon-recorded'></span>
+                <span class='bs-status__title'>Смотреть</span>
+            </span>
+        </script>
+        <script id="recording-notifyTmpl" type="text/x-template">
+            <span class="broadcast__status">
+                <div data-icon="icon-recording"></div>
+                <span class="bs-status__title">Ваша любимая передача<br> поставлена на запись</span>
+            </span>
+        </script>
+        <script id="status-recordingTmpl" type="text/x-template">
+            <span class='broadcast__status'>
+                <span data-icon='icon-recording'></span>
+                <span class='bs-status__title'>В записи</span>
+            </span>
+        </script>
+        <script>
+            // var returnEl = $('<div class="item ' + item.status + '" data-type="broadcast" data-broadcast-id="' + item.id + '" data-category="' + item.category.link + '"> <div class="inner">' + item.button + '<div class="item-header"> <div class="meta"> <div class="time">' + item.time + '</div><div class="date">' + item.date + '</div><div class="category"><a href="#" data-type="category">' + item.category.name + '</a></div></div><div class="title"> <a href="' + item.link + '"> ' + item.name + ' </a> </div></div></div></div>');
+        </script>
     </section>
 </main>
 <?
