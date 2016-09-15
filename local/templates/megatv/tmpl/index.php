@@ -1,4 +1,8 @@
 <? 
+    if(isset($_POST["AJAX_TYPE"])){
+        include "/js/json_array.js";
+        exit();
+    }
     require("include/header.php");
 ?>
 
@@ -8,9 +12,14 @@
         <h1>Программа телепередач на сегодня</h1>
     </section>
     
-    <section class="main-container" data-module="broadcast-results">
+    <section class="main-container" data-module="broadcast-results" data-date="<?=date("d.m.Y H:i:s")?>">
         <script type="text/x-config">
             {
+                "recordingURL" : "<?=SITE_TEMPLATE_PATH;?>/ajax/to_record.php",
+                "fetchResultsURL" : "/",
+                "origin" : "https://megatv.su",
+                "page" : "2",
+                "ajaxType" : "CHANNELS",
                 "weekdays" : {
                     "Mon" : "Понедельник",
                     "Tue" : "Вторник",
@@ -55,18 +64,19 @@
     </section>
 
 
-<script id="paramsJson" type="text/json">
-</script>
+<script id="paramsJson" type="text/json"><? include "/js/json_array.js"; ?></script>
 <script id="broadcastTmpl" type="text/x-template">
-    <div class="bs-container__broadcast broadcast">
+    <div class="bs-container__broadcast broadcast<% if(noAir){ %> broadcast--no-air<% } %>" data-type="broadcast" data-broadcast-id="<%- id %>">
         <% if(onAir){ %>
-        <span class="broadcast__on-air">В эфире</span>
+        <span data-channel-id="<%- channel_id %>" class="badge broadcast__on-air">В эфире</span>
         <% } %>
-        <img class="broadcast__image broadcast-image lazy-img swiper-lazy" height="350" data-src="<%- blurImage %>" data-load="<%- image %>">
-        <span class="broadcast__status <% var isAuth = isAuth || false; if(!isAuth){ %> js-btnModalInit" data-module="modal" data-modal="authURL" data-type="openModal"<% }else{ %>" <% } %>>        
+        <img class="broadcast__image broadcast-image lazy-img swiper-lazy" data-src="<%- blurImage %>" data-load="<%- image %>">
+        <% if(!noAir){ %>
+        <span class="broadcast__status">        
             <div data-icon="icon-recordit"></div>
             <span class="bs-status__title">Записать</span>
         </span>
+        <% } %>
         <div class="broadcast__info broadcast-info">
             <div class="broadcast__time broadcast-time"><%- time %></div>
             <div class="broadcast__title broadcast-title">
@@ -125,7 +135,8 @@
 
 <?
     $js = [
-        "js/main.js"
+        "js/main.js",
+        "js/project.js"
     ];
     require("include/footer.php");
 ?>
