@@ -35003,9 +35003,9 @@ return $.widget;
 				    if(sortChn.length > 4){
 				    	for (var i = 0; i < sortChn.length; i++) {
 				    		if(i > 3) {
-				    			for (var i = 0; i < chn.length; i++) {
-					    			if(sortChn[i][ID_TITLE] === chn[i][ID_TITLE]){
-					    				broadcasts[column][channel].splice(i, 1);
+				    			for (var y = 0; y < chn.length; y++) {
+					    			if(sortChn[i][ID_TITLE] === chn[y][ID_TITLE]){
+					    				broadcasts[column][channel].splice(y, 1);
 					    			}
 				    			}
 				    		}
@@ -37266,14 +37266,19 @@ Box.Application.addBehavior('recording-broadcast', function (context) {
 			broadcastID: broadcastID
 		}, function (data) {
 			if (data.status === 'success') {
-				addRecordingNotify(broadcast);
+				// addRecordingNotify(broadcast);
 				broadcast.removeClass('status-recordable').addClass('recording-in-progress status-recording');
 				broadcast.find('.icon-recordit').remove().end().find('.item-status-icon').prepend($('<span data-icon="icon-recording" />'));
-				broadcast.find('.status-desc').text('В записи');
+				broadcast.find('.bs-status__title').text('В записи');
+				var countHeader = $(".item-recording__count").text();
+				var arrCount = [];
+				arrCount.push(countHeader.match(/^([0-9]{1,})/, "$1"));
+				arrCount.push(countHeader.match(/([0-9]{1,})$/, "$1"));
+				$(".item-recording__count").text((parseInt(arrCount[0])+1) + " из " + (parseInt(arrCount[1])+1));
 				// Box.Application.renderIcons(context);
 
 				setTimeout(function () {
-					removeRecordingNotify(broadcast);
+					// removeRecordingNotify(broadcast);
 					broadcast.removeClass('recording-in-progress');
 					$(element).data('status-flag', false);
 				}, 2000);
@@ -37323,13 +37328,14 @@ Box.Application.addBehavior('recording-broadcast', function (context) {
 				event.preventDefault();
 				// console.log( 'Авторизован: ' );
 				// console.log( authentication === true );
+				// authentication = true;
 				if (authentication === true) {
 					// console.log( 'Статус флаг: ' );
 					// console.log( $(element).data('status-flag') === false );
 					// console.log( 'Статус не undefined: ' );
 					// console.log( $(element).data('status-flag') === 'undefined' );
 					if ($(element).data('status-flag') === false || typeof $(element).data('status-flag') === 'undefined') {
-						var broadcast = $(moduleEl).find($(event.target).closest('.item'));
+						var broadcast = $(moduleEl).find($(event.target).closest('.broadcast'));
 						var broadcastID = broadcast.data('broadcast-id');
 						// console.log( 'broadcastID не пустой: ' );
 						// console.log( broadcastID !== '' );
