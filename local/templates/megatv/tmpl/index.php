@@ -73,12 +73,14 @@
         <% } %>
         <img class="broadcast__image broadcast-image lazy-img swiper-lazy" data-src="<%- blurImage %>" data-load="<%- image %>">
         <% if(!noAir){ %>
-        <span class="broadcast__status item-status-icon">        
-            <div data-icon="icon-recordit"></div>
-            <span class="bs-status__title">Записать</span>
-        </span>
+        <div class="broadcast__wrap-status">
+            <span class="broadcast__status item-status-icon">        
+                <div data-icon="icon-recordit"></div>
+                <span class="bs-status__title">Записать</span>
+            </span>
+        </div>
         <% } %>
-        <div class="broadcast__info broadcast-info item-header">
+        <div class="broadcast__info item-header">
             <div class="broadcast__time broadcast-time"><%- time %></div>
             <div class="broadcast__title broadcast-title">
                 <a class="broadcast__link broadcast-link" href="<%- link %>"><%- title %></a>
@@ -128,6 +130,43 @@
             <div class="end-day__title"><%- endDayTitle %></div>
         </div>
     </div>
+</script>
+
+<script id="nonAuthTmpl" type="text/x-template">
+    <span class="broadcast__status item-status-icon" data-module="modal" data-modal="authURL" data-type="openModal">
+        <span data-icon="icon-recordit"></span>
+        <span class="bs-status__title">Записать</span>
+    </span>
+</script>
+<script id="status-recordableTmpl" type="text/x-template">
+    <span class="broadcast__status item-status-icon">
+        <span data-icon="icon-recordit"></span>
+        <span class="bs-status__title">Записать</span>
+    </span>
+</script>
+<script id="status-viewedTmpl" type="text/x-template">
+    <span class="broadcast__status item-status-icon">
+        <span data-icon="icon-viewed"></span>
+        <span class="bs-status__title">Просмотрено</span>
+    </span>
+</script>
+<script id="status-recordedTmpl" type="text/x-template">
+    <span class='broadcast__status item-status-icon'>
+        <span data-icon='icon-recorded'></span>
+        <span class='bs-status__title'>Смотреть</span>
+    </span>
+</script>
+<script id="recording-notifyTmpl" type="text/x-template">
+    <span class="broadcast__status item-status-icon">
+        <div data-icon="icon-recording"></div>
+        <span class="bs-status__title">Ваша любимая передача<br> поставлена на запись</span>
+    </span>
+</script>
+<script id="status-recordingTmpl" type="text/x-template">
+    <span class='broadcast__status item-status-icon'>
+        <span data-icon='icon-recording'></span>
+        <span class='bs-status__title'>В записи</span>
+    </span>
 </script>
 
 	<?require("include/content-bottom.php");?>
