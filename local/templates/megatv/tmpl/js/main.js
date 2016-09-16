@@ -38359,11 +38359,13 @@ Box.Application.addModule('broadcast-results', function (context) {
 		behaviors: ['category-row', 'recording-broadcast', 'play-recorded-broadcasts'],
 
 		init: function () {
+			$(moduleEl).find('[data-type="broadcast"]').data('status-flag', false).data('play-flag', false);
+			$(moduleEl).data('ajax-flag', true);
 			var json = $("#paramsJson").html();
 			moduleEl = context.getElement();
 			broadcastObj = $(".main-container").Broadcasts("initialize", {
 	            config: context.getConfig(),
-	            JSONParams: JSON.parse(),
+	            JSONParams: JSON.parse(json),
 	            origin: context.getConfig("origin")
 	        });
 		    var iconLoaderService = Box.Application.getService('icon-loader');

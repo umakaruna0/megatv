@@ -65,19 +65,20 @@
 
 
 <script id="paramsJson" type="text/json"><? include "/js/json_array.js"; ?></script>
+
 <script id="broadcastTmpl" type="text/x-template">
-    <div class="bs-container__broadcast broadcast<% if(noAir){ %> broadcast--no-air<% } %>" data-type="broadcast" data-broadcast-id="<%- id %>">
+    <div class="item bs-container__broadcast broadcast<% if(noAir){ %> broadcast--no-air<% } %>" data-type="broadcast" data-broadcast-id="<%- id %>">
         <% if(onAir){ %>
         <span data-channel-id="<%- channel_id %>" class="badge broadcast__on-air">В эфире</span>
         <% } %>
         <img class="broadcast__image broadcast-image lazy-img swiper-lazy" data-src="<%- blurImage %>" data-load="<%- image %>">
         <% if(!noAir){ %>
-        <span class="broadcast__status">        
+        <span class="broadcast__status item-status-icon">        
             <div data-icon="icon-recordit"></div>
             <span class="bs-status__title">Записать</span>
         </span>
         <% } %>
-        <div class="broadcast__info broadcast-info">
+        <div class="broadcast__info broadcast-info item-header">
             <div class="broadcast__time broadcast-time"><%- time %></div>
             <div class="broadcast__title broadcast-title">
                 <a class="broadcast__link broadcast-link" href="<%- link %>"><%- title %></a>
