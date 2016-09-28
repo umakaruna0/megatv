@@ -33,10 +33,10 @@
         </div>
     </div>
 
-    <link rel="stylesheet" href="css/recommendations.css">
+    <!-- <link rel="stylesheet" href="css/recommendations.css"> -->
 
     <section class="main-broadcasts main-broadcasts--static" data-offset="0" data-date="<?=date("d\.m\.Y");?>" data-module="recomended-broadcasts"><!-- "viewMoreUrl" : "/recommendations/?AJAX=Y", -->
-            <script type="text/x-config">
+        <script type="text/x-config">
 	        { 
 	        	"viewMoreUrl" : "/local/templates/megatv/tmpl/ajax/load_recommendations.php",
 	        	"recordingURL": "/local/templates/megatv/ajax/to_record.php",
@@ -47,7 +47,7 @@
 	                "btn_order_of_space": "Заказать дополнительную емкость"
 	            }
 	        }
-	    </script>
+	   </script>
         <div class="broadcasts-list main-broadcasts__broadcasts broadcasts">
 	    	<? if(!$items){ ?>
 	    	<!-- ========================= Если рекоммендаций нет  ========================= -->
@@ -58,10 +58,12 @@
 	    	<? }else{ ?>
             <div class="broadcasts__broadcast broadcast broadcast--recordable" data-type="broadcast" data-broadcast-id="70186" data-category="sketch-shou">
                 <img class="broadcast__image broadcast-image" height="350" src="img/324640.jpg">
-                <span class="broadcast__status js-btnModalInit" data-module="modal" data-modal="authURL" data-type="openModal">   
-                    <span data-icon="icon-recordit"></span>
-                    <span class="bs-status__title">Записать</span>
-                </span>
+                <div class="broadcast__wrap-status">
+                    <span class="broadcast__status js-btnModalInit" data-module="modal" data-modal="authURL" data-type="openModal">
+                        <span data-icon="icon-recordit"></span>
+                        <span class="bs-status__title">Записать</span>
+                    </span>
+                </div>
                 <!--<div class="extend-drive-notify">
                     <div class="extend-drive-notify-text-wrap">
                         <span data-icon="icon-storage"></span>
@@ -82,10 +84,12 @@
             </div>
             <div class="broadcasts__broadcast broadcast broadcast--viewed" data-type="broadcast" data-broadcast-id="70186" data-category="sketch-shou">
                 <img class="broadcast__image broadcast-image" height="350" src="img/324640.jpg">
-                <span class='broadcast__status'>
-                    <span data-icon='icon-viewed'></span>
-                    <span class='bs-status__title'>Просмотрено</span>
-                </span>
+                <div class="broadcast__wrap-status">
+                    <span class='broadcast__status'>
+                        <span data-icon='icon-viewed'></span>
+                        <span class='bs-status__title'>Просмотрено</span>
+                    </span>
+                </div>
                 <div class="broadcast__info broadcast__info--full broadcast-info">
                     <div class="g-flexbox">
                         <div class="broadcast__time broadcast-time">20:00</div>
@@ -99,10 +103,12 @@
             </div>
             <div class="broadcasts__broadcast broadcast broadcast--recorded" data-type="broadcast" data-broadcast-id="70186" data-category="sketch-shou">
                 <img class="broadcast__image broadcast-image" height="350" src="img/324640.jpg">
-                <span class='broadcast__status'>
-                    <span data-icon='icon-recorded'></span>
-                    <span class='bs-status__title'>Смотреть</span>
-                </span>
+                <div class="broadcast__wrap-status">
+                    <span class='broadcast__status'>
+                        <span data-icon='icon-recorded'></span>
+                        <span class='bs-status__title'>Смотреть</span>
+                    </span>
+                </div>
                 <div class="broadcast__info broadcast__info--full broadcast-info">
                     <div class="g-flexbox">
                         <div class="broadcast__time broadcast-time">20:00</div>
@@ -114,12 +120,14 @@
                     <a class="broadcast__link broadcast-link" href="#">Мистер Олимпия 2016</a>
                 </div>
             </div>
-            <div class="broadcasts__broadcast broadcast broadcast--in-recording" data-type="broadcast" data-broadcast-id="70186" data-category="novosti">
+            <div class="broadcasts__broadcast broadcast status-recording" data-type="broadcast" data-broadcast-id="70186" data-category="novosti">
                 <img class="broadcast__image broadcast-image" height="350" src="img/324640.jpg">
-                <span class='broadcast__status'>
-                    <span data-icon='icon-recording'></span>
-                    <span class='bs-status__title'>В записи</span>
-                </span>
+                <div class="broadcast__wrap-status">
+                    <span class='broadcast__status'>
+                        <span data-icon='icon-recording'></span>
+                        <span class='bs-status__title'>В записи</span>
+                    </span>
+                </div>
                 <div class="broadcast__info broadcast__info--full broadcast-info">
                     <div class="g-flexbox">
                         <div class="broadcast__time broadcast-time">20:00</div>
@@ -131,46 +139,14 @@
                     <a class="broadcast__link broadcast-link" href="#">Мистер Олимпия 2016</a>
                 </div>
             </div>
-            <div class="broadcasts__broadcast broadcast broadcast--proccess-recording" data-type="broadcast" data-broadcast-id="70186" data-category="novosti">
+            <div class="broadcasts__broadcast broadcast status-notify" data-type="broadcast" data-broadcast-id="70186" data-category="novosti">
                 <img class="broadcast__image broadcast-image" height="350" src="img/324640.jpg">
-                <span class="broadcast__status">
-                    <div data-icon="recording-notify-icon"></div>
-                    <span class="bs-status__title">Ваша любимая передача<br> поставлена на запись</span>
-                </span>
-                <div class="broadcast__info broadcast__info--full broadcast-info">
-                    <div class="g-flexbox">
-                        <div class="broadcast__time broadcast-time">20:00</div>
-                        <div class="broadcast__date broadcast-date">12.12.2016</div>
-                        <div class="broadcast__title broadcast-title">
-                            <a class="broadcast__category-link category-broadcasts-link" data-type="category" href="#">Первый</a>
-                        </div>
-                    </div>
-                    <a class="broadcast__link broadcast-link" href="#">Мистер Олимпия 2016</a>
+                <div class="broadcast__wrap-status">
+                   <span class="broadcast__status item-status-icon">
+                        <div data-icon="icon-recording"></div>
+                        <span class="bs-status__title">Ваша любимая передача<br> поставлена на запись</span>
+                    </span>
                 </div>
-            </div>
-            <div class="broadcasts__broadcast broadcast broadcast--recordable" data-type="broadcast" data-broadcast-id="70186" data-category="novosti">
-                <img class="broadcast__image broadcast-image" height="350" src="img/324640.jpg">
-                <span class="broadcast__status js-btnModalInit" data-module="modal" data-modal="authURL" data-type="openModal">
-                    <div data-icon="icon-recordit"></div>
-                    <span class="bs-status__title">Записать</span>
-                </span>
-                <div class="broadcast__info broadcast__info--full broadcast-info">
-                    <div class="g-flexbox">
-                        <div class="broadcast__time broadcast-time">20:00</div>
-                        <div class="broadcast__date broadcast-date">12.12.2016</div>
-                        <div class="broadcast__title broadcast-title">
-                            <a class="broadcast__category-link category-broadcasts-link" data-type="category" href="#">Первый</a>
-                        </div>
-                    </div>
-                    <a class="broadcast__link broadcast-link" href="#">Мистер Олимпия 2016</a>
-                </div>
-            </div>
-            <div class="broadcasts__broadcast broadcast broadcast--recordable" data-type="broadcast" data-broadcast-id="70186" data-category="novosti">
-                <img class="broadcast__image broadcast-image" height="350" src="img/324640.jpg">
-                <span class="broadcast__status js-btnModalInit" data-module="modal" data-modal="authURL" data-type="openModal">
-                    <div data-icon="icon-recordit"></div>
-                    <span class="bs-status__title">Записать</span>
-                </span>
                 <div class="broadcast__info broadcast__info--full broadcast-info">
                     <div class="g-flexbox">
                         <div class="broadcast__time broadcast-time">20:00</div>
@@ -184,10 +160,12 @@
             </div>
             <div class="broadcasts__broadcast broadcast broadcast--recordable" data-type="broadcast" data-broadcast-id="70186" data-category="novosti">
                 <img class="broadcast__image broadcast-image" height="350" src="img/324640.jpg">
-                <span class="broadcast__status js-btnModalInit" data-module="modal" data-modal="authURL" data-type="openModal"> 
-                    <div data-icon="icon-recordit"></div>
-                    <span class="bs-status__title">Записать</span>
-                </span>
+                <div class="broadcast__wrap-status">
+                    <span class="broadcast__status js-btnModalInit" data-module="modal" data-modal="authURL" data-type="openModal">
+                        <div data-icon="icon-recordit"></div>
+                        <span class="bs-status__title">Записать</span>
+                    </span>
+                </div>
                 <div class="broadcast__info broadcast__info--full broadcast-info">
                     <div class="g-flexbox">
                         <div class="broadcast__time broadcast-time">20:00</div>
@@ -201,10 +179,12 @@
             </div>
             <div class="broadcasts__broadcast broadcast broadcast--recordable" data-type="broadcast" data-broadcast-id="70186" data-category="novosti">
                 <img class="broadcast__image broadcast-image" height="350" src="img/324640.jpg">
-                <span class="broadcast__status js-btnModalInit" data-module="modal" data-modal="authURL" data-type="openModal">
-                    <div data-icon="icon-recordit"></div>
-                    <span class="bs-status__title">Записать</span>
-                </span>
+                <div class="broadcast__wrap-status">
+                    <span class="broadcast__status js-btnModalInit" data-module="modal" data-modal="authURL" data-type="openModal">
+                        <div data-icon="icon-recordit"></div>
+                        <span class="bs-status__title">Записать</span>
+                    </span>
+                </div>
                 <div class="broadcast__info broadcast__info--full broadcast-info">
                     <div class="g-flexbox">
                         <div class="broadcast__time broadcast-time">20:00</div>
@@ -218,10 +198,12 @@
             </div>
             <div class="broadcasts__broadcast broadcast broadcast--recordable" data-type="broadcast" data-broadcast-id="70186" data-category="novosti">
                 <img class="broadcast__image broadcast-image" height="350" src="img/324640.jpg">
-                <span class="broadcast__status js-btnModalInit" data-module="modal" data-modal="authURL" data-type="openModal">
-                    <div data-icon="icon-recordit"></div>
-                    <span class="bs-status__title">Записать</span>
-                </span>
+                <div class="broadcast__wrap-status">
+                    <span class="broadcast__status js-btnModalInit" data-module="modal" data-modal="authURL" data-type="openModal"> 
+                        <div data-icon="icon-recordit"></div>
+                        <span class="bs-status__title">Записать</span>
+                    </span>
+                </div>
                 <div class="broadcast__info broadcast__info--full broadcast-info">
                     <div class="g-flexbox">
                         <div class="broadcast__time broadcast-time">20:00</div>
@@ -235,10 +217,50 @@
             </div>
             <div class="broadcasts__broadcast broadcast broadcast--recordable" data-type="broadcast" data-broadcast-id="70186" data-category="novosti">
                 <img class="broadcast__image broadcast-image" height="350" src="img/324640.jpg">
-                <span class="broadcast__status js-btnModalInit" data-module="modal" data-modal="authURL" data-type="openModal">
-                    <div data-icon="icon-recordit"></div>
-                    <span class="bs-status__title">Записать</span>
-                </span>
+                <div class="broadcast__wrap-status">
+                    <span class="broadcast__status js-btnModalInit" data-module="modal" data-modal="authURL" data-type="openModal">
+                        <div data-icon="icon-recordit"></div>
+                        <span class="bs-status__title">Записать</span>
+                    </span>
+                </div>
+                <div class="broadcast__info broadcast__info--full broadcast-info">
+                    <div class="g-flexbox">
+                        <div class="broadcast__time broadcast-time">20:00</div>
+                        <div class="broadcast__date broadcast-date">12.12.2016</div>
+                        <div class="broadcast__title broadcast-title">
+                            <a class="broadcast__category-link category-broadcasts-link" data-type="category" href="#">Первый</a>
+                        </div>
+                    </div>
+                    <a class="broadcast__link broadcast-link" href="#">Мистер Олимпия 2016</a>
+                </div>
+            </div>
+            <div class="broadcasts__broadcast broadcast broadcast--recordable" data-type="broadcast" data-broadcast-id="70186" data-category="novosti">
+                <img class="broadcast__image broadcast-image" height="350" src="img/324640.jpg">
+                <div class="broadcast__wrap-status">
+                    <span class="broadcast__status js-btnModalInit" data-module="modal" data-modal="authURL" data-type="openModal">
+                        <div data-icon="icon-recordit"></div>
+                        <span class="bs-status__title">Записать</span>
+                    </span>
+                </div>
+                <div class="broadcast__info broadcast__info--full broadcast-info">
+                    <div class="g-flexbox">
+                        <div class="broadcast__time broadcast-time">20:00</div>
+                        <div class="broadcast__date broadcast-date">12.12.2016</div>
+                        <div class="broadcast__title broadcast-title">
+                            <a class="broadcast__category-link category-broadcasts-link" data-type="category" href="#">Первый</a>
+                        </div>
+                    </div>
+                    <a class="broadcast__link broadcast-link" href="#">Мистер Олимпия 2016</a>
+                </div>
+            </div>
+            <div class="broadcasts__broadcast broadcast broadcast--recordable" data-type="broadcast" data-broadcast-id="70186" data-category="novosti">
+                <img class="broadcast__image broadcast-image" height="350" src="img/324640.jpg">
+                <div class="broadcast__wrap-status">
+                    <span class="broadcast__status js-btnModalInit" data-module="modal" data-modal="authURL" data-type="openModal">
+                        <div data-icon="icon-recordit"></div>
+                        <span class="bs-status__title">Записать</span>
+                    </span>
+                </div>
                 <div class="broadcast__info broadcast__info--full broadcast-info">
                     <div class="g-flexbox">
                         <div class="broadcast__time broadcast-time">20:00</div>
@@ -252,10 +274,13 @@
             </div>
             <? } ?>
         </div>
+
         <script type="text/x-template" id="broadcastFullTmpl">
             <div class="broadcasts__broadcast broadcast broadcast--full <%- status %>" data-type="broadcast" data-broadcast-id="<%- id %>" data-category="<%- categoryLink %>">
                 <img class="broadcast__image broadcast-image" height="350" src="<%- image %>">
-                <%= placeholder %>
+                <div class="broadcast__wrap-status">
+                    <%= placeholder %>
+                </div>
                 <div class="broadcast__alert bs-alert bs-alert--extend-drive">
                     <span data-icon="icon-storage"></span>
                     <p class="g-mt-5">У Вас закончилось свободное место на облачном хранилище МЕГА.ДИСК</p>
@@ -274,37 +299,37 @@
             </div>
         </script>
         <script id="nonAuthTmpl" type="text/x-template">
-            <span class="broadcast__status" data-module="modal" data-modal="authURL" data-type="openModal">
+            <span class="broadcast__status item-status-icon" data-module="modal" data-modal="authURL" data-type="openModal">
                 <span data-icon="icon-recordit"></span>
                 <span class="bs-status__title">Записать</span>
             </span>
         </script>
         <script id="status-recordableTmpl" type="text/x-template">
-            <span class="broadcast__status">
+            <span class="broadcast__status item-status-icon">
                 <span data-icon="icon-recordit"></span>
                 <span class="bs-status__title">Записать</span>
             </span>
         </script>
         <script id="status-viewedTmpl" type="text/x-template">
-            <span class="broadcast__status">
+            <span class="broadcast__status item-status-icon">
                 <span data-icon="icon-viewed"></span>
                 <span class="bs-status__title">Просмотрено</span>
             </span>
         </script>
         <script id="status-recordedTmpl" type="text/x-template">
-            <span class='broadcast__status'>
+            <span class='broadcast__status item-status-icon'>
                 <span data-icon='icon-recorded'></span>
                 <span class='bs-status__title'>Смотреть</span>
             </span>
         </script>
         <script id="recording-notifyTmpl" type="text/x-template">
-            <span class="broadcast__status">
+            <span class="broadcast__status item-status-icon">
                 <div data-icon="icon-recording"></div>
                 <span class="bs-status__title">Ваша любимая передача<br> поставлена на запись</span>
             </span>
         </script>
         <script id="status-recordingTmpl" type="text/x-template">
-            <span class='broadcast__status'>
+            <span class='broadcast__status item-status-icon'>
                 <span data-icon='icon-recording'></span>
                 <span class='bs-status__title'>В записи</span>
             </span>

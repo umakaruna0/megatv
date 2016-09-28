@@ -69,7 +69,10 @@
                                   { "id":34, "text":"Благовещенск" },
                                   { "id":38, "text":"Брянск" }
                                ],
-                               "showCityRequestPopover":false
+                               "showCityRequestPopover":false,
+                               "consts" : {
+                                    "titleNotFound": "Не найдено!"
+                               }
                             }
                         </script>
                         <form action="/" method="POST" class="js-city-select-form">
