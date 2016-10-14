@@ -39004,8 +39004,26 @@ Box.Application.addModule('broadcast-results', function (context) {
 	var slideSwiperLast;
 	var slideSwiperNext;
 	var authentication;
+	var swiper;
+	var sessionSlide = sessionStorage.getItem('slide');
+	var bigSlider = sessionSlide > 10 ? true : false;
 
-	function addDay(nextDay){
+	function initEvents(){
+		slideSwiperLast = $(".swiper-slide").last();
+		slideSwiperNext = $(".swiper-slide--end").siblings(".swiper-slide-next");
+		slideSwiperLast.on("mousedown", mouseDown);
+		slideSwiperNext.on("mousedown", mouseDown);
+	}
+
+	function resetEvents(){
+		slideSwiperLast = $(".swiper-slide").last();
+		slideSwiperNext = $(".swiper-slide--end").siblings(".swiper-slide-next");
+		slideSwiperLast.off("mousedown");
+		slideSwiperNext.off("mousedown");
+	}
+
+	function addDay(nextDay, nextDayToScript){
+		broadcastObj.openPreloader();
 		$.ajax({
 			type: 'post',
 			url: context.getConfig("fetchResultsURL"),
@@ -39017,8 +39035,9 @@ Box.Application.addModule('broadcast-results', function (context) {
 			dataType: "json",
 			success: function (response) {
 				if(!_.isEmpty(response)){
-					broadcastObj.addDay(response);
+					broadcastObj.addDay(response, nextDayToScript);
 					moduleEl.dataset.date = nextDay;
+					broadcastObj.closePreloader();
 				}
 			},
 			error: function () {
@@ -39027,14 +39046,13 @@ Box.Application.addModule('broadcast-results', function (context) {
 		});
 	}
 
-	function mouseDown(e){
+	function nextDay(){
 		var currDate = (moduleEl.dataset.date).replace(/([0-9]{2})\.([0-9]{2})\.([0-9]{4})\s(([0-9]{2})\:([0-9]{2})\:([0-9]{2}))/, "$3-$2-$1 $4");
 		var nextDay = moment(currDate);
 		nextDay = nextDay.add(1,"days");
+		var nextDayToScript = nextDay.format("YYYY-MM-DD HH:mm:ss");
 		nextDay = nextDay.format("DD.MM.YYYY HH:mm:ss");
-		addDay(nextDay);
-		slideSwiperLast.off("mousedown");
-		slideSwiperNext.off("mousedown");
+		addDay(nextDay, nextDayToScript);
     }
 
 	// --------------------------------------------------------------------------
@@ -39056,8 +39074,25 @@ Box.Application.addModule('broadcast-results', function (context) {
 			broadcastObj = $(".main-container").Broadcasts("initialize", {
 	            config: context.getConfig(),
 	            JSONParams: json,
+	            bigSlider: bigSlider,
 	            origin: context.getConfig("origin")
 	        });
+			swiper = broadcastObj.swiper;
+			var countDays = this.getDayFromSession(sessionSlide);
+			if(countDays > 1){
+				for(var i = 0; i < (countDays - 1); i++){
+					nextDay();
+				}
+				setTimeout(function(){
+					swiper.slideTo(sessionSlide);
+					broadcastObj.closePreloader();
+				},1000);
+			}
+			swiper.on('onSlideChangeStart', function (getSwiper) {
+				if(getSwiper.isEnd) {
+					nextDay();
+				}
+			});
 		    var iconLoaderService = Box.Application.getService('icon-loader');
             setInterval(function(){
             	if(document.querySelector("[data-icon]"))
@@ -39070,18 +39105,20 @@ Box.Application.addModule('broadcast-results', function (context) {
 			        });
             },1000);
             $("#paramsJson").empty().remove();
-			slideSwiperLast = $(".swiper-slide").last();
-			slideSwiperNext = $(".swiper-slide--end").siblings(".swiper-slide-next");
-			slideSwiperLast.on("mousedown", mouseDown);
-			slideSwiperNext.on("mousedown", mouseDown);
             // setImmediate(function(){
             // });
 		},
+
+		getDayFromSession: function(countSlides){
+			return Math.ceil(countSlides / 10);
+		},
+
 		destroy: function () {
 			broadcastObj = null;
 			slideSwiperLast = null;
 			slideSwiperNext = null;
 		},
+
 		onclick: function (event, element, elementType) {
 			if (elementType === 'category') {
 				var category = $(element).closest('.item').data('category');

@@ -34922,7 +34922,6 @@ return $.widget;
 	var PATTERN = "YYYY-MM-DD HH:mm:ss";
 	// var TIME = moment().format(PATTERN);
 
-
 	var Broadcasts = function (options) {
 		var self = this;
 		$.each(options, function(key, value){
@@ -34935,6 +34934,7 @@ return $.widget;
 		initialize: function(){
 			var self = this;
 			self.timeNow = self.JSONParams[TIME_TITLE.toUpperCase()];
+			self.addDayVar = false;
 			self.auth = self.JSONParams[AUTH_TITLE];
 		    self.$wrapper = $(".swiper-wrapper");
 		    var broadcasts = null;
@@ -34952,12 +34952,11 @@ return $.widget;
 			});
 			broadcastsView += outputMark;
 
-		    self.closePreloader();
 		    self.$wrapper.html(broadcastsView);
 		    self.$wrapper.find("." + slideClass).last().addClass(slideClass + "--end");
     		self.swiper = self.initSwiper();
         	self.fixedTimeline(self.$wrapper, weekday + " " + hours);
-
+        	if(!this.bigSlider) self.closePreloader();
 			setInterval(function(){
 				if($("." + swiperLazyClass)[0]){
 					self.loadImages();
@@ -35127,9 +35126,9 @@ return $.widget;
 		            for (var i = 0; i < v.length; i++) {
 		                var start = currArray[key][k][i][DATE_START_TITLE] = self.convertDate(v[i][DATE_START_TITLE]);
 		                var end = currArray[key][k][i][DATE_END_TITLE] = self.convertDate(v[i][DATE_END_TITLE]);
-		                var startNextDay = moment().add(1, "days").startOf("days").format(PATTERN);
+		                var startNextDay = self.createMoment(0).add(1, "days").startOf("days").format(PATTERN);
 		                if(start > end || end >= startNextDay) {
-		                    end = currArray[key][k][i][DATE_END_TITLE] = moment().endOf("days").format(PATTERN);
+		                    end = currArray[key][k][i][DATE_END_TITLE] = self.createMoment(0).endOf("days").format(PATTERN);
 		                }
 		                var diff = self.getDiffFromDateStartEnd(start, end);
 		                currArray[key][k][i][DATE_DIFF_TITLE] = diff;
@@ -35212,22 +35211,23 @@ return $.widget;
 		    }
 		},
 
-		parseBroadcastByTime: function (broadcast){
+	    createMoment: function(num){
+			var time = this.timeNow;
+	        return moment(time).minutes(0).seconds(0).hours(num);
+	    },
+
+	    format: function(momentObj, pattern){
+	        if(!pattern) pattern = PATTERN;
+	        return momentObj.format(pattern);
+	    },
+
+		parseBroadcastByTime: function (b_cast){
 			var self = this;
-		    var beginDay = createMoment(0).format(PATTERN);
-		    function createMoment(num){
-		        return moment().minutes(0).seconds(0).hours(num);
-		    }
-
-		    function format(momentObj, pattern){
-		        if(!pattern) pattern = PATTERN;
-		        return momentObj.format(pattern);
-		    }
-
+		    
 		    function collectArray(item, numStart){
 		        var array = [];
 		        var startTime, endTime, bigArray = false, column = 0, diffFull, diff, offset, limit;
-		        var startPart = createMoment(0);
+		        var startPart = self.format(self.createMoment(0));
 		        item = _.clone(item);
 		        var start = startTime = item[DATE_START_TITLE];
 		        var end = endTime = item[DATE_END_TITLE];
@@ -35240,9 +35240,9 @@ return $.widget;
 		        if(limit === 0) limit = 24;
 		        var early30m, early15m, later30m, later15m, early, later, current, broadcast, push = false, stop = false, diffNext;
 		        for (var i = offset; i < limit; i++) {
-		            current = format(createMoment(i));
-		            early = format(createMoment(i).subtract(1, "hours"));
-		            later = format(createMoment(i).add(1, "hours"));
+		            current = self.format(self.createMoment(i));
+		            early = self.format(self.createMoment(i).subtract(1, "hours"));
+		            later = self.format(self.createMoment(i).add(1, "hours"));
 		            early30m = self.mathTimes([early, { minutes: 30 }], false, PATTERN);
 		            later30m = self.mathTimes([later, { minutes: 30 }], true, PATTERN);
 		            broadcast = _.clone(item);
@@ -35251,13 +35251,13 @@ return $.widget;
 		                diff = self.getDiffFromDateStartEnd(start, later);
 		                diffNext = self.getDiffFromDateStartEnd(later, end);
 		                push = false; stop = false;
-		                if(diffFull >= "01:00:00"){
-		                    startTime = ((startTime >= early30m && startTime <= early) ? start : early) < start ? start : early;
-		                    startTime = (start >= early30m && start <= early) ? start : startTime;
-		                    endTime = ((endTime <= later30m && endTime > later) ? end : later) > end ? end : later;
+		                if(diffFull >= "00:45:00"){
+		                    startTime = ((startTime >= early30m && startTime < early) ? startTime : early) < start ? start : early;
+		                    startTime = (start > early30m && start < early) ? start : startTime;
+		                    endTime = ((endTime <= later30m && endTime > later) ? endTime : later) > end ? end : later;
 		                    endTime = (end <= later30m && end >= later) ? end : endTime;
 		                    diff = self.getDiffFromDateStartEnd(startTime, endTime);
-		                    if(diff > "00:30:00"){
+		                    if(diff > "00:20:00"){
 		                        push = true;
 		                    }
 		                }else{
@@ -35267,21 +35267,16 @@ return $.widget;
 		                        if(diff < diffNext){
 		                            broadcast[COLUMN_TITLE] = i + 2;
 		                        }
-		                        stop = push = true;
-		                    }else if((early <= start && start < later) && end <= later){
-		                        stop = push = true;
-		                    }else if(early <= start && current >= start && later30m >= end){
-		                        stop = push = true;
-		                    }else if((early30m <= start && early >= start) && end <= later){
-		                        stop = push = true;
 		                    }
+		                    if(self.getDiffFromDateStartEnd(startTime, endTime) > "00:15:00") 
+		                    	stop = push = true;
 		                }
 
 		                diff = self.getDiffFromDateStartEnd(startTime, endTime);
 		                broadcast[DATE_START_TITLE] = startTime;
 		                broadcast[DATE_END_TITLE] = endTime;
 
-		                if(startTime <= self.timeNow && endTime >= self.timeNow) {
+		                if(startTime <= self.timeNow && endTime >= self.timeNow && !self.addDayVar) {
 		                    broadcast[ON_AIR_TITLE] = true;
 		            		broadcast[COLUMN_TITLE] = "now";
 		                }
@@ -35289,69 +35284,166 @@ return $.widget;
 
 		                column++;
 		            }else{
-		                if(start <= self.timeNow && end >= self.timeNow) {
+		                if(start <= self.timeNow && end >= self.timeNow && !self.addDayVar) {
 		                    broadcast[ON_AIR_TITLE] = true;
 		            		broadcast[COLUMN_TITLE] = "now";
 		                }
+		                continue;
 		            }
 		            if(push && diff > "00:00:00") array.push(broadcast);
 		            if(stop) break;
 		        }
 		        return array;
 		    }
-
-		    
-		    return collectArray(broadcast);
+		    var collect = collectArray(b_cast);
+		    // if(b_cast[ID_TITLE] == "169135") console.log(collect);
+		    return collect;
 		},
 
-		getColumnByDate: function(date){
-			var num = date.replace(/.*\s([0-9]{2})\:([0-9]{2})\:([0-9]{2})/,"$1");
-			if(num === 0 || num === 1) console.log();
+		getColumnByTime: function(){
+			var time = this.timeNow;
+			var hour = moment(time).format("HH");
+			return parseInt(hour);
 		},
 
 		pushToColumns: function (broadcasts){
 			var self = this;
-			var time = self.timeNow;
 			var channels = self.channelsNum;
-		    var array = {
-		    	"now" : []
-		    };
-		    var channel, channel_id, b_col, b_channel, date_start, date_end, col;
-		    for (col = 0; col < 24; col++) {
-		        if(col % 2){
-		            array[col] = [];
-		            for (channel = 0; channel < channels.length; channel++) {
-		                channel_id = channels[channel];
-		                array[col][channel_id] = [];
-		                array["now"][channel_id] = []; 
-		                for (var b = 0; b < broadcasts.length; b++) {
-		                    b_col = broadcasts[b][COLUMN_TITLE];
-		                    b_channel = broadcasts[b][CHANNEL_ID_TITLE];
-		                    date_start = broadcasts[b][DATE_START_TITLE];
-		                    date_end = broadcasts[b][DATE_END_TITLE];
-		                    if(time > date_start && time < date_end){
-			                    if(b_channel === channel_id){
-			                    	array["now"][channel_id].push(broadcasts[b]);
-			                    }
-		                    }else{
-		                    	if(b_col === col && b_channel === channel_id){
-			                    	array[col][channel_id].push(broadcasts[b]);
-			                    }
-		                    }
-		                }
-		            }
-		        }
+		    var array = {};
+		    var column;
+		    function sortColumns(array, col, channels, broadcasts) {
+	    		var channel, channel_id, b_col, b_channel, date_start, date_end, returnArr;
+	    		returnArr = [];
+		    	 for (channel = 0; channel < channels.length; channel++) {
+	                channel_id = channels[channel];
+	                returnArr[channel_id] = [];
+	                for (var b = 0; b < broadcasts.length; b++) {
+	                    b_col = broadcasts[b][COLUMN_TITLE];
+	                    b_channel = broadcasts[b][CHANNEL_ID_TITLE];
+	                    date_start = broadcasts[b][DATE_START_TITLE];
+	                    date_end = broadcasts[b][DATE_END_TITLE];
+                    	if(b_col === col && b_channel === channel_id){
+                    		if(col === "now" && returnArr[channel_id].length > 0) break;
+	                    	returnArr[channel_id].push(broadcasts[b]);
+	                    }
+	                }
+	            }
+	            return returnArr;
 		    }
-		    return self.sortByTime(array);
+
+			var colTime = this.getColumnByTime();
+		    for (column = 0; column < 24; column++) {
+		        if(column % 2){
+		            array[column] = sortColumns(array, column, channels, broadcasts);
+		        }
+		        if(colTime == column && !self.addDayVar){
+		        	array[column] = sortColumns(array, "now", channels, broadcasts);
+		        } 
+		        	
+		    }
+		    return self.fillBlankChanns(array);
+		},
+
+		partitionArray: function(array){
+			var returnArr = [ [], [] ];
+			if(array.length == 1) returnArr[0] = array;
+			else{
+				var lengthHalf = Math.floor(array.length / 2);
+				for (var i = 0; i < array.length; i++) {
+					if(i < lengthHalf){
+						returnArr[0].push(_.clone(array[i]));
+						array.splice(i,1);
+					}else{
+						returnArr[1].push(_.clone(array[i]));
+					}
+				}
+			}
+			return returnArr;
+		},
+
+		// Fill in the blank channels
+
+		fillBlankChanns: function(array){
+			var returnArr = [], channels = [], broadcasts = [], self = this;
+			
+			function compress(array, column, channel){
+				var chans = [], bss = [], arrayOne = [], arrays = [];
+				outer: for (var col in array) {
+					if(!(col in array)) continue; 
+					chans = array[col];
+					for (var chan in chans){
+						bss = chans[chan];
+						if(bss.length > 0 && chan == channel && parseInt(col) > parseInt(column)){
+							arrays = self.partitionArray(bss);
+							arrayOne = arrays[0];
+							break outer;
+						}
+					}
+				}
+				return arrayOne;
+			}
+
+			for (var column in array) {
+				channels = array[column];
+				for (var channel in channels) {
+					broadcasts = channels[channel];
+					if(broadcasts.length > 0) continue;
+					var arrChannel = [];
+					arrChannel = compress(array, column, channel);
+					if(arrChannel.length !== 0)
+						array[column][channel] = arrChannel;
+				}
+			}
+		    return this.deleteDublBroadcs(array);
+		},
+
+		// Delete dublicate broadcasts
+
+		deleteDublBroadcs: function(array){
+			var returnArr = [], channels = [], broadcasts = [], self = this;
+			
+			function compress(array, channel, column, id){
+				var channelsCp = [], broadcastsCp = [];
+				for(var colCp in array){
+					if(colCp > column){
+						channelsCp = array[colCp];
+						for(var channCp in channelsCp){
+							broadcastsCp = channelsCp[channCp];
+							if(channCp == channel){
+								for(var bsCp in broadcastsCp){
+									var idCp = broadcastsCp[bsCp][ID_TITLE];
+									if(idCp == id && broadcastsCp.length > 1){
+										broadcastsCp.splice(bsCp, 1);
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+
+			for (var column in array) {
+				channels = array[column];
+				for (var channel in channels) {
+					broadcasts = channels[channel];
+					for(var broadcast in broadcasts){
+						var id = broadcasts[broadcast][ID_TITLE];
+						compress(array, channel, column, id);
+					}
+				}
+			}
+		    return this.sortByTime(array);
 		},
 		
-		addStatus: function(html, type, auth, beforeAir){
+		addStatus: function(html, type, beforeAir){
+			var auth = this.auth;
 			var div = $("<div />");
 			div.html(html);
 			var tmpl;
 			var statusHTML;
 			if(auth){
 				switch(type){
+					case "status-":
 					case "status-recordable":
 						div.find(".broadcast").addClass("status-recordable");
 						tmpl = _.template($("#status-recordableTmpl").html());
@@ -35388,7 +35480,9 @@ return $.widget;
 
 		viewBroadcasts: function (broadcasts){
 			var self = this;
+			var addDayVar = this.addDayVar;
 		    var i = 0;
+			var colTime = this.getColumnByTime();
 		    var divSetInit = '<div class="bs-container__set bs-set" />';
 		    var divColumnInit = '<div class="bs-container__column swiper-slide" />';
 		    var divWrapInit = '<div />';
@@ -35399,8 +35493,10 @@ return $.widget;
 		    var channel, channelVal, countB, divSetMain, divSetInner, divSetInner2, divColumn, col, broadcast, divSet, tmpl, isSetInner, output, colVal, finalObj;
 		    var divWrapper = $(divWrapInit);
 		    for (col in broadcasts) {
+		    	col = parseInt(col); 
 		        colVal = broadcasts[col];
-		        divColumn = $(divColumnInit).addClass(doubleClass);
+		        divColumn = $(divColumnInit);
+		        if(col !== colTime || (col === colTime && addDayVar)) divColumn.addClass(doubleClass);
 		        for (channel in colVal) {
 		            channelVal = colVal[channel];
 		            countB = channelVal.length;
@@ -35418,40 +35514,41 @@ return $.widget;
 		                    time : broadcast[DATE_START_TITLE].replace(/.*\s([0-9]{2}\:[0-9]{2}).*/,"$1"),
 		                    onAir : broadcast[ON_AIR_TITLE],
 		                    auth : self.auth,
-		                    noAir : (self.timeNow > broadcast[DATE_END_TITLE]) ? true : false,
+		                    noAir : (self.timeNow > broadcast[DATE_END_TITLE] && !addDayVar) ? true : false,
 		                    channel_id : broadcast[CHANNEL_ID_TITLE],
 		                    image : origin + broadcast[IMGS_TITLE][IMG_HALF_TITLE],
 		                    blurImage : origin + broadcast[IMGS_TITLE][IMG_HALF_BAD_TITLE]
 		                };
 		                if(countB === 1){
 		                    output.image = origin + broadcast[IMGS_TITLE][IMG_DOUBLE_TITLE];
+		                    if(col === colTime && !addDayVar) output.image = origin + broadcast[IMGS_TITLE][IMG_ONE_TITLE];
 		                    output.blurImage = origin + broadcast[IMGS_TITLE][IMG_DOUBLE_BAD_TITLE];
-		                    finalObj = self.addStatus(tmpl(output), broadcast[STATUS_TITLE], self.auth);
+		                    finalObj = self.addStatus(tmpl(output), broadcast[STATUS_TITLE]);
 		                    divSetMain.removeClass(doubleXClass)
 		                              .html(finalObj);
 		                }else if(countB === 2){
 		                    output.image = origin + broadcast[IMGS_TITLE][IMG_ONE_TITLE];
 		                    output.blurImage = origin + broadcast[IMGS_TITLE][IMG_ONE_BAD_TITLE];
-		                    finalObj = self.addStatus(tmpl(output), broadcast[STATUS_TITLE], self.auth);
+		                    finalObj = self.addStatus(tmpl(output), broadcast[STATUS_TITLE]);
 		                    divSetMain.append(finalObj);
 		                }else if(countB === 3){
 		                    if(b == 0){
 		                        output.image = origin + broadcast[IMGS_TITLE][IMG_ONE_TITLE];
 		                        output.blurimage = origin + broadcast[IMGS_TITLE][IMG_ONE_BAD_TITLE];
-		                        finalObj = self.addStatus(tmpl(output), broadcast[STATUS_TITLE], self.auth);
+		                        finalObj = self.addStatus(tmpl(output), broadcast[STATUS_TITLE]);
 		                        divSetMain.append(finalObj);
 		                    }else{
-		                        finalObj = self.addStatus(tmpl(output), broadcast[STATUS_TITLE], self.auth);
+		                        finalObj = self.addStatus(tmpl(output), broadcast[STATUS_TITLE]);
 		                        divSetInner.addClass(doubleYClass)
 		                                   .append(finalObj);
 		                    }
 		                }else if(countB === 4){
 		                    if(b < 2){
-		                        finalObj = self.addStatus(tmpl(output), broadcast[STATUS_TITLE], self.auth);
+		                        finalObj = self.addStatus(tmpl(output), broadcast[STATUS_TITLE]);
 		                        divSetInner.addClass(doubleYClass)
 		                                   .append(finalObj);
 		                    }else{
-		                        finalObj = self.addStatus(tmpl(output), broadcast[STATUS_TITLE], self.auth);
+		                        finalObj = self.addStatus(tmpl(output), broadcast[STATUS_TITLE]);
 		                        divSetInner2.addClass(doubleYClass)
 		                                    .append(finalObj);
 		                    }
@@ -35465,6 +35562,7 @@ return $.widget;
 		                });
 		                divSetMain.removeClass(doubleXClass)
 		                          .html(finalObj);
+		                //Здесь продолжить! Сделать проверку: если такое время есть, значит вывести передачу без времени.
 		            }
 		            if($.trim(divSetInner.text()) != "") 
 		                divSetMain.append(divSetInner);
@@ -35490,7 +35588,7 @@ return $.widget;
 		        _.each(channels, function(v,k){
 		            var id = v[ID_TITLE.toUpperCase()];
 		            if(channelsNum[i] === id){
-		                channelView = _.template($("#channelTmpl").html());
+		                channelView = _.template($("#channelTmpl").html()); 
 		                output = channelView({
 		                    "id" : id,
 		                    "link" : v[DETAIL_PAGE_URL_TITLE],
@@ -35503,6 +35601,27 @@ return $.widget;
 		    return mainBlock.html();
 		},
 
+		uniqArray: function(broadcasts){
+			var returnArr = _.clone(broadcasts);
+			var id, start, end, channel, id_d, start_d, end_d, channel_d;
+			for(var key in broadcasts){
+				id = broadcasts[key][ID_TITLE];
+				start = broadcasts[key][DATE_START_TITLE];
+				channel = broadcasts[key][CHANNEL_ID_TITLE];
+				var i = 0;
+				for (var k in returnArr) {
+					id_d = returnArr[k][ID_TITLE];
+					start_d = returnArr[k][DATE_START_TITLE];
+					channel_d = returnArr[k][CHANNEL_ID_TITLE];
+					if(id === id_d && start === start_d && channel === channel_d){
+						if(i === 1) returnArr.splice(k, 1);
+						i += 1;
+					}
+				}
+			}
+		    return this.pushToColumns(returnArr);
+		},
+
 		correctBroadcasts: function (broadcasts){
 			var self = this;
 		    var returnArr = [];
@@ -35513,7 +35632,7 @@ return $.widget;
 		        }
 		    }
 		    returnArr = _.flatten(returnArr);
-		    return self.pushToColumns(returnArr);
+		    return self.uniqArray(returnArr);
 		},
 
 		initSwiper: function (){
@@ -35560,14 +35679,15 @@ return $.widget;
 		    });
 		},
 
-		addDay: function (json){
+		addDay: function (json, nextDay){
 			var self = this;
+			self.timeNow = nextDay;
+			self.addDayVar = true;
 		    var broadcasts = null;
 			var object = self.offsetToOneObj(json[DATES_TITLE]);
 		    broadcasts = self.correctBroadcasts(object.broadcasts);
 		    var broadcastsView = self.viewBroadcasts(broadcasts);
-		    console.log(json[TIME_TITLE]);
-			var momentNow = moment(json[TIME_TITLE]);
+			var momentNow = moment(nextDay);
 			var weekday = self.config.weekdays[(momentNow.toString()).replace(/(.{3}).*/, "$1")];
 			var hours = self.timeNow.replace(/.*\s([0-9]{2}\:[0-9]{2}).*/,"$1");
 			var dayMarkTmpl = _.template($("#beginDayMarkTmpl").html());
@@ -35614,12 +35734,12 @@ return $.widget;
 		        }
 		    };
 		    var sessionSlide = sessionStorage.getItem('slide');
-		    if(sessionSlide){
+		    if (sessionSlide) {
 		        slide = sessionSlide;
 		        $("html,body").animate({ 
 		        	scrollTop: sessionStorage.getItem('top') 
 		        }, 1000);
-		    }else slide = onAir;
+		    } else slide = onAir;
 		    self.swiper.slideTo(slide, 1000);
 		    $line.css("left", (left - 150));
 		    $title.css("left", (left - 370));
@@ -35636,9 +35756,13 @@ return $.widget;
 		        $timeline = null;
 		    });
 		},
+		openPreloader: function (){
+		    var $loader = $(".broadcasts-loader");
+		    $loader.removeClass("broadcasts-loader--loaded").addClass("broadcasts-loader--loading");
+		},
 		closePreloader: function (){
 		    var $loader = $(".broadcasts-loader");
-		    $loader.addClass("broadcasts-loader--loaded");
+		    $loader.removeClass("broadcasts-loader--loading").addClass("broadcasts-loader--loaded");
 		}
 	};
 
@@ -35647,6 +35771,7 @@ return $.widget;
           config: {},
           origin: location.origin,
           JSONParams: {},
+          bigSlider: false,
           timeNow: moment().format(PATTERN),
 	      preInit: function(){},
 	      postInit: function(){}
@@ -38410,8 +38535,26 @@ Box.Application.addModule('broadcast-results', function (context) {
 	var slideSwiperLast;
 	var slideSwiperNext;
 	var authentication;
+	var swiper;
+	var sessionSlide = sessionStorage.getItem('slide');
+	var bigSlider = sessionSlide > 10 ? true : false;
 
-	function addDay(nextDay){
+	function initEvents(){
+		slideSwiperLast = $(".swiper-slide").last();
+		slideSwiperNext = $(".swiper-slide--end").siblings(".swiper-slide-next");
+		slideSwiperLast.on("mousedown", mouseDown);
+		slideSwiperNext.on("mousedown", mouseDown);
+	}
+
+	function resetEvents(){
+		slideSwiperLast = $(".swiper-slide").last();
+		slideSwiperNext = $(".swiper-slide--end").siblings(".swiper-slide-next");
+		slideSwiperLast.off("mousedown");
+		slideSwiperNext.off("mousedown");
+	}
+
+	function addDay(nextDay, nextDayToScript){
+		broadcastObj.openPreloader();
 		$.ajax({
 			type: 'post',
 			url: context.getConfig("fetchResultsURL"),
@@ -38423,8 +38566,9 @@ Box.Application.addModule('broadcast-results', function (context) {
 			dataType: "json",
 			success: function (response) {
 				if(!_.isEmpty(response)){
-					broadcastObj.addDay(response);
+					broadcastObj.addDay(response, nextDayToScript);
 					moduleEl.dataset.date = nextDay;
+					broadcastObj.closePreloader();
 				}
 			},
 			error: function () {
@@ -38433,14 +38577,13 @@ Box.Application.addModule('broadcast-results', function (context) {
 		});
 	}
 
-	function mouseDown(e){
+	function nextDay(){
 		var currDate = (moduleEl.dataset.date).replace(/([0-9]{2})\.([0-9]{2})\.([0-9]{4})\s(([0-9]{2})\:([0-9]{2})\:([0-9]{2}))/, "$3-$2-$1 $4");
 		var nextDay = moment(currDate);
 		nextDay = nextDay.add(1,"days");
+		var nextDayToScript = nextDay.format("YYYY-MM-DD HH:mm:ss");
 		nextDay = nextDay.format("DD.MM.YYYY HH:mm:ss");
-		addDay(nextDay);
-		slideSwiperLast.off("mousedown");
-		slideSwiperNext.off("mousedown");
+		addDay(nextDay, nextDayToScript);
     }
 
 	// --------------------------------------------------------------------------
@@ -38462,8 +38605,25 @@ Box.Application.addModule('broadcast-results', function (context) {
 			broadcastObj = $(".main-container").Broadcasts("initialize", {
 	            config: context.getConfig(),
 	            JSONParams: json,
+	            bigSlider: bigSlider,
 	            origin: context.getConfig("origin")
 	        });
+			swiper = broadcastObj.swiper;
+			var countDays = this.getDayFromSession(sessionSlide);
+			if(countDays > 1){
+				for(var i = 0; i < (countDays - 1); i++){
+					nextDay();
+				}
+				setTimeout(function(){
+					swiper.slideTo(sessionSlide);
+					broadcastObj.closePreloader();
+				},1000);
+			}
+			swiper.on('onSlideChangeStart', function (getSwiper) {
+				if(getSwiper.isEnd) {
+					nextDay();
+				}
+			});
 		    var iconLoaderService = Box.Application.getService('icon-loader');
             setInterval(function(){
             	if(document.querySelector("[data-icon]"))
@@ -38476,18 +38636,20 @@ Box.Application.addModule('broadcast-results', function (context) {
 			        });
             },1000);
             $("#paramsJson").empty().remove();
-			slideSwiperLast = $(".swiper-slide").last();
-			slideSwiperNext = $(".swiper-slide--end").siblings(".swiper-slide-next");
-			slideSwiperLast.on("mousedown", mouseDown);
-			slideSwiperNext.on("mousedown", mouseDown);
             // setImmediate(function(){
             // });
 		},
+
+		getDayFromSession: function(countSlides){
+			return Math.ceil(countSlides / 10);
+		},
+
 		destroy: function () {
 			broadcastObj = null;
 			slideSwiperLast = null;
 			slideSwiperNext = null;
 		},
+
 		onclick: function (event, element, elementType) {
 			if (elementType === 'category') {
 				var category = $(element).closest('.item').data('category');

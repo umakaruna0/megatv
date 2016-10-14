@@ -3017,9 +3017,11 @@ http://flickity.metafizzy.co
 .modal-open {
   overflow: hidden; }
 
+/*
 .player-modal-open {
-  padding-right: 0 !important; }
-
+    padding-right: 0!important
+}
+*/
 .modal {
   position: fixed !important;
   top: 0;
@@ -10664,6 +10666,10 @@ button.swiper-pagination-bullet {
   opacity: 0;
   z-index: -99999; }
 
+.broadcasts-loader--loading {
+  opacity: 0.5;
+  z-index: 111; }
+
 .timeline {
   height: 50px;
   margin-top: -50px; }
@@ -10743,6 +10749,15 @@ button.swiper-pagination-bullet {
 
 .broadcast--recorded .broadcast__image {
   opacity: 0.35; }
+
+.broadcast--full .broadcast__image {
+  width: 100%; }
+
+.broadcast__category-link {
+  color: rgba(255, 255, 255, 0.5); }
+
+.broadcast__category-link:hover {
+  color: #ffba00; }
 
 .broadcast__info {
   position: absolute;
@@ -10841,7 +10856,11 @@ button.swiper-pagination-bullet {
           justify-content: center;
   -webkit-box-align: center;
       -ms-flex-align: center;
-          align-items: center; }
+          align-items: center;
+  margin-top: -20px; }
+
+.broadcast--no-air .broadcast__wrap-status {
+  display: none !important; }
 
 .broadcast__status {
   font-size: 15px;
@@ -11086,7 +11105,8 @@ dl.stuff-list a {
 
 .bs-container__set {
   min-width: 288px;
-  max-width: 576px; }
+  max-width: 576px;
+  width: 100%; }
 
 .bs-container__set--double-x {
   display: -webkit-box;
@@ -11185,6 +11205,43 @@ dl.stuff-list a {
   -webkit-transform-origin: bottom left;
   transform-origin: bottom left;
   color: #fff; }
+
+.extend-drive-notify {
+  position: absolute;
+  background: rgba(30, 110, 220, 0.8);
+  height: 100%;
+  width: 100%;
+  top: 0;
+  left: 0;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  color: #ffffff; }
+
+.extend-drive-notify +
+.broadcast__wrap-status {
+  display: none; }
+
+.extend-drive-notify-text-wrap {
+  margin-top: -20px; }
+
+.extend-drive-notify .icon {
+  color: #ffba00; }
+
+.extend-drive-notify a {
+  color: white;
+  text-decoration: none;
+  padding-bottom: 2px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0); }
+
+.extend-drive-notify a:hover {
+  border-color: white; }
 
 .form {
   overflow: hidden; }
