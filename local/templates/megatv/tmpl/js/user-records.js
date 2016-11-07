@@ -37487,7 +37487,6 @@ Box.Application.addBehavior('banner-close', function (context) {
 	};
 
 });
-
 /* global Box, alert */
 Box.Application.addBehavior('recording-broadcast', function (context) {
 	'use strict';
@@ -37511,7 +37510,13 @@ Box.Application.addBehavior('recording-broadcast', function (context) {
 							'</div>' +
 						'</div>';
 
-		broadcast.find('.item-header').before(notifyHTML);
+		if(broadcast.find('.item-header')[0]){
+			broadcast.find('.item-header').before(notifyHTML);
+		}else{
+			var statusHTML = $($("#status-recordingTmpl").html()).html();
+			$(".broadcast__status").html(statusHTML);
+			broadcast.removeClass("broadcast--alert").addClass("status-recording");
+		}
 	}
 	function removeRecordingNotify(broadcast) {
 		broadcast.find('.recording-notify').remove();
@@ -37526,12 +37531,20 @@ Box.Application.addBehavior('recording-broadcast', function (context) {
 							'</div>' +
 						'</div>';
 
-		broadcast.find('.item-header').before(notifyHTML);
-		broadcast.addClass('extend-drive-required');
+		if(broadcast.find('.item-header')[0]){
+			broadcast.find('.item-header').before(notifyHTML);
+			broadcast.addClass('extend-drive-required');
+		}else{
+			broadcast.addClass("broadcast--alert");
+		}
 	}
 	function removeExtendDriveNotify(broadcast) {
-		broadcast.removeClass('extend-drive-required');
-		broadcast.find('.extend-drive-notify').remove();
+		if(broadcast.find('.item-header')[0]) {
+			broadcast.removeClass('extend-drive-required');
+			broadcast.find('.extend-drive-notify').remove();
+		}else{
+			broadcast.removeClass("broadcast--alert");
+		}
 	}
 
 	function updateRemoteBroadcastStatus(broadcast, broadcastID, element) {
@@ -37542,7 +37555,7 @@ Box.Application.addBehavior('recording-broadcast', function (context) {
 			if (data.status === 'success') {
 				// addRecordingNotify(broadcast);
 				broadcast.removeClass('status-recordable').addClass('recording-in-progress status-recording');
-				broadcast.find('.icon-recordit').remove().end().find('.item-status-icon').prepend($('<span data-icon="icon-recording" />'));
+				broadcast.find('.icon-recordit').remove().end().find('.broadcast__status').prepend($('<span data-icon="icon-recording" />'));
 				broadcast.find('.bs-status__title').text('В записи');
 				var countHeader = $(".item-recording__count").text();
 				var arrCount = [];
@@ -37600,27 +37613,28 @@ Box.Application.addBehavior('recording-broadcast', function (context) {
 		onclick: function (event, element, elementType) {
 			if (elementType === 'broadcast' && $(event.target).closest('.icon-recordit').length > 0) {
 				event.preventDefault();
-				// console.log( 'Авторизован: ' );
-				// console.log( authentication === true );
+				console.log( 'Авторизован: ' );
+				console.log( authentication === true );
 				// authentication = true;
 				if (authentication === true) {
-					// console.log( 'Статус флаг: ' );
-					// console.log( $(element).data('status-flag') === false );
-					// console.log( 'Статус не undefined: ' );
-					// console.log( $(element).data('status-flag') === 'undefined' );
+					console.log( 'Статус флаг: ' );
+					console.log( $(element).data('status-flag') === false );
+					console.log( 'Статус не undefined: ' );
+					console.log( $(element).data('status-flag') === 'undefined' );
 					if ($(element).data('status-flag') === false || typeof $(element).data('status-flag') === 'undefined') {
 						var broadcast = $(moduleEl).find($(event.target).closest('.broadcast'));
 						var broadcastID = broadcast.data('broadcast-id');
-						// console.log( 'broadcastID не пустой: ' );
-						// console.log( broadcastID !== '' );
-						// console.log( 'broadcastID не undefined: ' );
-						// console.log( typeof broadcastID !== 'undefined' );
+						console.log( 'broadcastID не пустой: ' );
+						console.log( broadcastID !== '' );
+						console.log( 'broadcastID не undefined: ' );
+						console.log( typeof broadcastID !== 'undefined' );
 						if (broadcastID !== '' && typeof broadcastID !== 'undefined') {
-							// console.log( 'Имеет класс status-recordable: ' );
-							// console.log( broadcast.hasClass('status-recordable') );
-							// console.log( 'Не имеет класса status-recording' );
-							// console.log( !broadcast.hasClass('status-recording') );
+							console.log( 'Имеет класс status-recordable: ' );
+							console.log( broadcast.hasClass('status-recordable') );
+							console.log( 'Не имеет класса status-recording' );
+							console.log( !broadcast.hasClass('status-recording') );
 							if (broadcast.hasClass('status-recordable') && !broadcast.hasClass('status-recording')) {
+								console.log("Апдейт");
 								updateRemoteBroadcastStatus(broadcast, broadcastID, element);
 							}
 						}
@@ -37777,7 +37791,6 @@ Box.Application.addBehavior('load-broadcast-player', function (context) {
 	};
 
 });
-
 /* global Box */
 Box.Application.addBehavior('play-recorded-broadcasts', function (context) {
 	'use strict';
@@ -37811,13 +37824,18 @@ Box.Application.addBehavior('play-recorded-broadcasts', function (context) {
 			modalService = null;
 		},
 		onclick: function (event, element, elementType) {
+			console.log($(element));
+			console.log($(moduleEl));
+			console.log();
 			if (elementType === 'broadcast' && $(event.target).closest('.icon-recorded').length > 0) {
 				event.preventDefault();
 				if (authentication === true) {
 					if ($(element).data('play-flag') === false) {
+						console.log("3 step");
 						var broadcast = $(moduleEl).find($(event.target).closest('.item'));
 						var broadcastID = broadcast.data('broadcast-id');
 						if (broadcastID !== '' && typeof broadcastID !== 'undefined' && broadcast.hasClass('status-recorded')) {
+							console.log("4 step");
 							// send message
 							Box.Application.broadcast('playbroadcast', {
 								broadcastID: broadcastID,
@@ -38347,10 +38365,10 @@ Box.Application.addModule('broadcasts-categories', function (context) {
 	}
 
 	function filterBroadcasts(category) {
-		var broadcasts = $('.broadcast');
+		var broadcasts = $('.broadcast, .broadcasts-list .item');
 
-		items.removeClass('category-broadcasts--active');
-		$(moduleEl).find('.category-broadcasts[data-category="'+category+'"]').addClass('category-broadcasts--active');
+		items.removeClass('category-broadcasts--active').removeClass('active');
+		$(moduleEl).find('.category-broadcasts[data-category="'+category+'"], .item[data-category="'+category+'"]').addClass('category-broadcasts--active');
 
 		broadcasts.removeClass('broadcast--hidden');
 
@@ -38397,8 +38415,8 @@ Box.Application.addModule('broadcasts-categories', function (context) {
 
 		init: function () {
 			moduleEl = context.getElement();
-			list = $(moduleEl).find('.categories-broadcasts');
-			items = $(moduleEl).find('.category-broadcasts');
+			list = $(moduleEl).find('.categories-broadcasts, .items');
+			items = $(moduleEl).find('.category-broadcasts, .item');
 			height = 60;
 
 			state();
@@ -38414,7 +38432,7 @@ Box.Application.addModule('broadcasts-categories', function (context) {
 
 			if (elementType === 'more') {
 				toggleCategories();
-			} else if (elementType === 'category-broadcasts') {
+			} else if (elementType === 'category-broadcasts' || elementType === 'item') {
 				filterBroadcasts(category);
 			}
 		},
@@ -38426,7 +38444,6 @@ Box.Application.addModule('broadcasts-categories', function (context) {
         }
 	};
 });
-
 /* global Box */
 Box.Application.addModule('recomended-broadcasts', function (context) {
 	'use strict';
@@ -38448,7 +38465,28 @@ Box.Application.addModule('recomended-broadcasts', function (context) {
 	var inProccess = false;
 	var stopView = false;
 	var placeholder;
-	var auth = context.getGlobalConfig("auth");
+	var pageModule = $('[data-module="page"]').get(0);
+	var auth = Box.Application.getModuleConfig(pageModule, 'authentication');
+
+	function cutString(str, count){
+		count = parseInt(count);
+		str = str.replace(/\.{3}$/, "");
+		if ( str.length > count ) {
+		    str = str.slice( 0, count ) + '...';
+		}
+		return str;
+	}
+
+	$(".broadcasts").children().each(function(){
+		var $this = $(this);
+		var link = $(this).find(".broadcast__link");
+		link.text(cutString($.trim(link.text()), 30));
+		if($this.hasClass("recordable")){
+			$this.removeClass("recordable").addClass("status-recordable");
+		}else if($this.hasClass("recording")){
+			$this.removeClass("recording").addClass("status-recording");
+		}
+	});
 
 	function convertDate(date){
 		return date.replace(/([0-9]{2})\.([0-9]{2})\.([0-9]{4})(\s([0-9]{2})\:([0-9]{2})\:([0-9]{2}))?/,"$3-$2-$1");
@@ -38460,9 +38498,10 @@ Box.Application.addModule('recomended-broadcasts', function (context) {
 		if(auth) statusTmpl = $("#" + item.status + "Tmpl").html(); 
 		else statusTmpl = $("#nonAuthTmpl").html(); 
 		var compile = _.template(tmpl);
+		var name = cutString(item.name, 30);
 		var output = compile({
 			id: item.id,
-			name: item.name,
+			name: name,
 			link: item.link,
 			time: item.time,
 			image: item.image,
@@ -38472,7 +38511,8 @@ Box.Application.addModule('recomended-broadcasts', function (context) {
 			categoryName: item.category.name
 		});
 		var returnEl = $(output);
-		if(auth) returnEl.addClass("broadcast--" + (item.status).replace("status-","")); 
+		// if(auth) returnEl.addClass("broadcast--" + (item.status).replace("status-","")); 
+		if(auth) returnEl.addClass(item.status === "status-" ? "status-recordable" : item.status); 
 		setImmediate(function(){
 			returnEl = null;
 			tmpl = null;
@@ -38538,13 +38578,13 @@ Box.Application.addModule('recomended-broadcasts', function (context) {
 	}
 
 	function hidePlaceholder(){
+		// alert(1);
 		if(!placeholder) return false;
 		$(placeholder).fadeOut(500,function(){
 			$(this).remove();
 		});
 		if(inProccess) return false;
 		stopView = false;
-		initModules();
 	}
 
 	function showPlaceholder(){
@@ -38552,6 +38592,9 @@ Box.Application.addModule('recomended-broadcasts', function (context) {
 		var $placeholder = $('<div class="broadcast-placeholder"><div class="broadcast-placeholder__bp-wrap bp-wrap"><div class="broadcast-placeholder__bp-image bp-image"></div></div></div>').hide();
 		listItems.append($placeholder);
 		$placeholder.fadeIn();
+		setTimeout(function(){
+			hidePlaceholder();
+		},3000);
 	}
 
 	function dataEmpty(){
@@ -38647,14 +38690,16 @@ Box.Application.addModule('recomended-broadcasts', function (context) {
 					}else{
 						hidePlaceholder();
 					}
+					setImmediate(function(){
+						categoryID = null, categoryLink = null, block = null, offsetTop = null;
+					});
 				}
 			},2000);
+			initModules();
 		},
 		destroy: function () {
-			moduleEl = null;
-			listItems = null;
+			moduleEl = null, listItems = null, kineticService = null, iconLoaderService = null, items = null, viewMoreUrl = null, countMax = null, categoryActive = null, categoriesNoData = null, inProccess = null, stopView = null, placeholder = null, pageModule = null, auth = null;
 		}
-
 	};
 });
 
@@ -38796,8 +38841,9 @@ Box.Application.addModule('user-recorded-broadcasts', function (context) {
 
 			$(".broadcasts-categories").on("click",".item",function(){
 				var countItems = $('[data-broadcast-id]:visible').length;
-				var categoryID = $.trim($('[data-type="item"].active').text());
-				var categoryLink = $('[data-type="item"].active').data("category");
+				var categoryID = $.trim($('[data-type="item"].category-broadcasts--active').text());
+				var categoryLink = $('[data-type="item"].category-broadcasts--active').data("category");
+				// alert(countItems + " | " + categoryID + " | " + categoryLink);
 				categoryActive = categoryLink;
 				if(dataEmpty()) return false;
 				showPlaceholder();
@@ -38820,8 +38866,8 @@ Box.Application.addModule('user-recorded-broadcasts', function (context) {
 			$(window).scroll(function(e){
 				if(!stopView && !inProccess){
 					var countItems = $('[data-broadcast-id]:visible').length;
-					var categoryID = $.trim($('[data-type="item"].active').text());
-					var categoryLink = $('[data-type="item"].active').data("category");
+					var categoryID = $.trim($('[data-type="item"].category-broadcasts--active').text());
+					var categoryLink = $('[data-type="item"].category-broadcasts--active').data("category");
 					categoryActive = categoryLink;
 					if(dataEmpty()) return false;
 					countItems = countItems + countMax;

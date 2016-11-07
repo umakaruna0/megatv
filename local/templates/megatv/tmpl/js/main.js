@@ -34881,146 +34881,584 @@ return $.widget;
   };
 
 }).call(this);
-(function($){
-	'use strict';
-	var DATE_START_TITLE = "date_start";
-	var DATE_END_TITLE = "date_end";
-	var NATIVE_DATE_START_TITLE = "native_date_start";
-	var NATIVE_DATE_END_TITLE = "native_date_end";
-	var DATE_DIFF_TITLE = "date_diff";
-	var ID_TITLE = "id";
-	var CHANNEL_ID_TITLE = "channel_id";
-	var DATES_TITLE = "DATES";
-	var COLUMN_TITLE = "column";
-	var CHANNEL_ID_TITLE = "channel_id";
-	var NAME_TITLE = "name";
-	var IMGS_TITLE = "images";
-	var IMG_DOUBLE_TITLE = "double";
-	var IMG_DOUBLE_BAD_TITLE = "double_bad";
-	var IMG_HALF_TITLE = "half";
-	var IMG_HALF_BAD_TITLE = "half_bad";
-	var IMG_ONE_TITLE = "one";
-	var IMG_ONE_BAD_TITLE = "one_bad";
-	var LINK_TITLE = "link";
-	var TIME_TITLE = "time";
-	var ON_AIR_TITLE = "on_air";
-	var CHANNELS_TITLE = "CHANNELS";
-	var STATUS_TITLE = "status";
-	var AUTH_TITLE = "auth";
-	var DETAIL_PAGE_URL_TITLE = "DETAIL_PAGE_URL";
-	var ICON_TITLE = "ICON";
+!(function($){
+    'use strict';
+    var CONSTS = {
+        // MAIN CONSTS
+        DATE_START_TITLE : "date_start",
+        DATE_END_TITLE : "date_end",
+        NATIVE_DATE_START_TITLE : "native_date_start",
+        NATIVE_DATE_END_TITLE : "native_date_end",
+        DATE_DIFF_TITLE : "date_diff",
+        ID_TITLE : "id",
+        CHANNEL_ID_TITLE : "channel_id",
+        DATES_TITLE : "DATES",
+        COLUMN_TITLE : "column",
+        CHANNEL_ID_TITLE : "channel_id",
+        NAME_TITLE : "name",
+        IMGS_TITLE : "images",
+        IMG_TITLE : "image",
+        IMG_BAD_PATH : "/local/templates/megatv/ajax/img_grey.php?quality=1&grey=false&path=/home/d/daotel/dev.megatv.su/public_html",
+        LINK_TITLE : "link",
+        TIME_TITLE : "time",
+        ON_AIR_TITLE : "on_air",
+        CHANNELS_TITLE : "CHANNELS",
+        STATUS_TITLE : "status",
+        AUTH_TITLE : "auth",
+        DETAIL_PAGE_URL_TITLE : "DETAIL_PAGE_URL",
+        ICON_TITLE : "ICON",
+        WIDTH_BROADCAST : 288,
+        HEIGHT_BROADCAST : 288,
+        DOUBLE_ITEM_CLASS : "double-item",
+        BROADCASTS_ROW_CLASS : "broadcasts-row",
+        PAIR_CONTAINER_CLASS : "pair-container",
+        PAIR_CONTAINER_ID_TMPL : "pairContainerTmpl",
+        BROADCAST_ID_TMPL : "broadcastTmpl",
+        SWSLIDE_ID_TMPL : "swSlideTmpl",
+        CATEGORY_LOGO_ID_TMPL : "categoryLogoTmpl",
+        BROADCASTS_FULL_DAY : "broadcasts-full-day",
+        CHANNEL_LINK : "DETAIL_PAGE_URL",
+        CHANNEL_ICON : "ICON",
+        CHANNEL_ID : "ID",
+        CATEGORIES_LOGOS_CLASS : ".categories-logos",
+        CATEGORY_LOGO_CLASS : ".category-logo",
+        BOTTOM_PRELOADER_ID_TMPL : "bottomPreloaderTmpl",
+        BROADCAST_RESULTS_CLASS : ".broadcast-results",
+        BPL_CLASS : "bottom-preloader-ph",
+        WEEKDAYS : [
+            "Понедельник",
+            "Вторник",
+            "Среда",
+            "Четверг",
+            "Пятница",
+            "Суббота",
+            "Воскресенье"
+        ],
+        PRELOADER_CLASS : "broadcasts-loader",
+        PRELOADER_LOADED_CLASS : "broadcasts-loader--loaded",
+        PRELOADER_LOADING_CLASS : "broadcasts-loader--loading",
+        STATUS : {
+            empty : "status-",
+            recordable : "status-recordable",
+            recording : "status-recording",
+            viewed : "status-viewed",
+            recorded : "status-recorded",
+            notify : "status-notify",
+        },
 
-	// SWIPER-SLIDER
-    var slideClass = 'swiper-slide';
-    var swiperLazyClass = 'swiper-lazy';
-    var swiperLazyLoadingClass = 'swiper-lazy-loading';
-    var swiperLazyLoadedClass = 'swiper-lazy-loaded';
-    var slideActiveClass = 'swiper-slide-active';
-    var slideNextClass = 'swiper-slide-next';
-    var slidePrevClass = 'swiper-slide-prev';
+        // SWIPER-SLIDER
+        swContainer : '.swiper-container',
+        swWrapper : '.swiper-wrapper',
+        swPrevButton : '.swiper-button-prev',
+        swNextButton : '.swiper-button-next',
+        swScrollbar : '.swiper-scrollbar',
+        swSlide : '.swiper-slide',
+        swLazy : '.swiper-lazy',
+        swLazyLoading : '.swiper-lazy-loading',
+        swLazyLoaded : '.swiper-lazy-loaded',
+        swSlideActive : '.swiper-slide-active',
+        swSlideNext : '.swiper-slide-next',
+        swSlidePrev : '.swiper-slide-prev',
+        
+        PATTERN : "YYYY-MM-DD HH:mm:ss"
+    };
 
-	var PATTERN = "YYYY-MM-DD HH:mm:ss";
-	// var TIME = moment().format(PATTERN);
+    var Broadcasts = function (options) {
+        var self = this;
+        $.each(options, function(key, value){
+          self[key] = value;
+        });
+        this.swiper = null;
+        this.consts = $.extend(CONSTS, self.consts);
+    }
 
-	var Broadcasts = function (options) {
-		var self = this;
-		$.each(options, function(key, value){
-		  self[key] = value;
-		});
-		self.swiper = null;
-	}
+    Broadcasts.prototype = {
+        initialize: function(){
+        	if(this.checkErrors()) return false;
+            var self = this;
+            var CS = this.consts;
+            this.time = this.json.time;
+            var broadcasts = this.broadcasts = this.json.broadcasts;
+            var channels = this.channels = this.json.channels;
+            var wrapper = $(CS.swWrapper);
+            var logos = $(CS.CATEGORIES_LOGOS_CLASS);
 
-	Broadcasts.prototype = {
-		initialize: function(){
-			var self = this;
-			self.timeNow = self.JSONParams[TIME_TITLE.toUpperCase()];
-			self.addDayVar = false;
-			self.auth = self.JSONParams[AUTH_TITLE];
-		    self.$wrapper = $(".swiper-wrapper");
-		    var broadcasts = null;
-			var object = self.offsetToOneObj(self.JSONParams[DATES_TITLE]);
-			self.initChannels(object.channels);
-		    broadcasts = self.correctBroadcasts(object.broadcasts);
-		    var broadcastsView = self.viewBroadcasts(broadcasts);
-			self.preInit();
-			var momentNow = moment(self.timeNow);
-			var weekday = self.config.weekdays[(momentNow.toString()).replace(/(.{3}).*/, "$1")];
-			var hours = self.timeNow.replace(/.*\s([0-9]{2}\:[0-9]{2}).*/,"$1");
-			var dayMarkTmpl = _.template($("#endDayMarkTmpl").html());
-			var outputMark = dayMarkTmpl({
-				endDayTitle: weekday + " " + momentNow.format("DD.MM.YYYY")
-			});
-			broadcastsView += outputMark;
+            var html = self.renderToHTML({
+                broadcasts: broadcasts, 
+                channels: channels
+            });
 
-		    self.$wrapper.html(broadcastsView);
-		    self.$wrapper.find("." + slideClass).last().addClass(slideClass + "--end");
-    		self.swiper = self.initSwiper();
-        	self.fixedTimeline(self.$wrapper, weekday + " " + hours);
-        	if(!this.bigSlider) self.closePreloader();
-			setInterval(function(){
-				if($("." + swiperLazyClass)[0]){
-					self.loadImages();
-				}
-				sessionStorage.setItem('slide', self.getPositionUser("slide"));
-				sessionStorage.setItem('top', self.getPositionUser("top"));
-			},1000);
-		    
-		    setImmediate(function(){
-				self.postInit();
-				broadcastsView = null;
-				broadcasts = null;
-				dayMarkTmpl = null;
-				outputMark = null;
-				weekday = null;
-				hours = null;
-				momentNow = null;
-				object = null;
-		    });
-		},
+            wrapper.html(self.minify(html[0]));
+            logos.html(self.minify(html[1]));
 
-		getPositionUser: function(type){
-			var self = this;
-			switch(type){
-				case "top":
-					var scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-					return scrollTop;
-				break;
+            setImmediate(function(){
+                $(CS.swWrapper + ' > div:first-child.day-mark').remove();
+                setImmediate(function(){
+                    self.swiper = self.initSwiper();
+                    self.fixedTimeline();
+                    self.loadImages();
+                    broadcasts = null, channels = null, wrapper = null, logos = null, html = null;
+                });
+            });
 
-				case "slide":
-					if(self.swiper !== null)
-						return self.swiper.activeIndex;
-					else return 0;
-				break;
-			}
-		},
+            setInterval(function(){
+                if($(CS.swLazy)[0]){
+                    self.loadImages();
+                }
+                sessionStorage.setItem('slide', self.getPositionUser("slide"));
+                sessionStorage.setItem('top', self.getPositionUser("top"));
+                sessionStorage.setItem('channels', self.getCurrentChannels());
+                sessionStorage.setItem('dates', self.getCurrentDates());
+            },1000);
+        },
 
-		sortByTime: function(broadcasts){
-			for (var column in broadcasts) {
-				var col = broadcasts[column];
-				for (var channel in col) {
-					var chn = col[channel];
-					var sortChn = _.sortBy(chn, function(val){
-				        return val[DATE_DIFF_TITLE];
-				    }).reverse();
-				    if(sortChn.length > 4){
-				    	for (var i = 0; i < sortChn.length; i++) {
-				    		if(i > 3) {
-				    			for (var y = 0; y < chn.length; y++) {
-					    			if(sortChn[i][ID_TITLE] === chn[y][ID_TITLE]){
-					    				broadcasts[column][channel].splice(y, 1);
-					    			}
-				    			}
-				    		}
-				    	}
-				    }
-				}
-			}
-			return broadcasts;
-		},
+        checkErrors: function(){
+        	var self = this;
+        	var error = false;
+        	if(!("_" in window)){
+        		throw new Error("Not was included UnderscoreJS! To use the plugin you must connect the UnderscoreJS.");
+        		error = true;
+        	}
+        	
+        	if(!("setImmediate" in window)){
+        		throw new Error("Not was included to window the method - setImmediate!");
+        		error = true;
+        	}
+        	
+        	if(!_.isEmpty(self.json)){
+        		if(typeof this.json !== "object"){
+	        		throw new Error("Not valid JSON!");
+	        		error = true;
+        		}
+        	}
 
-		loadImages: function(){
-			var self = this;
-			var img = $("." + slidePrevClass + " ." + swiperLazyClass + ",." + slideActiveClass + " ." + swiperLazyClass + ",." + slideNextClass + " ." + swiperLazyClass + ", ."+ slideNextClass + " + ." + slideClass + "--end ." + swiperLazyClass );
+        	return error;
+        },
+
+        addChannels: function(object){
+            var self = this;
+            var CS = this.consts;
+            var broadcasts = object.broadcasts;
+            var channels = object.channels;
+            var logos = $(CS.CATEGORIES_LOGOS_CLASS);
+
+            var html = self.renderToHTML({
+                broadcasts: broadcasts, 
+                channels: channels
+            });
+
+            if($("." + CS.BPL_CLASS).length <= 0) logos.append(html[1]);
+            else $("." + CS.BPL_CLASS).before(html[1]);
+
+            var wrapper = $("<div />").html(html[0]);
+            wrapper.find("." + CS.BROADCASTS_ROW_CLASS).each(function(){
+                var $bfd = $(this).parent();
+                var $bfdChild = $(this);
+                var tempDIV = $('<div>').append($bfdChild.clone());
+                $('[data-br-day="' + $bfd.data("br-day") + '"]').append(tempDIV.html());
+                setImmediate(function(){
+                    tempDIV = null, $bfdChild = null, $bfd = null;
+                });
+            });
+
+            setImmediate(function(){
+                self = null, CS = null, broadcasts = null, wrapper = null, channels = null, html = null, logos = null;
+            });
+        },
+
+        minify: function(buffer) {
+            return (buffer.replace(/\n{1,}/gi,"")).replace(/([>])(\s){1,}([<])/gi, "><");
+        },
+
+        addDay: function(object){
+            if(_.isEmpty(this.json)) {
+                this.json = object;
+                this.initialize();
+                return;
+            }
+            var self = this;
+            var CS = this.consts;
+            var broadcasts = object.broadcasts;
+            var channels = object.channels;
+            var logos = $(CS.CATEGORIES_LOGOS_CLASS);
+
+            var html = self.renderToHTML({
+                broadcasts: broadcasts, 
+                channels: channels
+            });
+
+            var wrapper = $("<div />").html(self.minify(html[0]));
+            wrapper.children().each(function(){
+                var $bfd = $(this);
+                self.addSlides(self.minify($("<div />").html($bfd.clone()).html()));
+                setImmediate(function(){
+                    $bfd = null;
+                });
+            });
+
+            setImmediate(function(){
+                self = null, CS = null, broadcasts = null, wrapper = null, channels = null, html = null, logos = null;
+            });
+        },
+
+        renderToHTML: function(object){
+            var broadcasts = object.broadcasts;
+            var channels = object.channels;
+            var self = this;
+            var CS = this.consts;
+            var wrapper = $("<div />");
+            var logos = $("<div />");
+            var date = "", channelBroadcasts = null, channel = null, ch = null, item = null, $item = null, $channel = null;
+                                                                                                                               
+            broadcasts = self.renderBroadcasts(broadcasts);
+            for (date in broadcasts) {
+                item = broadcasts[date];
+                if(wrapper.find('[data-br-day="' + date + '"]').length <= 0){
+                    wrapper.append(self.tmpl("#" + CS.SWSLIDE_ID_TMPL, {
+                        current: item.current,
+                        day: date
+                    }));
+                }
+                $item = wrapper.find('[data-br-day="' + date + '"]');
+                for(ch in item.broadcasts){ 
+                    channel = channels[ch];
+                    if($item.find('[data-br-channel="' + ch + '"]').length <= 0){
+                        $item.append('<div class="' + CS.BROADCASTS_ROW_CLASS + '" data-br-channel="' + ch + '"></div>');
+                    }else break;
+
+                    if(logos.find('[data-channel-id="' + ch + '"]').length <= 0){
+                        logos.append(this.tmpl("#" + CS.CATEGORY_LOGO_ID_TMPL, {
+                            id : channel[CS.CHANNEL_ID],
+                            link : channel[CS.CHANNEL_LINK],
+                            icon : channel[CS.CHANNEL_ICON]
+                        }));  
+                    }
+
+                    $channel = $item.find('[data-br-channel="' + ch + '"]');
+                    channelBroadcasts = item.broadcasts[ch];   
+                    $channel.append(channelBroadcasts);
+                }
+            }
+
+            self.enterWidth(wrapper.find("." + CS.BROADCASTS_FULL_DAY));
+
+            var returnArr = [
+                wrapper.html(),
+                logos.html()
+            ];
+
+            setImmediate(function(){
+                self = null, CS = null, wrapper = null, logos = null, date = null, channelBroadcasts = null, channel = null, ch = null, item = null, $item = null, $channel = null, broadcasts = null, channels = null, returnArr;
+            });
+
+            return returnArr;
+        },
+
+        enterWidth: function($broadcasts){
+            var self = this;
+            var CS = self.consts;
+            var width = 0;
+            $broadcasts.each(function(){
+                var wRow = 0;
+                $(this).find("." + CS.BROADCASTS_ROW_CLASS).each(function(){
+                    var wBrs = 0;
+                    $(this).children().each(function(){
+                        wBrs += $(this).width();
+                    });
+                    $(this).width(wBrs);
+                    if(wRow < wBrs) wRow = wBrs;
+                });
+                $(this).width(wRow);
+                if(width < wRow) width = wRow;
+            });
+            return $broadcasts;
+        },
+            
+        tmpl: function(selector, obj){
+            var returnTmpl = _.template($(selector).html());
+            return returnTmpl(obj);
+        },
+
+        renderBroadcasts: function(broadcasts){
+            var self = this;
+            var CS = self.consts;
+
+            function getOutput(obj){
+                var origin = self.origin;
+                return {
+                    id : obj[CS.ID_TITLE],
+                    title : obj[CS.NAME_TITLE],
+                    link : obj[CS.LINK_TITLE],
+                    status : obj[CS.STATUS_TITLE],
+                    time : obj[CS.DATE_START_TITLE].replace(/.*\s([0-9]{2}\:[0-9]{2}).*/,"$1"),
+                    onAir : obj[CS.ON_AIR_TITLE],
+                    auth : self.auth,
+                    noAir : (!obj[CS.ON_AIR_TITLE]) ? true : false,
+                    channel_id : obj[CS.CHANNEL_ID_TITLE],
+                    image : origin + obj[CS.IMG_TITLE],
+                    blurImage : origin + CS.IMG_BAD_PATH + obj[CS.IMG_TITLE]
+                }
+            }
+
+            var channel = {}, item = {}, key = "", ch = 0, tp = {}, bs = 0, broadcastTmpl = "", $pairContainer = "", broadcastsTmpl = "", output = {}, $broadcast = null, $categoryRow = null, categoriesRows = {}, broadcastsReturn = {}, broadcastsRow = null;
+
+            for(key in broadcasts){
+                item = broadcasts[key];
+                for (ch in item.channels) {
+                    channel = item.channels[ch];
+                    $categoryRow = $("<div class='" + CS.BROADCASTS_ROW_CLASS + "'></div>");
+                    for (var y = 0; y < channel.length; y++) {
+                        broadcastsRow = channel[y];
+                        for (tp in broadcastsRow) {
+                            bs = broadcastsRow[tp];
+                            output = getOutput(bs[0]);
+                            broadcastTmpl = self.tmpl("#" + CS.BROADCAST_ID_TMPL, output);
+                            $broadcast = $(broadcastTmpl);
+
+                            switch(tp){
+                                case "one":
+                                    $broadcast.css({
+                                        width: (CS.WIDTH_BROADCAST)
+                                    });
+                                break;
+
+                                case "double":
+                                    $broadcast.css({
+                                        width: (2 * CS.WIDTH_BROADCAST)
+                                    }).addClass(CS.DOUBLE_ITEM_CLASS);
+                                break;
+
+                                case "half":
+                                    broadcastsTmpl = "";
+                                    for (var i = 0; i < bs.length; i++) {
+                                        output = getOutput(bs[i]);
+                                        broadcastsTmpl += self.tmpl("#" + CS.BROADCAST_ID_TMPL, output);
+                                    }
+                                    $broadcast = $("<div style='width: " + (CS.WIDTH_BROADCAST) + "px' class='" + CS.PAIR_CONTAINER_CLASS + "'></div>");
+                                    $broadcast.html(broadcastsTmpl);
+                                break;
+
+                                default:
+                                    var num = parseInt(tp);
+                                    if(num <= 0) return false;
+                                    $broadcast.css({
+                                        width: (num * CS.WIDTH_BROADCAST)
+                                    });
+                                break;
+                            }
+                            $broadcast = self.addStatus($broadcast, output[CS.STATUS_TITLE]);
+                            $categoryRow.append($broadcast);
+                        }
+                    }
+                    categoriesRows[ch] = $categoryRow.html();
+                }
+                broadcastsReturn[key] = {};
+                broadcastsReturn[key].broadcasts = categoriesRows;
+                if("currentDay" in item) broadcastsReturn[key].current = item.currentDay;
+            }
+            
+            setImmediate(function(){
+                self = null, CS = null, channel = null, item = null, key = null, ch = null, tp = null, bs = null, broadcastTmpl = null, $pairContainer = null, broadcastsTmpl = null, output = null, $broadcast = null, $categoryRow = null, categoriesRows = null, broadcastsReturn = null, broadcastsRow = null;
+            });
+
+            return broadcastsReturn;
+        },
+
+        initSwiper: function (){
+            var CS = this.consts;
+            var swiper = new Swiper(CS.swContainer, {
+                scrollbar: CS.swScrollbar,
+                slidesPerView: "auto",
+                scrollbarHide: true,
+                keyboardControl: false,
+                nextButton: CS.swNextButton,
+                prevButton: CS.swPrevButton,
+                spaceBetween: 0,
+                hashnav: true,
+                preloadImages: false,
+                lazyLoading: true,
+                lazyLoadingOnTransitionStart: true,
+                grabCursor: false,
+                freeMode: true,
+                freeModeMomentum: false,
+                freeModeMomentumBounce: false
+            }); 
+            
+            setImmediate(function(){
+                CS = null, swiper = null;
+            });
+
+            return swiper;
+        },
+
+        destroySwiper: function(){
+            this.swiper.destroy();
+            this.swiper = null;
+            this.json = null;
+        },
+
+        getCurrentChannels: function(){
+            var self = this;
+            var CS = this.consts;
+            var returnChannels = [];
+
+            var logos = $(CS.CATEGORIES_LOGOS_CLASS + " " + CS.CATEGORY_LOGO_CLASS);
+            logos.each(function(){
+                var channel = $(this).data("channel-id");
+                returnChannels.push(channel);
+            });
+
+            setImmediate(function(){
+                self = null, CS = null, logos = null, returnChannels = null;
+            });
+
+            return returnChannels;
+        },
+
+        getCurrentDates: function(){
+            var self = this;
+            var CS = this.consts;
+            var returnDates = [];
+
+            var days = $("." + CS.BROADCASTS_FULL_DAY);
+            days.each(function(){
+                var date = $(this).data("br-day");
+                returnDates.push(date);
+            });
+
+            setImmediate(function(){
+                self = null, CS = null, days = null, returnDates = null;
+            });
+
+            return returnDates;
+        },
+        
+        addSlides: function (slidesHTML, method){
+            var self = this;
+            if(!method) method = "append";
+            var $div = $("<div />").html(slidesHTML);
+            var slides = [];
+            $div.children().each(function(){
+                var $this = $(this);
+                slides.push($this);
+            });
+            switch(method){
+                case "append":
+                    self.swiper.appendSlide(slides);
+                break;
+
+                case "prepend":
+                    self.swiper.prependSlide(slides);
+                break;
+            }
+            setImmediate(function(){
+                slides = null;
+                $div.empty().remove();
+                $div = null;
+            });
+        },
+
+        dateWithZero: function(date){
+            return (date < 10) ? "0" + date : date;
+        },
+
+        getDateForTL: function(){
+            var weekdays = this.consts.WEEKDAYS;
+            var date = new Date();
+            return weekdays[date.getDay()-1] + " " + this.dateWithZero(date.getHours()) + ":" + this.dateWithZero(date.getMinutes());
+        },
+
+        fixedTimeline: function (){
+            var self = this;
+            var broadcasts = this.broadcasts;
+            var currentDate = self.getDateForTL();
+            var CS = this.consts;
+            var $wrapper = $(CS.swWrapper);
+            var $timeline = $(self.tmpl("#timelineTmpl", {
+                today: currentDate
+            }));
+            var $line = $timeline.find(".timeline__line");
+            var $title = $timeline.find(".timeline__title");
+            var $columns = $wrapper.find(".broadcast");
+            var left = 0, onAir = 0, slide;
+            for(var i = 0; i < $columns.length; i++){
+                var $this = $($columns[i]);
+                left += parseInt($this.width());
+                if($this.find(".badge").length > 0){
+                    onAir = i;
+                    break;
+                }
+            };
+            var sessionSlide = sessionStorage.getItem('slide');
+            if (sessionSlide) {
+                slide = sessionSlide;
+                $("html,body").animate({ 
+                    scrollTop: sessionStorage.getItem('top') 
+                }, 1000);
+            } else slide = onAir;
+            self.swiper.slideTo(slide, 1000);
+            $line.css("left", (left - 146));
+            $title.css("left", (left - 238));
+            $wrapper.prepend($timeline);
+            setImmediate(function(){
+                $wrapper = null, $title = null, $line = null, $columns = null, self = null, left = null, $this = null, $timeline = null;
+            });
+        },
+        
+        addStatus: function(selector, type, beforeAir){
+            var self = this;
+            var auth = this.auth;
+            var CS = this.consts;
+            var div = selector;
+            var tmpl;
+            var statusHTML;
+            if(auth){
+                switch(type){
+                    case CS.STATUS.empty:
+                    case CS.STATUS.recordable:
+                        div.addClass(CS.STATUS.recordable);
+                        tmpl = self.tmpl("#" + CS.STATUS.recordable + "Tmpl");
+                    break;
+
+                    case CS.STATUS.recording:
+                        div.addClass(CS.STATUS.recording);
+                        tmpl = self.tmpl("#" + CS.STATUS.recording + "Tmpl");
+                    break;
+                    
+                    case CS.STATUS.viewed:
+                        div.addClass(CS.STATUS.viewed);
+                        tmpl = self.tmpl("#" + CS.STATUS.viewed + "Tmpl");
+                    break;
+                    
+                    case CS.STATUS.recorded:
+                        div.addClass(CS.STATUS.recorded);
+                        tmpl = self.tmpl("#" + CS.STATUS.recorded + "Tmpl");
+                    break;
+                    
+                    case CS.STATUS.notify:
+                        div.addClass(CS.STATUS.notify);
+                        tmpl = self.tmpl("#" + CS.STATUS.notify + "Tmpl");
+                    break;
+                }
+            }else{
+                tmpl = self.tmpl("#nonAuthTmpl");
+            }
+            if(tmpl !== ""){
+                div.find(".broadcast__wrap-status").html(tmpl);
+            }
+            setImmediate(function(){
+                self = null, auth = null, CS = null, div = null, tmpl = null, statusHTML = null;
+            });
+            return div;
+        },
+
+        loadImages: function(){
+            function clearClass(input){
+                return input.replace(/^\./,"");
+            };
+            var self = this;
+            var CS = this.consts;
+            var img = $(CS.swSlidePrev + " " + CS.swLazy + "," + CS.swSlideActive + " " + CS.swLazy + "," + CS.swSlideNext + " " + CS.swLazy + ", "+ CS.swSlideNext + " + " + CS.swSlide + "--end " + CS.swLazy);
             if (img.length === 0) return;
             var _img, src, siblings;
     
@@ -35028,10 +35466,10 @@ return $.widget;
                 _img = $(this);
                 src = _img.data("src");
                 siblings = _img.siblings("img");
-                _img.addClass(swiperLazyLoadingClass);
+                _img.addClass(clearClass(CS.swLazyLoading));
                 function imgLoaded(_img, src, siblings){
-                	var clientHeight = document.documentElement.clientHeight;
-                    var s_top = self.getPositionUser("top") + clientHeight;
+                    var clientHeight = document.documentElement.clientHeight;
+                    var s_top = self.getPositionUser("top") + (clientHeight - 300);
                     var yes = _img.offset().top;
                     if(s_top > yes && (s_top - clientHeight) < yes){
                         if (src) {
@@ -35043,14 +35481,13 @@ return $.widget;
                                 var $img = $(new window.Image());
                                 $img.attr("src",load).hide();
                             }else{
-                                $img = null;
                                 $img = _img.siblings("img");
                             }
                             $img.on("load",function(){
                                 load = _img[0].dataset.load;
-                                _img.attr("src", load).addClass("fullLoaded").removeClass(swiperLazyClass);
+                                _img.attr("src", load).addClass("fullLoaded").removeClass(clearClass(CS.swLazy));
                                 siblings.remove();
-                                setTimeout(function(){
+                                setImmediate(function(){
                                     load = null;
                                     src = null;
                                     if(0 in siblings){
@@ -35061,738 +35498,137 @@ return $.widget;
                                         $img.remove();
                                         $img = null;
                                     }
-                                }, 500);
+                                });
                             });  
                         }
-                        _img.addClass(swiperLazyLoadedClass).removeClass(swiperLazyLoadingClass);
+                        _img.addClass(clearClass(CS.swLazyLoaded)).removeClass(clearClass(CS.swLazyLoading));
                     }
                 }
-               	imgLoaded(_img, src, siblings);
+                imgLoaded(_img, src, siblings);
             });
-           	setImmediate(function(){
-	            img = null;
-           		_img = null;
-           		src = null;
-           		siblings = null;
-	        });
-		},
+            setImmediate(function(){
+                img = null;
+                _img = null;
+                src = null;
+                siblings = null;
+            });
+        },
 
-		initChannels: function(objChannels){
-			var self = this;
-		    self.channels = self.JSONParams[CHANNELS_TITLE];
-		    self.channelsNum = objChannels;
-		    var channelsView = self.viewChannels();
-		    $(".channels__wrapper").html(channelsView);
-		    setTimeout(function(){
-		    	channelsView = null;
-		    },500);
-		},
+        getPositionUser: function(type){
+            var self = this;
+            switch(type){
+                case "top":
+                    var scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+                    return scrollTop;
+                break;
 
-		convertDate: function (date, noTime){
-		    if(!noTime) noTime = "$4";
-			date = date.replace(/([0-9]{2})\.([0-9]{2})\.([0-9]{4})\s(.*)/,"$3-$2-$1 " + noTime);
-			return date;
-		},
+                case "slide":
+                    if(self.swiper !== null)
+                        return self.swiper.activeIndex;
+                    else return 0;
+                break;
+            }
+        },
 
-		isEmpty: function (v){
-		    return _.isNull(v) || _.isUndefined(v) || _.isNaN(v) || v === false; 
-		},
+        openBottomPreloader: function(){
+            var self = this;
+            var CS = self.consts;
+            var placeholder = $('<div class="category-logo bottom-preloader-ph"></div>');
+            var preloader = $(self.tmpl("#" + CS.BOTTOM_PRELOADER_ID_TMPL));
+            var logos = $(CS.CATEGORIES_LOGOS_CLASS);
 
-		getDiffFromDateStartEnd: function (start, end){
-		    if(start > end) return "-00:00:00";
-		    var dateStart = moment(start);
-		    var dateEnd = moment(end);
-		    return dateEnd.subtract({
-		        "year" : dateStart.year(), 
-		        "months" : dateStart.month() + 1, 
-		        "days" : dateStart.days(), 
-		        "hours" : dateStart.hours(), 
-		        "minutes" : dateStart.minutes(),
-		        "seconds" : dateStart.seconds()
-		    }).format("HH:mm:ss");
-		},
+            logos.append(placeholder);
+            $(CS.BROADCAST_RESULTS_CLASS).prepend(preloader);
+            setImmediate(function(){
+                preloader.fadeIn();
+            });
 
-		offsetToOneObj: function (currArray){
-			var self = this;
-		    var object = {
-		        broadcasts: [],
-		        channels: []
-		    };
-		    for(var key in currArray){
-		        var val = currArray[key];
-		        for(var k in val){
-		            var v = val[k];
-		            object.channels.push(k);
-		            for (var i = 0; i < v.length; i++) {
-		                var start = currArray[key][k][i][DATE_START_TITLE] = self.convertDate(v[i][DATE_START_TITLE]);
-		                var end = currArray[key][k][i][DATE_END_TITLE] = self.convertDate(v[i][DATE_END_TITLE]);
-		                var startNextDay = self.createMoment(0).add(1, "days").startOf("days").format(PATTERN);
-		                if(start > end || end >= startNextDay) {
-		                    end = currArray[key][k][i][DATE_END_TITLE] = self.createMoment(0).endOf("days").format(PATTERN);
-		                }
-		                var diff = self.getDiffFromDateStartEnd(start, end);
-		                currArray[key][k][i][DATE_DIFF_TITLE] = diff;
-		                object.broadcasts.push(currArray[key][k][i]);
-		            }
-		        };
-		    };
-		    return object;
-		},
+            this.el.on("closeBottomPreloader", function(){
+                preloader.fadeOut(function(){
+                    $(this).remove();
+                    placeholder.remove();
+                });
+            });
+            setImmediate(function(){
+                self = null, placeholder = null, CS = null, logos = null, preloader = null;
+            });
+        },
 
-		collectObject: function (broadcasts){
-		    var array = {};
-		    function recursion(obj){
-		        var curr = obj.current;
-		        var elDateStart = curr[DATE_START_TITLE];
-		        var elDateEnd = curr[DATE_END_TITLE];
-		        if(broadcasts.length > 0){
-		            for(var i = 0; i < broadcasts.length; i++){
-		                var dateStart = broadcasts[i][DATE_START_TITLE];
-		                var dateEnd = broadcasts[i][DATE_END_TITLE];
-		                var dateDiff = broadcasts[i][DATE_DIFF_TITLE];
-		                if(dateDiff > "00:10:00"){
-		                    if((elDateStart <= dateStart && elDateEnd >= dateEnd) && broadcasts[i][ID_TITLE] != curr[ID_TITLE]){
-		                        var broadcast = broadcasts[i];
-		                        broadcasts.splice(i, 1);
-		                        if(_.isUndefined(obj.children[broadcast[ID_TITLE]]))
-		                            obj.children[broadcast[ID_TITLE]] = {
-		                                current: broadcast,
-		                                children: []
-		                            };
-		                        recursion(obj.children[broadcast[ID_TITLE]]);
-		                    }
-		                }
-		            }
-		        }
-		    }
-		    for(var i = 0; i < broadcasts.length; i++){
-		        var broadcast = broadcasts[i];
-		        broadcasts.splice(i, 1);
-		        array[broadcast[ID_TITLE]] = {
-		            current: broadcast,
-		            children: []
-		        };
-		        recursion(array[broadcast[ID_TITLE]]);
-		    };
-		    return array;
-		},
+        prevButton: function(){
+            this.swiper.setWrapperTransition(500);
+            var self = this;
+            var CS = self.consts;
+            var offset = this.offset;
+            var translate = Math.round(self.swiper.translate);
+            offset = translate + offset;
+            if(offset > 0) offset = 0;
+            this.swiper.setWrapperTranslate(offset);
+        },
 
-		mathTimes: function (dates, symb, pattern){
-		    if(!pattern) pattern = "HH:mm:ss";
-		    var date1 = moment(dates[0]);
-		    var date2 = dates[1];
+        nextButton: function(){
+            this.swiper.setWrapperTransition(500);
+            var self = this;
+            var CS = self.consts;
+            var offset = this.offset;
+            var translate = Math.round(self.swiper.translate);
+            offset = translate - offset;
+            if(offset < swiper.maxTranslate()) offset = swiper.maxTranslate();
+            this.swiper.setWrapperTranslate(offset);
+        },
 
-		    if(symb) return date1.add(date2).format(pattern);
-		    else return date1.subtract(date2).format(pattern);
-		},
+        arrowsChannels: function(type, method){
+            var arrow = $("." + type + "-channels");
+            if(method == true)
+                arrow.removeClass("hidden-btn");
+            else arrow.addClass("hidden-btn");
+        },
 
-		roundTime: function (date, direction, type){
-		    var hours, momentDate;
-		    date = moment(date);
-		    type = (!type) ? [] : type;
-		    if(type.length === 0) {
-		        type[0] = "format";
-		        type[1] = PATTERN;
-		    }
-		    if(direction){
-		        momentDate = (date.endOf("hours")).add(1, "seconds");
-		        hours = momentDate.hours();
-		        if(hours % 2 !== 0) momentDate = momentDate.add(1, "hours");
-		        if(type[0] === "hours") return momentDate.hours();
-		        else if(type[0] === "format") return momentDate.format(type[1]); 
-		        else return momentDate;
-		    }else{
-		        momentDate = date.startOf("hours");
-		        hours = momentDate.hours();
-		        if(hours % 2 !== 0) momentDate = momentDate.subtract(1, "hours");
-		        if(type[0] === "hours") return momentDate.hours();
-		        else if(type[0] === "format") return momentDate.format(type[1]); 
-		        else return momentDate;
-		    }
-		},
+        openPreloader: function(){
+            var CS = this.consts;
+            var $loader = $("." + CS.PRELOADER_CLASS);
+            $loader.removeClass(CS.PRELOADER_LOADED_CLASS).addClass(CS.PRELOADER_LOADING_CLASS);
+            setImmediate(function(){
+                CS = null, $loader = null;
+            });
+        },
 
-	    createMoment: function(num){
-			var time = this.timeNow;
-	        return moment(time).minutes(0).seconds(0).hours(num);
-	    },
+        closePreloader: function(){
+            var CS = this.consts;
+            var $loader = $("." + CS.PRELOADER_CLASS);
+            $loader.removeClass(CS.PRELOADER_LOADING_CLASS).addClass(CS.PRELOADER_LOADED_CLASS);
+            setImmediate(function(){
+                CS = null, $loader = null;
+            });
+        }
+    };
 
-	    format: function(momentObj, pattern){
-	        if(!pattern) pattern = PATTERN;
-	        return momentObj.format(pattern);
-	    },
-
-		parseBroadcastByTime: function (b_cast){
-			var self = this;
-		    
-		    function collectArray(item, numStart){
-		        var array = [];
-		        var startTime, endTime, bigArray = false, column = 0, diffFull, diff, offset, limit;
-		        var startPart = self.format(self.createMoment(0));
-		        item = _.clone(item);
-		        var start = startTime = item[DATE_START_TITLE];
-		        var end = endTime = item[DATE_END_TITLE];
-		        if(startPart > start)
-		            start = startPart;
-		        diffFull = self.getDiffFromDateStartEnd(start, end);
-		        if(diffFull < "00:15:00") return [];
-		        offset = self.roundTime(moment(start), false, ["hours"]);
-		        limit = self.roundTime(moment(end), true, ["hours"]);
-		        if(limit === 0) limit = 24;
-		        var early30m, early15m, later30m, later15m, early, later, current, broadcast, push = false, stop = false, diffNext;
-		        for (var i = offset; i < limit; i++) {
-		            current = self.format(self.createMoment(i));
-		            early = self.format(self.createMoment(i).subtract(1, "hours"));
-		            later = self.format(self.createMoment(i).add(1, "hours"));
-		            early30m = self.mathTimes([early, { minutes: 30 }], false, PATTERN);
-		            later30m = self.mathTimes([later, { minutes: 30 }], true, PATTERN);
-		            broadcast = _.clone(item);
-		            broadcast[COLUMN_TITLE] = i;
-		            if(i % 2){
-		                diff = self.getDiffFromDateStartEnd(start, later);
-		                diffNext = self.getDiffFromDateStartEnd(later, end);
-		                push = false; stop = false;
-		                if(diffFull >= "00:45:00"){
-		                    startTime = ((startTime >= early30m && startTime < early) ? startTime : early) < start ? start : early;
-		                    startTime = (start > early30m && start < early) ? start : startTime;
-		                    endTime = ((endTime <= later30m && endTime > later) ? endTime : later) > end ? end : later;
-		                    endTime = (end <= later30m && end >= later) ? end : endTime;
-		                    diff = self.getDiffFromDateStartEnd(startTime, endTime);
-		                    if(diff > "00:20:00"){
-		                        push = true;
-		                    }
-		                }else{
-		                    startTime = start;
-		                    endTime = end;
-		                    if(start <= later && later <= end && end <= later30m){
-		                        if(diff < diffNext){
-		                            broadcast[COLUMN_TITLE] = i + 2;
-		                        }
-		                    }
-		                    if(self.getDiffFromDateStartEnd(startTime, endTime) > "00:15:00") 
-		                    	stop = push = true;
-		                }
-
-		                diff = self.getDiffFromDateStartEnd(startTime, endTime);
-		                broadcast[DATE_START_TITLE] = startTime;
-		                broadcast[DATE_END_TITLE] = endTime;
-
-		                if(startTime <= self.timeNow && endTime >= self.timeNow && !self.addDayVar) {
-		                    broadcast[ON_AIR_TITLE] = true;
-		            		broadcast[COLUMN_TITLE] = "now";
-		                }
-		                broadcast[DATE_DIFF_TITLE] = diff;
-
-		                column++;
-		            }else{
-		                if(start <= self.timeNow && end >= self.timeNow && !self.addDayVar) {
-		                    broadcast[ON_AIR_TITLE] = true;
-		            		broadcast[COLUMN_TITLE] = "now";
-		                }
-		                continue;
-		            }
-		            if(push && diff > "00:00:00") array.push(broadcast);
-		            if(stop) break;
-		        }
-		        return array;
-		    }
-		    var collect = collectArray(b_cast);
-		    // if(b_cast[ID_TITLE] == "169135") console.log(collect);
-		    return collect;
-		},
-
-		getColumnByTime: function(){
-			var time = this.timeNow;
-			var hour = moment(time).format("HH");
-			return parseInt(hour);
-		},
-
-		pushToColumns: function (broadcasts){
-			var self = this;
-			var channels = self.channelsNum;
-		    var array = {};
-		    var column;
-		    function sortColumns(array, col, channels, broadcasts) {
-	    		var channel, channel_id, b_col, b_channel, date_start, date_end, returnArr;
-	    		returnArr = [];
-		    	 for (channel = 0; channel < channels.length; channel++) {
-	                channel_id = channels[channel];
-	                returnArr[channel_id] = [];
-	                for (var b = 0; b < broadcasts.length; b++) {
-	                    b_col = broadcasts[b][COLUMN_TITLE];
-	                    b_channel = broadcasts[b][CHANNEL_ID_TITLE];
-	                    date_start = broadcasts[b][DATE_START_TITLE];
-	                    date_end = broadcasts[b][DATE_END_TITLE];
-                    	if(b_col === col && b_channel === channel_id){
-                    		if(col === "now" && returnArr[channel_id].length > 0) break;
-	                    	returnArr[channel_id].push(broadcasts[b]);
-	                    }
-	                }
-	            }
-	            return returnArr;
-		    }
-
-			var colTime = this.getColumnByTime();
-		    for (column = 0; column < 24; column++) {
-		        if(column % 2){
-		            array[column] = sortColumns(array, column, channels, broadcasts);
-		        }
-		        if(colTime == column && !self.addDayVar){
-		        	array[column] = sortColumns(array, "now", channels, broadcasts);
-		        } 
-		        	
-		    }
-		    return self.fillBlankChanns(array);
-		},
-
-		partitionArray: function(array){
-			var returnArr = [ [], [] ];
-			if(array.length == 1) returnArr[0] = array;
-			else{
-				var lengthHalf = Math.floor(array.length / 2);
-				for (var i = 0; i < array.length; i++) {
-					if(i < lengthHalf){
-						returnArr[0].push(_.clone(array[i]));
-						array.splice(i,1);
-					}else{
-						returnArr[1].push(_.clone(array[i]));
-					}
-				}
-			}
-			return returnArr;
-		},
-
-		// Fill in the blank channels
-
-		fillBlankChanns: function(array){
-			var returnArr = [], channels = [], broadcasts = [], self = this;
-			
-			function compress(array, column, channel){
-				var chans = [], bss = [], arrayOne = [], arrays = [];
-				outer: for (var col in array) {
-					if(!(col in array)) continue; 
-					chans = array[col];
-					for (var chan in chans){
-						bss = chans[chan];
-						if(bss.length > 0 && chan == channel && parseInt(col) > parseInt(column)){
-							arrays = self.partitionArray(bss);
-							arrayOne = arrays[0];
-							break outer;
-						}
-					}
-				}
-				return arrayOne;
-			}
-
-			for (var column in array) {
-				channels = array[column];
-				for (var channel in channels) {
-					broadcasts = channels[channel];
-					if(broadcasts.length > 0) continue;
-					var arrChannel = [];
-					arrChannel = compress(array, column, channel);
-					if(arrChannel.length !== 0)
-						array[column][channel] = arrChannel;
-				}
-			}
-		    return this.deleteDublBroadcs(array);
-		},
-
-		// Delete dublicate broadcasts
-
-		deleteDublBroadcs: function(array){
-			var returnArr = [], channels = [], broadcasts = [], self = this;
-			
-			function compress(array, channel, column, id){
-				var channelsCp = [], broadcastsCp = [];
-				for(var colCp in array){
-					if(colCp > column){
-						channelsCp = array[colCp];
-						for(var channCp in channelsCp){
-							broadcastsCp = channelsCp[channCp];
-							if(channCp == channel){
-								for(var bsCp in broadcastsCp){
-									var idCp = broadcastsCp[bsCp][ID_TITLE];
-									if(idCp == id && broadcastsCp.length > 1){
-										broadcastsCp.splice(bsCp, 1);
-									}
-								}
-							}
-						}
-					}
-				}
-			}
-
-			for (var column in array) {
-				channels = array[column];
-				for (var channel in channels) {
-					broadcasts = channels[channel];
-					for(var broadcast in broadcasts){
-						var id = broadcasts[broadcast][ID_TITLE];
-						compress(array, channel, column, id);
-					}
-				}
-			}
-		    return this.sortByTime(array);
-		},
-		
-		addStatus: function(html, type, beforeAir){
-			var auth = this.auth;
-			var div = $("<div />");
-			div.html(html);
-			var tmpl;
-			var statusHTML;
-			if(auth){
-				switch(type){
-					case "status-":
-					case "status-recordable":
-						div.find(".broadcast").addClass("status-recordable");
-						tmpl = _.template($("#status-recordableTmpl").html());
-					break;
-
-					case "status-recording":
-						div.find(".broadcast").addClass("status-recording");
-						tmpl = _.template($("#status-recordingTmpl").html());
-					break;
-					
-					case "status-viewed":
-						div.find(".broadcast").addClass("status-viewed");
-						tmpl = _.template($("#status-viewedTmpl").html());
-					break;
-					
-					case "status-recorded":
-						div.find(".broadcast").addClass("status-recorded");
-						tmpl = _.template($("#status-recordedTmpl").html());
-					break;
-					
-					case "status-notify":
-						div.find(".broadcast").addClass("status-notify");
-						tmpl = _.template($("#status-notifyTmpl").html());
-					break;
-				}
-			}else{
-				tmpl = _.template($("#nonAuthTmpl").html());
-			}
-			if(tmpl) statusHTML = tmpl();
-			if(statusHTML !== "")
-				div.find(".broadcast__wrap-status").html(statusHTML);
-			return div.html();
-		},
-
-		viewBroadcasts: function (broadcasts){
-			var self = this;
-			var addDayVar = this.addDayVar;
-		    var i = 0;
-			var colTime = this.getColumnByTime();
-		    var divSetInit = '<div class="bs-container__set bs-set" />';
-		    var divColumnInit = '<div class="bs-container__column swiper-slide" />';
-		    var divWrapInit = '<div />';
-		    var doubleXClass = 'bs-container__set--double-x';
-		    var doubleYClass = 'bs-container__set--double-y';
-		    var doubleClass = 'bs-container__column--double';
-		    var origin = self.origin;
-		    var channel, channelVal, countB, divSetMain, divSetInner, divSetInner2, divColumn, col, broadcast, divSet, tmpl, isSetInner, output, colVal, finalObj;
-		    var divWrapper = $(divWrapInit);
-		    for (col in broadcasts) {
-		    	col = parseInt(col); 
-		        colVal = broadcasts[col];
-		        divColumn = $(divColumnInit);
-		        if(col !== colTime || (col === colTime && addDayVar)) divColumn.addClass(doubleClass);
-		        for (channel in colVal) {
-		            channelVal = colVal[channel];
-		            countB = channelVal.length;
-		            divSetMain = $(divSetInit);
-		            divSetInner = $(divSetInit);
-		            divSetInner2 = $(divSetInit);
-		            divSetMain.addClass(doubleXClass);
-		            for (var b in channelVal) {
-		                broadcast = channelVal[b];
-		                tmpl = _.template($("#broadcastTmpl").html());
-		                output = {
-		                    id : broadcast[ID_TITLE],
-		                    title : broadcast[NAME_TITLE],
-		                    link : broadcast[LINK_TITLE],
-		                    time : broadcast[DATE_START_TITLE].replace(/.*\s([0-9]{2}\:[0-9]{2}).*/,"$1"),
-		                    onAir : broadcast[ON_AIR_TITLE],
-		                    auth : self.auth,
-		                    noAir : (self.timeNow > broadcast[DATE_END_TITLE] && !addDayVar) ? true : false,
-		                    channel_id : broadcast[CHANNEL_ID_TITLE],
-		                    image : origin + broadcast[IMGS_TITLE][IMG_HALF_TITLE],
-		                    blurImage : origin + broadcast[IMGS_TITLE][IMG_HALF_BAD_TITLE]
-		                };
-		                if(countB === 1){
-		                    output.image = origin + broadcast[IMGS_TITLE][IMG_DOUBLE_TITLE];
-		                    if(col === colTime && !addDayVar) output.image = origin + broadcast[IMGS_TITLE][IMG_ONE_TITLE];
-		                    output.blurImage = origin + broadcast[IMGS_TITLE][IMG_DOUBLE_BAD_TITLE];
-		                    finalObj = self.addStatus(tmpl(output), broadcast[STATUS_TITLE]);
-		                    divSetMain.removeClass(doubleXClass)
-		                              .html(finalObj);
-		                }else if(countB === 2){
-		                    output.image = origin + broadcast[IMGS_TITLE][IMG_ONE_TITLE];
-		                    output.blurImage = origin + broadcast[IMGS_TITLE][IMG_ONE_BAD_TITLE];
-		                    finalObj = self.addStatus(tmpl(output), broadcast[STATUS_TITLE]);
-		                    divSetMain.append(finalObj);
-		                }else if(countB === 3){
-		                    if(b == 0){
-		                        output.image = origin + broadcast[IMGS_TITLE][IMG_ONE_TITLE];
-		                        output.blurimage = origin + broadcast[IMGS_TITLE][IMG_ONE_BAD_TITLE];
-		                        finalObj = self.addStatus(tmpl(output), broadcast[STATUS_TITLE]);
-		                        divSetMain.append(finalObj);
-		                    }else{
-		                        finalObj = self.addStatus(tmpl(output), broadcast[STATUS_TITLE]);
-		                        divSetInner.addClass(doubleYClass)
-		                                   .append(finalObj);
-		                    }
-		                }else if(countB === 4){
-		                    if(b < 2){
-		                        finalObj = self.addStatus(tmpl(output), broadcast[STATUS_TITLE]);
-		                        divSetInner.addClass(doubleYClass)
-		                                   .append(finalObj);
-		                    }else{
-		                        finalObj = self.addStatus(tmpl(output), broadcast[STATUS_TITLE]);
-		                        divSetInner2.addClass(doubleYClass)
-		                                    .append(finalObj);
-		                    }
-		                }
-		            }
-		            if(countB === 0){
-		                tmpl = _.template($("#broadcastEmptyTmpl").html());
-		                var emptyNum = col-1;
-		                finalObj = tmpl({
-		                    time: ((emptyNum < 10) ? "0" + emptyNum : emptyNum) + ":00"
-		                });
-		                divSetMain.removeClass(doubleXClass)
-		                          .html(finalObj);
-		                //Здесь продолжить! Сделать проверку: если такое время есть, значит вывести передачу без времени.
-		            }
-		            if($.trim(divSetInner.text()) != "") 
-		                divSetMain.append(divSetInner);
-		            if($.trim(divSetInner2.text()) != "") 
-		                divSetMain.append(divSetInner2);
-		            if($.trim(divSetMain.text()) != "") 
-		                divColumn.append(divSetMain);
-		            finalObj = divSetInner = divSetInner2 = divSetMain = null;
-		        }
-		        divWrapper.append(divColumn);
-		        divColumn = null;
-		    }
-		    return divWrapper.html();
-		},
-
-		viewChannels: function (){
-			var self = this;
-			var channels = self.channels;
-			var channelsNum = self.channelsNum;
-		    var mainBlock = $("<div />");
-		    var channelView, output;
-		    for (var i = 0; i < channelsNum.length; i++) {
-		        _.each(channels, function(v,k){
-		            var id = v[ID_TITLE.toUpperCase()];
-		            if(channelsNum[i] === id){
-		                channelView = _.template($("#channelTmpl").html()); 
-		                output = channelView({
-		                    "id" : id,
-		                    "link" : v[DETAIL_PAGE_URL_TITLE],
-		                    "icon" : v[ICON_TITLE]
-		                });
-		                mainBlock.append(output);
-		            }
-		        });
-		    }
-		    return mainBlock.html();
-		},
-
-		uniqArray: function(broadcasts){
-			var returnArr = _.clone(broadcasts);
-			var id, start, end, channel, id_d, start_d, end_d, channel_d;
-			for(var key in broadcasts){
-				id = broadcasts[key][ID_TITLE];
-				start = broadcasts[key][DATE_START_TITLE];
-				channel = broadcasts[key][CHANNEL_ID_TITLE];
-				var i = 0;
-				for (var k in returnArr) {
-					id_d = returnArr[k][ID_TITLE];
-					start_d = returnArr[k][DATE_START_TITLE];
-					channel_d = returnArr[k][CHANNEL_ID_TITLE];
-					if(id === id_d && start === start_d && channel === channel_d){
-						if(i === 1) returnArr.splice(k, 1);
-						i += 1;
-					}
-				}
-			}
-		    return this.pushToColumns(returnArr);
-		},
-
-		correctBroadcasts: function (broadcasts){
-			var self = this;
-		    var returnArr = [];
-		    for (var y = 0; y < broadcasts.length; y++) {
-		        if(y >= 0){
-		            var broadcast = self.parseBroadcastByTime(broadcasts[y]);
-		            if(broadcast.length > 0) returnArr.push(broadcast);
-		        }
-		    }
-		    returnArr = _.flatten(returnArr);
-		    return self.uniqArray(returnArr);
-		},
-
-		initSwiper: function (){
-		    var swiper = new Swiper('.swiper-container', {
-		            scrollbar: '.swiper-scrollbar',
-		            slidesPerView: "auto",
-		            scrollbarHide: true,
-		            keyboardControl: true,
-		            nextButton: '.swiper-button-next',
-		            prevButton: '.swiper-button-prev',
-		            spaceBetween: 0,
-		            hashnav: true,
-		            preloadImages: false,
-		            lazyLoading: true,
-		            lazyLoadingOnTransitionStart: true,
-		            grabCursor: false,
-		            freeMode: true
-		        }); 
-		    return swiper;
-		},
-		
-		addSlides: function (slidesHTML, method){
-			var self = this;
-		    if(!method) method = "append";
-		    var $div = $("<div />").html(slidesHTML);
-		    var slides = [];
-		    $div.children().each(function(){
-		        var $this = $(this);
-		        slides.push($this);
-		    });
-		    switch(method){
-		        case "append":
-		            self.swiper.appendSlide(slides);
-		        break;
-
-		        case "prepend":
-		            self.swiper.prependSlide(slides);
-		        break;
-		    }
-		    setImmediate(function(){
-		    	slides = null;
-		    	$div.empty().remove();
-		    	$div = null;
-		    });
-		},
-
-		addDay: function (json, nextDay){
-			var self = this;
-			self.timeNow = nextDay;
-			self.addDayVar = true;
-		    var broadcasts = null;
-			var object = self.offsetToOneObj(json[DATES_TITLE]);
-		    broadcasts = self.correctBroadcasts(object.broadcasts);
-		    var broadcastsView = self.viewBroadcasts(broadcasts);
-			var momentNow = moment(nextDay);
-			var weekday = self.config.weekdays[(momentNow.toString()).replace(/(.{3}).*/, "$1")];
-			var hours = self.timeNow.replace(/.*\s([0-9]{2}\:[0-9]{2}).*/,"$1");
-			var dayMarkTmpl = _.template($("#beginDayMarkTmpl").html());
-			var outputMark = dayMarkTmpl({
-				beginDayTitle: weekday + " " + momentNow.format("DD.MM.YYYY")
-			});
-			broadcastsView = outputMark + broadcastsView;
-			var dayMarkTmpl = _.template($("#endDayMarkTmpl").html());
-			var outputMark = dayMarkTmpl({
-				endDayTitle: weekday + " " + momentNow.format("DD.MM.YYYY")
-			});
-			broadcastsView += outputMark;
-		    
-		    self.addSlides(broadcastsView);
-		    setImmediate(function(){
-		    	self.$wrapper.find("." + slideClass).last().addClass(slideClass + "--end");
-				broadcastsView = null;
-				broadcasts = null;
-				dayMarkTmpl = null;
-				outputMark = null;
-				weekday = null;
-				hours = null;
-				momentNow = null;
-				object = null;
-		    });
-		},
-
-		fixedTimeline: function ($wrapper, today){
-			var self = this;
-		    var tmpl = _.template($("#timelineTmpl").html());
-		    var $timeline = $(tmpl({
-		        today: today
-		    }));
-		    var $line = $timeline.find(".timeline__line");
-		    var $title = $timeline.find(".timeline__title");
-		    var $columns = $wrapper.children(".swiper-slide");
-		    var left = 0, onAir = 0, slide;
-		    for(var i = 0; i < $columns.length; i++){
-		        var $this = $($columns[i]);
-		        left += parseInt($this.width());
-		        if($this.find(".broadcast__on-air").length > 0){
-		        	onAir = i;
-		            break;
-		        }
-		    };
-		    var sessionSlide = sessionStorage.getItem('slide');
-		    if (sessionSlide) {
-		        slide = sessionSlide;
-		        $("html,body").animate({ 
-		        	scrollTop: sessionStorage.getItem('top') 
-		        }, 1000);
-		    } else slide = onAir;
-		    self.swiper.slideTo(slide, 1000);
-		    $line.css("left", (left - 150));
-		    $title.css("left", (left - 370));
-		    $wrapper.prepend($timeline);
-		    setImmediate(function(){
-		        $wrapper = null;
-		        $title = null;
-		        $line = null;
-		        $columns = null;
-		        tmpl = null;
-		        self = null;
-		        left = null;
-		        $this = null;
-		        $timeline = null;
-		    });
-		},
-		openPreloader: function (){
-		    var $loader = $(".broadcasts-loader");
-		    $loader.removeClass("broadcasts-loader--loaded").addClass("broadcasts-loader--loading");
-		},
-		closePreloader: function (){
-		    var $loader = $(".broadcasts-loader");
-		    $loader.removeClass("broadcasts-loader--loading").addClass("broadcasts-loader--loaded");
-		}
-	};
-
-	$.fn.Broadcasts = function(method, options) {
-	  var options = $.extend({
+    $.fn.Broadcasts = function(method, options) {
+      var options = $.extend({
           config: {},
           origin: location.origin,
-          JSONParams: {},
-          bigSlider: false,
-          timeNow: moment().format(PATTERN),
-	      preInit: function(){},
-	      postInit: function(){}
-	  }, options);
+          json: {},
+          consts: {},
+          time: "",
+          offset: 288,
+          preInit: function(){},
+          postInit: function(){}
+      }, options);
 
       var $this = $(this),
           bsInit = new Broadcasts($.extend({
             el: $this
           },options));
-      if(method === undefined || method == "" || !method) {
-      	bsInit.initialize();
-      	return bsInit;
+      if(method === undefined || method == "" || !method || typeof method === "object") {
+        return bsInit;
       }else if(method in bsInit) {
-      	bsInit[method]();
-      	return bsInit;
+        bsInit[method]();
+        return bsInit;
       }else {
         console.error("Exception: Undefined method!");
         return;
       }
 
-	};
+    };
 
 })(jQuery);
 
@@ -37420,7 +37256,6 @@ Box.Application.addBehavior('banner-close', function (context) {
 	};
 
 });
-
 /* global Box, alert */
 Box.Application.addBehavior('recording-broadcast', function (context) {
 	'use strict';
@@ -37444,7 +37279,13 @@ Box.Application.addBehavior('recording-broadcast', function (context) {
 							'</div>' +
 						'</div>';
 
-		broadcast.find('.item-header').before(notifyHTML);
+		if(broadcast.find('.item-header')[0]){
+			broadcast.find('.item-header').before(notifyHTML);
+		}else{
+			var statusHTML = $($("#status-recordingTmpl").html()).html();
+			$(".broadcast__status").html(statusHTML);
+			broadcast.removeClass("broadcast--alert").addClass("status-recording");
+		}
 	}
 	function removeRecordingNotify(broadcast) {
 		broadcast.find('.recording-notify').remove();
@@ -37459,12 +37300,20 @@ Box.Application.addBehavior('recording-broadcast', function (context) {
 							'</div>' +
 						'</div>';
 
-		broadcast.find('.item-header').before(notifyHTML);
-		broadcast.addClass('extend-drive-required');
+		if(broadcast.find('.item-header')[0]){
+			broadcast.find('.item-header').before(notifyHTML);
+			broadcast.addClass('extend-drive-required');
+		}else{
+			broadcast.addClass("broadcast--alert");
+		}
 	}
 	function removeExtendDriveNotify(broadcast) {
-		broadcast.removeClass('extend-drive-required');
-		broadcast.find('.extend-drive-notify').remove();
+		if(broadcast.find('.item-header')[0]) {
+			broadcast.removeClass('extend-drive-required');
+			broadcast.find('.extend-drive-notify').remove();
+		}else{
+			broadcast.removeClass("broadcast--alert");
+		}
 	}
 
 	function updateRemoteBroadcastStatus(broadcast, broadcastID, element) {
@@ -37475,7 +37324,7 @@ Box.Application.addBehavior('recording-broadcast', function (context) {
 			if (data.status === 'success') {
 				// addRecordingNotify(broadcast);
 				broadcast.removeClass('status-recordable').addClass('recording-in-progress status-recording');
-				broadcast.find('.icon-recordit').remove().end().find('.item-status-icon').prepend($('<span data-icon="icon-recording" />'));
+				broadcast.find('.icon-recordit').remove().end().find('.broadcast__status').prepend($('<span data-icon="icon-recording" />'));
 				broadcast.find('.bs-status__title').text('В записи');
 				var countHeader = $(".item-recording__count").text();
 				var arrCount = [];
@@ -37533,27 +37382,28 @@ Box.Application.addBehavior('recording-broadcast', function (context) {
 		onclick: function (event, element, elementType) {
 			if (elementType === 'broadcast' && $(event.target).closest('.icon-recordit').length > 0) {
 				event.preventDefault();
-				// console.log( 'Авторизован: ' );
-				// console.log( authentication === true );
+				console.log( 'Авторизован: ' );
+				console.log( authentication === true );
 				// authentication = true;
 				if (authentication === true) {
-					// console.log( 'Статус флаг: ' );
-					// console.log( $(element).data('status-flag') === false );
-					// console.log( 'Статус не undefined: ' );
-					// console.log( $(element).data('status-flag') === 'undefined' );
+					console.log( 'Статус флаг: ' );
+					console.log( $(element).data('status-flag') === false );
+					console.log( 'Статус не undefined: ' );
+					console.log( $(element).data('status-flag') === 'undefined' );
 					if ($(element).data('status-flag') === false || typeof $(element).data('status-flag') === 'undefined') {
 						var broadcast = $(moduleEl).find($(event.target).closest('.broadcast'));
 						var broadcastID = broadcast.data('broadcast-id');
-						// console.log( 'broadcastID не пустой: ' );
-						// console.log( broadcastID !== '' );
-						// console.log( 'broadcastID не undefined: ' );
-						// console.log( typeof broadcastID !== 'undefined' );
+						console.log( 'broadcastID не пустой: ' );
+						console.log( broadcastID !== '' );
+						console.log( 'broadcastID не undefined: ' );
+						console.log( typeof broadcastID !== 'undefined' );
 						if (broadcastID !== '' && typeof broadcastID !== 'undefined') {
-							// console.log( 'Имеет класс status-recordable: ' );
-							// console.log( broadcast.hasClass('status-recordable') );
-							// console.log( 'Не имеет класса status-recording' );
-							// console.log( !broadcast.hasClass('status-recording') );
+							console.log( 'Имеет класс status-recordable: ' );
+							console.log( broadcast.hasClass('status-recordable') );
+							console.log( 'Не имеет класса status-recording' );
+							console.log( !broadcast.hasClass('status-recording') );
 							if (broadcast.hasClass('status-recordable') && !broadcast.hasClass('status-recording')) {
+								console.log("Апдейт");
 								updateRemoteBroadcastStatus(broadcast, broadcastID, element);
 							}
 						}
@@ -37710,7 +37560,6 @@ Box.Application.addBehavior('load-broadcast-player', function (context) {
 	};
 
 });
-
 /* global Box */
 Box.Application.addBehavior('play-recorded-broadcasts', function (context) {
 	'use strict';
@@ -37744,13 +37593,18 @@ Box.Application.addBehavior('play-recorded-broadcasts', function (context) {
 			modalService = null;
 		},
 		onclick: function (event, element, elementType) {
+			console.log($(element));
+			console.log($(moduleEl));
+			console.log();
 			if (elementType === 'broadcast' && $(event.target).closest('.icon-recorded').length > 0) {
 				event.preventDefault();
 				if (authentication === true) {
 					if ($(element).data('play-flag') === false) {
+						console.log("3 step");
 						var broadcast = $(moduleEl).find($(event.target).closest('.item'));
 						var broadcastID = broadcast.data('broadcast-id');
 						if (broadcastID !== '' && typeof broadcastID !== 'undefined' && broadcast.hasClass('status-recorded')) {
+							console.log("4 step");
 							// send message
 							Box.Application.broadcast('playbroadcast', {
 								broadcastID: broadcastID,
@@ -38440,10 +38294,10 @@ Box.Application.addModule('broadcasts-categories', function (context) {
 	}
 
 	function filterBroadcasts(category) {
-		var broadcasts = $('.broadcast');
+		var broadcasts = $('.broadcast, .broadcasts-list .item');
 
-		items.removeClass('category-broadcasts--active');
-		$(moduleEl).find('.category-broadcasts[data-category="'+category+'"]').addClass('category-broadcasts--active');
+		items.removeClass('category-broadcasts--active').removeClass('active');
+		$(moduleEl).find('.category-broadcasts[data-category="'+category+'"], .item[data-category="'+category+'"]').addClass('category-broadcasts--active');
 
 		broadcasts.removeClass('broadcast--hidden');
 
@@ -38490,8 +38344,8 @@ Box.Application.addModule('broadcasts-categories', function (context) {
 
 		init: function () {
 			moduleEl = context.getElement();
-			list = $(moduleEl).find('.categories-broadcasts');
-			items = $(moduleEl).find('.category-broadcasts');
+			list = $(moduleEl).find('.categories-broadcasts, .items');
+			items = $(moduleEl).find('.category-broadcasts, .item');
 			height = 60;
 
 			state();
@@ -38507,7 +38361,7 @@ Box.Application.addModule('broadcasts-categories', function (context) {
 
 			if (elementType === 'more') {
 				toggleCategories();
-			} else if (elementType === 'category-broadcasts') {
+			} else if (elementType === 'category-broadcasts' || elementType === 'item') {
 				filterBroadcasts(category);
 			}
 		},
@@ -38527,63 +38381,123 @@ Box.Application.addModule('broadcast-results', function (context) {
 	// Private
 	// --------------------------------------------------------------------------
 	var $ = context.getGlobal('jQuery');
-	if(!$("#paramsJson")[0]) return;
 	var moduleEl;
 	var DATA_KEY = 'broadcast_results_dates';
 	var broadcastObj;
 	var pageModule;
-	var slideSwiperLast;
-	var slideSwiperNext;
 	var authentication;
-	var swiper;
+    var swiper = null;
+    var stopAjax = false;
 	var sessionSlide = sessionStorage.getItem('slide');
-	var bigSlider = sessionSlide > 10 ? true : false;
+    var date;
+    var dates;
+    var channels;
+    var offset;
+    var iconLoaderService;
+    var ajaxType = context.getConfig("ajaxType");
 
-	function initEvents(){
-		slideSwiperLast = $(".swiper-slide").last();
-		slideSwiperNext = $(".swiper-slide--end").siblings(".swiper-slide-next");
-		slideSwiperLast.on("mousedown", mouseDown);
-		slideSwiperNext.on("mousedown", mouseDown);
-	}
+	function runSwiper(){
+        swiper = broadcastObj.swiper;
+        swiper.on('onSliderMove', function (getSwiper) {
+            if(getSwiper.isEnd) {
+                broadcastObj.openPreloader();
+                date = getDay(date, "next");
+                setTimeout(function(){
+                    renderDay([date], channels.split(","));
+                },1000);
+            }
+        });
+    };
 
-	function resetEvents(){
-		slideSwiperLast = $(".swiper-slide").last();
-		slideSwiperNext = $(".swiper-slide--end").siblings(".swiper-slide-next");
-		slideSwiperLast.off("mousedown");
-		slideSwiperNext.off("mousedown");
-	}
-
-	function addDay(nextDay, nextDayToScript){
-		broadcastObj.openPreloader();
-		$.ajax({
-			type: 'post',
-			url: context.getConfig("fetchResultsURL"),
+    function renderDay(days, channels, ajaxType, type){
+        if(stopAjax) return;
+        $.ajax({
+            type: 'post',
+            url: context.getConfig("fetchResultsURL"),
 			data: {
 				AJAX: 'Y',
-				AJAX_TYPE: context.getConfig("ajaxType"),
-				date: nextDay
-			},
-			dataType: "json",
-			success: function (response) {
-				if(!_.isEmpty(response)){
-					broadcastObj.addDay(response, nextDayToScript);
-					moduleEl.dataset.date = nextDay;
-					broadcastObj.closePreloader();
-				}
-			},
-			error: function () {
-				console.warn('Ошибка загрузки дня');
-			}
-		});
-	}
+				AJAX_TYPE: ajaxType,
+                date: days,
+                channels: channels,
+                count_channels: context.getConfig("countChannels"),
+                offset_channels: offset
+            },
+            beforeSend: function(){
+                stopAjax = true;
+            },
+            dataType: "json",
+            success: function (response) {
+                if(!_.isEmpty(response)){
+                    if("next_disable" in response) broadcastObj.arrowsChannels("next");
+                    else broadcastObj.arrowsChannels("next", true);
 
-	function nextDay(){
-		var currDate = (moduleEl.dataset.date).replace(/([0-9]{2})\.([0-9]{2})\.([0-9]{4})\s(([0-9]{2})\:([0-9]{2})\:([0-9]{2}))/, "$3-$2-$1 $4");
-		var nextDay = moment(currDate);
-		nextDay = nextDay.add(1,"days");
-		var nextDayToScript = nextDay.format("YYYY-MM-DD HH:mm:ss");
-		nextDay = nextDay.format("DD.MM.YYYY HH:mm:ss");
-		addDay(nextDay, nextDayToScript);
+                    if("prev_disable" in response) broadcastObj.arrowsChannels("prev");
+                    else broadcastObj.arrowsChannels("prev", true);
+
+                    broadcastObj.addDay(response);
+                    moduleEl[0].dataset.date = days[days.length - 1];
+                    setImmediate(function(){
+                        if(swiper === null)
+                        var swiperIntval = setInterval(function(){
+                            if(broadcastObj.swiper !== null){
+                                runSwiper();
+                                clearInterval(swiperIntval);
+                            }
+                        });
+                        stopAjax = false;
+                        setTimeout(function(){
+                            broadcastObj.closePreloader();
+                        },1000);
+                    });
+                }else{
+                    if("next" == type) {
+                    	broadcastObj.arrowsChannels("next");
+                    	broadcastObj.arrowsChannels("prev", true);
+                    }else if("prev" == type) {
+                    	broadcastObj.arrowsChannels("prev");
+                    	broadcastObj.arrowsChannels("next", true);
+                    }
+                }
+            },
+            error: function () {
+                console.warn('Ошибка загрузки дня');
+            }
+        });
+    };
+
+    function renderChannels(type){
+        offset = parseInt(offset);
+        swiper = null;
+        if(type === "prev"){
+        	offset -= 10;
+		    sessionStorage.setItem("offsetChannels", offset == 0 ? 0 : offset);
+        }else if(type === "next"){
+        	offset += 10;
+		    sessionStorage.setItem("offsetChannels", offset);
+        }
+        broadcastObj.openPreloader();
+        broadcastObj.destroySwiper();
+        var date = getDay();
+        renderDay([date], [], ajaxType[type], type);
+    }
+
+    function getDay(currDate, type){
+        var getDate = new Date();
+        function cpDate(date){
+            return (date < 10) ? "0" + date : date;
+        }
+
+        if(currDate !== undefined){
+            if(currDate.match(/[0-9]{2}\./)){
+                currDate = (currDate).replace(/([0-9]{2})\.([0-9]{2})\.([0-9]{4})\s(([0-9]{2})\:([0-9]{2})\:([0-9]{2}))/, "$3-$2-$1 $4");
+            }else currDate;
+            getDate = new Date(currDate);
+        }
+       
+        if(type === "next") getDate.setDate(getDate.getDate() + 1);
+        else if(type === "prev") getDate.setDate(getDate.getDate() - 1); 
+
+        return cpDate(getDate.getDate()) + "." + cpDate(getDate.getMonth() + 1) + "." + getDate.getFullYear() + " " + cpDate(getDate.getHours()) + ":" + cpDate(getDate.getMinutes()) + ":" + cpDate(getDate.getSeconds());
     }
 
 	// --------------------------------------------------------------------------
@@ -38595,53 +38509,85 @@ Box.Application.addModule('broadcast-results', function (context) {
 		behaviors: ['category-row', 'recording-broadcast', 'play-recorded-broadcasts'],
 
 		init: function () {
+			var self = this;
 			$(moduleEl).find('[data-type="broadcast"]').data('status-flag', false).data('play-flag', false);
 			$(moduleEl).data('ajax-flag', true);
 			pageModule = $('[data-module="page"]').get(0);
 			authentication = Box.Application.getModuleConfig(pageModule, 'authentication');
-			var json = JSON.parse($("#paramsJson").html());
-			json.auth = authentication;
 			moduleEl = context.getElement();
-			broadcastObj = $(".main-container").Broadcasts("initialize", {
-	            config: context.getConfig(),
-	            JSONParams: json,
-	            bigSlider: bigSlider,
-	            origin: context.getConfig("origin")
-	        });
-			swiper = broadcastObj.swiper;
-			var countDays = this.getDayFromSession(sessionSlide);
-			if(countDays > 1){
-				for(var i = 0; i < (countDays - 1); i++){
-					nextDay();
-				}
-				setTimeout(function(){
-					swiper.slideTo(sessionSlide);
-					broadcastObj.closePreloader();
-				},1000);
-			}
-			swiper.on('onSlideChangeStart', function (getSwiper) {
-				if(getSwiper.isEnd) {
-					nextDay();
-				}
+
+			broadcastObj = $(".categories-items").Broadcasts({
+				auth: true,
+				origin: "https://megatv.su"
 			});
-		    var iconLoaderService = Box.Application.getService('icon-loader');
-            setInterval(function(){
-            	if(document.querySelector("[data-icon]"))
-		        	iconLoaderService.renderIcons();
-	            var btnModals = $('[data-module="modal"]');
-	            if(btnModals[0])
-			        btnModals.each(function(){
-			            var $this = $(this)[0];
-			            Box.Application.start($this);
-			        });
-            },1000);
-            $("#paramsJson").empty().remove();
-            // setImmediate(function(){
-            // });
+
+			setImmediate(function(){
+				swiper = broadcastObj.swiper;
+			    date = getDay();
+			    dates = sessionStorage.getItem("dates") ? sessionStorage.getItem("dates") : date;
+			    channels = sessionStorage.getItem("channels") ? sessionStorage.getItem("channels") : "";
+			    offset = sessionStorage.getItem("offsetChannels") ? sessionStorage.getItem("offsetChannels") : 0;
+			    sessionStorage.setItem("offsetChannels", offset);
+
+			    renderDay(dates.split(","), channels.split(","), ajaxType.start, offset);
+				setImmediate(function(){
+					self.runEvents();
+				    iconLoaderService = Box.Application.getService('icon-loader');
+		            setInterval(function(){
+		            	if(document.querySelector("[data-icon]"))
+				        	iconLoaderService.renderIcons();
+			            var btnModals = $('[data-module="modal"]');
+			            if(btnModals[0])
+					        btnModals.each(function(){
+					            var $this = $(this)[0];
+					            Box.Application.start($this);
+					        });
+		            },1000);
+				});
+			});
+
 		},
 
-		getDayFromSession: function(countSlides){
-			return Math.ceil(countSlides / 10);
+		runEvents: function(){
+		    $(".next-channels").on("click", function(){
+		        swiper.setWrapperTranslate(0);
+		        var type = "next";
+		        renderChannels(type);
+		    });
+
+		    $(".prev-channels").on("click", function(){
+		        swiper.setWrapperTranslate(0);
+		        var type = "prev";
+		        renderChannels(type);
+		    });
+		    $('[data-type="prev-button"]').on("click", function(){
+		        broadcastObj.prevButton();
+		        return false;
+		    });
+
+		    $('[data-type="next-button"]').on("click", function(){
+		        broadcastObj.nextButton();
+		        if(swiper.translate == swiper.maxTranslate()){
+		            var channels = sessionStorage.getItem("channels") ? sessionStorage.getItem("channels") : "";
+		            broadcastObj.openPreloader();
+		            renderDay(getDay(date, "next"), channels.split(","), ajaxType.start);
+		        }
+		        return false;
+		    });
+
+		    $("body").on("keydown", function(eventObject){
+		      if(eventObject.which === 37){
+		        broadcastObj.prevButton();
+		      }
+		      if(eventObject.which === 39){
+		        broadcastObj.nextButton();
+		        if(swiper.translate == swiper.maxTranslate()){
+		            var channels = sessionStorage.getItem("channels") ? sessionStorage.getItem("channels") : "";
+		            broadcastObj.openPreloader();
+		            renderDay(getDay(date, "next"), channels.split(","), ajaxType.start);
+		        }
+		      }
+		    });
 		},
 
 		destroy: function () {
@@ -38659,7 +38605,6 @@ Box.Application.addModule('broadcast-results', function (context) {
 
 	};
 });
-
 /* global Box */
 Box.Application.addModule('recomended-broadcasts', function (context) {
 	'use strict';
@@ -38681,7 +38626,28 @@ Box.Application.addModule('recomended-broadcasts', function (context) {
 	var inProccess = false;
 	var stopView = false;
 	var placeholder;
-	var auth = context.getGlobalConfig("auth");
+	var pageModule = $('[data-module="page"]').get(0);
+	var auth = Box.Application.getModuleConfig(pageModule, 'authentication');
+
+	function cutString(str, count){
+		count = parseInt(count);
+		str = str.replace(/\.{3}$/, "");
+		if ( str.length > count ) {
+		    str = str.slice( 0, count ) + '...';
+		}
+		return str;
+	}
+
+	$(".broadcasts").children().each(function(){
+		var $this = $(this);
+		var link = $(this).find(".broadcast__link");
+		link.text(cutString($.trim(link.text()), 30));
+		if($this.hasClass("recordable")){
+			$this.removeClass("recordable").addClass("status-recordable");
+		}else if($this.hasClass("recording")){
+			$this.removeClass("recording").addClass("status-recording");
+		}
+	});
 
 	function convertDate(date){
 		return date.replace(/([0-9]{2})\.([0-9]{2})\.([0-9]{4})(\s([0-9]{2})\:([0-9]{2})\:([0-9]{2}))?/,"$3-$2-$1");
@@ -38693,9 +38659,10 @@ Box.Application.addModule('recomended-broadcasts', function (context) {
 		if(auth) statusTmpl = $("#" + item.status + "Tmpl").html(); 
 		else statusTmpl = $("#nonAuthTmpl").html(); 
 		var compile = _.template(tmpl);
+		var name = cutString(item.name, 30);
 		var output = compile({
 			id: item.id,
-			name: item.name,
+			name: name,
 			link: item.link,
 			time: item.time,
 			image: item.image,
@@ -38705,7 +38672,8 @@ Box.Application.addModule('recomended-broadcasts', function (context) {
 			categoryName: item.category.name
 		});
 		var returnEl = $(output);
-		if(auth) returnEl.addClass("broadcast--" + (item.status).replace("status-","")); 
+		// if(auth) returnEl.addClass("broadcast--" + (item.status).replace("status-","")); 
+		if(auth) returnEl.addClass(item.status === "status-" ? "status-recordable" : item.status); 
 		setImmediate(function(){
 			returnEl = null;
 			tmpl = null;
@@ -38771,13 +38739,13 @@ Box.Application.addModule('recomended-broadcasts', function (context) {
 	}
 
 	function hidePlaceholder(){
+		// alert(1);
 		if(!placeholder) return false;
 		$(placeholder).fadeOut(500,function(){
 			$(this).remove();
 		});
 		if(inProccess) return false;
 		stopView = false;
-		initModules();
 	}
 
 	function showPlaceholder(){
@@ -38785,6 +38753,9 @@ Box.Application.addModule('recomended-broadcasts', function (context) {
 		var $placeholder = $('<div class="broadcast-placeholder"><div class="broadcast-placeholder__bp-wrap bp-wrap"><div class="broadcast-placeholder__bp-image bp-image"></div></div></div>').hide();
 		listItems.append($placeholder);
 		$placeholder.fadeIn();
+		setTimeout(function(){
+			hidePlaceholder();
+		},3000);
 	}
 
 	function dataEmpty(){
@@ -38880,14 +38851,16 @@ Box.Application.addModule('recomended-broadcasts', function (context) {
 					}else{
 						hidePlaceholder();
 					}
+					setImmediate(function(){
+						categoryID = null, categoryLink = null, block = null, offsetTop = null;
+					});
 				}
 			},2000);
+			initModules();
 		},
 		destroy: function () {
-			moduleEl = null;
-			listItems = null;
+			moduleEl = null, listItems = null, kineticService = null, iconLoaderService = null, items = null, viewMoreUrl = null, countMax = null, categoryActive = null, categoriesNoData = null, inProccess = null, stopView = null, placeholder = null, pageModule = null, auth = null;
 		}
-
 	};
 });
 

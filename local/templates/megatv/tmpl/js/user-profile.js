@@ -38836,7 +38836,7 @@ Box.Application.addModule('reset-password-form', function (context) {
 				});
 			},
 			success: function (data) {
-				if (data.status === 'error') {
+				if (data.status === 'error' || data.status === false) {
 					msSubmitButton.temporalState('fail-data-state', {
 						afterChange: function () {
 							this.enable();

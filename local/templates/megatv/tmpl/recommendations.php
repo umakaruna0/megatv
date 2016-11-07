@@ -1,4 +1,8 @@
 <?
+    $css = [
+        "css/main.css",
+        "css/recommendations.css"
+    ];
 	$items = true;
 	require("include/header.php");
 ?>
@@ -7,23 +11,21 @@
     <section class="section-h1 hidden">
         <h1></h1></section>
     <div class="broadcasts-categories" data-module="broadcasts-categories">
+
         <script type="text/x-config">
-            { "url": "/recommendations/" }
+            { "url": "personal-records.php" }
         </script>
-        <div class="categories-broadcasts">
-            <a href="#" class="category-broadcasts category-broadcasts--active" data-type="category-broadcasts" data-category="all">
-			Все
-		</a>
-            <a href="#novosti" class="category-broadcasts" data-type="category-broadcasts" data-category="novosti">
-    			Новости    		</a>
-            <a href="#d-s" class="category-broadcasts" data-type="category-broadcasts" data-category="d-s">
-    			Д/с    		</a>
-            <a href="#sketch-shou" class="category-broadcasts" data-type="category-broadcasts" data-category="sketch-shou">
-    			Скетч-шоу    		</a>
-            <a href="#tok-shou" class="category-broadcasts" data-type="category-broadcasts" data-category="tok-shou">
-    			Ток-шоу    		</a>
-            <a href="#t-s" class="category-broadcasts" data-type="category-broadcasts" data-category="t-s">
-    			Т/с    		</a>
+
+        <div class="items">
+            <a href="#" class="item active" data-type="item" data-category="all">Все</a>
+            <a href="#d-s" class="item" data-type="item" data-category="d-s">Д/с</a>
+            <a href="#novosti" class="item" data-type="item" data-category="novosti">Новости</a>
+            <a href="#tok-shou" class="item" data-type="item" data-category="tok-shou">Ток-шоу</a>
+            <a href="#t-s" class="item" data-type="item" data-category="t-s">Т/с</a>
+            <a href="#poznavatelnoe" class="item" data-type="item" data-category="poznavatelnoe">Познавательное</a>
+            <a href="#tv-shou" class="item" data-type="item" data-category="tv-shou">ТВ-шоу</a>
+            <a href="#yumor" class="item" data-type="item" data-category="yumor">Юмор</a>
+            <a href="#sport" class="item" data-type="item" data-category="sport">Спорт</a>
         </div>
         <div class="more" data-type="more">
             <span data-icon="icon-close"></span>
@@ -35,7 +37,7 @@
 
     <!-- <link rel="stylesheet" href="css/recommendations.css"> -->
 
-    <section class="main-broadcasts main-broadcasts--static" data-offset="0" data-date="<?=date("d\.m\.Y");?>" data-module="recomended-broadcasts"><!-- "viewMoreUrl" : "/recommendations/?AJAX=Y", -->
+    <section class="broadcasts" data-offset="0" data-date="<?=date("d\.m\.Y");?>" data-module="recomended-broadcasts"><!-- "viewMoreUrl" : "/recommendations/?AJAX=Y", -->
         <script type="text/x-config">
 	        { 
 	        	"viewMoreUrl" : "/local/templates/megatv/tmpl/ajax/load_recommendations.php",
@@ -48,7 +50,7 @@
 	            }
 	        }
 	   </script>
-        <div class="broadcasts-list main-broadcasts__broadcasts broadcasts">
+        <div class="broadcasts-list">
 	    	<? if(!$items){ ?>
 	    	<!-- ========================= Если рекоммендаций нет  ========================= -->
 	    	<div class="empty-content">
@@ -56,6 +58,409 @@
 	    	</div>
 	    	<!-- ======================= ! Если рекоммендаций нет !  ======================= -->
 	    	<? }else{ ?>
+            <div class="item status-recordable" data-type="broadcast" data-broadcast-id="223341" data-category="novosti">
+                <div class="inner">
+                    <div class="item-image-holder" style="background-image: url(/upload/epg_cut/53804_288_288.jpg)"></div>
+
+                    <span class="item-status-icon">
+                                    <div class="icon icon-recordit "><svg class="icon__cnt"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#icon-recordit"></use></svg></div>
+                        <span class="status-desc">Записать</span>
+                    </span>
+                    <div class="extend-drive-notify">
+                        <div class="extend-drive-notify-text-wrap">
+                            <div class="icon icon-storage ">
+                                <svg class="icon__cnt">
+                                    <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#icon-storage"></use>
+                                </svg>
+                            </div>
+                            <p>У Вас закончилось свободное место на облачном хранилище МЕГА.ДИСК</p>
+                            <p><a href="/personal/services/">Заказать дополнительную емкость</a></p>
+                        </div>
+                    </div>
+
+                    <div class="item-header">
+                        <div class="meta">
+                            <div class="time">20:45</div>
+                            <div class="date">14.10.2016</div>
+                            <div class="category"><a href="#" data-type="category">Новости</a></div>
+                        </div>
+                        <div class="title">
+                            <a href="/channels/rossiya-1/vesti/?event=223341">
+                                    Вести                        </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="item status-recordable" data-type="broadcast" data-broadcast-id="225074" data-category="kh-f">
+                <div class="inner">
+                    <div class="item-image-holder" style="background-image: url(/upload/epg_cut/225404_288_288.jpg)"></div>
+
+                    <span class="item-status-icon">
+                                    <div class="icon icon-recordit "><svg class="icon__cnt"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#icon-recordit"></use></svg></div>
+                        <span class="status-desc">Записать</span>
+                    </span>
+                    <div class="extend-drive-notify">
+                        <div class="extend-drive-notify-text-wrap">
+                            <div class="icon icon-storage ">
+                                <svg class="icon__cnt">
+                                    <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#icon-storage"></use>
+                                </svg>
+                            </div>
+                            <p>У Вас закончилось свободное место на облачном хранилище МЕГА.ДИСК</p>
+                            <p><a href="/personal/services/">Заказать дополнительную емкость</a></p>
+                        </div>
+                    </div>
+
+                    <div class="item-header">
+                        <div class="meta">
+                            <div class="time">20:29</div>
+                            <div class="date">14.10.2016</div>
+                            <div class="category"><a href="#" data-type="category">Х/ф</a></div>
+                        </div>
+                        <div class="title">
+                            <a href="/channels/zvezda/gost-s-kubani/?event=225074">
+                                    Гость с Кубани                        </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="item status-recordable" data-type="broadcast" data-broadcast-id="225182" data-category="t-s">
+                <div class="inner">
+                    <div class="item-image-holder" style="background-image: url(/upload/epg_cut/181749_288_288.jpg)"></div>
+
+                    <span class="item-status-icon">
+                                    <div class="icon icon-recordit "><svg class="icon__cnt"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#icon-recordit"></use></svg></div>
+                        <span class="status-desc">Записать</span>
+                    </span>
+                    <div class="extend-drive-notify">
+                        <div class="extend-drive-notify-text-wrap">
+                            <div class="icon icon-storage ">
+                                <svg class="icon__cnt">
+                                    <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#icon-storage"></use>
+                                </svg>
+                            </div>
+                            <p>У Вас закончилось свободное место на облачном хранилище МЕГА.ДИСК</p>
+                            <p><a href="/personal/services/">Заказать дополнительную емкость</a></p>
+                        </div>
+                    </div>
+
+                    <div class="item-header">
+                        <div class="meta">
+                            <div class="time">16:00</div>
+                            <div class="date">14.10.2016</div>
+                            <div class="category"><a href="#" data-type="category">Т/с</a></div>
+                        </div>
+                        <div class="title">
+                            <a href="/channels/sts/voroniny/?event=225182">
+                                    Воронины                        </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="item status-recordable" data-type="broadcast" data-broadcast-id="225224" data-category="kh-f">
+                <div class="inner">
+                    <div class="item-image-holder" style="background-image: url(/upload/epg_cut/313525_288_288.jpg)"></div>
+
+                    <span class="item-status-icon">
+                                    <div class="icon icon-recordit "><svg class="icon__cnt"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#icon-recordit"></use></svg></div>
+                        <span class="status-desc">Записать</span>
+                    </span>
+                    <div class="extend-drive-notify">
+                        <div class="extend-drive-notify-text-wrap">
+                            <div class="icon icon-storage ">
+                                <svg class="icon__cnt">
+                                    <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#icon-storage"></use>
+                                </svg>
+                            </div>
+                            <p>У Вас закончилось свободное место на облачном хранилище МЕГА.ДИСК</p>
+                            <p><a href="/personal/services/">Заказать дополнительную емкость</a></p>
+                        </div>
+                    </div>
+
+                    <div class="item-header">
+                        <div class="meta">
+                            <div class="time">10:45</div>
+                            <div class="date">14.10.2016</div>
+                            <div class="category"><a href="#" data-type="category">Х/ф</a></div>
+                        </div>
+                        <div class="title">
+                            <a href="/channels/mir/o-schastlivchik/?event=225224">
+                                    О, счастливчик!                        </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="item status-recordable" data-type="broadcast" data-broadcast-id="225097" data-category="d-s">
+                <div class="inner">
+                    <div class="item-image-holder" style="background-image: url(/upload/epg_cut/302340_288_288.jpg)"></div>
+
+                    <span class="item-status-icon">
+                                    <div class="icon icon-recordit "><svg class="icon__cnt"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#icon-recordit"></use></svg></div>
+                        <span class="status-desc">Записать</span>
+                    </span>
+                    <div class="extend-drive-notify">
+                        <div class="extend-drive-notify-text-wrap">
+                            <div class="icon icon-storage ">
+                                <svg class="icon__cnt">
+                                    <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#icon-storage"></use>
+                                </svg>
+                            </div>
+                            <p>У Вас закончилось свободное место на облачном хранилище МЕГА.ДИСК</p>
+                            <p><a href="/personal/services/">Заказать дополнительную емкость</a></p>
+                        </div>
+                    </div>
+
+                    <div class="item-header">
+                        <div class="meta">
+                            <div class="time">17:00</div>
+                            <div class="date">14.10.2016</div>
+                            <div class="category"><a href="#" data-type="category">Д/с</a></div>
+                        </div>
+                        <div class="title">
+                            <a href="/channels/tv3/gadalka/?event=225097">
+                                    Гадалка | Концы в воду                        </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="item status-recordable" data-type="broadcast" data-broadcast-id="225181" data-category="t-s">
+                <div class="inner">
+                    <div class="item-image-holder" style="background-image: url(/upload/epg_cut/384304_288_288.jpg)"></div>
+
+                    <span class="item-status-icon">
+                                    <div class="icon icon-recordit "><svg class="icon__cnt"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#icon-recordit"></use></svg></div>
+                        <span class="status-desc">Записать</span>
+                    </span>
+                    <div class="extend-drive-notify">
+                        <div class="extend-drive-notify-text-wrap">
+                            <div class="icon icon-storage ">
+                                <svg class="icon__cnt">
+                                    <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#icon-storage"></use>
+                                </svg>
+                            </div>
+                            <p>У Вас закончилось свободное место на облачном хранилище МЕГА.ДИСК</p>
+                            <p><a href="/personal/services/">Заказать дополнительную емкость</a></p>
+                        </div>
+                    </div>
+
+                    <div class="item-header">
+                        <div class="meta">
+                            <div class="time">13:30</div>
+                            <div class="date">14.10.2016</div>
+                            <div class="category"><a href="#" data-type="category">Т/с</a></div>
+                        </div>
+                        <div class="title">
+                            <a href="/channels/sts/kukhnya/?event=225181">
+                                    Кухня                        </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="item status-recordable" data-type="broadcast" data-broadcast-id="223492" data-category="tok-shou">
+                <div class="inner">
+                    <div class="item-image-holder" style="background-image: url(/upload/epg_cut/186334_288_288.jpg)"></div>
+
+                    <span class="item-status-icon">
+                                    <div class="icon icon-recordit "><svg class="icon__cnt"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#icon-recordit"></use></svg></div>
+                        <span class="status-desc">Записать</span>
+                    </span>
+                    <div class="extend-drive-notify">
+                        <div class="extend-drive-notify-text-wrap">
+                            <div class="icon icon-storage ">
+                                <svg class="icon__cnt">
+                                    <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#icon-storage"></use>
+                                </svg>
+                            </div>
+                            <p>У Вас закончилось свободное место на облачном хранилище МЕГА.ДИСК</p>
+                            <p><a href="/personal/services/">Заказать дополнительную емкость</a></p>
+                        </div>
+                    </div>
+
+                    <div class="item-header">
+                        <div class="meta">
+                            <div class="time">15:15</div>
+                            <div class="date">14.10.2016</div>
+                            <div class="category"><a href="#" data-type="category">Ток-шоу</a></div>
+                        </div>
+                        <div class="title">
+                            <a href="/channels/pervyy-kanal/vremya-pokazhet/?event=223492">
+                                    Время покажет                        </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="item status-recordable" data-type="broadcast" data-broadcast-id="230810" data-category="m-s">
+                <div class="inner">
+                    <div class="item-image-holder" style="background-image: url(/upload/epg_cut/350082_288_288.jpg)"></div>
+
+                    <span class="item-status-icon">
+                                    <div class="icon icon-recordit "><svg class="icon__cnt"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#icon-recordit"></use></svg></div>
+                        <span class="status-desc">Записать</span>
+                    </span>
+                    <div class="extend-drive-notify">
+                        <div class="extend-drive-notify-text-wrap">
+                            <div class="icon icon-storage ">
+                                <svg class="icon__cnt">
+                                    <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#icon-storage"></use>
+                                </svg>
+                            </div>
+                            <p>У Вас закончилось свободное место на облачном хранилище МЕГА.ДИСК</p>
+                            <p><a href="/personal/services/">Заказать дополнительную емкость</a></p>
+                        </div>
+                    </div>
+
+                    <div class="item-header">
+                        <div class="meta">
+                            <div class="time">19:17</div>
+                            <div class="date">14.10.2016</div>
+                            <div class="category"><a href="#" data-type="category">М/с</a></div>
+                        </div>
+                        <div class="title">
+                            <a href="/channels/karusel/malenkiy-zoomagazin/?event=230810">
+                                    Маленький зоомагазин | Хомячья брат...                        </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="item status-recordable" data-type="broadcast" data-broadcast-id="223485" data-category="tok-shou">
+                <div class="inner">
+                    <div class="item-image-holder" style="background-image: url(/upload/epg_cut/359459_288_288.jpg)"></div>
+
+                    <span class="item-status-icon">
+                                    <div class="icon icon-recordit "><svg class="icon__cnt"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#icon-recordit"></use></svg></div>
+                        <span class="status-desc">Записать</span>
+                    </span>
+                    <div class="extend-drive-notify">
+                        <div class="extend-drive-notify-text-wrap">
+                            <div class="icon icon-storage ">
+                                <svg class="icon__cnt">
+                                    <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#icon-storage"></use>
+                                </svg>
+                            </div>
+                            <p>У Вас закончилось свободное место на облачном хранилище МЕГА.ДИСК</p>
+                            <p><a href="/personal/services/">Заказать дополнительную емкость</a></p>
+                        </div>
+                    </div>
+
+                    <div class="item-header">
+                        <div class="meta">
+                            <div class="time">10:55</div>
+                            <div class="date">14.10.2016</div>
+                            <div class="category"><a href="#" data-type="category">Ток-шоу</a></div>
+                        </div>
+                        <div class="title">
+                            <a href="/channels/pervyy-kanal/modnyy-prigovor/?event=223485">
+                                    Модный приговор                        </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="item status-recordable" data-type="broadcast" data-broadcast-id="225208" data-category="novosti">
+                <div class="inner">
+                    <div class="item-image-holder" style="background-image: url(/upload/epg_cut/195644_288_288.jpg)"></div>
+
+                    <span class="item-status-icon">
+                                    <div class="icon icon-recordit "><svg class="icon__cnt"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#icon-recordit"></use></svg></div>
+                        <span class="status-desc">Записать</span>
+                    </span>
+                    <div class="extend-drive-notify">
+                        <div class="extend-drive-notify-text-wrap">
+                            <div class="icon icon-storage ">
+                                <svg class="icon__cnt">
+                                    <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#icon-storage"></use>
+                                </svg>
+                            </div>
+                            <p>У Вас закончилось свободное место на облачном хранилище МЕГА.ДИСК</p>
+                            <p><a href="/personal/services/">Заказать дополнительную емкость</a></p>
+                        </div>
+                    </div>
+
+                    <div class="item-header">
+                        <div class="meta">
+                            <div class="time">18:30</div>
+                            <div class="date">14.10.2016</div>
+                            <div class="category"><a href="#" data-type="category">Новости</a></div>
+                        </div>
+                        <div class="title">
+                            <a href="/channels/pyatyy-kanal/seychas/?event=225208">
+                                    Сейчас                        </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="item status-recordable" data-type="broadcast" data-broadcast-id="223338" data-category="tok-shou">
+                <div class="inner">
+                    <div class="item-image-holder" style="background-image: url(/upload/epg_cut/198277_288_288.jpg)"></div>
+
+                    <span class="item-status-icon">
+                                    <div class="icon icon-recordit "><svg class="icon__cnt"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#icon-recordit"></use></svg></div>
+                        <span class="status-desc">Записать</span>
+                    </span>
+                    <div class="extend-drive-notify">
+                        <div class="extend-drive-notify-text-wrap">
+                            <div class="icon icon-storage ">
+                                <svg class="icon__cnt">
+                                    <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#icon-storage"></use>
+                                </svg>
+                            </div>
+                            <p>У Вас закончилось свободное место на облачном хранилище МЕГА.ДИСК</p>
+                            <p><a href="/personal/services/">Заказать дополнительную емкость</a></p>
+                        </div>
+                    </div>
+
+                    <div class="item-header">
+                        <div class="meta">
+                            <div class="time">17:45</div>
+                            <div class="date">14.10.2016</div>
+                            <div class="category"><a href="#" data-type="category">Ток-шоу</a></div>
+                        </div>
+                        <div class="title">
+                            <a href="/channels/rossiya-1/pryamoy-efir/?event=223338">
+                                    Прямой эфир                        </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="item status-recordable" data-type="broadcast" data-broadcast-id="223483" data-category="poznavatelnoe">
+                <div class="inner">
+                    <div class="item-image-holder" style="background-image: url(/upload/epg_cut/171147_288_288.jpg)"></div>
+
+                    <span class="item-status-icon">
+                                    <div class="icon icon-recordit "><svg class="icon__cnt"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#icon-recordit"></use></svg></div>
+                        <span class="status-desc">Записать</span>
+                    </span>
+                    <div class="extend-drive-notify">
+                        <div class="extend-drive-notify-text-wrap">
+                            <div class="icon icon-storage ">
+                                <svg class="icon__cnt">
+                                    <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#icon-storage"></use>
+                                </svg>
+                            </div>
+                            <p>У Вас закончилось свободное место на облачном хранилище МЕГА.ДИСК</p>
+                            <p><a href="/personal/services/">Заказать дополнительную емкость</a></p>
+                        </div>
+                    </div>
+
+                    <div class="item-header">
+                        <div class="meta">
+                            <div class="time">09:20</div>
+                            <div class="date">14.10.2016</div>
+                            <div class="category"><a href="#" data-type="category">Познавательное</a></div>
+                        </div>
+                        <div class="title">
+                            <a href="/channels/pervyy-kanal/kontrolnaya-zakupka/?event=223483">Контрольная закупка</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+
+
+
+
+
+
             <div class="broadcasts__broadcast broadcast broadcast--recordable" data-type="broadcast" data-broadcast-id="70186" data-category="sketch-shou">
                 <img class="broadcast__image broadcast-image" height="350" src="img/324640.jpg">
                 <div class="broadcast__wrap-status">

@@ -37594,7 +37594,6 @@ Box.Application.addBehavior('banner-close', function (context) {
 	};
 
 });
-
 /* global Box, alert */
 Box.Application.addBehavior('recording-broadcast', function (context) {
 	'use strict';
@@ -37618,7 +37617,13 @@ Box.Application.addBehavior('recording-broadcast', function (context) {
 							'</div>' +
 						'</div>';
 
-		broadcast.find('.item-header').before(notifyHTML);
+		if(broadcast.find('.item-header')[0]){
+			broadcast.find('.item-header').before(notifyHTML);
+		}else{
+			var statusHTML = $($("#status-recordingTmpl").html()).html();
+			$(".broadcast__status").html(statusHTML);
+			broadcast.removeClass("broadcast--alert").addClass("status-recording");
+		}
 	}
 	function removeRecordingNotify(broadcast) {
 		broadcast.find('.recording-notify').remove();
@@ -37633,12 +37638,20 @@ Box.Application.addBehavior('recording-broadcast', function (context) {
 							'</div>' +
 						'</div>';
 
-		broadcast.find('.item-header').before(notifyHTML);
-		broadcast.addClass('extend-drive-required');
+		if(broadcast.find('.item-header')[0]){
+			broadcast.find('.item-header').before(notifyHTML);
+			broadcast.addClass('extend-drive-required');
+		}else{
+			broadcast.addClass("broadcast--alert");
+		}
 	}
 	function removeExtendDriveNotify(broadcast) {
-		broadcast.removeClass('extend-drive-required');
-		broadcast.find('.extend-drive-notify').remove();
+		if(broadcast.find('.item-header')[0]) {
+			broadcast.removeClass('extend-drive-required');
+			broadcast.find('.extend-drive-notify').remove();
+		}else{
+			broadcast.removeClass("broadcast--alert");
+		}
 	}
 
 	function updateRemoteBroadcastStatus(broadcast, broadcastID, element) {
@@ -37649,7 +37662,7 @@ Box.Application.addBehavior('recording-broadcast', function (context) {
 			if (data.status === 'success') {
 				// addRecordingNotify(broadcast);
 				broadcast.removeClass('status-recordable').addClass('recording-in-progress status-recording');
-				broadcast.find('.icon-recordit').remove().end().find('.item-status-icon').prepend($('<span data-icon="icon-recording" />'));
+				broadcast.find('.icon-recordit').remove().end().find('.broadcast__status').prepend($('<span data-icon="icon-recording" />'));
 				broadcast.find('.bs-status__title').text('В записи');
 				var countHeader = $(".item-recording__count").text();
 				var arrCount = [];
@@ -37707,27 +37720,28 @@ Box.Application.addBehavior('recording-broadcast', function (context) {
 		onclick: function (event, element, elementType) {
 			if (elementType === 'broadcast' && $(event.target).closest('.icon-recordit').length > 0) {
 				event.preventDefault();
-				// console.log( 'Авторизован: ' );
-				// console.log( authentication === true );
+				console.log( 'Авторизован: ' );
+				console.log( authentication === true );
 				// authentication = true;
 				if (authentication === true) {
-					// console.log( 'Статус флаг: ' );
-					// console.log( $(element).data('status-flag') === false );
-					// console.log( 'Статус не undefined: ' );
-					// console.log( $(element).data('status-flag') === 'undefined' );
+					console.log( 'Статус флаг: ' );
+					console.log( $(element).data('status-flag') === false );
+					console.log( 'Статус не undefined: ' );
+					console.log( $(element).data('status-flag') === 'undefined' );
 					if ($(element).data('status-flag') === false || typeof $(element).data('status-flag') === 'undefined') {
 						var broadcast = $(moduleEl).find($(event.target).closest('.broadcast'));
 						var broadcastID = broadcast.data('broadcast-id');
-						// console.log( 'broadcastID не пустой: ' );
-						// console.log( broadcastID !== '' );
-						// console.log( 'broadcastID не undefined: ' );
-						// console.log( typeof broadcastID !== 'undefined' );
+						console.log( 'broadcastID не пустой: ' );
+						console.log( broadcastID !== '' );
+						console.log( 'broadcastID не undefined: ' );
+						console.log( typeof broadcastID !== 'undefined' );
 						if (broadcastID !== '' && typeof broadcastID !== 'undefined') {
-							// console.log( 'Имеет класс status-recordable: ' );
-							// console.log( broadcast.hasClass('status-recordable') );
-							// console.log( 'Не имеет класса status-recording' );
-							// console.log( !broadcast.hasClass('status-recording') );
+							console.log( 'Имеет класс status-recordable: ' );
+							console.log( broadcast.hasClass('status-recordable') );
+							console.log( 'Не имеет класса status-recording' );
+							console.log( !broadcast.hasClass('status-recording') );
 							if (broadcast.hasClass('status-recordable') && !broadcast.hasClass('status-recording')) {
+								console.log("Апдейт");
 								updateRemoteBroadcastStatus(broadcast, broadcastID, element);
 							}
 						}
@@ -37884,7 +37898,6 @@ Box.Application.addBehavior('load-broadcast-player', function (context) {
 	};
 
 });
-
 /* global Box */
 Box.Application.addBehavior('play-recorded-broadcasts', function (context) {
 	'use strict';
@@ -37918,13 +37931,18 @@ Box.Application.addBehavior('play-recorded-broadcasts', function (context) {
 			modalService = null;
 		},
 		onclick: function (event, element, elementType) {
+			console.log($(element));
+			console.log($(moduleEl));
+			console.log();
 			if (elementType === 'broadcast' && $(event.target).closest('.icon-recorded').length > 0) {
 				event.preventDefault();
 				if (authentication === true) {
 					if ($(element).data('play-flag') === false) {
+						console.log("3 step");
 						var broadcast = $(moduleEl).find($(event.target).closest('.item'));
 						var broadcastID = broadcast.data('broadcast-id');
 						if (broadcastID !== '' && typeof broadcastID !== 'undefined' && broadcast.hasClass('status-recorded')) {
+							console.log("4 step");
 							// send message
 							Box.Application.broadcast('playbroadcast', {
 								broadcastID: broadcastID,
@@ -38524,7 +38542,6 @@ Box.Application.addModule('search', function (context) {
 		}
 	};
 });
-
 /* global Box */
 Box.Application.addModule('recomended-broadcasts', function (context) {
 	'use strict';
@@ -38546,7 +38563,28 @@ Box.Application.addModule('recomended-broadcasts', function (context) {
 	var inProccess = false;
 	var stopView = false;
 	var placeholder;
-	var auth = context.getGlobalConfig("auth");
+	var pageModule = $('[data-module="page"]').get(0);
+	var auth = Box.Application.getModuleConfig(pageModule, 'authentication');
+
+	function cutString(str, count){
+		count = parseInt(count);
+		str = str.replace(/\.{3}$/, "");
+		if ( str.length > count ) {
+		    str = str.slice( 0, count ) + '...';
+		}
+		return str;
+	}
+
+	$(".broadcasts").children().each(function(){
+		var $this = $(this);
+		var link = $(this).find(".broadcast__link");
+		link.text(cutString($.trim(link.text()), 30));
+		if($this.hasClass("recordable")){
+			$this.removeClass("recordable").addClass("status-recordable");
+		}else if($this.hasClass("recording")){
+			$this.removeClass("recording").addClass("status-recording");
+		}
+	});
 
 	function convertDate(date){
 		return date.replace(/([0-9]{2})\.([0-9]{2})\.([0-9]{4})(\s([0-9]{2})\:([0-9]{2})\:([0-9]{2}))?/,"$3-$2-$1");
@@ -38558,9 +38596,10 @@ Box.Application.addModule('recomended-broadcasts', function (context) {
 		if(auth) statusTmpl = $("#" + item.status + "Tmpl").html(); 
 		else statusTmpl = $("#nonAuthTmpl").html(); 
 		var compile = _.template(tmpl);
+		var name = cutString(item.name, 30);
 		var output = compile({
 			id: item.id,
-			name: item.name,
+			name: name,
 			link: item.link,
 			time: item.time,
 			image: item.image,
@@ -38570,7 +38609,8 @@ Box.Application.addModule('recomended-broadcasts', function (context) {
 			categoryName: item.category.name
 		});
 		var returnEl = $(output);
-		if(auth) returnEl.addClass("broadcast--" + (item.status).replace("status-","")); 
+		// if(auth) returnEl.addClass("broadcast--" + (item.status).replace("status-","")); 
+		if(auth) returnEl.addClass(item.status === "status-" ? "status-recordable" : item.status); 
 		setImmediate(function(){
 			returnEl = null;
 			tmpl = null;
@@ -38636,13 +38676,13 @@ Box.Application.addModule('recomended-broadcasts', function (context) {
 	}
 
 	function hidePlaceholder(){
+		// alert(1);
 		if(!placeholder) return false;
 		$(placeholder).fadeOut(500,function(){
 			$(this).remove();
 		});
 		if(inProccess) return false;
 		stopView = false;
-		initModules();
 	}
 
 	function showPlaceholder(){
@@ -38650,6 +38690,9 @@ Box.Application.addModule('recomended-broadcasts', function (context) {
 		var $placeholder = $('<div class="broadcast-placeholder"><div class="broadcast-placeholder__bp-wrap bp-wrap"><div class="broadcast-placeholder__bp-image bp-image"></div></div></div>').hide();
 		listItems.append($placeholder);
 		$placeholder.fadeIn();
+		setTimeout(function(){
+			hidePlaceholder();
+		},3000);
 	}
 
 	function dataEmpty(){
@@ -38745,14 +38788,16 @@ Box.Application.addModule('recomended-broadcasts', function (context) {
 					}else{
 						hidePlaceholder();
 					}
+					setImmediate(function(){
+						categoryID = null, categoryLink = null, block = null, offsetTop = null;
+					});
 				}
 			},2000);
+			initModules();
 		},
 		destroy: function () {
-			moduleEl = null;
-			listItems = null;
+			moduleEl = null, listItems = null, kineticService = null, iconLoaderService = null, items = null, viewMoreUrl = null, countMax = null, categoryActive = null, categoriesNoData = null, inProccess = null, stopView = null, placeholder = null, pageModule = null, auth = null;
 		}
-
 	};
 });
 
@@ -38848,63 +38893,123 @@ Box.Application.addModule('broadcast-results', function (context) {
 	// Private
 	// --------------------------------------------------------------------------
 	var $ = context.getGlobal('jQuery');
-	if(!$("#paramsJson")[0]) return;
 	var moduleEl;
 	var DATA_KEY = 'broadcast_results_dates';
 	var broadcastObj;
 	var pageModule;
-	var slideSwiperLast;
-	var slideSwiperNext;
 	var authentication;
-	var swiper;
+    var swiper = null;
+    var stopAjax = false;
 	var sessionSlide = sessionStorage.getItem('slide');
-	var bigSlider = sessionSlide > 10 ? true : false;
+    var date;
+    var dates;
+    var channels;
+    var offset;
+    var iconLoaderService;
+    var ajaxType = context.getConfig("ajaxType");
 
-	function initEvents(){
-		slideSwiperLast = $(".swiper-slide").last();
-		slideSwiperNext = $(".swiper-slide--end").siblings(".swiper-slide-next");
-		slideSwiperLast.on("mousedown", mouseDown);
-		slideSwiperNext.on("mousedown", mouseDown);
-	}
+	function runSwiper(){
+        swiper = broadcastObj.swiper;
+        swiper.on('onSliderMove', function (getSwiper) {
+            if(getSwiper.isEnd) {
+                broadcastObj.openPreloader();
+                date = getDay(date, "next");
+                setTimeout(function(){
+                    renderDay([date], channels.split(","));
+                },1000);
+            }
+        });
+    };
 
-	function resetEvents(){
-		slideSwiperLast = $(".swiper-slide").last();
-		slideSwiperNext = $(".swiper-slide--end").siblings(".swiper-slide-next");
-		slideSwiperLast.off("mousedown");
-		slideSwiperNext.off("mousedown");
-	}
-
-	function addDay(nextDay, nextDayToScript){
-		broadcastObj.openPreloader();
-		$.ajax({
-			type: 'post',
-			url: context.getConfig("fetchResultsURL"),
+    function renderDay(days, channels, ajaxType, type){
+        if(stopAjax) return;
+        $.ajax({
+            type: 'post',
+            url: context.getConfig("fetchResultsURL"),
 			data: {
 				AJAX: 'Y',
-				AJAX_TYPE: context.getConfig("ajaxType"),
-				date: nextDay
-			},
-			dataType: "json",
-			success: function (response) {
-				if(!_.isEmpty(response)){
-					broadcastObj.addDay(response, nextDayToScript);
-					moduleEl.dataset.date = nextDay;
-					broadcastObj.closePreloader();
-				}
-			},
-			error: function () {
-				console.warn('Ошибка загрузки дня');
-			}
-		});
-	}
+				AJAX_TYPE: ajaxType,
+                date: days,
+                channels: channels,
+                count_channels: context.getConfig("countChannels"),
+                offset_channels: offset
+            },
+            beforeSend: function(){
+                stopAjax = true;
+            },
+            dataType: "json",
+            success: function (response) {
+                if(!_.isEmpty(response)){
+                    if("next_disable" in response) broadcastObj.arrowsChannels("next");
+                    else broadcastObj.arrowsChannels("next", true);
 
-	function nextDay(){
-		var currDate = (moduleEl.dataset.date).replace(/([0-9]{2})\.([0-9]{2})\.([0-9]{4})\s(([0-9]{2})\:([0-9]{2})\:([0-9]{2}))/, "$3-$2-$1 $4");
-		var nextDay = moment(currDate);
-		nextDay = nextDay.add(1,"days");
-		var nextDayToScript = nextDay.format("YYYY-MM-DD HH:mm:ss");
-		nextDay = nextDay.format("DD.MM.YYYY HH:mm:ss");
-		addDay(nextDay, nextDayToScript);
+                    if("prev_disable" in response) broadcastObj.arrowsChannels("prev");
+                    else broadcastObj.arrowsChannels("prev", true);
+
+                    broadcastObj.addDay(response);
+                    moduleEl[0].dataset.date = days[days.length - 1];
+                    setImmediate(function(){
+                        if(swiper === null)
+                        var swiperIntval = setInterval(function(){
+                            if(broadcastObj.swiper !== null){
+                                runSwiper();
+                                clearInterval(swiperIntval);
+                            }
+                        });
+                        stopAjax = false;
+                        setTimeout(function(){
+                            broadcastObj.closePreloader();
+                        },1000);
+                    });
+                }else{
+                    if("next" == type) {
+                    	broadcastObj.arrowsChannels("next");
+                    	broadcastObj.arrowsChannels("prev", true);
+                    }else if("prev" == type) {
+                    	broadcastObj.arrowsChannels("prev");
+                    	broadcastObj.arrowsChannels("next", true);
+                    }
+                }
+            },
+            error: function () {
+                console.warn('Ошибка загрузки дня');
+            }
+        });
+    };
+
+    function renderChannels(type){
+        offset = parseInt(offset);
+        swiper = null;
+        if(type === "prev"){
+        	offset -= 10;
+		    sessionStorage.setItem("offsetChannels", offset == 0 ? 0 : offset);
+        }else if(type === "next"){
+        	offset += 10;
+		    sessionStorage.setItem("offsetChannels", offset);
+        }
+        broadcastObj.openPreloader();
+        broadcastObj.destroySwiper();
+        var date = getDay();
+        renderDay([date], [], ajaxType[type], type);
+    }
+
+    function getDay(currDate, type){
+        var getDate = new Date();
+        function cpDate(date){
+            return (date < 10) ? "0" + date : date;
+        }
+
+        if(currDate !== undefined){
+            if(currDate.match(/[0-9]{2}\./)){
+                currDate = (currDate).replace(/([0-9]{2})\.([0-9]{2})\.([0-9]{4})\s(([0-9]{2})\:([0-9]{2})\:([0-9]{2}))/, "$3-$2-$1 $4");
+            }else currDate;
+            getDate = new Date(currDate);
+        }
+       
+        if(type === "next") getDate.setDate(getDate.getDate() + 1);
+        else if(type === "prev") getDate.setDate(getDate.getDate() - 1); 
+
+        return cpDate(getDate.getDate()) + "." + cpDate(getDate.getMonth() + 1) + "." + getDate.getFullYear() + " " + cpDate(getDate.getHours()) + ":" + cpDate(getDate.getMinutes()) + ":" + cpDate(getDate.getSeconds());
     }
 
 	// --------------------------------------------------------------------------
@@ -38916,53 +39021,85 @@ Box.Application.addModule('broadcast-results', function (context) {
 		behaviors: ['category-row', 'recording-broadcast', 'play-recorded-broadcasts'],
 
 		init: function () {
+			var self = this;
 			$(moduleEl).find('[data-type="broadcast"]').data('status-flag', false).data('play-flag', false);
 			$(moduleEl).data('ajax-flag', true);
 			pageModule = $('[data-module="page"]').get(0);
 			authentication = Box.Application.getModuleConfig(pageModule, 'authentication');
-			var json = JSON.parse($("#paramsJson").html());
-			json.auth = authentication;
 			moduleEl = context.getElement();
-			broadcastObj = $(".main-container").Broadcasts("initialize", {
-	            config: context.getConfig(),
-	            JSONParams: json,
-	            bigSlider: bigSlider,
-	            origin: context.getConfig("origin")
-	        });
-			swiper = broadcastObj.swiper;
-			var countDays = this.getDayFromSession(sessionSlide);
-			if(countDays > 1){
-				for(var i = 0; i < (countDays - 1); i++){
-					nextDay();
-				}
-				setTimeout(function(){
-					swiper.slideTo(sessionSlide);
-					broadcastObj.closePreloader();
-				},1000);
-			}
-			swiper.on('onSlideChangeStart', function (getSwiper) {
-				if(getSwiper.isEnd) {
-					nextDay();
-				}
+
+			broadcastObj = $(".categories-items").Broadcasts({
+				auth: true,
+				origin: "https://megatv.su"
 			});
-		    var iconLoaderService = Box.Application.getService('icon-loader');
-            setInterval(function(){
-            	if(document.querySelector("[data-icon]"))
-		        	iconLoaderService.renderIcons();
-	            var btnModals = $('[data-module="modal"]');
-	            if(btnModals[0])
-			        btnModals.each(function(){
-			            var $this = $(this)[0];
-			            Box.Application.start($this);
-			        });
-            },1000);
-            $("#paramsJson").empty().remove();
-            // setImmediate(function(){
-            // });
+
+			setImmediate(function(){
+				swiper = broadcastObj.swiper;
+			    date = getDay();
+			    dates = sessionStorage.getItem("dates") ? sessionStorage.getItem("dates") : date;
+			    channels = sessionStorage.getItem("channels") ? sessionStorage.getItem("channels") : "";
+			    offset = sessionStorage.getItem("offsetChannels") ? sessionStorage.getItem("offsetChannels") : 0;
+			    sessionStorage.setItem("offsetChannels", offset);
+
+			    renderDay(dates.split(","), channels.split(","), ajaxType.start, offset);
+				setImmediate(function(){
+					self.runEvents();
+				    iconLoaderService = Box.Application.getService('icon-loader');
+		            setInterval(function(){
+		            	if(document.querySelector("[data-icon]"))
+				        	iconLoaderService.renderIcons();
+			            var btnModals = $('[data-module="modal"]');
+			            if(btnModals[0])
+					        btnModals.each(function(){
+					            var $this = $(this)[0];
+					            Box.Application.start($this);
+					        });
+		            },1000);
+				});
+			});
+
 		},
 
-		getDayFromSession: function(countSlides){
-			return Math.ceil(countSlides / 10);
+		runEvents: function(){
+		    $(".next-channels").on("click", function(){
+		        swiper.setWrapperTranslate(0);
+		        var type = "next";
+		        renderChannels(type);
+		    });
+
+		    $(".prev-channels").on("click", function(){
+		        swiper.setWrapperTranslate(0);
+		        var type = "prev";
+		        renderChannels(type);
+		    });
+		    $('[data-type="prev-button"]').on("click", function(){
+		        broadcastObj.prevButton();
+		        return false;
+		    });
+
+		    $('[data-type="next-button"]').on("click", function(){
+		        broadcastObj.nextButton();
+		        if(swiper.translate == swiper.maxTranslate()){
+		            var channels = sessionStorage.getItem("channels") ? sessionStorage.getItem("channels") : "";
+		            broadcastObj.openPreloader();
+		            renderDay(getDay(date, "next"), channels.split(","), ajaxType.start);
+		        }
+		        return false;
+		    });
+
+		    $("body").on("keydown", function(eventObject){
+		      if(eventObject.which === 37){
+		        broadcastObj.prevButton();
+		      }
+		      if(eventObject.which === 39){
+		        broadcastObj.nextButton();
+		        if(swiper.translate == swiper.maxTranslate()){
+		            var channels = sessionStorage.getItem("channels") ? sessionStorage.getItem("channels") : "";
+		            broadcastObj.openPreloader();
+		            renderDay(getDay(date, "next"), channels.split(","), ajaxType.start);
+		        }
+		      }
+		    });
 		},
 
 		destroy: function () {
