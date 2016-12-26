@@ -23,6 +23,21 @@ $epg->import();
 
 \CDev::deleteDirectory($_SERVER['DOCUMENT_ROOT'].'/bitrix/cache', 0);
 
+\Hawkart\Megatv\ScheduleTable::connectByTitle();
+
+\CDev::deleteDirectory($_SERVER['DOCUMENT_ROOT'].'/bitrix/cache', 0);
+
+\Hawkart\Megatv\ScheduleTable::slice(); 
+\CDev::deleteDirectory($_SERVER['DOCUMENT_ROOT'].'/bitrix/cache', 0);
+
+$fisrt_date = date('d.m.Y', strtotime(\CTimeEx::getCurDate()));
+for($day=0; $day<3; $day++)
+{
+    $curDate = date('d.m.Y', strtotime("+".$day." day", strtotime($fisrt_date)));
+    \Hawkart\Megatv\ScheduleCell::generate($curDate);
+}
+\CDev::deleteDirectory($_SERVER['DOCUMENT_ROOT'].'/bitrix/cache', 0);
+
 echo date("H:i:s")."\r\n";
 
 echo " --finish loading--";
