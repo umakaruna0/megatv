@@ -11,26 +11,31 @@
 /** @var string $componentPath */
 /** @var CBitrixComponent $component */
 $this->setFrameMode(true);
-?>     
-<div class="city-select box-left__box-city" data-module="city-select">
-    <script type="text/x-config">
-        {
-            "url": "<?=$arResult["URL"]?>",
-            "cities": [
-                <?foreach($arResult["ITEMS"] as $key=>$arItem):?>
-                    { "id": <?=$arItem["ID"]?>, "text": "<?=$arItem["UF_TITLE"]?>" }<?if($key<count($arResult["ITEMS"])-1):?>,<?endif;?>
-                <?endforeach;?>
-            ],
-            "showCityRequestPopover": false
-        }
-    </script>
-    <form action="<?=$arResult["URL"]?>" method="POST" id="city-select-form">
-        <select name="city-select" id="_id-city-select">
-            <option value="<?=$arResult["CUR_CITY"]["ID"]?>" selected>
-                <?=$arResult["CUR_CITY"]["UF_TITLE"]?>
-            </option>
-        </select>
-        <input type="hidden" name="city-id" value="<?=$arParams["CITY_GEO"]["ID"]?>" id="city-select-value" />
-        <?=bitrix_sessid_post()?>
-    </form>
+?>  
+
+<div class="box-left__box-city">
+    <div class="js-citydd-init selectdd" data-class="citydd-container" data-module="city-select">
+        <script class="js-citydd-json" type="text/x-config">
+            {
+                "url": "<?=$arResult["URL"]?>",
+                "cities": [
+                    <?foreach($arResult["ITEMS"] as $key=>$arItem):?>
+                        { "id": <?=$arItem["ID"]?>, "text": "<?=$arItem["UF_TITLE"]?>" }<?if($key<count($arResult["ITEMS"])-1):?>,<?endif;?>
+                    <?endforeach;?>
+                ],
+                "showCityRequestPopover": false, 
+                "consts" : {
+                    "titleNotFound": "Не найдено!"
+                }
+            }
+        </script>
+        <form action="<?=$arResult["URL"]?>" method="POST" class="js-city-select-form">
+            <div class="selectdd__titledd js-jdd-open citydd">
+                <span class="selectdd__name js-jdd-title"><?=$arResult["CUR_CITY"]["UF_TITLE"]?></span>
+                <span class="selectdd__corner"></span>
+            </div>
+            <input type="hidden" name="city-id" value="<?=$arParams["CITY_GEO"]["ID"]?>" class="js-city-select-value">
+            <?=bitrix_sessid_post()?>
+        </form>
+    </div>
 </div>

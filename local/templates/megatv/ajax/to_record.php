@@ -15,7 +15,11 @@ if($USER->IsAuthorized() && $prog_time>0)
     //get subsribe channel list
     $selectedChannels = array();
     $result = \Hawkart\Megatv\SubscribeTable::getList(array(
-        'filter' => array("UF_ACTIVE"=>1, "=UF_USER_ID" => $USER->GetID(), ">UF_CHANNEL_ID" => 0),
+        'filter' => array(
+            "=UF_ACTIVE"=>1, 
+            "=UF_USER_ID" => $USER->GetID(), 
+            ">UF_CHANNEL_ID" => 0
+        ),
         'select' => array("UF_CHANNEL_ID")
     ));
     while ($arSub = $result->fetch())
@@ -33,26 +37,35 @@ if($USER->IsAuthorized() && $prog_time>0)
         'select' => array(
             "ID", "UF_DATE_START", "UF_DATE_END", "UF_DATE", "UF_CHANNEL_BASE_ID" => "UF_CHANNEL.UF_BASE_ID", "UF_PROG_ID",
             "UF_CHANNEL_EPG_ID" => "UF_CHANNEL.UF_BASE.UF_EPG_ID", "UF_IMG_PATH" => "UF_PROG.UF_IMG.UF_PATH",
-            "UF_PROG_EPG_ID" => "UF_PROG.UF_EPG_ID"
+            "UF_PROG_EPG_ID" => "UF_PROG.UF_EPG_ID", "UF_EPG_ID", "UF_CHANNEL_ID"
         ),
         'limit' => 1
     ));
     if ($arSchedule = $result->fetch())
     {
-        $arSchedule['UF_CHANNEL_ID'] = $arSchedule["UF_CHANNEL_BASE_ID"];
         $arSchedule["UF_DATE_START"] = $arSchedule['UF_DATE_START']->toString();
         $arSchedule["UF_DATE_END"] = $arSchedule['UF_DATE_END']->toString();
     }
     
-    //check if schedule in recording yet
+    //check if schedule in recording yet. Deleted to recordable
+    $update = false;
     $result = \Hawkart\Megatv\RecordTable::getList(array(
-        'filter' => array("=UF_USER_ID" => $USER_ID, "=UF_SCHEDULE_ID" => $prog_time),
-        'select' => array("ID"),
+        'filter' => array(
+            "=UF_USER_ID" => $USER_ID, 
+            "=UF_SCHEDULE_ID" => $prog_time, 
+        ),
+        'select' => array("ID", "UF_DELETED"),
         'limit' => 1
     ));
     if ($arRecord = $result->fetch())
     {
-        exit(json_encode(array("status"=>"error", "error"=> "Такая запись уже есть.")));
+        if(intval($arRecord["UF_DELETED"])==1)
+        {
+            $update = true;
+            $update_id = $arRecord["ID"];
+        }else{
+            exit(json_encode(array("status"=>"error", "error"=> "Такая запись уже есть.")));
+        }
     }
     
     //money check
@@ -72,7 +85,7 @@ if($USER->IsAuthorized() && $prog_time>0)
     {
         exit(json_encode(array("status"=>"require-space", "error"=> "Не достаточно места на диске для записи")));
     }else{
-        if(in_array($arSchedule["UF_CHANNEL_ID"], $selectedChannels))
+        if(in_array($arSchedule["UF_CHANNEL_BASE_ID"], $selectedChannels))
         {
             $log_file = "/logs/sotal/sotal_".date("d_m_Y_H").".txt";
             \CDev::log(array(
@@ -82,37 +95,29 @@ if($USER->IsAuthorized() && $prog_time>0)
                     "DATE"       => date("d.m.Y H:i:s")
                 )
             ), false, $log_file);
-                
-            $Sotal = new \Hawkart\Megatv\CSotal($USER_ID);
-            $Sotal->register();     //регистрируем пользователя, если нужно
-            $Sotal->getSubscriberToken();   //получим ключ для использования в запросах
-            $record_id = $Sotal->putRecord($arSchedule); //ставим на запись программу
-            
-            if($record_id>0)
+
+            if($update)
             {
-                //сохраняем инфу о записе
-                $arSchedule["UF_SOTAL_ID"] = $record_id;
-                
-                \Hawkart\Megatv\RecordTable::create($arSchedule);
-                                
-                //Inc rating for prog
-                \Hawkart\Megatv\ProgTable::addByEpgRating($arSchedule["UF_PROG_EPG_ID"], 1);
-                
-                //change capacity for user 
-                $cuser = new \CUser;
-                $cuser->Update($arUser["ID"], array("UF_CAPACITY_BUSY"=>$busy));
-                
-                /**
-                 * Данные в статистику
-                 */                
-                \Hawkart\Megatv\CStat::addByShedule($arSchedule["ID"], "record");
-                
-                //--------------------------------------------------                
-                
-                $status = "success";
+                \Hawkart\Megatv\RecordTable::update($update_id, array("UF_DELETED" => 0));
             }else{
-                exit(json_encode(array("status"=>"error", "error"=> "Ошибка, программа на запись не поставлена. [sotal problem]")));
-            } 
+                \Hawkart\Megatv\RecordTable::create($arSchedule);
+            }
+            
+                            
+            //Inc rating for prog
+            \Hawkart\Megatv\ProgTable::addByEpgRating($arSchedule["UF_PROG_EPG_ID"], 1);
+            
+            //change capacity for user 
+            $cuser = new \CUser;
+            $cuser->Update($arUser["ID"], array("UF_CAPACITY_BUSY"=>$busy));
+            
+            /**
+             * Данные в статистику
+             */                
+            \Hawkart\Megatv\CStat::addByShedule($arSchedule["ID"], "record");
+
+            $status = "success";
+
         }else{
             exit(json_encode(array("status"=>"error", "error"=> "Нельзя записать")));
         }

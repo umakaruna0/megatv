@@ -1,0 +1,10 @@
+.site-footer .footer-content .copyrights{
+    margin-left: 0;
+    border: none;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.site-footer .footer-content .copyrights a{
+    margin: 0 10px;
+}

@@ -17,22 +17,19 @@
         }elseif($APPLICATION->GetCurDir() == "/personal/records/"){
             $js = array(
                 "tmpl/js/user-records.js",
-               // "tmpl/js/player.js"
             );
         }elseif($APPLICATION->GetCurDir() == "/personal/services/"){
             $js = array(
                 "tmpl/js/user-services.js"
             );
         }
-        elseif(strpos($APPLICATION->GetCurDir(), "/channels/")!==false && isset($_REQUEST["SCHEDULE_CODE"])){
+        elseif(strpos($APPLICATION->GetCurDir(), "/channels/")!==false && !empty($_REQUEST["SCHEDULE_CODE"])){
             $js = array(
                 "tmpl/js/broadcast-card.js",
-                //"tmpl/js/player.js"
             );
         }elseif(strpos($APPLICATION->GetCurDir(), "/channels/")!==false && !empty($_REQUEST["CHANNEL_CODE"])){
             $js = array(
                 "tmpl/js/channel-card.js",
-                //"tmpl/js/player.js"
             );
         }else{
             $js = array(
@@ -46,12 +43,82 @@
             );
         }
         $js[] = "tmpl/js/player.js";
-        $js[] = "project.js";
+        $js[] = "tmpl/js/project.js";
         
         foreach($js as $path)
         {
-            ?><script src="<?=SITE_TEMPLATE_PATH?>/<?=$path?>"></script><?
+            $APPLICATION->AddHeadScript(SITE_TEMPLATE_PATH."/".$path);
         }
+        
+        global $USER;
+        //if($USER->IsAdmin()){
+        //$site_quide = $APPLICATION->get_cookie("SITE_GUIDE");
+        //if($site_quide!="Y" && !$USER->IsAuthorized())
+        //{
+            ?>
+            <?/*<link href="https://cdnjs.cloudflare.com/ajax/libs/intro.js/2.3.0/introjs.min.css" rel="stylesheet">
+            <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/intro.js/2.3.0/intro.min.js"></script>*/?>
+            <script type="text/javascript" src="<?=SITE_TEMPLATE_PATH?>/tmpl/js/introjs.js"></script>
+            <script>
+            /*$(document).ready(function()
+            {
+                var intro = introJs();
+                intro.setOptions({
+                    steps: [
+                        {
+                            intro: "Добро пожаловать на сайта МегаТВ!<br /> Это тур по сайту, который ознакомит вас с функционалом сайта."
+                        },
+                        {
+                            element: '#mod-user-navigation-1',
+                            intro: "Зарегистрируйтесь и записывайте любимые шоу в персональное облачное хранилище.",
+                            position: 'left'
+                        },
+                        {
+                            intro: '<span class="item-status-icon"><div class="icon icon-recordit "><svg class="icon__cnt"><use xlink:href="#icon-recordit"></use></svg></div></span>Для того, чтобы записать программу, нажмите на кнопку. Она появится при наведение на интересующую вас передачу.',
+                            position: 'auto'
+                        },
+                        {
+                            intro: '<span class="badge">в эфире</span><br /> Для просмотра канала в реальном времени нажмите на кнопку "В эфире".'
+                        },
+                        {
+                            element: '.swiper-button-next',
+                            intro: "Для навигации по расписанию передач используйте стрелочки.",
+                            position: 'left'
+                        },
+                        {
+                            element: 'a.box-menu__link[href="/recommendations/"]',
+                            intro: 'Чем больше передач Вы записываете в облачное<br /> хранилище - тем более точными становятся наши персональные рекомендации.',
+                            position: 'bottom-middle-aligned'
+                        },
+                        {
+                            element: '#mod-search-1',
+                            intro: 'Воспользуйтесь поиском и найдите свою любимую передачу!',
+                            position: 'bottom-middle-aligned'
+                        },
+                        
+                    ],
+                    keyboardNavigation: true,
+                    disableInteraction: true,
+                    nextLabel: 'След. шаг',
+                    prevLabel: 'Пред. шаг',
+                    skipLabel: 'Пропустить',
+                    doneLabel: 'Завершить'
+                }).onbeforechange(function(targetElement) {
+                    
+                    if($(targetElement).hasClass("item-status-icon"))
+                    {
+                        $(targetElement).show();
+                    }
+                    console.log(targetElement);
+                });
+                
+                intro.start();
+            })*/
+            </script>
+            <?
+            $APPLICATION->set_cookie("SITE_GUIDE", "Y");  
+        //}
+        //}    
         ?>
         
         <?if(intval($_REQUEST["record_id"])>0 && $_REQUEST["play"]=="yes"):?>

@@ -26,7 +26,7 @@ $arSelect = array(
 );
 
 $obCache = new \CPHPCache;
-if( $obCache->InitCache(3600, serialize($arFilter).serialize($arSelect), "/search-ajx/"))
+if( $obCache->InitCache(3600, serialize($arFilter).serialize($arSelect), "/search-ajax/"))
 {
 	$arResult = $obCache->GetVars();
 }

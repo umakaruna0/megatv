@@ -17,73 +17,98 @@ class CStat
         return json_decode($arUser["UF_STATISTIC"], true);
     }
     
-    public static function countRate($action)
+    public static function countRate($action, $recommendations = false)
     {
         switch($action)
         {
             case "record":
                 $arRate = array(
-                    "CATS" => 4,
-                    "TAGS" => 0.4, 
-                    "CHANNELS" => 1,
-                    "SERIALS" => 1,
-                    "GANRES" => 1
+                    "CATS" => \COption::GetOptionString("grain.customsettings", "STAT_RECORD_CATS_COEFF"),//4
+                    "TAGS" => \COption::GetOptionString("grain.customsettings", "STAT_RECORD_TAGS_COEFF"),//0.4, 
+                    "CHANNELS" => \COption::GetOptionString("grain.customsettings", "STAT_RECORD_CHANNELS_COEFF"),//1,
+                    "SERIALS" => \COption::GetOptionString("grain.customsettings", "STAT_RECORD_SERIALS_COEFF"),//1,
+                    "GANRES" => \COption::GetOptionString("grain.customsettings", "STAT_RECORD_GANRES_COEFF"),//1
                 );
+                
+                if($recommendations)
+                {
+                    foreach($arRate as &$value)
+                    {
+                        $value = $value + \COption::GetOptionString("grain.customsettings", "STAT_RECORD_COEFF_ADDITION");
+                    }
+                }
+                
             break;
             
             case "channelShow":
                 $arRate = array(
-                    "CHANNELS" => 1
+                    "CHANNELS" => \COption::GetOptionString("grain.customsettings", "STAT_CHANNEL_SHOW_CHANNELS_COEFF"),//1
                 );
             break;
             
             case "scheduleShow":
                 $arRate = array(
-                    "CATS" => 1,
-                    "TAGS" => 0.1,
-                    "GANRES" => 1
+                    "CATS" => \COption::GetOptionString("grain.customsettings", "STAT_SCHEDULE_SHOW_CATS_COEFF"),//1
+                    "TAGS" => \COption::GetOptionString("grain.customsettings", "STAT_SCHEDULE_SHOW_TAGS_COEFF"),//0.1,
+                    "GANRES" => \COption::GetOptionString("grain.customsettings", "STAT_SCHEDULE_SHOW_GANRES_COEFF"),//1
                 );
+                
+                if($recommendations)
+                {
+                    foreach($arRate as &$value)
+                    {
+                        $value = $value + \COption::GetOptionString("grain.customsettings", "STAT_SCHEDULE_SHOW_COEFF_ADDITION");
+                    }
+                }
             break;
             
             case "quaterShow_1":
                 $arRate = array(
-                    "CATS" => 1,
-                    "TAGS" => 0.5,
-                    "CHANNELS" => 0.5, 
-                    "SERIALS" => 1,
-                    "GANRES" => 1
+                    "CATS" => \COption::GetOptionString("grain.customsettings", "STAT_QUATERSHOW_1_CATS_COEFF"),//1,
+                    "TAGS" => \COption::GetOptionString("grain.customsettings", "STAT_QUATERSHOW_1_TAGS_COEFF"),//0.5,
+                    "CHANNELS" => \COption::GetOptionString("grain.customsettings", "STAT_QUATERSHOW_1_CHANNELS_COEFF"),//0.5, 
+                    "SERIALS" => \COption::GetOptionString("grain.customsettings", "STAT_QUATERSHOW_1_SERIALS_COEFF"),//1,
+                    "GANRES" => \COption::GetOptionString("grain.customsettings", "STAT_QUATERSHOW_1_GANRES_COEFF"),//1
                 );
             break;
             
             case "quaterShow_2":
                 $arRate = array(
-                    "CATS" => 2,
-                    "TAGS" => 0.5,
-                    "CHANNELS" => 1, 
-                    "SERIALS" => 1,
-                    "GANRES" => 1
+                    "CATS" => \COption::GetOptionString("grain.customsettings", "STAT_QUATERSHOW_2_CATS_COEFF"),//2,
+                    "TAGS" => \COption::GetOptionString("grain.customsettings", "STAT_QUATERSHOW_2_TAGS_COEFF"),//0.5,
+                    "CHANNELS" => \COption::GetOptionString("grain.customsettings", "STAT_QUATERSHOW_2_CHANNELS_COEFF"),//1, 
+                    "SERIALS" => \COption::GetOptionString("grain.customsettings", "STAT_QUATERSHOW_2_SERIALS_COEFF"),//1,
+                    "GANRES" => \COption::GetOptionString("grain.customsettings", "STAT_QUATERSHOW_2_GANRES_COEFF"),//1
                 );
             break;
             
             case "quaterShow_3":
                 $arRate = array(
-                    "CATS" => 3,
-                    "TAGS" => 0.5,
-                    "CHANNELS" => 1, 
-                    "SERIALS" => 1.5,
-                    "GANRES" => 1
+                    "CATS" => \COption::GetOptionString("grain.customsettings", "STAT_QUATERSHOW_3_CATS_COEFF"),//3,
+                    "TAGS" => \COption::GetOptionString("grain.customsettings", "STAT_QUATERSHOW_3_TAGS_COEFF"),//0.5,
+                    "CHANNELS" => \COption::GetOptionString("grain.customsettings", "STAT_QUATERSHOW_3_CHANNELS_COEFF"),//1, 
+                    "SERIALS" => \COption::GetOptionString("grain.customsettings", "STAT_QUATERSHOW_3_SERIALS_COEFF"),//1.5,
+                    "GANRES" => \COption::GetOptionString("grain.customsettings", "STAT_QUATERSHOW_3_GANRES_COEFF"),//1
                 );
             break;
             
             case "quaterShow_4":
                 $arRate = array(
-                    "CATS" => 4,
-                    "TAGS" => 0.5,
-                    "CHANNELS" => 1, 
-                    "SERIALS" => 2,
-                    "GANRES" => 1
+                    "CATS" => \COption::GetOptionString("grain.customsettings", "STAT_QUATERSHOW_4_CATS_COEFF"),//4,
+                    "TAGS" => \COption::GetOptionString("grain.customsettings", "STAT_QUATERSHOW_4_TAGS_COEFF"),//0.5,
+                    "CHANNELS" => \COption::GetOptionString("grain.customsettings", "STAT_QUATERSHOW_4_CHANNELS_COEFF"),//1, 
+                    "SERIALS" => \COption::GetOptionString("grain.customsettings", "STAT_QUATERSHOW_4_SERIALS_COEFF"),//2,
+                    "GANRES" => \COption::GetOptionString("grain.customsettings", "STAT_QUATERSHOW_4_GANRES_COEFF"),//1
                 );
             break;
+        }
+
+        if(strpos($action, "quaterShow")!==false && $recommendations)
+        {
+            foreach($arRate as &$value)
+            {
+                $value = $value + \COption::GetOptionString("grain.customsettings", "STAT_QUATERSHOW_COEFF_ADDITION");
+            }
         }
         
         return $arRate;
@@ -100,7 +125,7 @@ class CStat
                 "UF_CHANNEL_BASE_ID" => "UF_CHANNEL.UF_BASE_ID", "UF_CATEGORY" => "UF_PROG.UF_CATEGORY", 
                 "UF_SERIAL" => "UF_PROG.UF_EPG_ID", "UF_GANRE" => "UF_PROG.UF_GANRE"
             );
-            $result = \Hawkart\Megatv\RecordTable::getList(array(
+            $result = RecordTable::getList(array(
                 'filter' => array("=ID" => $prog_id),
                 'select' => $arSelect,
                 'limit' => 1
@@ -110,20 +135,20 @@ class CStat
             $arCount = self::countRate($action);
             
             if(!empty($arSchedule["UF_CHANNEL_BASE_ID"]))
-                $arStatistic["CHANNELS"][$arSchedule["UF_CHANNEL_BASE_ID"]] += floatval($arCount["CHANNELS"]);
+                $arStatistic["CHANNELS"][trim($arSchedule["UF_CHANNEL_BASE_ID"])] += floatval($arCount["CHANNELS"]);
             
             if(!empty($arSchedule["UF_CATEGORY"]))
-                $arStatistic["CATS"][$arSchedule["UF_CATEGORY"]] += floatval($arCount["CATS"]);
+                $arStatistic["CATS"][trim($arSchedule["UF_CATEGORY"])] += floatval($arCount["CATS"]);
             
             if(!empty($arSchedule["UF_SERIAL"])) 
-                $arStatistic["SERIALS"][$arSchedule["UF_SERIAL"]] += floatval($arCount["SERIALS"]);
+                $arStatistic["SERIALS"][trim($arSchedule["UF_SERIAL"])] += floatval($arCount["SERIALS"]);
                 
             if(!empty($arSchedule["UF_GANRE"]))
             {
                 $arGanres = explode(",", $arSchedule["UF_GANRE"]);
                 foreach($arGanres as $ganre)
                 {
-                    $arStatistic["GANRES"][$ganre] += floatval($arCount["GANRES"])/count($arGanres);
+                    $arStatistic["GANRES"][trim($ganre)] += floatval($arCount["GANRES"])/count($arGanres);
                 }
             } 
                 
@@ -131,7 +156,7 @@ class CStat
         }
     }
     
-    public static function addByShedule($prog_id, $action = false)
+    public static function addByShedule($prog_id, $action = false, $recommendations = false)
     {
         global $USER;
         if($USER->IsAuthorized())
@@ -142,30 +167,30 @@ class CStat
                 "UF_CHANNEL_BASE_ID" => "UF_CHANNEL.UF_BASE_ID", "UF_CATEGORY" => "UF_PROG.UF_CATEGORY", 
                 "UF_SERIAL" => "UF_PROG.UF_EPG_ID", "UF_GANRE" => "UF_PROG.UF_GANRE"
             );
-            $result = \Hawkart\Megatv\ScheduleTable::getList(array(
+            $result = ScheduleTable::getList(array(
                 'filter' => array("=ID" => $prog_id),
                 'select' => $arSelect,
                 'limit' => 1
             ));
             $arSchedule = $result->fetch();
             
-            $arCount = self::countRate($action);
+            $arCount = self::countRate($action, $recommendations);
             
             if(!empty($arSchedule["UF_CHANNEL_BASE_ID"]))
-                $arStatistic["CHANNELS"][$arSchedule["UF_CHANNEL_BASE_ID"]] += floatval($arCount["CHANNELS"]);
+                $arStatistic["CHANNELS"][trim($arSchedule["UF_CHANNEL_BASE_ID"])] += floatval($arCount["CHANNELS"]);
             
             if(!empty($arSchedule["UF_CATEGORY"]))
-                $arStatistic["CATS"][$arSchedule["UF_CATEGORY"]] += floatval($arCount["CATS"]);
+                $arStatistic["CATS"][trim($arSchedule["UF_CATEGORY"])] += floatval($arCount["CATS"]);
             
             if(!empty($arSchedule["UF_SERIAL"])) 
-                $arStatistic["SERIALS"][$arSchedule["UF_SERIAL"]] += floatval($arCount["SERIALS"]);
+                $arStatistic["SERIALS"][trim($arSchedule["UF_SERIAL"])] += floatval($arCount["SERIALS"]);
             
             if(!empty($arSchedule["UF_GANRE"]))
             {
                 $arGanres = explode(",", $arSchedule["UF_GANRE"]);
                 foreach($arGanres as $ganre)
                 {
-                    $arStatistic["GANRES"][$ganre] += floatval($arCount["GANRES"])/count($arGanres);
+                    $arStatistic["GANRES"][trim($ganre)] += floatval($arCount["GANRES"])/count($arGanres);
                 }
             }
             
@@ -237,7 +262,7 @@ class CStat
         
         $ids = array();
         $dateStart = date("Y-m-d H:i:s", time() - 86400 * 7); 
-        $result = \Hawkart\Megatv\RecordTable::getList(array(
+        $result = RecordTable::getList(array(
             'filter' => array(
                 "=UF_USER_ID" => $user_id, 
                 "!UF_URL" => false,

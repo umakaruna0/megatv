@@ -2,11 +2,7 @@
 global $USER;
 session_start();
 
-$host = $_SERVER['SERVER_NAME'];
-if(strpos($host, "http://")==false)
-{
-    $host = "http://".$host;
-}
+$site = "megatv.su";
 
 //city change
 if(isset($_POST["city-id"]) && intval($_POST["city-id"])>0 && check_bitrix_sessid())
@@ -20,9 +16,9 @@ else if(isset($_POST["lang-id"]) && intval($_POST["lang-id"])>0 && check_bitrix_
     
     if(strtoupper($arGeo["COUNTRY_ISO"])==LANGUAGE_DEFAULT) //if ru
     {
-        $redirect_url = "http://tvguru.com";
+        $redirect_url = "https://".$site;
     }else{
-        $redirect_url = "http://".strtolower($arGeo["COUNTRY_ISO"])."."."tvguru.com";
+        $redirect_url = "https://".strtolower($arGeo["COUNTRY_ISO"]).".".$site;
     }
     
     if(strtolower(LANGUAGE_ID) != strtolower($arGeo["COUNTRY_ISO"]))
@@ -33,59 +29,18 @@ else if(isset($_POST["lang-id"]) && intval($_POST["lang-id"])>0 && check_bitrix_
 else
 {
     $arGeo = \Hawkart\Megatv\CityTable::getGeoCity();
-    if(strtolower(LANGUAGE_ID) != strtolower($arGeo["COUNTRY_ISO"]))
+    if(strtolower(LANGUAGE_ID) != strtolower($arGeo["COUNTRY_ISO"]) || empty($arGeo["COUNTRY_ISO"]))
     {
         \Hawkart\Megatv\CountryTable::setCountryByIso(LANGUAGE_ID);
     }
 }
 
 if($USER->IsAuthorized())
-{           
-    $countRecorded = 0;
-    $countInRec = 0;
-    $count = 0;
-    $arStatusRecording = array();   //записывается
-    $arStatusRecorded = array();    //записана, можно просмотреть
-    $arStatusViewed = array();    //просмотренна
-    $result = \Hawkart\Megatv\RecordTable::getList(array(
-        'filter' => array("=UF_USER_ID" => $USER->GetID()),
-        'select' => array("ID", "UF_URL", "UF_SCHEDULE_ID", "UF_WATCHED", "UF_PROG_ID"),
-    ));
-    while ($arRecord = $result->fetch())
-    {
-        $shedule_id = $arRecord["UF_SCHEDULE_ID"];
-        
-        if(intval($shedule_id)>0)
-        {
-            if($arRecord["UF_WATCHED"]==1)
-            {
-                $countRecorded++;
-                $arStatusViewed[$shedule_id] = $arRecord;
-            }
-            else if(empty($arRecord["UF_URL"]))
-            {
-                $countInRec++;
-                $arStatusRecording[$shedule_id] = $arRecord;
-            }
-            else if(!empty($arRecord["UF_URL"]))
-            {
-                $countRecorded++;
-                $arStatusRecorded[$shedule_id] = $arRecord;
-            }
-        }
-        
-        $count++;
-    }
-    $arRecordStatus = array(
-        "RECORDING" => $arStatusRecording,
-        "RECORDED"  => $arStatusRecorded,
-        "VIEWED"    => $arStatusViewed
-    );
-    $APPLICATION->SetPageProperty("ar_record_status", json_encode($arRecordStatus));
-    $APPLICATION->SetPageProperty("ar_record_in_rec", $countInRec);
-    $APPLICATION->SetPageProperty("ar_record_recorded", $countRecorded);
-    $APPLICATION->SetPageProperty("ar_record_total", $count);
-    
+{     
+    /**
+     * Get records statuses by user
+     */
+    $arRecordStatus = \Hawkart\Megatv\RecordTable::getListStatusesByUser();
     
     /**
      * User subscribe channel list. Add global property

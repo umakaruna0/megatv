@@ -24,6 +24,7 @@ if(!$USER->IsAuthorized() && count($result['errors'])==0)
 {
     $EMAIL = htmlspecialcharsbx(strip_tags($_POST["USER_EMAIL"]));
     $AGREE = htmlspecialcharsbx(strip_tags($_POST["AGREE"]));
+    $password = htmlspecialcharsbx($_POST["USER_PASSWORD"]);
     
     $phone = preg_replace("/[^0-9]/", '', $EMAIL);
 
@@ -63,6 +64,11 @@ if(!$USER->IsAuthorized() && count($result['errors'])==0)
         $result['errors']["AGREE"] = GetMessage('AUTH_ERROR_AGREE');
     }
     
+    if(strlen($password)<6)
+    {
+        $result['errors']["USER_PASSWORD"] = GetMessage('AUTH_ERROR_PASSWORD');
+    }
+    
     if(count($result['errors'])==0)
     {
         global $USER;
@@ -72,15 +78,13 @@ if(!$USER->IsAuthorized() && count($result['errors'])==0)
         if(!empty($default_group))
             $arrGroups = explode(",", $default_group);
         
-        $PASS_1 = mb_substr(md5(uniqid(rand(),true)), 0, 8);
-        
         $user = new CUser;
         $arFields = Array(
         	"LOGIN"             	=> $EMAIL,
         	"LID"               	=> SITE_ID,
         	"ACTIVE"            	=> "N",
-        	"PASSWORD"          	=> $PASS_1,
-        	"CONFIRM_PASSWORD"  	=> $PASS_1,
+        	"PASSWORD"          	=> $password,
+        	"CONFIRM_PASSWORD"  	=> $password,
         	"EMAIL"			        => $EMAIL,
             "GROUP_ID"              => $arrGroups,
             "CHECKWORD"             => md5(CMain::GetServerUniqID().uniqid()),
@@ -125,12 +129,12 @@ if(!$USER->IsAuthorized() && count($result['errors'])==0)
                 
                 $event->SendImmediate("NEW_USER_CONFIRM", SITE_ID, $arFields);  //на почту письмо для подтверждения
                 $result['message'] = "<font style='color:green'>".GetMessage('AUTH_REGISTER_SUCCESS_TEXT_2')."</font><br />";
+            
+                CUserEx::capacityAdd($USER_ID, 1);   // за мэйл +1ГБ
             }
         }
 
         $result['status'] = "success";
-        
-        CUserEx::capacityAdd($USER_ID, 1);   // за мэйл +1ГБ
         
         //Бонус за регистрацию
         CUserEx::capacityAdd($USER_ID, BONUS_FOR_REGISTRATION);

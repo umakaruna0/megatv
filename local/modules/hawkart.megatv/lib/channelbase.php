@@ -63,14 +63,14 @@ class ChannelBaseTable extends Entity\DataManager
         $res = self::getById($primary);
         $arChannel = $res->fetch();
         $price = floatval($arChannel["UF_PRICE_H24"]);
-
+        
         if($data["UF_ACTIVE"] && !$arChannel["UF_ACTIVE"] && $price==0)
         {
             //Найдем пользователей, для кого эта подписка была включена
             $userIds = array();
             
             $result = SubscribeTable::getList(array(
-                'filter' => array("=UF_CHANNEL_ID" => $data["ID"]),
+                'filter' => array("=UF_CHANNEL_ID" => $arChannel["ID"]),
                 'select' => array("ID", "UF_USER_ID")
             ));
             while ($arSub = $result->fetch())
@@ -84,7 +84,7 @@ class ChannelBaseTable extends Entity\DataManager
             {
                 if(!array_key_exists($arUser["ID"], $userIds))
                 {
-                    $CSubscribe->setUserSubscribe($data["ID"], $arUser["ID"]);
+                    $CSubscribe->setUserSubscribe($arChannel["ID"], $arUser["ID"]);
                 }else{
                     $sub_id = $userIds[$arUser["ID"]];
                     $CSubscribe->updateUserSubscribe($sub_id, array("UF_ACTIVE"=>1));
@@ -192,6 +192,14 @@ class ChannelBaseTable extends Entity\DataManager
             'UF_SUPERPROMO' => array(
 				'data_type' => 'integer',
 			),
+            'UF_NEED_CONTRACT' => array(
+				'data_type' => 'boolean',
+				'values'    => array(0, 1),
+			),
+            'UF_ESTER' => array(
+				'data_type' => 'boolean',
+				'values'    => array(0, 1),
+			)
 		);
 	}
     

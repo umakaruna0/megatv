@@ -21,6 +21,13 @@
 			        <input type="text" name="USER_EMAIL" data-validation="phone_and_email" class="form__form-control js-user-email" value="" placeholder="<?=GetMessage('AUTH_PHONE_OR_EMAIL')?>" autocomplete="off" data-type="adaptive-field">
 			    </div>
                 
+                <div class="form__form-group has-feedback">
+        	        <input data-validation="auth_pass" data-type="password-field" type="password" name="USER_PASSWORD" class="form__form-control js-password-field" placeholder="<?=GetMessage('AUTH_PASSWORD')?>" autocomplete="off">
+                    <a href="#" data-type="password-show-toggle" class="password-show-toggle">
+                        <span class="g-icon icon-password-eye"><svg class="g-icon__icon-cnt"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#icon-password-eye"></use></svg></span>
+                    </a>
+        	    </div>
+                
                 <div class="form__form-group form__agree">
 			        <div class="form__group-checkbox">
 						<input id="checkbox-agree" data-validation="agree" value="on" type="checkbox" name="AGREE" class="form__checkbox checkbox-agree"><label for="checkbox-agree" class="form__label"><span class="form__checkbox-imitation"></span><span class="form__label-title"><?=GetMessage('AUTH_AGREE')?> <a href="#"><?=GetMessage('AUTH_AGREE_OFERTA')?></a></span></label>

@@ -7,7 +7,7 @@ global $USER;
 if(!is_object($USER))
     $USER = new \CUser;
 
-if(!$USER->IsAuthorized())
+if(!$USER->IsAuthorized() && empty($_REQUEST["url"]))
     return false;
 
 /**
@@ -24,6 +24,12 @@ if(isset($_REQUEST["channel_id"]))
         'limit' => 1
     ));
     $arChannel = $result->fetch();
+    
+    if(empty($arChannel["UF_STREAM_URL"]))
+    {
+        $arChannel["UF_STREAM_URL"] = $_REQUEST["url"];
+        $arChannel["UF_TITLE"] = "Test";
+    }
     ?>
     <div class="broadcast-player" data-module="broadcast-player">
     	<script type="text/x-config">
@@ -66,6 +72,10 @@ if(isset($_REQUEST["channel_id"]))
             if(strpos($arVideo["VIDEO_URL"], "rutube")!==false && !empty($arVideo["VIDEO_URL"]))
             {
                 $arVideo["VIDEO_URL"] = str_replace("play", "video", $arVideo["VIDEO_URL"])."?sTitle=false&sAuthor=false";
+            }
+            else if(strpos($arVideo["VIDEO_URL"], "youtube")!==false)
+            {
+                $arVideo["VIDEO_URL"] = str_replace("watch?v=", "v/", $arVideo["VIDEO_URL"]);
             }else{
                 $doc = new DOMDocument();
                 $doc->loadHTML($row["UF_JSON"]["html"]);
@@ -96,7 +106,7 @@ if(isset($_REQUEST["channel_id"]))
         	<div class="block-body">
         		<a href="#" class="close-link" data-dismiss="modal"><span data-icon="icon-times"></span></a>
         		<div class="player-holder">
-                    <?if(strpos($_GET["broadcastID"], "youtube")!==false):?>
+                    <?if(strpos($_GET["broadcastID"], "youtube")!==false || strpos($arVideo["VIDEO_URL"], "youtube")!==false):?>
                         <div id="player"></div>
                     <?else:?>
                         <iframe src="<?=$arVideo["VIDEO_URL"]?>" width="896" height="504" frameborder="0" id="vk-player" class="flash"></iframe>
@@ -111,7 +121,13 @@ if(isset($_REQUEST["channel_id"]))
                     <?endif;?>
         		</div>
                 <div>
-                    <p style="color: #fff;"><?=$row["UF_JSON"]["description"]?></p>
+                    <p style="color: #fff;">
+                        <?=$row["UF_JSON"]["description"]?>
+                        <?if(strpos($arVideo["VIDEO_URL"], "youtube")!==false):?>
+                            <br />
+                            Ссылка на источник:: <a href="<?=$arVideo["VIDEO_URL"]?>" target="_blank" style="color: #fff;"><?=$arVideo["VIDEO_URL"]?></a>
+                        <?endif;?>
+                    </p>
                 </div>
         	</div>
         </div>
@@ -170,7 +186,8 @@ if(isset($_REQUEST["channel_id"]))
         	</a>
         	<div class="block-header">
         		<h3 class="block-title"><?=$arRecord["UF_TITLE"]?><?= $arRecord["UF_SUB_TITLE"] ? " <small>|".$arRecord["UF_SUB_TITLE"]."</small>" : "" ?></h3>
-        	</div>
+                <?//=$arRecord["UF_URL"]?>
+            </div>
         	<div class="block-body">
         		<a href="#" class="close-link" data-dismiss="modal"><span data-icon="icon-times"></span></a>
         		<div class="player-holder">

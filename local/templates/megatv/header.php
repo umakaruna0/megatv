@@ -6,12 +6,10 @@ IncludeTemplateLangFile(__FILE__);
 <!DOCTYPE html>
 <html lang="<?=LANGUAGE_ID?>">
 	<head>
-		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 		<meta name="format-detection" content="telephone=no">
-		<link rel="shortcut icon" href="/favicon.png">
-		<link rel="icon" href="/favicon.png">
-		<meta name='yandex-verification' content='6b022e42074ebaca' />
+		<link rel="shortcut icon" href="<?=SITE_TEMPLATE_PATH;?>/favicon.png">
+		<link rel="icon" href="<?=SITE_TEMPLATE_PATH;?>/favicon.png">
         <?/*<meta name="author" content="http://hawkart.ru, разработка и поддержка интернет-проектов и информационных систем"/>*/?>
         <script id="globalConfig" type="text/x-config">
             {
@@ -23,21 +21,21 @@ IncludeTemplateLangFile(__FILE__);
                 "ajax_key" : "<?=md5('ajax_'.LICENSE_KEY)?>"
             }
         </script>
-        <?
-        echo '<meta http-equiv="Content-Type" content="text/html; charset='.LANG_CHARSET.'"'.(true ? ' /':'').'>'."\n";
-
-        $APPLICATION->ShowMeta("robots", false, true);
-        $APPLICATION->ShowMeta("keywords", false, true);
-        $APPLICATION->ShowMeta("description", false, true);
-        $APPLICATION->ShowCSS(true, true);
-
-        $APPLICATION->SetAdditionalCSS(SITE_TEMPLATE_PATH.'/tmpl/css/main.css');
-        $APPLICATION->SetAdditionalCSS(SITE_TEMPLATE_PATH.'/project.css');
+        <script type="text/javascript" src="<?=SITE_TEMPLATE_PATH?>/tmpl/js/vendor.js"></script><?
         
-        $APPLICATION->ShowHeadStrings();
-    	$APPLICATION->ShowHeadScripts();
+        if($APPLICATION->GetCurDir()=="/" || $APPLICATION->GetCurDir()=="/channels/"):
+            ?><script type="text/javascript" src="<?=SITE_TEMPLATE_PATH?>/tmpl/js/swiper.js"></script><?
+        endif;
+        
+        $APPLICATION->ShowHead();
+        $APPLICATION->SetAdditionalCSS(SITE_TEMPLATE_PATH.'/tmpl/css/main.css');
+        $APPLICATION->SetAdditionalCSS(SITE_TEMPLATE_PATH.'/tmpl/css/project.css');
+        $APPLICATION->SetAdditionalCSS(SITE_TEMPLATE_PATH.'/project.css');
         $APPLICATION->SetDirProperty("h1-hide", "hidden");
         ?>
+        <meta name="verify-admitad" content="5e37e7b9c0" />
+        
+        <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
 
 		<title><?$APPLICATION->ShowTitle()?></title>
         <!-- Google Analytics -->
@@ -75,13 +73,11 @@ IncludeTemplateLangFile(__FILE__);
 	        <header class="site-wrapper__header header g-clearfix">
 	            <div class="header__box-left box-left">
 	                <div class="box-left__box-logo">
-                        <?if(false):?>
-    	                    <?if($APPLICATION->GetCurPage(false) === '/'):?>
-    						   <span class="box-logo__link-logo link-logo"><span class="link-logo__logo logo"></span></span>
-    	                    <?else:?>
-    	                        <a class="box-logo__link-logo link-logo" href="/"><span class="link-logo__logo logo"></span></a>
-                            <?endif;?>
-	                    <?endif;?>
+	                    <?/*if($APPLICATION->GetCurPage(false) === '/'):?>
+						   <span class="box-logo__link-logo link-logo"><span class="link-logo__logo logo"></span></span>
+	                    <?else:?>
+	                        <a class="box-logo__link-logo link-logo" href="/"><span class="link-logo__logo logo"></span></a>
+                        <?endif;*/?>
 	                </div>
                     <?
                     	$APPLICATION->IncludeComponent("hawkart:city.list", "", Array(), false);
@@ -105,7 +101,7 @@ IncludeTemplateLangFile(__FILE__);
                     <?endif;?>
                     
                     <?$APPLICATION->IncludeComponent("hawkart:search", "", Array(), false);?>
-                    <?$APPLICATION->IncludeComponent("bitrix:menu","top", Array(
+                    <?$APPLICATION->IncludeComponent("bitrix:menu", "top", Array(
                             "ROOT_MENU_TYPE" => "top_".LANGUAGE_ID, 
                             "MAX_LEVEL" => "1", 
                             "CHILD_MENU_TYPE" => "top_".LANGUAGE_ID, 
@@ -133,4 +129,4 @@ IncludeTemplateLangFile(__FILE__);
 	        </div>
 
 			<main class="site-content">
-                <section class="section-h1 <?$APPLICATION->ShowProperty("h1-hide");?>"><h1><?$APPLICATION->ShowProperty("h1");?></h1></section>
+                <section class="section-h1 <?/*if($APPLICATION->GetCurDir()=="/"):?> main-page__title<?endif;*/?><?$APPLICATION->ShowProperty("h1-hide");?>"><h1><?$APPLICATION->ShowProperty("h1");?></h1></section>

@@ -1,7 +1,7 @@
 <?
 if(!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED!==true) die();
 
-global $USER, $APPLICATION;
+global $USER, $APPLICATION, $arSite; 
 $arResult = array();
 $arParams = $arParams + array(
     "DATETIME" => \CTimeEx::getDatetime(),
@@ -39,9 +39,11 @@ elseif($obCache->StartDataCache())
     {
         $arResult["ID"] = $arResult["UF_CHANNEL_ID"];
         $arResult["DETAIL_PAGE_URL"] = "/channels/".$arResult['UF_CODE']."/";
-        $title = $arResult["UF_TITLE"]." -  телепрограмма на сегодня, программа телепередач канала ".$arResult["UF_H1"]." на МегаТВ";
+        $title = $arResult["UF_TITLE"]." -  телепрограмма на сегодня, программа телепередач канала ".$arResult["UF_H1"]." на ".$arSite["NAME"];
         if($arResult["UF_H1"]=="5 канал")
             $title = str_replace("канала ", "", $title);
+        
+        $title = str_replace("TvGuru", $arSite["NAME"], $title);
         
         $arResult["PAGE_TITLE"] = $title;
     }

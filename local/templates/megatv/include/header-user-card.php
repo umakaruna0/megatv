@@ -12,15 +12,19 @@
             $filledPercent = round(floatval($arUser["UF_CAPACITY_BUSY"])/floatval($arUser["UF_CAPACITY"]), 4);
         }
         
+        $notFilledPercent = 1 - $filledPercent;
+        
         $APPLICATION->AddViewContent('user_budget', number_format($budget, 0, "", " "));
         $APPLICATION->AddViewContent('user_filled_space', round($arUser["UF_CAPACITY_BUSY"], 2));
         $APPLICATION->AddViewContent('user_filled_space_percent', $filledPercent);  
+        $APPLICATION->AddViewContent('user_empty_space', round(floatval($arUser["UF_CAPACITY"]-$arUser["UF_CAPACITY_BUSY"]), 2));  
         ?>
         <div class="box-userbar__userbar userbar">
+            
             <div class="userbar__disk-space disk-space" data-type="fill-disk-space" onclick="window.location.href='/personal/services/';" style="cursor: pointer;">
         		<div class="disk-space__progress-holder progress-holder" data-progress="<?=$filledPercent?>"></div>
-        		<span class="disk-space__label"><?=GetMessage('BUSY')?> <strong class="disk-space__strong"><?=round($arUser["UF_CAPACITY_BUSY"], 2);?> <?=GetMessage('GB')?></strong></span>
-        	</div>                
+        		<span class="disk-space__label">Свободно <strong class="disk-space__strong"><?=round(floatval($arUser["UF_CAPACITY"]-$arUser["UF_CAPACITY_BUSY"]), 2);?> из <?=round($arUser["UF_CAPACITY"], 2);?> <?=GetMessage('GB')?></strong></span>
+        	</div>             
 
             <nav class="box-userbar__usernav usernav" data-module="user-navigation">
                 <div class="usernav__user-card">

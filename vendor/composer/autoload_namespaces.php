@@ -6,9 +6,8 @@ $vendorDir = dirname(dirname(__FILE__));
 $baseDir = dirname($vendorDir);
 
 return array(
+    'Pimple' => array($vendorDir . '/pimple/pimple/lib'),
     'Hybrid' => array($vendorDir . '/hybridauth/hybridauth/hybridauth'),
-    'Guzzle\\Tests' => array($vendorDir . '/guzzlehttp/guzzle/tests'),
-    'Guzzle' => array($vendorDir . '/guzzlehttp/guzzle/src'),
     'Gregwar\\Image' => array($vendorDir . '/gregwar/image'),
     'Gregwar\\Cache' => array($vendorDir . '/gregwar/cache'),
 );

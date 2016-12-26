@@ -114,7 +114,7 @@ class RutubeClient{
                         $result = \Hawkart\Megatv\ProgExternalTable::add($arFields);
                         if ($result->isSuccess())
                         {
-                            $arTableItems[] = $result->getId();
+                            $arTableItems[] = $arItem["ID"];
                         }else{
                             $errors = $result->getErrorMessages();
                         }
@@ -167,7 +167,7 @@ class RutubeClient{
                     $arFields = array(
                         "UF_TITLE" => $arItem["TITLE"],
                         "UF_EXTERNAL_ID" => $arItem["ID"],
-                        "UF_SERIAL_ID" => $$arSerial["ID"],
+                        "UF_SERIAL_ID" => $arSerial["ID"],
                         "UF_THUMBNAIL_URL" => $arItem["THUMBNAIL_URL"],
                         "UF_VIDEO_URL" => $arItem["VIDEO_URL"],
                         "UF_JSON" => $arItem["JSON"],
@@ -175,7 +175,7 @@ class RutubeClient{
                     $result = \Hawkart\Megatv\ProgExternalTable::add($arFields);
                     if ($result->isSuccess())
                     {
-                        $arTableItems[] = $result->getId();
+                        $arTableItems[] = $arItem["ID"];
                     }else{
                         $errors = $result->getErrorMessages();
                     }

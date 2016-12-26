@@ -326,5 +326,55 @@ $(document).on('ready', function(){
             return;
         }
     });
-    
+ 
+var intro = introJs();
+                intro.setOptions({
+                    steps: [
+                        {
+                            intro: "Добро пожаловать на сайта МегаТВ!<br /> Это тур по сайту, который ознакомит вас с функционалом сайта."
+                        },
+                        {
+                            element: '#mod-user-navigation-1',
+                            intro: "Зарегистрируйтесь и записывайте любимые шоу в персональное облачное хранилище."
+                        },
+                        {
+                            intro: '<span class="item-status-icon"><div class="icon icon-recordit "><svg class="icon__cnt"><use xlink:href="#icon-recordit"></use></svg></div></span>Для того, чтобы записать программу, нажмите на кнопку. Она появится при наведение на интересующую вас передачу.',
+                            position: 'bottom-left-aligned'
+                        },
+                        {
+                            intro: '<span class="badge">в эфире</span><br /> Для просмотра канала в реальном времени нажмите на кнопку "В эфире".'
+                        },
+                        {
+                            element: '.swiper-button-next',
+                            intro: "Для навигации по расписанию передач используйте стрелочки.",
+                        },
+                        {
+                            element: 'a.box-menu__link[href="/recommendations/"]',
+                            intro: 'Чем больше передач Вы записываете в облачное<br /> хранилище - тем более точными становятся наши персональные рекомендации.',
+                            position: 'bottom-middle-aligned'
+                        },
+                        {
+                            element: '#mod-search-1',
+                            intro: 'Воспользуйтесь поиском и найдите свою любимую передачу!',
+                            position: 'bottom-middle-aligned'
+                        },
+                        
+                    ],
+                    keyboardNavigation: true,
+                    disableInteraction: true,
+                    nextLabel: 'След. шаг',
+                    prevLabel: 'Пред. шаг',
+                    skipLabel: 'Пропустить',
+                    doneLabel: 'Завершить'
+                }).onbeforechange(function(targetElement) {
+                    
+                    if($(targetElement).hasClass("item-status-icon"))
+                    {
+                        $(targetElement).show();
+                    }
+                    console.log(targetElement);
+                });
+                
+                // intro.start();
+
 });

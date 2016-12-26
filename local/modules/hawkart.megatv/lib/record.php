@@ -46,6 +46,80 @@ class RecordTable extends Entity\DataManager
 		return 'hw_record';
 	}
     
+    public static function getListStatusesByUser()
+    {
+        global $USER, $APPLICATION;
+        if($USER->IsAuthorized())
+        {
+            $arTime =  \CTimeEx::getDatetime();
+            $date_now = $arTime["SERVER_DATETIME_WITH_OFFSET"];
+            $countRecorded = 0;
+            $countInRec = 0;
+            $count = 0;
+            $arStatusRecording = array();   //записывается
+            $arStatusRecorded = array();    //записана, можно просмотреть
+            $arStatusViewed = array();    //просмотренна
+            $result = self::getList(array(
+                'filter' => array(
+                    "=UF_USER_ID" => $USER->GetID(), 
+                    "=UF_DELETED" => 0
+                ),
+                'select' => array("ID", "UF_URL", "UF_SCHEDULE_ID", "UF_WATCHED", "UF_PROG_ID",
+                "DATE_START" => "UF_SCHEDULE.UF_DATE_START"),
+            ));
+            while ($arRecord = $result->fetch())
+            {
+                $shedule_id = $arRecord["UF_SCHEDULE_ID"];
+                if(!empty($arRecord["DATE_START"]))
+                {
+                    $arRecord["DATE_START"] = \CTimeEx::dateOffset($arRecord["DATE_START"]->toString());
+                    $minutes = intval(strtotime($date_now)-strtotime($arRecord["DATE_START"]))/60;
+                }
+
+                if(intval($shedule_id)>0)
+                {
+                    if((!\CTimeEx::dateDiff($arRecord["DATE_START"], $date_now) || $minutes<5) && !empty($arRecord["DATE_START"]) && !empty($arRecord["UF_URL"]))
+                    {
+                        $countInRec++;
+                        $arStatusRecording[$shedule_id] = $arRecord;
+                        $count++;
+                        continue;
+                    }
+                    
+                    if($arRecord["UF_WATCHED"]==1)
+                    {
+                        $countRecorded++;
+                        $arStatusViewed[$shedule_id] = $arRecord;
+                    }
+                    else if(empty($arRecord["UF_URL"]))
+                    {
+                        $countInRec++;
+                        $arStatusRecording[$shedule_id] = $arRecord;
+                    }
+                    else if(!empty($arRecord["UF_URL"]))
+                    {
+                        $countRecorded++;
+                        $arStatusRecorded[$shedule_id] = $arRecord;
+                    }
+                }
+                
+                $count++;
+            }
+            $arRecordsStatuses = array(
+                "RECORDING" => $arStatusRecording,
+                "RECORDED"  => $arStatusRecorded,
+                "VIEWED"    => $arStatusViewed
+            );
+            $APPLICATION->SetPageProperty("ar_record_status", json_encode($arRecordsStatuses));
+            $APPLICATION->SetPageProperty("ar_record_in_rec", $countInRec);
+            $APPLICATION->SetPageProperty("ar_record_recorded", $countRecorded);
+            $APPLICATION->SetPageProperty("ar_record_total", $count);
+        }
+        
+        return $arRecordsStatuses;
+    }
+    
+    
     public static function create($arFields)
     {
         global $USER;
@@ -60,16 +134,16 @@ class RecordTable extends Entity\DataManager
            'UF_USER_ID' => $USER_ID,
            'UF_DATE_START' => $start,
            'UF_DATE_END' => $end,
-           'UF_SOTAL_ID' => $arFields["UF_SOTAL_ID"],
+           'UF_EPG_ID' => $arFields["UF_EPG_ID"],
            'UF_CHANNEL_ID' => $arFields["UF_CHANNEL_ID"],
            'UF_SCHEDULE_ID' => $arFields["ID"],
-           'UF_PROG_ID' => $arFields["UF_PROG_ID"]
+           'UF_PROG_ID' => $arFields["UF_PROG_ID"],
+           'UF_DATETIME_ADD' => new \Bitrix\Main\Type\DateTime(date('Y-m-d H:i:s'), 'Y-m-d H:i:s')
         );
         
         $result = self::add($data);
         if ($result->isSuccess()) 
         {   
-            
             /**
              * Create image croped for record
              * \Hawkart\Megatv\CFile::getCropedPath($arFields["UF_IMG_PATH"], array(300, 300), true)
@@ -130,7 +204,7 @@ class RecordTable extends Entity\DataManager
 				'data_type' => 'integer',
 			),
             'UF_CHANNEL' => array(
-				'data_type' => '\Hawkart\Megatv\ChannelBaseTable',
+				'data_type' => '\Hawkart\Megatv\ChannelTable',
 				'reference' => array('=this.UF_CHANNEL_ID' => 'ref.ID'),
 			),
             'UF_PROGRESS_PERS' => array(
@@ -159,12 +233,21 @@ class RecordTable extends Entity\DataManager
 				'data_type' => 'boolean',
 				'values'    => array(0, 1)
 			),
-            'UF_SOTAL_ID' => array(
-				'data_type' => 'string',
+            'UF_DELETED' => array(
+				'data_type' => 'boolean',
+				'values'    => array(0, 1)
 			),
             'UF_URL' => array(
 				'data_type' => 'string',
-			)
+			),
+            'UF_DATETIME_ADD' => array(
+				'data_type' => 'datetime',
+                'required'  => true
+			),
+            'UF_EPG_ID' => array(
+				'data_type' => 'string',
+			),
+            
 		);
 	}
     

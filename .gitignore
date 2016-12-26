@@ -1,6 +1,7 @@
 ﻿# bitrix core
 /bitrix/
 /test/
+/rest/
 
 # import & export
 /*.xml
@@ -21,6 +22,7 @@ web.config
 /logs/
 /upload/
 /test.php
+/s.php
 /*.html
 *.log
 *.tmp

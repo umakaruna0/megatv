@@ -236,6 +236,22 @@ class CEpg
             
             $arHrefChannels[$epg_id][] = $href;
             
+
+            //включим базовые каналы в админке
+            /*if( (!empty($base_epg_id) && $base_epg_id==$epg_id) || empty($base_epg_id) )
+            {
+                //echo $name." BASE=".$base_epg_id." EPG_ID".$epg_id."<br />";
+                
+                if(is_array($arBaseChannels[$epg_id]) && intval($arBaseChannels[$epg_id]["UF_ACTIVE"])!=1)
+                {
+                    ChannelBaseTable::update($arBaseChannels[$epg_id]["ID"], array(
+                        "UF_ACTIVE" => 1,
+                        "UF_FORBID_REC" => 1
+                    ));
+                }
+            }*/
+                       
+            
             if(!empty($base_epg_id) && $base_epg_id!=$epg_id)
             {
                 ChannelBaseTable::delete($epg_id);
@@ -731,13 +747,15 @@ class CEpg
             $path_parts = pathinfo($row["UF_IMG_PATH"]);
             $file_name = $path_parts["filename"];
             
+            if(!exif_imagetype($_SERVER["DOCUMENT_ROOT"]. $path_from))
+                continue;
+            
             $arCropedSize = array(
                 array(288, 144),
                 array(288, 288),
                 array(576, 288),
                 array(300, 300),
-                array(600, 600)/*,
-                array(300, 550),*/
+                array(600, 600)
             );
             foreach($arCropedSize as $arSize)
             {
@@ -767,8 +785,8 @@ class CEpg
         $arTopics = self::importTopic();
         $arCountries = self::importCountry();
         //$arProductions = self::importProduction();
-        //$arRoles = self::importRole();
-        //$arPeople = self::importPeople($arRoles);
+        $arRoles = self::importRole();
+        $arPeople = self::importPeople($arRoles);
         $arBaseChannels = $this->base_channels;
         $arChannels = $this->channels;
         
@@ -818,6 +836,11 @@ class CEpg
 
                 //$attr = $xml->channel->attributes();
                 //$channel_epg_id = (string)$attr["id"];
+                
+                $prev_title = false;
+                $first_id = false;
+                $date_end = false;
+                $prev_ids = array();
                 
                 /**
                  * Update Progs
@@ -938,8 +961,17 @@ class CEpg
                         $prog_id = $arProgs[$prog_epg_id]["ID"];
                     }
                     
+                    
+                    
+                    $image_id = intval($arProgs[$prog_epg_id]["UF_IMG_ID"]);
                     //--------------Add original image----------------
-                    if(intval($arProgs[$prog_epg_id]["UF_IMG_ID"])==0)
+                    if(
+                        $image_id==0 || 
+                        (
+                            !file_exists($_SERVER["DOCUMENT_ROOT"]."/".CFile::getCropedPath($image_id, array(288, 288))) &&
+                            $image_id>0
+                        )
+                    )
                     {
                         $arFields = array();
                         $icons = array();
@@ -1064,6 +1096,9 @@ class CEpg
         self::guessSerials();
     }
     
+    /**
+     * Add new serials to the table Serials
+     */
     public static function guessSerials()
     {
         /**

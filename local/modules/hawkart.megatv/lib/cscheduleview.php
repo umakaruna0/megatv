@@ -100,9 +100,7 @@ class CScheduleView
                     }
                 }
             }
-            
-            //CDev::pre($arParts);
-                        
+                  
             if(count($arParts["HALF"])==0)
             {
                 if(count($arParts["DOUBLE"])>0)
@@ -296,6 +294,296 @@ class CScheduleView
 		//} // END CACHE
         
         return $arProgs;
+    }
+    
+    public static function setIndexNew($arChannelProgs, $arChannels)
+    {
+        $arDateTime = \CTimeEx::getDatetime();
+        $datetime = $arDateTime["SERVER_DATETIME_WITH_OFFSET"];
+        
+        echo $datetime; die();
+        
+        $cols = 0;
+        $q = 0;
+        
+        $arTimePointers = array();
+        foreach($arChannels as $arChannel)
+        {
+            $channel_id = $arChannel["ID"];
+            $arSchedules = $arChannelProgs[$channel_id];
+            
+            $key = 1;
+            foreach($arSchedules as $arSchedule)
+            {
+                $start = $arSchedule["DATE_START"];
+                $end = $arSchedule["DATE_END"];
+                
+                if(\CTimeEx::dateDiff($start, $datetime) && \CTimeEx::dateDiff($datetime, $end))
+                {
+                    $arTimePointers[$arChannel["ID"]][] = $key;
+                    
+                    if($key<BROADCAT_COLS*2)
+                    {
+                        $cols+= $key;
+                        $q++;
+                    } 
+                    
+                    $key = 0;
+                }
+                
+                $key++;
+            }
+            $arTimePointers[$arChannel["ID"]][] = count($arSchedules);
+        }
+        
+        $avarage = floor($cols/$q);
+        $arKeys = self::setKeysToCols($avarage, $arTimePointers);
+        
+        foreach($arChannels as $arChannel)
+        {
+            $channel_id = $arChannel["ID"];
+            $keys = $arKeys[$channel_id];
+            $key = 1;
+            foreach($arChannelProgs[$channel_id] as &$arSchedule)
+            {
+                $arSchedule["CLASS"] = $keys[$key];
+                $key++;
+            }
+        }
+        
+        return $arChannelProgs;
+    }
+    
+    
+    /**
+     * 
+     * @param string $pointerColNumber номер столбца по вертикали
+     */
+    public static function setKeysToCols($pointerColNumber, $arTimePointers)
+    {
+        $arKeys = array();
+        
+        //Чтобы больше варяций по возможным столбцам было
+        if($pointerColNumber==1)
+            $pointerColNumber = 2;
+        
+        //Разброс от возможного столбца делаем в 1 столбец влево/вправо
+        foreach(array($pointerColNumber, $pointerColNumber-1, $pointerColNumber+1) as $pointerColNumber)
+        {
+            $success = true;
+            
+            foreach($arTimePointers as $channel_id => $array)
+            {
+                $arKeys[$channel_id] = array();
+                
+                $progPointer = $array[0];    //Порядковый номер программы в столбце
+                $progsNumber = $array[1];    //Общее кол-во программ
+                
+                $leftArray = range(1, $progPointer-1);
+                $rightArray = range($progPointer+1, $progsNumber);
+                
+                $leftCols = $pointerColNumber-1;
+                $rightCols = BROADCAT_COLS-$pointerColNumber;
+                
+                $progPointerClass = "one";
+                
+                if(count($leftArray)*2<$leftCols)
+                {
+                    $leftCols = $pointerColNumber-2;                
+                    $progPointerClass = "double";
+                    
+                }else if(count($rightArray)*2<$rightCols){
+                    
+                    $rightCols = BROADCAT_COLS-$pointerColNumber-1;
+                    $progPointerClass = "double";
+                }
+    
+                $keysResult = self::putArrayIntoQuantity($leftArray, $leftCols);
+                $keysResult2 = self::putArrayIntoQuantity($rightArray, $rightCols);
+                
+                $arKeys[$channel_id] = $keysResult+array($progPointer => $progPointerClass)+$keysResult2;
+                
+                $count = 0;
+                foreach($arKeys[$channel_id] as $class)
+                {
+                    if($class=="one"){
+                        $count+=1;
+                    }else if($class=="double"){
+                        $count+=2;
+                    }else{
+                        $count+=0.5;
+                    }
+                }
+                
+                if($count<BROADCAT_COLS)
+                {
+                    $success = false;
+                    $arKeys = array();
+                    break;
+                }
+            }
+            
+            if($success)
+                break;
+        }
+        
+        return $arKeys;
+    }
+    
+    public static function putArrayIntoQuantity($keys, $numCols)
+    {
+        $count = count($keys);
+        if($count>$numCols*2)
+        {
+            $arParts["HALF"] = $numCols;
+            $needDelete = $count - $numCols*2;
+        }else{
+            if($count>=$numCols)  //больше 12 колонок
+            {
+                $ostatok = $numCols*2 - $count;
+                $arParts["ONE"] = $ostatok;
+                $arParts["HALF"] = ($count-$ostatok)/2;
+            }else{
+                if($numCols>$count*2)
+                {
+                    $arParts["DOUBLE"] = $count;//floor($count/2);
+                    $arParts["ONE"] = $count - $arParts["DOUBLE"];
+                }else{
+                    $double = $numCols - $count;
+                    $arParts["DOUBLE"] = $double;
+                    $arParts["ONE"] = $count-$double;
+                }
+            }
+        }
+        
+        $keysResult = array();
+        if(count($arParts["HALF"])==0)
+        {
+            if(count($arParts["DOUBLE"])>0)
+            {
+                while($arParts["DOUBLE"]>0)
+                {
+                    $key = array_shift($keys);
+                    $keysResult[$key] = "double";
+                    $keys = array_diff($keys, array($key));
+                    $arParts["DOUBLE"]--;
+                }
+            }
+            
+            if(count($arParts["ONE"])>0)
+            {
+                while($arParts["ONE"]>0)
+                {
+                    $key = array_shift($keys);
+                    $keysResult[$key] = "one"; 
+                    $keys = array_diff($keys, array($key));
+                    $arParts["ONE"]--;
+                }
+            }
+        }else{
+            $allKeysReverse = array_reverse($keys);
+            
+            //Получили ключи с худшим рейтингом в количестве = количеству нужных половин * 2
+            $halfKeys = array();
+            for($i=0; $i<$arParts["HALF"]*2; $i++)
+            {
+                $halfKeys[] = $allKeysReverse[$i];
+            }
+            
+            //проверим сколько из этих ключей являются парами
+            $countHalfs = 0;
+            $halfKeysDelete = array();
+            sort($halfKeys);    //отсортируем
+            for($i=1; $i<count($halfKeys); $i=$i+2)
+            {
+                if(abs($halfKeys[$i]-$halfKeys[$i-1])==1)
+                {
+                    $keys = array_diff($keys, array($halfKeys[$i], $halfKeys[$i-1]));
+                    $halfKeysDelete[] = $halfKeys[$i];
+                    $halfKeysDelete[] = $halfKeys[$i-1];
+                    $keysResult[$halfKeys[$i]] = "half";
+                    $keysResult[$halfKeys[$i-1]] = "half";
+                    $countHalfs++;
+                }
+            }
+            $halfKeys = array_diff($halfKeys, $halfKeysDelete);
+
+            //если остались половинуи, то берем соседние половинок
+            $diff = 0;
+            $halfKeysDelete = array();
+            if(count($arParts["HALF"])>$countHalfs)
+            {
+                $diff = $arParts["HALF"]-$countHalfs;
+
+                foreach($halfKeys as $key)
+                {
+                    $key_1 = $key-1;
+                    $key_2 = $key+1;
+                    if(in_array($key_1, $keys))
+                    {
+                        $keysResult["CLASS"] = "half"; 
+                        $keysResult["CLASS"] = "half";
+                        $halfKeysDelete[] = $key;
+                        $halfKeysDelete[] = $key_1;
+                        $keys = array_diff($keys, array($key, $key_1));
+                        $diff--;
+                    }
+                    elseif(in_array($key_2, $keys))
+                    {
+                        $keysResult[$key] = "half"; 
+                        $keysResult[$key_2] = "half";
+                        $halfKeysDelete[] = $key;
+                        $halfKeysDelete[] = $key_2;
+                        $keys = array_diff($keys, array($key, $key_2));
+                        $diff--;
+                    }
+                    
+                    if($diff==0)
+                        break;
+                }
+                $halfKeys = array_diff($halfKeys, $halfKeysDelete);
+            }
+            
+            //если остались половинки, то берем соседние половинок
+            if($diff>0)
+            {
+                if(count($halfKeys)>0)
+                {
+                    foreach($halfKeys as $key)
+                    {
+                        $keysResult[$key] = "one"; 
+                        $keys = array_diff($keys, array($key));
+                        $arParts["ONE"]--;
+                    }
+                }
+            }
+            
+            if(count($arParts["DOUBLE"])>0)
+            {
+                while($arParts["DOUBLE"]>0)
+                {
+                    $key = array_shift($keys);
+                    $keysResult[$key] = "double"; 
+                    $keys = array_diff($keys, array($key));
+                    $arParts["DOUBLE"]--;
+                }
+            }
+            
+            if(count($arParts["ONE"])>0)
+            {
+                while($arParts["ONE"]>0)
+                {
+                    $key = array_shift($keys);
+                    $keysResult[$key] = "one"; 
+                    $keys = array_diff($keys, array($key));
+                    $arParts["ONE"]--;
+                }
+            }
+            
+        }                   
+        
+        unset($arParts);
+        return $keysResult;
     }
     
     public static function setChannel($arParams)

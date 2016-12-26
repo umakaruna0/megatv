@@ -14,7 +14,7 @@
 $this->setFrameMode(true);
 ?>
 
-<?$APPLICATION->IncludeComponent(
+<?/*$APPLICATION->IncludeComponent(
 	"hawkart:channel.list",
 	"",
 	array(
@@ -24,4 +24,12 @@ $this->setFrameMode(true);
 	$component,
 	array("HIDE_ICONS" => "Y")
 );
-?>
+*/?>
+
+<?$APPLICATION->IncludeComponent("hawkart:channel.cell", "new", 
+    Array(
+		"NEWS_COUNT" => "45",
+        "DISPLAY_BOTTOM_PAGER" => "Y"
+    ),
+	false
+);?>

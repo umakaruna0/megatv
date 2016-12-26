@@ -9,4 +9,5 @@ $MESS["AUTH_CHECK_ENTER_DATA"] = "Проверьте введённые данн
 $MESS["AUTH_ERROR_SERVER_CONNECT"] = "Ошибка соединения с сервером";
 $MESS["AUTH_RECOVERY_PASSWORD"] = "Восстановить пароль";
 $MESS["AUTH_CONFIRM_TEXT_1"] = "Зайдите на почту и перейдите по ссылке<br> или введите код активации здесь:";
+$MESS['AUTH_PASSWORD'] = "Пароль";
 ?>

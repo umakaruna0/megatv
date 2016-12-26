@@ -10,11 +10,12 @@ if(count($arResult["PROGS"])==0)
         "recordingURL": "<?=SITE_TEMPLATE_PATH?>/ajax/to_record.php"
     }
     </script>
+    <div class="broadcasts-loader broadcasts-loader--loaded"><div class="broadcasts-loader__title"><p style="font-size:30px">Подождите,</p> <p>идёт загрузка элементов...</p></div><div class="broadcasts-loader__divimg"><img src="/local/templates/megatv/img/loader.gif" alt="" class="broadcasts-loader__img"></div></div>
 	<div class="block-header">
 		<h3 class="block-title"><?=$arParams["TITLE"]?></h3>
 	</div>
     <div class="block-body">
-	   <div class="broadcasts-list" data-url="<?=$arParams["LIST_URL"]?>" data-nop="<?=$arParams["NEWS_COUNT"]?>" data-activate="true">
+	   <div class="broadcasts-list broadcast-results" data-url="<?=$arParams["LIST_URL"]?>" data-nop="<?=$arParams["NEWS_COUNT"]?>" data-activate="true">
 			<?
             foreach($arResult["PROGS"] as $key=>$arProg)
             {                
@@ -24,12 +25,17 @@ if(count($arResult["PROGS"])==0)
                     data-type="broadcast" data-broadcast-id="<?=$arProg["UF_EXTERNAL_ID"]?>"
                 >
                     <div class="inner">
-                        <div class="item-image-holder" style="background-image: url(<?=$arProg["UF_THUMBNAIL_URL"]?>)"></div>
+                       
+                        <div class="item-image-holder">
+                            <img class="lazy-img swiper-lazy" src="<?=$arProg["UF_THUMBNAIL_URL"]?>">
+                        </div>
                         
-                        <span class="item-status-icon" href="#">
-            				<span data-icon="icon-recorded"></span>
-            				<span class="status-desc">Смотреть</span>
-            			</span>
+                        <div class="broadcast__wrap-status">
+                            <span class='broadcast__status'>
+                                <span data-icon='icon-recorded'></span>
+                                <span class='bs-status__title'>Смотреть</span>
+                            </span>
+                        </div>
                         
                     	<div class="item-header">
                             <div class="meta"></div>

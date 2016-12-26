@@ -35,8 +35,8 @@
         <!-- ============== Заменено ============== -->
         <script type="text/x-config">
             { 
-            	"remoteUrl" : "ajax/delete_record.php",
-            	"viewMoreUrl" : "ajax/load_records.php",
+            	"remoteUrl" : "<?=SITE_TEMPLATE_PATH?>/tmpl/ajax/modals/delete_record.php",
+            	"viewMoreUrl" : "<?=SITE_TEMPLATE_PATH?>/tmpl/ajax/load_records.php",
             	"countMax" : 15,
                 "lang":{
                     "delete_title": "Удалить",

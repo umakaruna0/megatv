@@ -18,6 +18,20 @@ class PeopleTable extends Entity\DataManager
 	{
 		return 'hw_people';
 	}
+    
+    public static function getKinopoiskLinkByName($name)
+    {
+        $result = \Hawkart\Megatv\PeopleTable::getList(array(
+            'filter' => array("=UF_TITLE" => $name),
+            'select' => array("UF_KINOPOISK_LINK")
+        ));
+        if ($row = $result->fetch())
+        {
+            return $row["UF_KINOPOISK_LINK"];
+        }
+        
+        return false;
+    }
 
 	/**
 	 * Returns entity map definition
@@ -47,6 +61,9 @@ class PeopleTable extends Entity\DataManager
             'UF_ROLE' => array(
 				'data_type' => 'Local\Hawkart\Megatv\RoleTable',
 				'reference' => array('=this.UF_ROLE_ID' => 'ref.ID'),
+			),
+            'UF_KINOPOISK_LINK' => array(
+				'data_type' => 'string',
 			),
 		);
 	}

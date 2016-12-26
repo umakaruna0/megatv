@@ -60,8 +60,14 @@
 				<label for="" class="sr-only">Телефон</label>
 				<input type="text" name="USER[PERSONAL_PHONE]" id="" class="form-control" value="<?=$arResult["USER"]["PERSONAL_PHONE"]?>" placeholder="Телефон" data-type="masked-phone-input">
 			</div>
-            <button type="submit" class="btn btn-primary btn-block btn-multistate" data-type="multistate-button"><span class="default-state init-state">Сохранить изменения</span><span class="done-state"><span data-icon="icon-msbutton-checkmark"></span>Изменения сохранены</span></button>
-		</form>
+            <button type="submit" class="btn btn-primary btn-block btn-multistate" data-type="multistate-button">
+                <span class="default-state init-state">Сохранить изменения</span><span class="done-state">
+                <span data-icon="icon-msbutton-checkmark"></span>Изменения сохранены</span>
+                <span class="fail-data-state"><span data-icon="icon-msbutton-cross-circle"></span>Проверьте введённые данные</span>
+                <span class="fail-network-state"><span data-icon="icon-msbutton-broken-network"></span>Ошибка соединения с сервером</span>
+            </button>
+            		  
+        </form>
 	</div>
 </section>
 <section class="user-passport">
@@ -109,7 +115,8 @@
 				<label for="" class="sr-only">Адрес прописки</label>
 				<textarea name="USER[PASSPORT][ADDRESS]" id="" rows="4" class="form-control" placeholder="Адрес прописки"><?=$arResult["USER"]["PASSPORT"]["DETAIL_TEXT"]?></textarea>
 			</div>
-			<button type="submit" class="btn btn-primary btn-block btn-multistate" data-type="multistate-button"><span class="default-state init-state">Сохранить данные</span><span class="done-state"><span data-icon="icon-msbutton-checkmark"></span>Данные сохранены</span></button>
+			<button type="submit" class="btn btn-primary btn-block btn-multistate" data-type="multistate-button"><span class="default-state init-state">Сохранить данные</span><span class="done-state"><span data-icon="icon-msbutton-checkmark"></span>Данные сохранены</span><span class="fail-data-state"><span data-icon="icon-msbutton-cross-circle"></span>Проверьте введённые данные</span>
+                        <span class="fail-network-state"><span data-icon="icon-msbutton-broken-network"></span>Ошибка соединения с сервером</span></button>
 		</form>
 	</div>
 </section>

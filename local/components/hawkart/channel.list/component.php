@@ -2,13 +2,12 @@
 if(!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED!==true) die();
 
 ini_set('max_execution_time', 30);
-global $USER;
+global $USER, $APPLICATION;
 
 $arParams = $arParams + array(
     "DATETIME" => \CTimeEx::getDatetime(),
     "AJAX" => $_REQUEST["AJAX"],
     "LIST_URL" => $APPLICATION->GetCurDir(),
-    "AJAX_TYPE" => $_REQUEST["AJAX_TYPE"]
 );
 
 //Get dates
@@ -21,15 +20,12 @@ for($i = 0; $i<\CTimeEx::getCalendarDays()+2; $i++)
 }
 
 //Get channel list
-$arResult["ITEMS"] = \Hawkart\Megatv\ChannelTable::getActiveByCity();
-
 $arChannels = array();
+$arResult["ITEMS"] = \Hawkart\Megatv\ChannelTable::getActiveByCity();
 foreach($arResult["ITEMS"] as $arChannel)
 {
     $arChannels[$arChannel["UF_CHANNEL_BASE_ID"]] = $arChannel;
-    
 }
-
 $arResult["ITEMS"] = $arChannels;
 
 /**
@@ -117,15 +113,31 @@ $arDate = \CTimeEx::getDateFilter($arParams["CURRENT_DATE"]);
 $dateStart = date("Y-m-d H:i:s", strtotime($arDate["DATE_FROM"]));
 $dateEnd = date("Y-m-d H:i:s", strtotime($arDate["DATE_TO"]));
 
+$currentDateTime = date("Y-m-d H:i:s", strtotime($arParams["DATETIME"]["SERVER_DATETIME_WITH_OFFSET"]));
+
 $arFilter = array(
     "=UF_CHANNEL_ID" => $arChannelIds,
-    ">=UF_DATE_START" => new \Bitrix\Main\Type\DateTime($dateStart, 'Y-m-d H:i:s'),
-    "<UF_DATE_START" => new \Bitrix\Main\Type\DateTime($dateEnd, 'Y-m-d H:i:s'),
+    "=UF_ACTIVE" => 1,
+    array(
+        "LOGIC" => "OR",
+        array(
+            ">=UF_DATE_START" => new \Bitrix\Main\Type\DateTime($dateStart, 'Y-m-d H:i:s'),
+            "<UF_DATE_START" => new \Bitrix\Main\Type\DateTime($dateEnd, 'Y-m-d H:i:s'),
+        ),
+        array(
+            "<UF_DATE_START" => new \Bitrix\Main\Type\DateTime($dateStart, 'Y-m-d H:i:s'),
+            ">UF_DATE_END" => new \Bitrix\Main\Type\DateTime($dateStart, 'Y-m-d H:i:s'),
+            //"<UF_DATE_START" => new \Bitrix\Main\Type\DateTime($currentDateTime, 'Y-m-d H:i:s'),
+            //">UF_DATE_END" => new \Bitrix\Main\Type\DateTime($currentDateTime, 'Y-m-d H:i:s'),
+        )
+    )
+    
 );
 $arSelect = array(
     "ID", "UF_DATE_START", "UF_DATE_END", "UF_DATE", "UF_CHANNEL_ID", "UF_PROG_ID",
     "UF_TITLE" => "UF_PROG.UF_TITLE", "UF_SUB_TITLE" => "UF_PROG.UF_SUB_TITLE", "UF_IMG_PATH" => "UF_PROG.UF_IMG.UF_PATH",
-    "UF_RATING" => "UF_PROG.UF_RATING", "UF_PROG_CODE" => "UF_PROG.UF_CODE"
+    "UF_RATING" => "UF_PROG.UF_RATING", "UF_PROG_CODE" => "UF_PROG.UF_CODE",
+    'UF_BASE_FORBID_REC' => 'UF_CHANNEL.UF_BASE.UF_FORBID_REC'
 );
 $obCache = new \CPHPCache;
 if( $obCache->InitCache(86400, serialize($arFilter).serialize($arSelect), "/index-schedules/"))
@@ -148,7 +160,9 @@ elseif($obCache->StartDataCache())
         
         $arSchedule["PROG_ID"] = $arSchedule["UF_PROG_ID"];
         $arSchedule["DETAIL_PAGE_URL"] = $arResult["CHANNELS"][$channel]["DETAIL_PAGE_URL"].$arSchedule["UF_PROG_CODE"]."/?event=".$arSchedule["ID"];
-        $arResult["DATES"][$arSchedule["UF_DATE"]][$channel][] = $arSchedule;
+        //$arResult["DATES"][$arSchedule["UF_DATE"]][$channel][] = $arSchedule;
+        $arResult["DATES"][$arParams["CURRENT_DATE"]][$channel][] = $arSchedule;
+        
     }
 	$obCache->EndDataCache($arResult["DATES"]); 
 }
@@ -156,9 +170,115 @@ unset($arChannelIds);
 
 
 /**
+ * Create json view for future algorithm
+ */
+if($_REQUEST["AJAX_JSON"]=="Y")
+{
+    $APPLICATION->RestartBuffer();
+}
+    
+    /**
+     * Get records statuses by user
+     */
+    $arRecordsStatuses = \Hawkart\Megatv\RecordTable::getListStatusesByUser();
+    
+    $arDates = array();
+    foreach($arResult["DATES"] as $date => &$arChannels)
+    {
+        if($arParams["TEMPLATE"]=="NEW")
+        {
+            $arChannels = \Hawkart\Megatv\CScheduleView::setIndexNew($arChannels, $arResult["CHANNELS"]);
+        }
+        
+        foreach($arResult["CHANNELS"] as $arChannel)
+        {
+            $channel = $arChannel["ID"];
+            $arProgs = $arChannels[$channel];
+            
+            if(!in_array($arChannel["UF_CHANNEL_BASE_ID"], $arResult["CHANNELS_SHOW"]) && $USER->IsAuthorized())
+                continue;
+
+            foreach($arProgs as $key=>$arProg)
+            {                
+                $time = substr($arProg['UF_DATE_START'], 11, 5);
+                
+                $arStatus = \Hawkart\Megatv\CScheduleTemplate::status($arProg, $arRecordsStatuses);
+                $status = $arStatus["status"];
+                
+                if(intval($arProg["UF_BASE_FORBID_REC"])==1 && $USER->IsAuthorized())
+                {
+                    $status = "";
+                }
+                
+                $start = $arProg["DATE_START"];
+                $end = $arProg["DATE_END"];
+                $datetime = $arParams["DATETIME"]["SERVER_DATETIME_WITH_OFFSET"];
+                $time_pointer = false;
+                if(\CTimeEx::dateDiff($start, $datetime) && \CTimeEx::dateDiff($datetime, $end))
+                {
+                    $time_pointer = true;
+                }
+                
+                $_arRecord = array(
+                    "id" => $arProg["ID"],
+                    "channel_id" => $arProg["UF_CHANNEL_ID"],
+                    "time" => $time,
+            		"date" => substr($arProg["DATE_START"], 0, 10),//$date,
+                    "date_start" => $arProg["DATE_START"],
+                    "date_end" => $arProg["DATE_END"],
+            		"link" => $arProg["DETAIL_PAGE_URL"],
+            		"name" => \Hawkart\Megatv\CScheduleTemplate::cutName(\Hawkart\Megatv\ProgTable::getName($arProg), 35),
+            		"images" => array(
+                        'one' => \Hawkart\Megatv\CFile::getCropedPath($arProg["UF_IMG_PATH"], array(288, 288)),
+                        'double' => \Hawkart\Megatv\CFile::getCropedPath($arProg["UF_IMG_PATH"], array(576, 288)),
+                        'half' => \Hawkart\Megatv\CFile::getCropedPath($arProg["UF_IMG_PATH"], array(288, 144))
+                    ),
+                    'badge' => $time_pointer,
+                    "status" => "status-".$status,
+                    "rating" => $arProg["UF_RATING"],
+                    "user_authorized" => $USER->IsAuthorized(),
+                    "class" => $arProg["CLASS"] //,
+                    //"forbidden_recording" => $arProg["UF_BASE_FORBID_REC"]                   
+                );
+                
+                foreach($_arRecord["images"] as $type => $value)
+                {
+                    $_arRecord["images"][$type."_bad"] = SITE_TEMPLATE_PATH."/ajax/img_grey.php?quality=1&grey=false&path=".urlencode($_SERVER["DOCUMENT_ROOT"].$value);
+                    if($status=="viewed")
+                    {
+                        $_arRecord["images"][$type] = ITE_TEMPLATE_PATH."/ajax/img_grey.php?&path=".urlencode($_SERVER["DOCUMENT_ROOT"].$value);
+                        $_arRecord["images"][$type."_bad"] = str_replace("&grey=false", "", $_arRecord["images"][$type."_bad"]);
+                    }
+                }
+                
+                $arDates[$date][$channel][] = $_arRecord;
+            }
+        }
+    }
+
+if($_REQUEST["AJAX_JSON"]=="Y")
+{    
+    echo json_encode(array(
+        "CHANNELS" => $arResult["CHANNELS"],
+        "DATES" => $arDates,
+        "TIME" => date("Y-m-d H:i:s", strtotime(\CTimeEx::dateOffset(date("Y-m-d H:i:s"))))
+    ));
+
+    die();
+}else{
+    $arResult["DATA"] = json_encode(array(
+        "CHANNELS" => $arResult["CHANNELS"],
+        "DATES" => $arDates,
+        "TIME" => date("Y-m-d H:i:s", strtotime(\CTimeEx::dateOffset(date("Y-m-d H:i:s"))))
+    ));
+}
+
+
+
+/**
  * Create view through template
  */
-$arResult["FIRST_DATE"] = false;
+/*$arResult["FIRST_DATE"] = false;
 foreach($arResult["DATES"] as $date => $arChannels )
 {
     if(!$arResult["FIRST_DATE"])
@@ -177,7 +297,7 @@ foreach($arResult["DATES"] as $date => $arChannels )
     //add social schedule
     //$arResult["DATES"][$date]["YOUTUBE"] = \YoutubeClient::dailyShow();
     //$arResult["DATES"][$date]["VK"] = \VkClient::dailyShow();
-}
+}*/
 
 /**
  * Add social channels

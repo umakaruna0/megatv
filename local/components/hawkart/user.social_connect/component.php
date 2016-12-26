@@ -2,7 +2,7 @@
 if(!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED!==true)
 	die();
 
-global $USER;
+global $USER, $arSite;
 CModule::IncludeModule("iblock");
 $arResult["SOCIALS"] = array();
 
@@ -25,6 +25,7 @@ if($USER->IsAuthorized())
 $arrFilter = array(
     "IBLOCK_ID" => SOCIAL_CONFIG_IB,
     "ACTIVE" => "Y",
+    "PROPERTY_PROJECT_VALUE" => $arSite["NAME"]
     //"!PROPERTY_SECRET" => false,
     //"!PROPERTY_PROVIDER" => false,
     //"!PROPERTY_ID" => false,

@@ -91,10 +91,12 @@ class CUserEx
 
     }
     
-    public static function generateDataSotal()
+    public static function generateDataSotal($USER_ID = false)
     {
         global $USER;
-        $USER_ID = $USER->GetID();
+        if(!$USER_ID)
+            $USER_ID = $USER->GetID();
+            
         $rsUser = \CUser::GetByID($USER_ID);
         $arUser = $rsUser->Fetch();
 
@@ -131,7 +133,7 @@ class CUserEx
             if (!\CFile::IsImage($arFile["FILE_NAME"]))
             {
                 echo "не является картинкой";
-                continue;
+                return $arUser;
             }
                 
             // Если размер больше допустимого
@@ -182,7 +184,33 @@ class CUserEx
     public function OnAfterUserUpdateHandler(&$arFields)
     {
         if(intval($arFields["ID"])>0)
+        {
             self::subcribeOnFreeChannels($arFields["ID"]);
+            
+            $rsUser = \CUser::GetByID($arFields["ID"]);
+            $arUser = $rsUser->Fetch();
+            if(empty($arUser["UF_SOTAL_LOGIN"]))
+            {
+                $arUser = self::generateDataSotal();
+            }
+        }    
+    }
+    
+    function OnAfterUserRegisterHandler(&$arFields)
+    {
+        // если регистрация успешна то
+        if($arFields["USER_ID"]>0)
+        {
+            self::subcribeOnFreeChannels($arFields["USER_ID"]);
+            
+            $rsUser = \CUser::GetByID($arFields["USER_ID"]);
+            $arUser = $rsUser->Fetch();
+            if(empty($arUser["UF_SOTAL_LOGIN"]))
+            {
+                $arUser = self::generateDataSotal();
+            }
+        }
+        return $arFields;
     }
     
     public function subcribeOnFreeChannels($user_id = false)
@@ -226,5 +254,49 @@ class CUserEx
             "UF_CAPACITY" => $capacity
         ));
     }
+    
+    public static function getFriendsByProvider($provider_name = false, $user_id = false)
+    {
+        \CModule::IncludeModule("iblock");
+        $config = $_SERVER['DOCUMENT_ROOT'].'/vendor/hybridauth/hybridauth/hybridauth/config.php';
+        $arFriends = array();
+        $arProviders = array();
+        global $USER;
         
+        if(!$user_id)
+        {
+            if($USER->IsAuthorized())
+                $user_id = $USER->GetID();
+        }
+        
+        if(!$user_id)
+            return false;
+
+        if(!$provider_name)
+        {
+            //Привязки к соц. сетям
+            $arrFilter = array(
+                "IBLOCK_ID" => USER_SOCIAL_IB,
+                "PROPERTY_USER_ID" => $user_id,
+            );
+            $arSelect = array("ID", "PROPERTY_SOCIAL_PROVIDER");
+            $rsRes = \CIBlockElement::GetList( $arOrder, $arrFilter, false, false, $arSelect );
+    		while( $arItem = $rsRes->GetNext() )
+            {
+                $arProviders[] = $arItem["PROPERTY_SOCIAL_PROVIDER_VALUE"];
+    		}
+        }
+        
+        try{
+            $hybridauth = new \Hybrid_Auth( $config );
+        	$adapter = $hybridauth->authenticate( $provider_name );
+        	$user_contacts = $adapter->getUserContacts();
+            
+            print_r($user_contacts);
+        }catch( Exception $e )
+        {
+            LocalRedirect("/?login=Y&social-error=".$e->getMessage());
+            die();
+        }
+    }  
 }

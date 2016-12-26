@@ -11,6 +11,10 @@ define("RECORD_HL", 5);
 define("BONUS_FOR_REGISTRATION", 10);   //бонус за регистрацию +20 ГБ пространства
 define("LANGUAGE_DEFAULT", "RU");
 
+global $arSite;
+$rsSites = \CSite::GetByID("s1");
+$arSite = $rsSites->Fetch();
+
 require_once $_SERVER['DOCUMENT_ROOT'] . '/vendor/autoload.php';
 
 use \Bitrix\Highloadblock as HL;
@@ -46,6 +50,7 @@ AddEventHandler('main', 'OnEpilog', '_Check404Error', 1);
 AddEventHandler("main", "OnBeforeUserLogin", Array("CUserEx", "OnBeforeUserLogin"));
 AddEventHandler("main", "OnBeforeUserRegister", Array("CUserEx", "OnBeforeUserRegister"));
 AddEventHandler("main", "OnAfterUserAdd", Array("CUserEx", "OnAfterUserUpdateHandler"));
+AddEventHandler("main", "OnAfterUserRegister", Array("CUserEx", "OnAfterUserRegisterHandler"));
 AddEventHandler("main", "OnBeforeUserSendPassword", Array("CUserEx", "OnBeforeUserSendPasswordHandler"));
 AddEventHandler("main", "OnBeforeUserDelete", Array("CUserEx", "OnBeforeUserDeleteHandler"));
 

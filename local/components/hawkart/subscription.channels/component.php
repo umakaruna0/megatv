@@ -18,7 +18,8 @@ while ($arSub = $result->fetch())
 
 $result = \Hawkart\Megatv\ChannelBaseTable::getList(array(
     'filter' => array("UF_ACTIVE" => 1),
-    'select' => array("ID", "UF_TITLE", "UF_ICON", "UF_PRICE_H24")
+    'select' => array("ID", "UF_TITLE", "UF_ICON", "UF_PRICE_H24"),
+    'order' => array("UF_PRICE_H24" => "DESC", "UF_TITLE"=>"ASC")
 ));
 while ($arChannel = $result->fetch())
 {

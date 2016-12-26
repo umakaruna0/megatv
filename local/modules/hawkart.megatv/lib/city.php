@@ -136,7 +136,7 @@ class CityTable extends Entity\DataManager
         
         if(!$_SESSION["USER_GEO"] || empty($_SESSION["USER_GEO"]))
         {
-            if($_COOKIE["city_select_data"])
+            /*if($_COOKIE["city_select_data"])
             {
                 $arFilter["=UF_TITLE"] = $_COOKIE["city_select_data"];
                 $_SESSION["USER_GEO"] = self::getByFilterSelect($arFilter);
@@ -147,27 +147,22 @@ class CityTable extends Entity\DataManager
                     $arFilter["=UF_DEFAULT"] = 1;
                     $_SESSION["USER_GEO"] = self::getByFilterSelect($arFilter);
                 }
-            }else{
+            }else{*/
                 $arGeo = GeoCity::getInstance()->getRecord();
                 
                 if(!empty($arGeo))
                 {
                     $arFilter["=UF_REGION"] = $arGeo["region"];
                     $_SESSION["USER_GEO"] = self::getByFilterSelect($arFilter);
-                    
-                    if(empty($_SESSION["USER_GEO"]))
-                    {
-                        unset($arFilter["=UF_REGION"]);
-                        $arFilter["=UF_DEFAULT"] = 1;
-                        $_SESSION["USER_GEO"] = self::getByFilterSelect($arFilter);
-                    }
-                    
-                }else{
+                }
+                
+                if(empty($_SESSION["USER_GEO"]))
+                {
                     unset($arFilter["=UF_REGION"]);
                     $arFilter["=UF_DEFAULT"] = 1;
                     $_SESSION["USER_GEO"] = self::getByFilterSelect($arFilter);
                 }
-            }
+            //}
         }
         
         //\CDev::pre($arFilter);

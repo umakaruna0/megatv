@@ -47,70 +47,79 @@ if(count($arResult["RECORDS"])==0)
             }
         }
     </script>
-    
+    <div class="broadcasts-loader broadcasts-loader--loaded"><div class="broadcasts-loader__title"><p style="font-size:30px">Подождите,</p> <p>идёт загрузка элементов...</p></div><div class="broadcasts-loader__divimg"><img src="/local/templates/megatv/img/loader.gif" alt="" class="broadcasts-loader__img"></div></div>
 	<div class="broadcasts-list">
-        <?
-        foreach($arResult["RECORDS"] as $arRecord)
-        {
-            $datetime = $arRecord['UF_DATE_START']->toString();
-            $date = substr($datetime, 0, 10);
-            $time = substr($datetime, 11, 5);
-            if(strlen($arRecord["UF_NAME"])>25)
+    
+        <?if(count($arResult["RECORDS"])>0):            
+            foreach($arResult["RECORDS"] as $arRecord)
             {
-                $arRecord["UF_NAME"] = substr($arRecord["UF_NAME"], 0, 25)."...";
-            }
-            ?>
-            <div class="item<?if($arRecord["UF_WATCHED"]):?> status-viewed<?endif;?>" data-broadcast-id="<?=$arRecord["ID"]?>" data-category="<?=$arResult["CATEGORIES"][$arRecord["UF_CATEGORY"]]?>">
-                <div class="inner">
-                    <?
-                    if($arRecord["UF_WATCHED"])
-                    {
-                        $path = $_SERVER["DOCUMENT_ROOT"].$arRecord["PICTURE"]["SRC"];
-                        ?>
-                        <div class="item-image-holder" style="background-image: url(<?=SITE_TEMPLATE_PATH?>/ajax/img_grey.php?path=<?=urlencode($path)?>)"></div>
-                        <span class="item-status-icon">
-							<span data-icon="icon-viewed"></span>
-							<span class="status-desc">Просмотрено</span>
-						</span>
+                $datetime = $arRecord['UF_DATE_START']->toString();
+                $date = substr($datetime, 0, 10);
+                $time = substr($datetime, 11, 5);
+                if(strlen($arRecord["UF_NAME"])>25)
+                {
+                    $arRecord["UF_NAME"] = substr($arRecord["UF_NAME"], 0, 25)."...";
+                }
+                ?>
+                <div class="item<?if($arRecord["UF_WATCHED"]):?> status-viewed<?endif;?>" data-broadcast-id="<?=$arRecord["ID"]?>" data-category="<?=$arResult["CATEGORIES"][$arRecord["UF_CATEGORY"]]?>">
+                    <div class="inner">
                         <?
-                    }else{
-                        $img = $arRecord["PICTURE"]["SRC"];
-                        ?><div class="item-image-holder" style="background-image: url(<?=$img?>)"></div><?
-                    }
-                    ?>
-					
-					<div class="actions-panel">
-						<ul class="actions-list">
-							<li><a href="#" data-type="delete-trigger" title="Удалить"><span data-icon="icon-trash-action"></span></a></li>
-							<?/*<li><a href="#" data-type="share-trigger" title="Поделиться"><span data-icon="icon-network-action"></span></a></li>*/?>
-							<?if(!empty($arRecord["UF_URL"])):?>
-                                <li><a href="#" data-type="player-trigger" title="Просмотреть"><span data-icon="icon-play-action"></span></a></li>
-                            <?endif;?>
-						</ul>
-						<div class="delete-dialog">
-							<p>Вы уверены, что хотите удалить данную передачу навсегда?</p>
-							<ul>
-								<li><a href="#" data-type="delete-broadcast">Да, хочу</a></li>
-								<li><a href="#" data-type="cancel-delete-state">Отменить</a></li>
-							</ul>
-						</div>
-					</div>
-					<div class="item-header">
-						<div class="view-progress" data-progress="<?=intval($arRecord["UF_PROGRESS_PERS"])?>"></div>
-						
-                        <div class="meta">
-							<div class="time"><?=$time?></div>
-							<div class="date"><?=$date?></div>
-							<div class="category"><a href="#" data-type="category"><?=$arRecord["UF_CATEGORY"]?></a></div>
-						</div>
-						<div class="title">
-							<a href="<?=$arRecord["DETAIL_PAGE_URL"]?>"><?=$arRecord["UF_NAME"]?></a>
-						</div>
-					</div>
+                        if($arRecord["UF_WATCHED"])
+                        {
+                            $path = $_SERVER["DOCUMENT_ROOT"].$arRecord["PICTURE"]["SRC"];
+                            ?>
+                            <div class="item-image-holder"><img class="lazy-img" src="<?=SITE_TEMPLATE_PATH?>/ajax/img_grey.php?path=<?=urlencode($path)?>" style="width: 100%;"/></div>
+                            <span class="item-status-icon">
+    							<span data-icon="icon-viewed"></span>
+    							<span class="status-desc">Просмотрено</span>
+    						</span>
+                            <?
+                        }else{
+                            $img = $arRecord["PICTURE"]["SRC"];
+                            ?><div class="item-image-holder"><img class="lazy-img" src="<?=$img?>" style="width: 100%;"/></div><?
+                        }
+                        ?>
+    					
+    					<div class="actions-panel">
+    						<ul class="actions-list">
+    							<li><a href="#" data-type="delete-trigger" title="Удалить"><span data-icon="icon-trash-action"></span></a></li>
+    							<?/*<li><a href="#" data-type="share-trigger" title="Поделиться"><span data-icon="icon-network-action"></span></a></li>*/?>
+    							<?if(!empty($arRecord["UF_URL"]) && $arRecord["STATUS"] != "status-recording"):?>
+                                    <li><a href="#" data-type="player-trigger" title="Просмотреть"><span data-icon="icon-play-action"></span></a></li>
+                                <?endif;?>
+    						</ul>
+    						<div class="delete-dialog">
+    							<p>Вы уверены, что хотите удалить данную передачу навсегда?</p>
+    							<ul>
+    								<li><a href="#" data-type="delete-broadcast">Да, хочу</a></li>
+    								<li><a href="#" data-type="cancel-delete-state">Отменить</a></li>
+    							</ul>
+    						</div>
+    					</div>
+    					<div class="item-header">
+    						<div class="view-progress" data-progress="<?=intval($arRecord["UF_PROGRESS_PERS"])?>"></div>
+    						
+                            <div class="meta">
+    							<div class="time"><?=$time?></div>
+    							<div class="date"><?=$date?></div>
+    							<div class="category"><a href="#" data-type="category"><?=$arRecord["UF_CATEGORY"]?></a></div>
+    						</div>
+    						<div class="title">
+    							<a href="<?=$arRecord["DETAIL_PAGE_URL"]?>"><?=$arRecord["UF_NAME"]?></a>
+                                <?//=$arRecord["UF_EPG_ID"]?>
+    						</div>
+    					</div>
+                    </div>
+    			</div>
+                <?
+            }
+        else:
+            ?>
+            <div class="empty-content">
+                    <h1 class="empty-content__title">Список Ваших записей пуст!</h1>
                 </div>
-			</div>
             <?
-        }
+        endif;
         ?>
 	</div><!-- /.broadcasts-list -->
 </section>

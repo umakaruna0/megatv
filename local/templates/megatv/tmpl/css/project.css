@@ -1,0 +1,665 @@
+.introjs-overlay {
+    position: absolute;
+    box-sizing: content-box;
+    z-index: 999999;
+    background-color: #000;
+    opacity: 0;
+    background: -moz-radial-gradient(center, ellipse cover, rgba(0, 0, 0, 0.4) 0, rgba(0, 0, 0, 0.9) 100%);
+    background: -webkit-gradient(radial, center center, 0px, center center, 100%, color-stop(0%, rgba(0, 0, 0, 0.4)), color-stop(100%, rgba(0, 0, 0, 0.9)));
+    background: -webkit-radial-gradient(center, ellipse cover, rgba(0, 0, 0, 0.4) 0, rgba(0, 0, 0, 0.9) 100%);
+    background: -o-radial-gradient(center, ellipse cover, rgba(0, 0, 0, 0.4) 0, rgba(0, 0, 0, 0.9) 100%);
+    background: -ms-radial-gradient(center, ellipse cover, rgba(0, 0, 0, 0.4) 0, rgba(0, 0, 0, 0.9) 100%);
+    background: radial-gradient(center, ellipse cover, rgba(0, 0, 0, 0.4) 0, rgba(0, 0, 0, 0.9) 100%);
+    filter: "progid:DXImageTransform.Microsoft.gradient(startColorstr='#66000000',endColorstr='#e6000000',GradientType=1)";
+    -ms-filter: "alpha(opacity=50)";
+    filter: alpha(opacity=50);
+    -webkit-transition: all .3s ease-out;
+    -moz-transition: all .3s ease-out;
+    -ms-transition: all .3s ease-out;
+    -o-transition: all .3s ease-out;
+    transition: all .3s ease-out;
+}
+
+.introjs-fixParent {
+    z-index: auto !important;
+    opacity: 1 !important;
+    -webkit-transform: none !important;
+    -moz-transform: none !important;
+    -ms-transform: none !important;
+    -o-transform: none !important;
+    transform: none !important;
+}
+
+.introjs-showElement,
+tr.introjs-showElement>td,
+tr.introjs-showElement>th {
+    z-index: 9999999 !important;
+}
+
+.introjs-disableInteraction {
+    z-index: 99999999!important;
+    position: absolute;
+    background-color: white;
+    opacity: 0;
+    filter: alpha(opacity=0)
+}
+
+.introjs-relativePosition,
+tr.introjs-showElement>td,
+tr.introjs-showElement>th {
+    position: relative
+}
+
+.introjs-helperLayer {
+    box-sizing: content-box;
+    position: absolute;
+    z-index: 9999998;
+    background-color: #FFF;
+    background-color: rgba(255, 255, 255, .9);
+    border: 1px solid #777;
+    border: 1px solid rgba(0, 0, 0, .5);
+    border-radius: 4px;
+    box-shadow: 0 2px 15px rgba(0, 0, 0, .4);
+    -webkit-transition: all .3s ease-out;
+    -moz-transition: all .3s ease-out;
+    -ms-transition: all .3s ease-out;
+    -o-transition: all .3s ease-out;
+    transition: all .3s ease-out
+}
+
+.introjs-tooltipReferenceLayer {
+    box-sizing: content-box;
+    position: absolute;
+    visibility: hidden;
+    z-index: 10000000;
+    background-color: transparent;
+    -webkit-transition: all .3s ease-out;
+    -moz-transition: all .3s ease-out;
+    -ms-transition: all .3s ease-out;
+    -o-transition: all .3s ease-out;
+    transition: all .3s ease-out
+}
+
+.introjs-helperLayer *,
+.introjs-helperLayer *:before,
+.introjs-helperLayer *:after {
+    -webkit-box-sizing: content-box;
+    -moz-box-sizing: content-box;
+    -ms-box-sizing: content-box;
+    -o-box-sizing: content-box;
+    box-sizing: content-box
+}
+
+.introjs-helperNumberLayer {
+    box-sizing: content-box;
+    position: absolute;
+    visibility: visible;
+    top: -16px;
+    left: -16px;
+    z-index: 9999999999!important;
+    padding: 2px;
+    font-family: Arial, verdana, tahoma;
+    font-size: 13px;
+    font-weight: bold;
+    color: white;
+    text-align: center;
+    text-shadow: 1px 1px 1px rgba(0, 0, 0, .3);
+    background: #ff3019;
+    background: -webkit-linear-gradient(top, #ff3019 0, #cf0404 100%);
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #ff3019), color-stop(100%, #cf0404));
+    background: -moz-linear-gradient(top, #ff3019 0, #cf0404 100%);
+    background: -ms-linear-gradient(top, #ff3019 0, #cf0404 100%);
+    background: -o-linear-gradient(top, #ff3019 0, #cf0404 100%);
+    background: linear-gradient(to bottom, #ff3019 0, #cf0404 100%);
+    width: 20px;
+    height: 20px;
+    line-height: 20px;
+    border: 3px solid white;
+    border-radius: 50%;
+    filter: "progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff3019', endColorstr='#cf0404', GradientType=0)";
+    filter: "progid:DXImageTransform.Microsoft.Shadow(direction=135, strength=2, color=ff0000)";
+    box-shadow: 0 2px 5px rgba(0, 0, 0, .4)
+}
+
+.introjs-arrow {
+    border: 5px solid white;
+    content: '';
+    position: absolute
+}
+
+.introjs-arrow.top {
+    top: -10px;
+    border-top-color: transparent;
+    border-right-color: transparent;
+    border-bottom-color: white;
+    border-left-color: transparent
+}
+
+.introjs-arrow.top-right {
+    top: -10px;
+    right: 10px;
+    border-top-color: transparent;
+    border-right-color: transparent;
+    border-bottom-color: white;
+    border-left-color: transparent
+}
+
+.introjs-arrow.top-middle {
+    top: -10px;
+    left: 50%;
+    margin-left: -5px;
+    border-top-color: transparent;
+    border-right-color: transparent;
+    border-bottom-color: white;
+    border-left-color: transparent
+}
+
+.introjs-arrow.right {
+    right: -10px;
+    top: 10px;
+    border-top-color: transparent;
+    border-right-color: transparent;
+    border-bottom-color: transparent;
+    border-left-color: white
+}
+
+.introjs-arrow.right-bottom {
+    bottom: 10px;
+    right: -10px;
+    border-top-color: transparent;
+    border-right-color: transparent;
+    border-bottom-color: transparent;
+    border-left-color: white
+}
+
+.introjs-arrow.bottom {
+    bottom: -10px;
+    border-top-color: white;
+    border-right-color: transparent;
+    border-bottom-color: transparent;
+    border-left-color: transparent
+}
+
+.introjs-arrow.left {
+    left: -10px;
+    top: 10px;
+    border-top-color: transparent;
+    border-right-color: white;
+    border-bottom-color: transparent;
+    border-left-color: transparent
+}
+
+.introjs-arrow.left-bottom {
+    left: -10px;
+    bottom: 10px;
+    border-top-color: transparent;
+    border-right-color: white;
+    border-bottom-color: transparent;
+    border-left-color: transparent
+}
+
+.introjs-tooltip {
+    box-sizing: content-box;
+    position: absolute;
+    visibility: visible;
+    padding: 10px;
+    background-color: transparent;
+    min-width: 200px;
+    max-width: 300px;
+    border-radius: 3px;
+    -webkit-transition: opacity .1s ease-out;
+    -moz-transition: opacity .1s ease-out;
+    -ms-transition: opacity .1s ease-out;
+    -o-transition: opacity .1s ease-out;
+    transition: opacity .1s ease-out;
+    width: 550px;
+    height: 268px;
+    display: flex !important;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.introjs-tooltipbuttons {
+    text-align: right;
+    white-space: nowrap
+}
+
+.introjs-button {
+    box-sizing: content-box;
+    position: relative;
+    overflow: visible;
+    display: inline-block;
+    padding: .3em .8em;
+    border: 1px solid #d4d4d4;
+    margin: 0;
+    text-decoration: none;
+    text-shadow: 1px 1px 0 #fff;
+    font: 11px/normal sans-serif;
+    color: #333;
+    white-space: nowrap;
+    cursor: pointer;
+    outline: 0;
+    margin-top: 10px;
+}
+
+.introjs-button:hover {
+    border-color: #bcbcbc;
+    text-decoration: none;
+    box-shadow: 0 1px 1px #e3e3e3
+}
+
+.introjs-button:focus,
+.introjs-button:active {
+    background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#ececec), to(#f4f4f4));
+    background-image: -moz-linear-gradient(#ececec, #f4f4f4);
+    background-image: -o-linear-gradient(#ececec, #f4f4f4);
+    background-image: linear-gradient(#ececec, #f4f4f4)
+}
+
+.introjs-button::-moz-focus-inner {
+    padding: 0;
+    border: 0
+}
+
+.introjs-tooltip .introjs-tooltipbuttons .introjs-button.introjs-skipbutton {
+    box-sizing: content-box;
+    margin-right: 5px;
+    color: #ffffff;
+    background: #5f42a3;
+}
+
+.introjs-prevbutton {
+    -webkit-border-radius: .2em 0 0 .2em;
+    -moz-border-radius: .2em 0 0 .2em;
+    border-radius: .2em 0 0 .2em;
+    border-right: 0
+}
+
+.introjs-prevbutton.introjs-fullbutton {
+    border: 1px solid #d4d4d4;
+    -webkit-border-radius: .2em;
+    -moz-border-radius: .2em;
+    border-radius: .2em
+}
+
+.introjs-nextbutton {
+    -webkit-border-radius: 0 .2em .2em 0;
+    -moz-border-radius: 0 .2em .2em 0;
+    border-radius: 0 .2em .2em 0
+}
+
+.introjs-nextbutton.introjs-fullbutton {
+    -webkit-border-radius: .2em;
+    -moz-border-radius: .2em;
+    border-radius: .2em
+}
+
+.introjs-tooltip .introjs-tooltipbuttons .introjs-disabled, .introjs-tooltip .introjs-tooltipbuttons .introjs-disabled:hover, .introjs-tooltip .introjs-tooltipbuttons .introjs-disabled:focus {
+    color: #ffffff;
+    box-shadow: none;
+    cursor: default;
+    text-decoration: none;
+    background-color: #72aeff !important;
+}
+
+.introjs-hidden {
+    display: none
+}
+
+.introjs-bullets {
+    text-align: center
+}
+
+.introjs-bullets ul {
+    box-sizing: content-box;
+    clear: both;
+    margin: 5px auto 0;
+    padding: 0;
+    display: inline-block;
+}
+
+.introjs-bullets ul li {
+    box-sizing: content-box;
+    list-style: none;
+    float: left;
+    margin: 0 2px
+}
+
+.introjs-bullets ul li a {
+    box-sizing: content-box;
+    display: block;
+    width: 6px;
+    height: 6px;
+    background: #ccc;
+    border-radius: 10px;
+    -moz-border-radius: 10px;
+    -webkit-border-radius: 10px;
+    text-decoration: none;
+    cursor: pointer
+}
+
+.introjs-bullets ul li a:hover {
+    background: #999
+}
+
+.introjs-bullets ul li a.active {
+    background: #999
+}
+
+.introjs-progress {
+    box-sizing: content-box;
+    overflow: hidden;
+    height: 10px;
+    margin: 10px 0 5px 0;
+    border-radius: 4px;
+    background-color: #ecf0f1
+}
+
+.introjs-progressbar {
+    box-sizing: content-box;
+    float: left;
+    width: 0;
+    height: 100%;
+    font-size: 10px;
+    line-height: 10px;
+    text-align: center;
+    background-color: #08c
+}
+
+.introjsFloatingElement {
+    position: absolute;
+    height: 0;
+    width: 0;
+    left: 50%;
+    top: 50%
+}
+
+.introjs-fixedTooltip {
+    position: fixed
+}
+
+.introjs-hint {
+    box-sizing: content-box;
+    position: absolute;
+    background: transparent;
+    width: 20px;
+    height: 15px;
+    cursor: pointer
+}
+
+.introjs-hint:focus {
+    border: 0;
+    outline: 0
+}
+
+.introjs-hidehint {
+    display: none
+}
+
+.introjs-fixedhint {
+    position: fixed
+}
+
+.introjs-hint:hover>.introjs-hint-pulse {
+    border: 5px solid rgba(60, 60, 60, 0.57)
+}
+
+.introjs-hint-pulse {
+    box-sizing: content-box;
+    width: 10px;
+    height: 10px;
+    border: 5px solid rgba(60, 60, 60, 0.27);
+    -webkit-border-radius: 30px;
+    -moz-border-radius: 30px;
+    border-radius: 30px;
+    background-color: rgba(136, 136, 136, 0.24);
+    z-index: 10;
+    position: absolute;
+    -webkit-transition: all .2s ease-out;
+    -moz-transition: all .2s ease-out;
+    -ms-transition: all .2s ease-out;
+    -o-transition: all .2s ease-out;
+    transition: all .2s ease-out
+}
+
+.introjs-hint-no-anim .introjs-hint-dot {
+    -webkit-animation: none;
+    -moz-animation: none;
+    animation: none
+}
+
+.introjs-hint-dot {
+    box-sizing: content-box;
+    border: 10px solid rgba(146, 146, 146, 0.36);
+    background: transparent;
+    -webkit-border-radius: 60px;
+    -moz-border-radius: 60px;
+    border-radius: 60px;
+    height: 50px;
+    width: 50px;
+    -webkit-animation: introjspulse 3s ease-out;
+    -moz-animation: introjspulse 3s ease-out;
+    animation: introjspulse 3s ease-out;
+    -webkit-animation-iteration-count: infinite;
+    -moz-animation-iteration-count: infinite;
+    animation-iteration-count: infinite;
+    position: absolute;
+    top: -25px;
+    left: -25px;
+    z-index: 1;
+    opacity: 0
+}
+
+@-moz-keyframes introjspulse {
+    0% {
+        -moz-transform: scale(0);
+        opacity: .0
+    }
+    25% {
+        -moz-transform: scale(0);
+        opacity: .1
+    }
+    50% {
+        -moz-transform: scale(0.1);
+        opacity: .3
+    }
+    75% {
+        -moz-transform: scale(0.5);
+        opacity: .5
+    }
+    100% {
+        -moz-transform: scale(1);
+        opacity: .0
+    }
+}
+
+@-webkit-keyframes introjspulse {
+    0% {
+        -webkit-transform: scale(0);
+        opacity: .0
+    }
+    25% {
+        -webkit-transform: scale(0);
+        opacity: .1
+    }
+    50% {
+        -webkit-transform: scale(0.1);
+        opacity: .3
+    }
+    75% {
+        -webkit-transform: scale(0.5);
+        opacity: .5
+    }
+    100% {
+        -webkit-transform: scale(1);
+        opacity: .0
+    }
+}
+
+
+.broadcast-card .block-body .image-col .ya-share2__list.ya-share2__list_direction_horizontal {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    display: -ms-flexbox;
+    display: -webkit-box;
+    display: flex;
+    height: 50px;
+    padding: 0;
+    margin: 0;
+    list-style: none;
+    -webkit-box-orient: horizontal;
+    -webkit-box-direction: normal;
+    flex-direction: row;
+    background-color: rgba(33, 110, 216, .84);
+    -webkit-transition: background-color .3s ease, opacity .3s ease;
+    transition: background-color .3s ease, opacity .3s ease;
+    -ms-flex-direction: row;
+    -ms-flex-wrap: nowrap;
+    flex-wrap: nowrap;
+    -ms-flex-pack: center;
+    -webkit-box-pack: center;
+    justify-content: center;
+    -ms-flex-align: center;
+    -webkit-box-align: center;
+    align-items: center
+}
+
+.broadcast-card .block-body .image-col .ya-share2__list.ya-share2__list_direction_horizontal li {
+    display: inline-block;
+    width: 50%;
+    height: 20px;
+    text-align: center;
+    border-right: 1px solid rgba(255, 255, 255, .5)
+}
+
+.broadcast-card .block-body .image-col .ya-share2__list.ya-share2__list_direction_horizontal li:last-child {
+    border-right: none
+}
+
+.broadcast-card .block-body .image-col .ya-share2__list.ya-share2__list_direction_horizontal a {
+    font-size: 1.2rem;
+    color: #fff;
+    text-decoration: none
+}
+
+.broadcast-card .block-body .image-col .ya-share2__list.ya-share2__list_direction_horizontal a .icon,
+.broadcast-card .block-body .image-col .ya-share2__list.ya-share2__list_direction_horizontal a [data-icon|=icon] {
+    margin-right: 9px;
+    -webkit-transition: fill .15s ease-in-out;
+    transition: fill .15s ease-in-out
+}
+
+.broadcast-card .block-body .image-col .ya-share2__list.ya-share2__list_direction_horizontal a:hover {
+    color: #e6e6e6
+}
+
+.stuff-list dd a{
+    color: #fff;
+}
+
+.broadcast-results .item.status-recorded.js-time-pointer .item-image-holder
+{
+    opacity: 1;
+}
+.item-empty-space__count{
+    font-size: 11px;
+    display: block;
+    text-align: right;
+    margin-top: -2px;
+    font-weight: 700;
+    margin-bottom: -5px;
+}
+.introjs-tooltip{
+    position:relative;
+    /*max-width: 600px !important;
+    min-width: 300px !important;*/
+    /*padding:60px 55px !important;*/
+    margin:0 auto 50px;
+    min-width: 300px !important;
+    max-width: 970px !important;
+    text-align: center;
+    color: #000;
+    /*background-color:#ffb100 !important;#1e6edc !important;*/
+    background: url("data:image/svg+xml;charset=UTF-8,<svg xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' preserveAspectRatio='xMidYMid' width='955.062' height='482.063' viewBox='0 0 955.062 482.063'><defs><style>.cls-1 {fill: #fff;fill-rule: evenodd;}</style></defs><path d='M622.800,60.590 C645.682,57.205 668.572,53.819 691.455,50.434 C784.181,48.035 859.181,101.170 859.279,190.080 C969.886,240.779 999.088,392.329 869.450,443.982 C817.356,464.739 753.153,439.782 701.626,449.060 C672.982,454.218 640.922,462.524 595.031,466.969 C563.911,464.506 545.666,457.523 518.545,449.060 C492.913,448.087 453.528,480.275 419.031,481.969 C376.257,484.069 339.298,455.595 325.293,451.599 C273.703,452.941 211.876,488.372 142.212,469.373 C-73.133,410.641 -46.901,93.775 241.381,121.527 C321.306,-96.969 563.217,42.111 622.800,60.590 Z' class='cls-1'/></svg>") center center no-repeat;
+    background-size: cover;
+    /*-webkit-border-top-left-radius:220px 160px !important;
+    -webkit-border-top-right-radius:220px 160px !important;
+    -webkit-border-bottom-right-radius:220px 160px !important;
+    -webkit-border-bottom-left-radius:220px 160px !important;
+    -moz-border-radius:220px / 160px !important;
+    border-radius:220px / 160px !important;*/
+}
+
+.introjs-tooltip div{
+    padding: 15px 30px 5px;
+}
+
+.introjs-tooltip .introjs-tooltiptext{
+    margin-bottom: 15px;
+    font-weight: 600;
+    width: 65%;
+    margin: 0 auto;
+    padding-top: 55px;
+}
+
+.introjs-tooltip .introjs-tooltipbuttons{
+    text-align: center !important;
+    padding-top: 0;
+}
+
+.introjs-tooltip .introjs-tooltipbuttons .introjs-button{
+    padding: 10px 13px;
+    background-color: #1e6edc;
+    text-shadow: none;
+    color: #fff;
+    margin-right: 5px;
+}
+
+.introjs-tooltiptext .item-status-icon{
+    display: inherit;
+    margin-bottom: 10px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+}
+.introjs-tooltiptext .item-status-icon .icon{
+  
+width: 100px;
+  
+height: 90px;
+  
+color: #ffba00;
+}
+
+.introjs-tooltiptext .badge{
+    display: inline-block;
+    font-size: 10px;
+    text-transform: uppercase;
+    z-index: 1;
+    background: #1e6edc;
+    padding: 3px 6px;
+    border-radius: 6px;
+    color: #fff;
+    text-shadow: 1px 1px 0 #000;
+    position: absolute;
+    transform: translateX(-50%);
+    -webkit-transform: translateX(-50%);
+    top: 70px;
+}
+/*[class*="introjs"]{
+    display: none;
+}*/
+.channel-to-pay{
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    font-size: 20px;
+}
+
+.category-logo:hover{
+    color: #fff !important;
+}

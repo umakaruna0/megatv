@@ -135,13 +135,7 @@
 
 <script>
 	jQuery(document).ready(function(){
-		var form = $('[data-module="signup-overlay"]')[0];
-		Box.Application.start(form);
-
-		var btnModals = $('[data-module="modal"]');
-		btnModals.each(function(){
-			var $this = $(this)[0];
-			Box.Application.start($this);
-		});
+		var init = Box.Application.getService("startModal");
+		init.start('[data-module="signup-overlay"]');
 	});
 </script>

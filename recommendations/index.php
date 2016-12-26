@@ -5,6 +5,7 @@ $APPLICATION->SetTitle("Рекомендации");
 
 <?$APPLICATION->IncludeComponent("hawkart:megatv.recommendations", "", Array(
         "DATETIME" => CTimeEx::getDatetime(),
+        "NEWS_COUNT" => 10
 	),
 	false
 );?>

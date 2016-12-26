@@ -136,8 +136,9 @@
 	}
 })(jQuery);
 
+
 $(document).on('ready', function(){
-    
+        
     $('.recommended-broadcasts .broadcasts-list').scrollPagination();
     
     function errorsView(form){

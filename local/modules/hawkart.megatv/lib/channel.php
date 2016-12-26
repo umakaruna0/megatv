@@ -16,15 +16,23 @@ class ChannelTable extends Entity\DataManager
      */
     public static function getActiveByCity()
     {
+        if(empty($_SESSION["USER_GEO"]["ID"]))
+        {
+            $city_id = 2;
+        }else{
+            $city_id = $_SESSION["USER_GEO"]["ID"];
+        }
+        
         $arChannels = array();
         $arFilter = array(
             "=UF_CHANNEL.UF_BASE.UF_ACTIVE" => 1,
-            "=UF_CITY_ID" => $_SESSION["USER_GEO"]["ID"]
+            "=UF_CITY_ID" => $city_id
         );
         $arSelect = array(
             'ID', 'UF_CHANNEL_ID', 'UF_CHANNEL_BASE_ID' => 'UF_CHANNEL.UF_BASE.ID', 
             'UF_TITLE' => 'UF_CHANNEL.UF_BASE.UF_TITLE', 'UF_ICON' => 'UF_CHANNEL.UF_BASE.UF_ICON',
-            'UF_CODE' => 'UF_CHANNEL.UF_BASE.UF_CODE', "UF_IS_NEWS" => 'UF_CHANNEL.UF_BASE.UF_IS_NEWS'
+            'UF_CODE' => 'UF_CHANNEL.UF_BASE.UF_CODE', "UF_IS_NEWS" => 'UF_CHANNEL.UF_BASE.UF_IS_NEWS',
+            'UF_PRICE' => 'UF_CHANNEL.UF_BASE.UF_PRICE_H24'
         );
         $arSort = array("UF_CHANNEL.UF_BASE.UF_SORT" => "ASC");
         $obCache = new \CPHPCache;
@@ -160,7 +168,14 @@ class ChannelTable extends Entity\DataManager
 			),
             'UF_EPG_ID' => array(
 				'data_type' => 'string',
-			)
+			),
+            'UF_SOURCE_ID' => array(
+				'data_type' => 'integer',
+			),
+            'UF_SOURCE' => array(
+				'data_type' => '\Hawkart\Megatv\SourceTable',
+				'reference' => array('=this.UF_SOURCE_ID' => 'ref.ID'),
+			),
 		);
 	}
     

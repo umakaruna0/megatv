@@ -46,14 +46,14 @@ class CScheduleTemplate
        "RECORDED"
        "VIEWED"
      */
-    public static function status($arProg)
+    public static function status($arProg, $arRecordsStatuses = false)
     {
         global $APPLICATION, $USER;
-        $arRecordsStatuses = $APPLICATION->GetPageProperty("ar_record_status");
-        $arRecordsStatuses = json_decode($arRecordsStatuses, true);
-        
-        //$arSubscriptionChannels = $APPLICATION->GetPageProperty("ar_subs_channels");
-        //$arSubscriptionChannels = json_decode($arSubscriptionChannels, true);
+        if(!$arRecordsStatuses)
+        {
+            $arRecordsStatuses = $APPLICATION->GetPageProperty("ar_record_status");
+            $arRecordsStatuses = json_decode($arRecordsStatuses, true);
+        }
         $arSubscriptionChannels = ChannelTable::getActiveIdByCityByUser();
         
         $schedule = $arProg["ID"];
@@ -83,40 +83,39 @@ class CScheduleTemplate
         }
         
         ob_start();
-        if($status == "recording"):?>
-            <div class="item-status-icon">
-				<span data-icon="icon-recording"></span>
-                <span class="status-desc">В записи</span>
+        if($status == 'recording'):?>
+            <div class='item-status-icon'>
+				<span data-icon='icon-recording'></span>
+                <span class='status-desc'>В записи</span>
 			</div>
         <?endif;?>
-        <?if($status == "recorded"):?>
-            <span class="item-status-icon" href="#">
-				<span data-icon="icon-recorded"></span>
-				<span class="status-desc">Смотреть</span>
-			</span>
-        <?endif;?>
-        <?if($status == "viewed"):?>
-            <span class="item-status-icon">
-				<span data-icon="icon-viewed"></span>
-				<span class="status-desc">Просмотрено</span>
+        
+        <?if($status == 'recorded'):?>
+            <span class='item-status-icon' href='#'>
+				<span data-icon='icon-recorded'></span>
+				<span class='status-desc'>Смотреть</span>
 			</span>
         <?endif;?>
         
-        <?if($status == "recordable"):?>
-            <?if($USER->IsAuthorized()):?>
-            <span class="item-status-icon">
-            <?else:?>
-            <span class="item-status-icon js-btnModalInit" data-module="modal" data-modal="authURL" data-type="openModal">        
-            <?endif;?>
-                <span data-icon="icon-recordit"></span>
-                <span class="status-desc">Записать</span>
+        <?if($status == 'viewed'):?>
+            <span class='item-status-icon'>
+				<span data-icon='icon-viewed'></span>
+				<span class='status-desc'>Просмотрено</span>
 			</span>
-			<?/*<div class="recording-notify">
-				<div class="recording-notify-text-wrap">
-					<span data-icon="icon-recording-progress"></span>
-					<p>Ваша любимая передача<br> поставлена на запись</p>
-				</div>
-			</div>*/?>
+        <?endif;?>
+        
+        <?if($status == 'recordable'):?>
+            <?if($USER->IsAuthorized()):?>
+                <span class='item-status-icon'>
+                    <span data-icon='icon-recordit'></span>
+                    <span class='status-desc'>Записать</span>
+    			</span>
+            <?else:?>
+                <span class='item-status-icon js-btnModalInit' data-module='modal' data-modal='authURL' data-type='openModal'>
+                    <span data-icon='icon-recordit'></span>
+                    <span class='status-desc'>Записать</span>
+    			</span>     
+            <?endif;?>
         <?endif;
         
         $content = ob_get_contents();  
@@ -173,11 +172,18 @@ class CScheduleTemplate
         $datetime = $arParams["DATETIME"]["SERVER_DATETIME_WITH_OFFSET"];
     
         $time_pointer = false;
-        if(\CTimeEx::dateDiff($start, $datetime) && \CTimeEx::dateDiff($datetime, $end))
-        {
-            $time_pointer = true;
-        }
         
+        if($arProg["TIME_POINTER"])
+        {
+            $time_pointer = $arProg["TIME_POINTER"];
+        }else if($arParams["NEED_POINTER"])
+        {
+            if(\CTimeEx::dateDiff($start, $datetime) && \CTimeEx::dateDiff($datetime, $end))
+            {
+                $time_pointer = true;
+            }
+        }
+ 
         ob_start();
         ?>
         <div class="item<?if($status):?> status-<?=$status?><?endif;?><?if($time_pointer && $arParams["NEED_POINTER"]):?> js-time-pointer<?endif;?><?if(empty($arProg["PICTURE"]["SRC"])):?> is-noimage<?endif;?><?if($arProg["CLASS"]=="double"):?> double-item<?endif;?>"
@@ -187,20 +193,23 @@ class CScheduleTemplate
 				<img data-src="<?=$arProg["PICTURE"]["SRC"]?>" alt="">
 			</div>
             
-            <?if($time_pointer):?>
-                <span class="badge" data-channel-id="<?=$arProg["UF_CHANNEL_ID"]?>">в эфире</span>
+            <?if(!$arProg["CLONE"]):?>
+                <?if($time_pointer):?>
+                    <span class="badge" data-channel-id="<?=$arProg["UF_CHANNEL_ID"]?>">в эфире</span>
+                <?endif;?>
+                
+                <?=$status_icon?>
+                <?//=self::driveNotifyMessage()?>
+                
+            	<div class="item-header">
+            		<time><?=substr($arProg["DATE_START"], 11, 5)?></time>
+            		<a href="<?=$arProg["DETAIL_PAGE_URL"]?>">
+                        <?=self::cutName(\Hawkart\Megatv\ProgTable::getName($arProg))?>
+                    </a>
+            	</div>
             <?endif;?>
-            
-            <?=$status_icon?>
-            <?//=self::driveNotifyMessage()?>
-            
-        	<div class="item-header">
-        		<time><?=substr($arProg["DATE_START"], 11, 5)?></time>
-        		<a href="<?=$arProg["DETAIL_PAGE_URL"]?>">
-                    <?=self::cutName(\Hawkart\Megatv\ProgTable::getName($arProg))?>
-                </a>
-        	</div>
         </div>
+
         <?
         $content = ob_get_contents();  
         ob_end_clean();
@@ -210,6 +219,7 @@ class CScheduleTemplate
     
     public static function getProgInfoRecommend($arProg)
     {
+        global $USER;
         $arProg["PICTURE"]["SRC"] = \Hawkart\Megatv\CFile::getCropedPath($arProg["UF_IMG_PATH"], array(288, 288));
         $start = $arProg["DATE_START"];
         $arStatus = self::status($arProg);
@@ -218,57 +228,75 @@ class CScheduleTemplate
         
         $date = substr($start, 0, 10);
         $time = substr($start, 11, 5);
+        
+        if($status=="viewed")
+        {
+            $path = $_SERVER["DOCUMENT_ROOT"].$arProg["PICTURE"]["SRC"];
+            $img = SITE_TEMPLATE_PATH."/ajax/img_grey.php?path=".urlencode($path);
+        }else{
+            $img = $arProg["PICTURE"]["SRC"];
+        }
+        
         ob_start();
-        ?>
-        <div class="item<?if($status=="viewed"):?> status-viewed<?elseif($status):?> status-<?=$status?><?endif;?>" 
-            data-type="broadcast"
-            data-broadcast-id="<?=$arProg["ID"]?>" data-category="<?=$arProg["CAT_CODE"]?>"
+        ?>        
+        <div class="item broadcast <?=$status?>"
+             data-type="broadcast" data-broadcast-id="<?=$arProg["ID"]?>" data-category="<?=$arProg["CAT_CODE"]?>"
         >
             <div class="inner">
-                <?
-                if($status=="viewed")
-                {
-                    $path = $_SERVER["DOCUMENT_ROOT"].$arProg["PICTURE"]["SRC"];
-                    ?>
-                    <div class="item-image-holder" style="background-image: url(<?=SITE_TEMPLATE_PATH?>/ajax/img_grey.php?path=<?=urlencode($path)?>)"></div>
-                    <span class="item-status-icon">
-						<span data-icon="icon-viewed"></span>
-						<span class="status-desc">Просмотрено</span>
-					</span>
-                    <?
-                }else{
-                    $img = $arProg["PICTURE"]["SRC"];
-                    ?><div class="item-image-holder" style="background-image: url(<?=$img?>)"></div><?
-                }
-                ?>
-                
-                <?=$status_icon?>
-                <?=self::driveNotifyMessage()?>
-                
-                <?if($status=="recording"):?>
-                <div class="recording-notify">
-                    <div class="recording-notify-text-wrap">
-                        <div class="recording-notify-icon">
-                        </div>
-                        <p>Ваша любимая передача<br> поставлена на запись</p>
-                    </div>
-                </div>
+                <div class="item-image-holder">
+                    <img class="lazy-img swiper-lazy" src="<?=$img?>">
+                </div>            
+    
+                <div class="broadcast__wrap-status">
+                <?if(!$USER->IsAuthorized()):?>
+                    <span class="broadcast__status" data-module="modal" data-modal="authURL" data-type="openModal">
+                        <span data-icon="icon-recordit"></span>
+                        <span class="bs-status__title">Записать</span>
+                    </span>
+                <?elseif($status=="recordable"):?>
+                    <span class="broadcast__status">
+                        <span data-icon="icon-recordit"></span>
+                        <span class="bs-status__title">Записать</span>
+                    </span>
+                <?elseif($status=="viewed"):?>
+                    <span class="broadcast__status">
+                        <span data-icon="icon-viewed"></span>
+                        <span class="bs-status__title">Просмотрено</span>
+                    </span>
+                <?elseif($status=="recorded"):?>
+                    <span class='broadcast__status'>
+                        <span data-icon='icon-recorded'></span>
+                        <span class='bs-status__title'>Смотреть</span>
+                    </span>
+                <?elseif($status=="recording"):?>
+                    <span class='broadcast__status'>
+                        <span data-icon='icon-recording'></span>
+                        <span class='bs-status__title'>В записи</span>
+                    </span>
                 <?endif;?>
-				
-				<div class="item-header">
-                    <div class="meta">
-						<div class="time"><?=$time?></div>
-						<div class="date"><?=$date?></div>
-						<div class="category"><a href="#" data-type="category"><?=$arProg["UF_CATEGORY"]?></a></div>
-					</div>
-					<div class="title">
-						<a href="<?=$arProg["DETAIL_PAGE_URL"]?>">
+                </div>
+            
+                <div class="broadcast__alert bs-alert bs-alert--extend-drive">
+                    <span data-icon="icon-storage"></span>
+                    <p class="g-mt-5">У Вас закончилось свободное место на облачном хранилище МЕГА.ДИСК</p>
+                    <p><a class="msg" href="/personal/services/">Заказать дополнительную емкость</a></p>
+                </div>
+                
+                <div class="item-header"> 
+                    <div class="meta"> 
+                        <div class="time"><?=$time?></div>
+                        <div class="date"><?=$date?></div>
+                        <div class="category"><a href="#" data-type="category"><?=$arProg["UF_CATEGORY"]?></a></div>
+                    </div>
+                    <div class="title"> 
+                        <a href="<?=$arProg["DETAIL_PAGE_URL"]?>">
                             <?=self::cutName(\Hawkart\Megatv\ProgTable::getName($arProg), 35)?>
                         </a>
-					</div>
-				</div>
-            </div>
-		</div>
+                    </div>
+                 </div>
+                 
+             </div>
+        </div>
         <?
         $content = ob_get_contents();  
         ob_end_clean();
@@ -287,10 +315,12 @@ class CScheduleTemplate
 				<img data-src="<?=$arProg["IMG"]?>" alt="">
 			</div>
             
-            <span class="item-status-icon" href="#">
-				<span data-icon="icon-recorded"></span>
-				<span class="status-desc">Смотреть</span>
-			</span>
+            <div class="broadcast__wrap-status">
+                <span class="item-status-icon" href="#">
+    				<span data-icon="icon-recorded"></span>
+    				<span class="status-desc">Смотреть</span>
+    			</span>
+            </div>
             
         	<div class="item-header">
         		<a href="#">

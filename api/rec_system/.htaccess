@@ -1,0 +1,4 @@
+AuthType Basic
+AuthName "Record System API protected area"
+AuthUserFile /home/c/cg05365/public_html/api/rec_system/.htpasswd
+Require valid-user

@@ -22,6 +22,12 @@
             <?=$status_icon?>
             <?\Hawkart\Megatv\CScheduleTemplate::driveNotifyMessage()?>
             
+            
+            <script src="//yastatic.net/es5-shims/0.0.2/es5-shims.min.js"></script>
+            <script src="//yastatic.net/share2/share.js"></script>
+
+            <div class="ya-share2" data-services="vkontakte,facebook,odnoklassniki,moimir,gplus,twitter,linkedin"></div>
+
 			<?/*
 			<ul class="action-panel">
 				<li>
@@ -35,7 +41,15 @@
 		</div>
     
 		<div class="right-col">
-			<div class="broadcast-status">начало в <?=substr($arResult["DATE_START"], 11, 5)?></div>
+            
+            <div class="broadcast-status">
+                <?if(!empty($arResult["DATE_START"])):?>
+                    начало в <?=substr($arResult["DATE_START"], 11, 5)?>
+                <?else:?>
+                    передача прошла
+                <?endif;?>
+            </div>
+            
 			<h3 class="broadcast-title"><?=$arResult["UF_TITLE"]?></h3>
 			<div class="info-row">
 				<div class="broadcast-descr-col">
@@ -46,9 +60,9 @@
                 </div>
 				<div class="broadcast-info-col-1">
 					<dl class="info-list">
-						<?if(!empty($arResult["UF_TOPIC"])):?>
+						<?if(!empty($arResult["UF_GANRE"])):?>
     						<dt>Жанры:</dt>
-    						<dd><?=$arResult["UF_TOPIC"]?></dd>
+    						<dd><?=$arResult["UF_GANRE"]?></dd>
                         <?endif;?>
                         <?if(!empty($arResult["DURATION"])):?>
     						<dt>Длительность:</dt>
@@ -73,15 +87,39 @@
 					<dl class="stuff-list">
 					   <?if(!empty($arResult["UF_DIRECTOR"])):?>
     						<dt>Режиссеры:</dt>
-    						<dd><?=$arResult["UF_DIRECTOR"]?></dd>
+    						<dd>
+                                <?
+                                foreach($arResult["UF_DIRECTOR"] as $key=>$arActor)
+                                {
+                                    if($key!=0) echo ", ";
+                                    ?><a href="<?=$arActor["LINK"]?>" target="_blank" rel="nofollow"><?=$arActor["NAME"]?></a><?
+                                }
+                                ?>
+                            </dd>
                         <?endif;?>
                         <?if(!empty($arResult["UF_PRESENTER"])):?>
     						<dt>Ведущие:</dt>
-    						<dd><?=$arResult["UF_PRESENTER"]?></dd>
+    						<dd>
+                            <?
+                                foreach($arResult["UF_PRESENTER"] as $key=>$arActor)
+                                {
+                                    if($key!=0) echo ", ";
+                                    ?><a href="<?=$arActor["LINK"]?>" target="_blank" rel="nofollow"><?=$arActor["NAME"]?></a><?
+                                }
+                                ?>
+                            </dd>
                         <?endif;?>
                         <?if(!empty($arResult["UF_ACTOR"])):?>
     						<dt>В ролях:</dt>
-    						<dd><?=$arResult["UF_ACTOR"]?></dd>
+    						<dd>
+                            <?
+                                foreach($arResult["UF_ACTOR"] as $key=>$arActor)
+                                {
+                                    if($key!=0) echo ", ";
+                                    ?><a href="<?=$arActor["LINK"]?>" target="_blank" rel="nofollow"><?=$arActor["NAME"]?></a><?
+                                }
+                                ?>
+                            </dd>
                         <?endif;?>	
                     </dl>
 				</div>

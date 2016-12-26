@@ -125,7 +125,7 @@ class ScheduleTable extends Entity\DataManager
     {
         $result = self::getList(array(
             'filter' => array(
-                "<UF_DATE" => new \Bitrix\Main\Type\Date(date('Y-m-d', strtotime('-1 day')), 'Y-m-d')
+                "<UF_DATE" => new \Bitrix\Main\Type\Date(date('Y-m-d', strtotime('-2 day')), 'Y-m-d')
             ),
             'select' => array("ID")
         ));
@@ -143,5 +143,49 @@ class ScheduleTable extends Entity\DataManager
         global $DB;
         $DB->Query("DELETE FROM ".self::getTableName(), false);
         $DB->Query("ALTER TABLE ".self::getTableName()." AUTO_INCREMENT=1", false);
+    }
+    
+    public static function connectByTitle()
+    {
+        $last_title = false;
+        $schedule_id = false;
+        $need_update = false;
+        $result = self::getList(array(
+            'filter' => array("=UF_CHANNEL_ID" => 98),
+            'select' => array("ID", "UF_DATE_END", "UF_PROG_TITLE" => "UF_PROG.UF_TITLE"),
+            'order' => array("UF_DATE_START" => "ASC")
+        ));
+        while ($row = $result->fetch())
+        {   
+            self::update($row["ID"], array(
+                "UF_ACTIVE" => 1
+            ));
+            
+            if($last_title==$row["UF_PROG_TITLE"])
+            {
+                $need_update = true;
+                
+                self::update($row["ID"], array(
+                    "UF_ACTIVE" => 0
+                ));
+            }else{
+                
+                if($need_update)
+                {
+                    self::update($schedule_id, array(
+                        "UF_DATE_END" => new \Bitrix\Main\Type\DateTime( date("Y-m-d H:i:s", strtotime($date_end)), 'Y-m-d H:i:s')
+                    ));
+                }
+                   
+                $schedule_id = false;
+                $need_update = false;
+            }  
+            
+            $last_title = $row["UF_PROG_TITLE"];
+            $date_end = $row["UF_DATE_END"]->toString();
+            
+            if(!$schedule_id)
+                $schedule_id = $row["ID"];
+        }
     }
 }

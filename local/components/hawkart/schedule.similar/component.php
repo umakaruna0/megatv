@@ -6,24 +6,21 @@ $arResult = array();
 $arTime =  \CTimeEx::getDatetime();
 
 //get channel by code
-if(empty($_REQUEST["event"]))
-{
-    $arFilter = array("=UF_PROG.UF_CODE" => $arParams["ELEMENT_CODE"]);
-}else{
-    $arFilter = array("=ID" => $_REQUEST["event"]);
-}
+$arFilter = array("=UF_CODE" => $arParams["ELEMENT_CODE"]);
 $arSelect = array(
-    "ID", "UF_CATEGORY" => 'UF_PROG.UF_CATEGORY', "UF_SID" => "UF_PROG.UF_EPG_ID"
+    "UF_CATEGORY", "UF_EPG_ID"
 );
-$result = \Hawkart\Megatv\ScheduleTable::getList(array(
+$result = \Hawkart\Megatv\ProgTable::getList(array(
     'filter' => $arFilter,
     'select' => $arSelect,
     'limit' => 1
 ));
 if ($arResult = $result->fetch())
 {
-    $category = $arResult["UF_CATEGORY"];
+    $arResult["UF_SID"] = $arResult["UF_EPG_ID"];
 }
+
+//print_r($arResult);
 
 //get channel by code
 $arResult["PROGS"] = array();
@@ -38,12 +35,17 @@ if($_REQUEST["AJAX"]=="Y")
     $dateEnd = date("Y-m-d H:i:s", strtotime($arDate["DATE_TO"]));
     
     $arFilter = array(
-        "!=ID" => $arResult["ID"],
         "=UF_PROG.UF_EPG_ID" => $arResult["UF_SID"],
         "=UF_CHANNEL_ID" => $arChannelsActive,
         ">=UF_DATE_START" => new \Bitrix\Main\Type\DateTime($dateStart, 'Y-m-d H:i:s'),
         "<UF_DATE_START" => new \Bitrix\Main\Type\DateTime($dateEnd, 'Y-m-d H:i:s'),
     );
+    
+    if(!empty($_REQUEST["event"]))
+    {
+        $arFilter["!=ID"] = $_REQUEST["event"];
+    }
+    
     $arSelect = array(
         "ID", "UF_DATE_START", "UF_DATE_END", "UF_DATE", "UF_CHANNEL_ID", "UF_PROG_ID", "UF_PROG_CODE" => "UF_PROG.UF_CODE",
         "UF_TITLE" => "UF_PROG.UF_TITLE", "UF_SUB_TITLE" => "UF_PROG.UF_SUB_TITLE", "UF_IMG_PATH" => "UF_PROG.UF_IMG.UF_PATH",
@@ -67,6 +69,7 @@ if($_REQUEST["AJAX"]=="Y")
     }
 }
 
+//Get external progs
 $result = \Hawkart\Megatv\ProgExternalTable::getList(array(
     'filter' => array("=UF_SERIAL.UF_EPG_ID" => $arResult["UF_SID"]),
     'select' => array("ID", "UF_TITLE", "UF_EXTERNAL_ID", "UF_THUMBNAIL_URL", "UF_JSON"),
