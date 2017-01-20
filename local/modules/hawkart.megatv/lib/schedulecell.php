@@ -176,7 +176,7 @@ class ScheduleCell
         $arKeys = $arData["keys"];
         $arClones = $arData["clones"];
         
-        //\CDev::pre($arKeys);
+        //\CDev::pre($arKeys); die();
         //\CDev::pre($arClones);
         
         /*$arProgs = array();
@@ -234,19 +234,24 @@ class ScheduleCell
                     
                     if(count($clones)>0)
                     {
-                        $countAdv = self::countByClasses($clones);
+                        /*$countAdv = self::countByClasses($clones);
                         for($adv=1; $adv<=$countAdv; $adv++)
                         {
                             $arAdv = Tvzavr::getRand();
                             $arAdv["IS_ADV"] = true;
                             $arProgs[$channel_id][] = $arAdv;
-                        }
+                        }*/
                         
-                        /*$clones[] = $arSchedule["CLASS"];
+                        $clones[] = $arSchedule["CLASS"];
                         //print_r($clones);
                         $class = self::countByClasses($clones);
-                        $arSchedule["CLASS"] = $class;*/
+                        $arSchedule["CLASS"] = $class;
                     }
+                }
+                
+                if(empty($arSchedule["CLASS"]))
+                {
+                    $arSchedule["CLASS"] = "one";
                 }
                 
                 $arProgs[$channel_id][] = $arSchedule;
@@ -254,9 +259,6 @@ class ScheduleCell
                 $key++;
             }
         }
-        
-        
-        //\CDev::pre($arProgs);
         
         unset($arChannelProgs);
         
@@ -293,7 +295,7 @@ class ScheduleCell
             $pointers[] = $pointerColNumber-4;
         }
         
-        $pointers = range(1, 24);
+        $pointers = range(1, BROADCAT_COLS);
  
         //Разброс от возможного столбца делаем в 1 столбец влево/вправо
         foreach($pointers as $pointerColNumber)
@@ -443,7 +445,8 @@ class ScheduleCell
                     //$count+=self::countByClasses($arClones[$channel_id]);
                     foreach($arClones[$channel_id] as $arClone)
                     {
-                        if($arClone["class"]=="one"){
+                        if($arClone["class"]=="one")
+                        {
                             $count+=1;
                         }else if($arClone["class"]=="double"){
                             $count+=2;

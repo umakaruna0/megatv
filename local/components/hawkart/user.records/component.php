@@ -21,7 +21,7 @@ $arFilter = array(
 );
 if(!empty($_REQUEST["categoryID"]) && $_REQUEST["categoryID"]!="Все" && $_REQUEST["categoryID"]!="false")
 {
-    $arFilter["=UF_CATEGORY"] = trim($_REQUEST["categoryID"]);
+    $arFilter["=UF_PROG.UF_CATEGORY"] = trim($_REQUEST["categoryID"]);
 }
 
 $arSelect = array(

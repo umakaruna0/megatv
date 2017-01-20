@@ -138,6 +138,7 @@
 	function ConnectorSettingGetCount(element, form)
 	{
 		var arAjaxQueryFields = {};
+		var arAjaxQueryFieldsData = [];
 		var currentParent;
 		var elementParent;
 		if(form)
@@ -150,15 +151,84 @@
 		}
 
         var arConForms = document.getElementsByName('post_form');
-        var controls = arConForms[arConForms.length - 1].elements;
+		var controls = arConForms[arConForms.length - 1].elements;
 		var ctrl;
-		for(var i in controls){
+		for(var i in controls)
+		{
 			ctrl = controls[i];
-			if(ctrl && ctrl.name && BX.type.isString(ctrl.name) && ctrl.name.substring(0,11)=='CONNECTOR_S'){
-				currentParent = BX.findParent(ctrl, {"tag" : "div", "className": "connector_form"}, true);
-				if(currentParent == elementParent){
-					arAjaxQueryFields[ctrl.name] = ctrl.value;
+
+			if(!ctrl || !ctrl.name || !BX.type.isString(ctrl.name))
+			{
+				continue;
+			}
+
+			if(ctrl.name.substring(0,11) != 'CONNECTOR_S')
+			{
+				continue;
+			}
+
+			currentParent = BX.findParent(ctrl, {"tag" : "div", "className": "connector_form"}, true);
+			if(currentParent != elementParent)
+			{
+				continue;
+			}
+
+			if (ctrl.disabled)
+			{
+				continue;
+			}
+
+			switch(ctrl.type.toLowerCase())
+			{
+				case 'text':
+				case 'textarea':
+				case 'password':
+				case 'number':
+				case 'hidden':
+				case 'select-one':
+					arAjaxQueryFieldsData.push({name: ctrl.name, value: ctrl.value});
+					break;
+				case 'file':
+					break;
+				case 'radio':
+				case 'checkbox':
+					if(ctrl.checked)
+					{
+						arAjaxQueryFieldsData.push({name: ctrl.name, value: ctrl.value});
+					}
+					break;
+				case 'select-multiple':
+					for (var j = 0; j < ctrl.options.length; j++)
+					{
+						if (ctrl.options[j].selected)
+						{
+							arAjaxQueryFieldsData.push({name : ctrl.name, value : ctrl.options[j].value});
+						}
+					}
+					break;
+				default:
+					break;
+			}
+		}
+
+		for(var k = 0; k < arAjaxQueryFieldsData.length; k++)
+		{
+			var _data = arAjaxQueryFieldsData[k];
+			if(BX.type.isString(arAjaxQueryFields[_data.name]))
+			{
+				arAjaxQueryFields[_data.name] = [arAjaxQueryFields[_data.name]];
+			}
+
+			if(BX.type.isArray(arAjaxQueryFields[_data.name]))
+			{
+				if(!BX.util.in_array(_data.value, arAjaxQueryFields[_data.name]))
+				{
+					arAjaxQueryFields[_data.name].push(_data.value);
 				}
+			}
+			else
+			{
+				arAjaxQueryFields[_data.name] = _data.value;
 			}
 		}
 

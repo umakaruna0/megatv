@@ -9,7 +9,9 @@ header('Content-Type: text/html; charset=utf-8');
 ini_set('mbstring.func_overload', '2');
 ini_set('mbstring.internal_encoding', 'UTF-8');
 
-echo date("H:i:s")."\r\n";
+//\Hawkart\Megatv\ProgTable::generateCodes(); die();
+
+echo $dstart = date("H:i:s")."\r\n";
 
 //Удаляем старые файлы лога
 $path = $_SERVER['DOCUMENT_ROOT'].'/logs/sotal/';
@@ -37,8 +39,9 @@ for($day=0; $day<3; $day++)
     \Hawkart\Megatv\ScheduleCell::generate($curDate);
 }
 \CDev::deleteDirectory($_SERVER['DOCUMENT_ROOT'].'/bitrix/cache', 0);
+echo $dfinish = date("H:i:s")."\r\n";
 
-echo date("H:i:s")."\r\n";
+mail("hawkart@rambler.ru", "Tvguru epg import success: ".$dstart."-".$dfinish, "success");
 
 echo " --finish loading--";
 die();

@@ -68,6 +68,49 @@ class CountryTable extends Entity\DataManager
         
         return $_SESSION["USER_GEO"];
     }
+    
+    
+    /**
+     * For RESTFul
+     */ 
+    public static function getLangList()
+    {
+        $arGeo = CityTable::getGeoCity();
+        $arResult["ITEMS"] = array();
+        
+        $arFilter = array(
+            "=UF_ACTIVE" => 1
+        );
+        $arSelect = array("id" => "ID", "title" => "UF_TITLE", "iso" => "UF_ISO");
+        $obCache = new \CPHPCache;
+        if( $obCache->InitCache(86400, serialize($arFilter).serialize($arSelect), "/langList/"))
+        {
+        	$arResult["ITEMS"] = $obCache->GetVars();
+        }
+        elseif($obCache->StartDataCache())
+        {
+            $result = self::getList(array(
+                'filter' => $arFilter,
+                'select' => $arSelect,
+                'order' => array("UF_TITLE" => "ASC")
+            ));
+            while ($arLang = $result->fetch())
+            {
+                $arResult["ITEMS"][] = $arLang;
+            }
+        	$obCache->EndDataCache($arResult["ITEMS"]); 
+        }
+        
+        foreach($arResult["ITEMS"] as &$arLang)
+        {
+            if($arGeo["UF_COUNTRY_ID"]==$arLang["id"]) 
+                $arLang["current"] = true;
+            else
+                $arLang["current"] = false;
+        }
+        
+        return $arResult["ITEMS"];
+    }
 
 	/**
 	 * Returns entity map definition

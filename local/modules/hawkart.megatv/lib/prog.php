@@ -60,7 +60,7 @@ class ProgTable extends Entity\DataManager
         $arProgs = array();
         $codes = array();
         $result = self::getList(array(
-            'filter' => array(),
+            'filter' => array(/*"UF_CODE" => false*/),
             'select' => array("ID", "UF_TITLE", "UF_CODE", "UF_EPG_ID")
         ));
         while ($row = $result->fetch())
@@ -288,6 +288,28 @@ class ProgTable extends Entity\DataManager
         unset($ids);
         
         return $arProgs;
+    }
+    
+    public static function getCategoryAll()
+    {
+        $arCats = array();
+        $result = self::getList(array(
+            'filter' => array(
+                "=UF_ACTIVE" => 1,
+            ),
+            'select' => array(
+                "UF_CATEGORY",
+            )
+        ));
+        while ($arSchedule = $result->fetch())
+        {
+            if(!empty($arSchedule["UF_CATEGORY"]))
+                $arCats[] = $arSchedule["UF_CATEGORY"];
+        }
+        
+        $arCats = array_unique($arCats);
+        
+        return $arCats;
     }
     
     /**

@@ -20,6 +20,16 @@ $sTableID = "tbl_sender_mailing_chain";
 $MAILING_ID = intval($_REQUEST["MAILING_ID"]);
 $ID = intval($_REQUEST["ID"]);
 
+if($_REQUEST["action"]=="copy" && check_bitrix_sessid() && $POST_RIGHT>="W")
+{
+	$copiedId = \Bitrix\Sender\MailingChainTable::copy($ID);
+	if ($copiedId)
+	{
+		\Bitrix\Sender\MailingChainTable::update(array('ID' => $copiedId), array('CREATED_BY' => $USER->GetID()));
+		LocalRedirect("sender_mailing_chain_edit.php?MAILING_ID=" . $MAILING_ID . "&ID=" . $copiedId . "&mess=copied");
+	}
+}
+
 if($_REQUEST["action"]=="send_to_me" && check_bitrix_sessid() && $POST_RIGHT>="W")
 {
 	$arResult = array();
@@ -414,7 +424,7 @@ $groupListDb = \Bitrix\Sender\MailingChainTable::getList(array(
 		'ID', 'MAILING_ID',  'POSTING_ID',  'CREATED_BY',  'STATUS',
 		'REITERATE', 'LAST_EXECUTED',  'EMAIL_FROM',  'AUTO_SEND_TIME',
 		'DAYS_OF_MONTH', 'DAYS_OF_WEEK', 'TIMES_OF_DAY',
-		'NAME' => 'SUBJECT'
+		'NAME' => 'SUBJECT', 'TITLE'
 	),
 	'filter' => $arFilter,
 	'order' => array($by=>$order)
@@ -435,6 +445,11 @@ $lAdmin->AddHeaders(array(
 		"content"	=>GetMessage("sender_mailing_chain_adm_field_name"),
 		"sort"		=>"NAME",
 		"default"	=>true,
+	),
+	array(	"id"		=>"TITLE",
+		"content"	=>GetMessage("sender_mailing_chain_adm_field_title"),
+		"sort"		=>"TITLE",
+		"default"	=>false,
 	),
 	array(	"id"		=>"CREATED_BY",
 		"content"	=>GetMessage("sender_mailing_chain_adm_field_created_by"),
@@ -493,11 +508,19 @@ while($arRes = $rsData->NavNext(true, "f_")):
 		"ACTION"=>$lAdmin->ActionRedirect("sender_mailing_chain_edit.php?MAILING_ID=".$MAILING_ID."&ID=".$f_ID)
 	);
 	if ($POST_RIGHT>="W")
+	{
+		$arActions[] = array(
+			"ICON"=>"copy",
+			"TEXT"=>GetMessage("sender_mailing_chain_adm_action_copy"),
+			"ACTION"=>$lAdmin->ActionRedirect("sender_mailing_chain_admin.php?action=copy&MAILING_ID=".$MAILING_ID."&ID=".$f_ID."&".bitrix_sessid_get())
+		);
+
 		$arActions[] = array(
 			"ICON"=>"delete",
 			"TEXT"=>GetMessage("sender_mailing_chain_adm_action_delete"),
 			"ACTION"=>"if(confirm('".GetMessage('sender_mailing_chain_adm_action_delete_confirm')."')) ".$lAdmin->ActionDoGroup($f_ID, "delete", "MAILING_ID=".$MAILING_ID)
 		);
+	}
 
 	$arActions[] = array("SEPARATOR"=>true);
 

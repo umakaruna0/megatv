@@ -822,8 +822,22 @@ class CEpg
             $arSchedules[$row["UF_EPG_ID"]] = $row["ID"];
         }
         
+        /**
+         * Get schedule's list parted
+         */
+        $epg_parts = array();
+        $result = ScheduleTable::getList(array(
+            'filter' => array("=UF_IS_PART" => 1),
+            'select' => array("UF_EPG_ID", "ID")
+        ));
+        while ($row = $result->fetch())
+        {
+            $epg_parts[] = $row["UF_EPG_ID"];
+        }
+        
         foreach($this->href_channels as $channel_epg_id => $xml_urls)
         {
+            $arScheduleIdsNotDelete = array();
             $arChannel = $arChannels[$channel_epg_id];
             $active = intval($arBaseChannels[$arChannel["UF_BASE_EPG_ID"]]["UF_ACTIVE"]);
             
@@ -832,6 +846,8 @@ class CEpg
             
             foreach($xml_urls as $xml_url)
             {
+                echo "loading ".$xml_url."\r\n";
+                
                 $xml = simplexml_load_file($xml_url);
 
                 //$attr = $xml->channel->attributes();
@@ -1034,7 +1050,8 @@ class CEpg
                             "UF_PROG_ID" => (int)$prog_id,
                             "UF_EPG_ID" => $schedule_epg_id,
                             "UF_CODE" => $title." - ". $arProg["@attributes"]["start"],
-                            "UF_DATETIME_CREATE" => new \Bitrix\Main\Type\Date(date("Y-m-d H:i:s"), 'Y-m-d H:i:s')
+                            "UF_DATETIME_CREATE" => new \Bitrix\Main\Type\Date(date("Y-m-d H:i:s"), 'Y-m-d H:i:s'),
+                            "UF_DATETIME_EDIT" => new \Bitrix\Main\Type\Date(date("Y-m-d H:i:s"), 'Y-m-d H:i:s')
                         );
                         
                         $result = ScheduleTable::add($arFields);
@@ -1055,45 +1072,68 @@ class CEpg
                             "UF_DATETIME_EDIT" => new \Bitrix\Main\Type\Date(date("Y-m-d H:i:s"), 'Y-m-d H:i:s')
                         );
                         
-                        ScheduleTable::Update($schedule_id, $arFields);
+                        if(!in_array($schedule_epg_id, $epg_parts))
+                            ScheduleTable::Update($schedule_id, $arFields);
                     }
                     $arScheduleIdsNotDelete[] = $schedule_id;
                     
                     $arProgCropIds[] = $prog_id;
-                    
+                }
+            }
+            
+            /**
+             * Delete not exist schedule
+             */
+            if(!empty($arScheduleIdsNotDelete))
+            {
+                $arsFilter = array(
+                    ">=UF_DATE" => new \Bitrix\Main\Type\Date(date("Y-m-d"), 'Y-m-d'),
+                    //"!UF_IS_PART" => 1,
+                    "UF_IS_PART" => 0,
+                    "=UF_CHANNEL_ID" => (int)$arChannel["ID"]
+                );
+                $result = ScheduleTable::getList(array(
+                    'filter' => $arsFilter,
+                    'select' => array("ID")
+                ));
+                while ($row = $result->fetch())
+                {
+                    if(!in_array($row["ID"], $arScheduleIdsNotDelete))
+                    {
+                        echo "delete ".$row["ID"]."\r\n";
+                        ScheduleTable::delete($row["ID"]);
+                    }
                 }
             }
         }
         
+        
         /**
          * Delete not exist schedule
          */
-        if(!empty($arScheduleIdsNotDelete))
+        $date = date('Y-m-d', strtotime("-1 day", strtotime(date("Y-m-d"))));
+        $arsFilter = array(
+            "<UF_DATETIME_EDIT" => new \Bitrix\Main\Type\Date($date, 'Y-m-d 00:00:00'),
+            "UF_IS_PART" => 0,
+        );
+        $result = ScheduleTable::getList(array(
+            'filter' => $arsFilter,
+            'select' => array("ID")
+        ));
+        while ($row = $result->fetch())
         {
-            $result = ScheduleTable::getList(array(
-                'filter' => array(
-                    ">=UF_DATE" => new \Bitrix\Main\Type\Date(date("Y-m-d"), 'Y-m-d')
-                ),
-                'select' => array("ID")
-            ));
-            while ($row = $result->fetch())
-            {
-                if(!in_array($row["ID"], $arScheduleIdsNotDelete))
-                {
-                    ScheduleTable::delete($row["ID"]);
-                }
-            }
+            ScheduleTable::delete($row["ID"]);
         }
         
         //Make cut images for imported progs 
         self::addCropFiles($arProgCropIds);
         
-        ProgTable::generateCodes();
+        //ProgTable::generateCodes();
         
         unset($arScheduleIdsNotDelete);
         unset($arProgCropIds);
         
-        self::guessSerials();
+        //self::guessSerials();
     }
     
     /**

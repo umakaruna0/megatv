@@ -15,8 +15,8 @@ $result = array();
 
 if (strlen($_POST['ajax_key']) && $_POST['ajax_key']==md5('ajax_'.LICENSE_KEY) && htmlspecialcharsbx($_POST["TYPE"])=="AUTH" && check_bitrix_sessid()) 
 {
-    $login = htmlspecialcharsbx($_POST["USER_PASSWORD"]);
-    $password = htmlspecialcharsbx($_POST["USER_LOGIN"]);
+    $login = htmlspecialcharsbx($_POST["USER_LOGIN"]);
+    $password = htmlspecialcharsbx($_POST["USER_PASSWORD"]);
     $arAuthResult = $USER->Login($login, $password, "Y");
     
     if(!$USER->IsAuthorized())

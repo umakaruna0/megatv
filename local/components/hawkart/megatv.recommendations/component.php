@@ -222,7 +222,7 @@ if($_REQUEST["AJAX"]=="Y")
     
     $arRecords = array();
     
-    foreach($arResult["PROGS"]as $arRecord)
+    foreach($arResult["PROGS"] as $arRecord)
     {
         $datetime = $arRecord['UF_DATE_START'];
         $date = substr($datetime, 0, 10);

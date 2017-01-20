@@ -199,6 +199,63 @@ class CityTable extends Entity\DataManager
         return $_SESSION["USER_GEO"];
     }
     
+    public static function convertForRest($arGeo)
+    {
+        return array(
+            "id" => $arGeo["ID"], 
+            "title" => $arGeo["UF_TITLE"],
+            "timezone" => $arGeo["UF_TIMEZONE"],
+            "lang_id" => $arGeo["UF_COUNTRY_ID"],
+            "lang_iso"  => $arGeo["COUNTRY_ISO"]
+        );
+    }
+    
+    public static function getLangCityList($lang_id = false)
+    {
+        $arGeo = self::getGeoCity();
+        $arResult["ITEMS"] = array();
+        
+        $arFilter = array(
+            "=UF_COUNTRY_ID" => $arGeo["UF_COUNTRY_ID"],
+            "=UF_ACTIVE" => 1,
+        );
+        
+        if($lang_id)
+        {
+            $arFilter["=UF_COUNTRY_ID"] = intval($lang_id);
+        }
+        
+        $arSelect = array("id" => "ID", "title" => "UF_TITLE");
+        $obCache = new \CPHPCache;
+        if( $obCache->InitCache(86400, serialize($arFilter).serialize($arSelect), "/cityListRest/"))
+        {
+        	$arResult["ITEMS"] = $obCache->GetVars();
+        }
+        elseif($obCache->StartDataCache())
+        {
+            $result = self::getList(array(
+                'filter' => $arFilter,
+                'select' => $arSelect,
+                'order' => array("UF_TITLE" => "ASC")
+            ));
+            while ($arCity = $result->fetch())
+            {
+                $arResult["ITEMS"][] = $arCity;
+            }
+        	$obCache->EndDataCache($arResult["ITEMS"]); 
+        }
+            
+        foreach($arResult["ITEMS"] as &$arCity)
+        {
+            if($arGeo["ID"]==$arCity["id"]) 
+                $arCity["current"] = true;
+            else
+                $arCity["current"] = false;
+        }
+        
+        return $arResult["ITEMS"];
+    }
+    
     
 	/**
 	 * Returns DB table name for entity

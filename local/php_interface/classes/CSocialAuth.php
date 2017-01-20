@@ -181,12 +181,12 @@ class CSocialAuth
             
             self::connectToUser($USER_ID, $providerName, $userProfile);
         }else{
-            echo $cUser->LAST_ERROR;
+            return array("error" => $cUser->LAST_ERROR);
         }
         
         COption::SetOptionString("main", "captcha_registration", "Y");
         
-        return $USER_ID;
+        return array("ID" => $USER_ID);
     }
     
     public static function updateUser()

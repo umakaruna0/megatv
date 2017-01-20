@@ -340,13 +340,13 @@ class CStat
     
     public static function saveRecommend($user_id, $json)
     {
-        $file = realpath(dirname(__FILE__) . '/../../../../../')."/statistic/".$user_id.".json";
+        $file = realpath(dirname(__FILE__) . '/../../../')."/data/statistic/".$user_id.".json";
         file_put_contents($file, $json);
     }
     
     public static function getRecommend($user_id)
     {
-        $file = realpath(dirname(__FILE__) . '/../../../../../')."/statistic/".$user_id.".json";
+        $file = realpath(dirname(__FILE__) . '/../../../')."/data/statistic/".$user_id.".json";
         $data = file_get_contents($file, FILE_USE_INCLUDE_PATH);
         return json_decode($data, true);
     }

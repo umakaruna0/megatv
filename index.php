@@ -8,7 +8,6 @@ if(strtolower(LANGUAGE_ID)=="ru"):
 endif;
 $APPLICATION->SetDirProperty("h1-hide", "");
 ?>
-
 <?$APPLICATION->IncludeComponent("hawkart:channel.cell", "new", 
     Array(
 		"NEWS_COUNT" => "45",
