@@ -1,7 +1,7 @@
 ﻿# bitrix core
 /bitrix/
 /test/
-/rest/
+/rest/*.txt
 
 # import & export
 /*.xml
@@ -29,6 +29,7 @@ web.config
 *.txt
 *.tar.gz
 /local/*.xml
+/local/*.json
 __*
 syslog
 

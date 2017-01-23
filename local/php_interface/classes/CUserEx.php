@@ -495,4 +495,239 @@ class CUserEx
         
         return $result;
     }
+    
+    public static function setProfile($arPost = array())
+    {
+        global $USER;
+        $result = array();
+        $result['status'] = false;
+        
+        $rsUser = \CUser::GetByID($USER->GetID());
+        $arUser = $rsUser->Fetch();
+        
+        $arPost["phone"] = preg_replace("/[^0-9]/", '', $arPost["phone"]);
+        
+        if(!preg_match("/^([a-zA-Z0-9])+([\.a-zA-Z0-9_-])*@([a-zA-Z0-9_-])+(\.[a-zA-Z0-9_-]+)*\.([a-zA-Z]{2,6})$/", $arPost["email"]))
+        {
+            $result['errors']['email'] = "Неправильный формат электроной почты.";
+        }
+
+        if(!empty($arPost["email"]))
+        {
+            $rsUsers = \CUser::GetList(($by="EMAIL"), ($order="desc"), Array("=EMAIL" =>$arPost["email"], "!ID"=>$arUser["ID"]));
+            if($rsUsers->NavNext(true, "f_"))
+            {
+                $result['errors']['email'] = "Такая электроная почта существует на сайте.";
+            }else if(!\CDev::check_email($arPost["EMAIL"]))
+            {
+                $result['errors']["email"] = "Неверный формат данных";
+            }
+        }
+        
+        if(empty($arPost["name"]))
+        {
+            $result['errors']['name'] = "Введите имя.";
+        }
+        if(empty($arPost["last_name"]))
+        {
+            $result['errors']['last_name'] = "Введите фамилию.";
+        }
+        if(empty($arPost["second_name"]))
+        {
+            $result['errors']['second_name'] = "Введите отчество.";
+        }
+        
+        if(!empty($arPost["birthday"]) && !preg_match("/^([0-9]{2})+([\/]{1})+([0-9]{2})+([\/]{1})+([0-9]{4})$/", $arPost["PERSONAL_BIRTHDAY"]))
+        {
+            $result['errors']["birthday"] = "Неверный формат.";
+        }else{
+            $arPost["birthday"] = str_replace("/", ".", $arPost["birthday"]);
+        }
+        
+        if(!empty($arPost["phone"]) && !preg_match("/^([0-9]{11})$/", $arPost["phone"]))
+        {
+            $result['errors']["phone"] = "Неверный формат.";
+        }
+        
+        if(count($result['errors'])==0)
+        {
+            $сuser = new CUser;
+            $fields = Array(
+                "NAME"              => $arPost["name"],
+                "LAST_NAME"         => $arPost["last_name"],
+                "SECOND_NAME"       => $arPost["second_name"],
+                "EMAIL"             => $arPost["email"],
+                "PERSONAL_BIRTHDAY" => $arPost["birthday"],  
+                "PERSONAL_PHONE"    => $arPost["phone"]
+            );
+            
+            $message = "Данные успешно изменены.";
+            if(empty($arUser["EMAIL"]) && !empty($arPost["email"]))
+            {
+                \CUserEx::capacityAdd($arUser["ID"], 1);   // за мэйл +1ГБ
+                
+                //При занесении мэйла менять тип авторизации
+                $password = mb_substr(md5(uniqid(rand(),true)), 0, 8);
+                $fields["EXTERNAL_AUTH_ID"] = "";
+                $fields["PASSWORD"] = $password;
+                $fields["CONFIRM_PASSWORD"] = $password;
+                $arEventFields = array(
+                    "USER_NAME"             => trim($arPost["name"]." ".$arPost["last_name"]),
+                    "PASSWORD"          	=> $password,
+                    "EMAIL"			        => $arPost["email"],
+                );
+                CEvent::Send("USER_PASS_CHANGED_PROFILE", SITE_ID, $arEventFields);
+                $message.= "На ваш email отправлен новый пароль.";
+            }
+            
+            if(empty($arUser["PERSONAL_PHONE"]) && !empty($arPost["phone"]))
+            {
+                \CUserEx::capacityAdd($arUser["ID"], 1);   // за телефон +1ГБ
+            }
+            
+            $сuser->Update($arUser["ID"], $fields);
+            $strError = $сuser->LAST_ERROR;
+                     
+            $result['status'] = true;
+            $result['message'] = $message;
+        }
+        
+        return $result;
+    }
+    
+    public static function setPassport($arPost = array())
+    {
+        global $USER;
+        
+        $result = array();
+        $result['status'] = false;
+        
+        $seria = preg_replace("/[^0-9]/", '', $arPost["seria"]);
+        $number = $arPost["number"];
+        $who_issued = $arPost["who_issued"];
+        $when_issued = $arPost["when_issued"];
+        $code_division = $arPost["code_devision"];
+        $address = $arPost["address"];
+
+        if(!preg_match("/^([0-9]{4})$/", $seria))
+        {
+            $result['errors']["seria"] = "";
+        }
+        
+        if(!preg_match("/^([0-9]{6})$/", $number))
+        {
+            $result['errors']["number"] = "Неверный формат.";
+        }
+        
+        if(empty($who_issued))
+        {
+            $result['errors']['who_issued'] = "Заполните поле.";
+        }
+        
+        if(!preg_match("/^([0-9]{2})+([\/]{1})+([0-9]{2})+([\/]{1})+([0-9]{4})$/", $when_issued))
+        {
+            $result['errors']["when_issued"] = "Неверный формат.";
+        }else{
+            $when_issued = str_replace("/", ".", $when_issued);
+        }
+        
+        if(empty($code_division))
+        {
+            $result['errors']['code_devision'] = "Заполните поле.";
+        }
+        
+        if(empty($address))
+        {
+            $result['errors']['address'] = "Заполните поле.";
+        }
+        
+        if(count($result['errors'])==0)
+        {
+            $arrFilter = array(
+                "IBLOCK_ID" => PASSPORT_IB,
+                "ACTIVE" => "Y",
+                "PROPERTY_USER_ID" => $USER->GetID()
+            );
+            $arSelect = array("ID");
+            $rsRes = \CIBlockElement::GetList( $arOrder, $arrFilter, false, false, $arSelect);
+        	$arPassport = $rsRes->GetNext();
+            
+            $el = new \CIBlockElement;
+            $PROP = array();
+            $PROP["USER_ID"] = $USER->GetID();
+            $PROP["SERIA_NUMBER"] = $seria." ".$number;
+            $PROP["WHEN_ISSUED"] = $when_issued;
+            $PROP["CODE_DIVISION"] = $code_division;
+            
+            $arLoadProductArray = Array(
+                "IBLOCK_SECTION_ID" => false,
+                "IBLOCK_ID"      => PASSPORT_IB,
+                "PROPERTY_VALUES"=> $PROP,
+                "NAME"           => "Паспорт №".$USER->GetID(),
+                "ACTIVE"         => "Y",
+                "PREVIEW_TEXT"   => $who_issued,
+                "DETAIL_TEXT"    => $address
+            );
+            
+            if(isset($arPassport["ID"]))
+            {
+                $el->Update($arPassport["ID"], $arLoadProductArray);
+            }else{
+                $el->Add($arLoadProductArray);
+            }
+   
+            $result['status'] = true;
+            $result['message'] = "Данные успешно изменены.";
+        }
+        
+        return $result;
+    }
+    
+    public static function changePassword($request)
+    {
+        global $USER;
+        
+        $result = array();
+        $result['status'] = false;
+        
+        $rsUser = \CUser::GetByID($USER->GetID());
+        $arUser = $rsUser->Fetch();
+    
+        $salt = substr($arUser['PASSWORD'], 0, (strlen($arUser['PASSWORD']) - 32));
+        $realPassword = substr($arUser['PASSWORD'], -32);
+        $old_password = md5($salt.$_POST['old_password']);
+    
+        if($old_password!=$realPassword)
+        {
+            $result['errors']["old_password"] = "Старый пароль введен неправильно!";
+        }
+    
+        $password = htmlspecialcharsbx($request->request->get['new_password']);
+        $password2 = htmlspecialcharsbx($request->request->get['new_password2']);
+    
+        if(strlen($password)<6 || strlen($password2)<6)
+        {
+            $result['errors']["new_password"] = "Длина пароля должна быть не менее 6 символов!";
+        }
+    
+        if($password!=$password2)
+        {
+            $result['errors']["new_password"] = "Пароли не совпадают!";
+        }
+    
+        if(count($result['errors'])==0)
+        {
+            $cuser = new \CUser;
+            $arFields = Array(
+                "PASSWORD" => $password,
+                "CONFIRM_PASSWORD" => $password
+            );
+            $cuser->Update($USER->GetID(), $arFields);
+            
+            $result['status'] = true;
+            $result['message'] = "Пароль успешно изменен.";
+        }
+        
+        return $result;
+    }
 }

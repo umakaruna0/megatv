@@ -267,36 +267,10 @@ class ScheduleTable extends Entity\DataManager
         }
     }
     
-    public static function getRecommendForAll($arFilter, $arSelect, $limit, $offset)
-    {
-        $arProgs = array();
-        $result = self::getList(array(
-            'filter' => $arFilter,
-            'select' => $arSelect,
-            'order' => array("UF_PROG.UF_RATING" => "DESC"),
-            'limit' => $limit,
-            'offset' => $offset,
-            'group' => array('UF_PROG.UF_EPG_ID')
-        ));
-        while ($arSchedule = $result->fetch())
-        {   
-            $arSchedule["UF_DATE_START"] = $arSchedule["DATE_START"] = \CTimeEx::dateOffset($arSchedule['UF_DATE_START']->toString());
-            $arSchedule["UF_DATE_END"] = $arSchedule["DATE_END"] = \CTimeEx::dateOffset($arSchedule['UF_DATE_END']->toString());
-            $arSchedule["UF_DATE"] = $arSchedule["DATE"] = substr($arSchedule["DATE_START"], 0, 10);
-            $arSchedule["DETAIL_PAGE_URL"] = "/channels/".$arSchedule["UF_CHANNEL_CODE"]."/".$arSchedule["UF_PROG_CODE"]."/?event=".$arSchedule["ID"];
-            $arProgs[] = $arSchedule;
-        }
-        
-        return $arProgs;
-    }
-    
     public static function getRecommend($request)
     {
         global $USER;
-        
         $arResult["PROGS"] = array();
-        $limit = intval($request["limit"]);
-        $offset = intval($request["offset"]);
         $dateStart = substr($request["date"], 0, 10).date(" H:i:s");
         $dateStart = date("Y-m-d H:i:s", strtotime($dateStart));
         $dateEnd = date("Y-m-d H:i:s", strtotime("+1 day", strtotime($dateStart)));
@@ -312,13 +286,6 @@ class ScheduleTable extends Entity\DataManager
         {
             $arFilter["=UF_PROG.UF_CATEGORY"] = htmlspecialcharsbx(urldecode($request["category"]));
         }
-        
-        /*$arSelect = array(
-            "ID", "UF_DATE_START", "UF_DATE_END", "UF_DATE", "UF_CHANNEL_ID", "UF_PROG_ID",
-            "UF_TITLE" => "UF_PROG.UF_TITLE", "UF_SUB_TITLE" => "UF_PROG.UF_SUB_TITLE", "UF_IMG_PATH" => "UF_PROG.UF_IMG.UF_PATH",
-            "UF_CHANNEL_CODE" => "UF_CHANNEL.UF_BASE.UF_CODE", "UF_CATEGORY" => "UF_PROG.UF_CATEGORY",
-            "UF_ID" => "UF_PROG.UF_EPG_ID", "UF_PROG_CODE" => "UF_PROG.UF_CODE"
-        );*/
         
         if(!$USER->IsAuthorized())
         {
@@ -378,73 +345,6 @@ class ScheduleTable extends Entity\DataManager
         $arOrder = array("UF_PROG.UF_RATING" => "DESC");
         $arGroup = array('UF_PROG.UF_EPG_ID');
         return self::getListModel($arFilter, $arNav, $arOrder, $arGroup);
-        
-        /*$arResult["PROGS"] = self::getRecommendForAll($arFilter, $arSelect, $limit, $offset);
-        
-        $maxRecord = self::getList([
-           'select' => [new \Bitrix\Main\Entity\ExpressionField('CNT', 'COUNT(*)')],
-           'filter' => $arFilter,
-        ])->fetch()['CNT'];        
-        
-        $arResult["CATEGORIES"] = array();
-        if($USER->IsAuthorized())
-        {
-            $arStat = CStat::getByUser($USER->GetID());
-            foreach($arStat["CATS"] as $category => $id)
-            {
-                $str = \CDev::translit($category, "ru", array("replace_space"=>"-", "replace_other"=>"-"));
-                $arResult["CATEGORIES"][$category] = $str; 
-            }
-        }else{
-            foreach($arResult["PROGS"] as $key=>$arProg)
-            {
-                $category = $arProg["UF_CATEGORY"];
-                $str = \CDev::translit($category, "ru", array("replace_space"=>"-", "replace_other"=>"-"));
-                $arResult["CATEGORIES"][$category] = $str;
-            }
-        }
-        
-        $arRecordsStatuses = RecordTable::getListStatusesByUser();        
-        $arRecords = array();
-        
-        foreach($arResult["PROGS"] as $arRecord)
-        {
-            $datetime = $arRecord['UF_DATE_START'];
-            $date = substr($datetime, 0, 10);
-            $time = substr($datetime, 11, 5);
-            
-            $arStatus = CScheduleTemplate::status($arRecord, $arRecordsStatuses);
-            $status = $arStatus["status"];
-            $status_icon = $arStatus["status-icon"];
-            
-            $img_path = CFile::getCropedPath($arRecord["UF_IMG_PATH"], array(288, 288));
-            if($status=="viewed")
-            {
-                $img_path = SITE_TEMPLATE_PATH."/ajax/img_grey.php?&path=".urlencode($_SERVER["DOCUMENT_ROOT"].$img_path);
-            }
-            
-            $_arRecord = array(
-                "id" => $arRecord["ID"],
-                "time" => $time,
-        		"date" => $date,
-        		"link" => $arRecord["DETAIL_PAGE_URL"],
-        		"name" => CScheduleTemplate::cutName(ProgTable::getName($arRecord), 35),
-        		"image" => $img_path,
-        		"category" => array(
-                    "link" => $arResult["CATEGORIES"][$arRecord["UF_CATEGORY"]],
-                    "name" => $arRecord["UF_CATEGORY"]
-                ),
-                "status" => "status-".$status,
-            );
-        
-            $arRecords[] = $_arRecord;
-            unset($_arRecord);
-        }
-        
-        return array(
-            "items" => $arRecords,
-            "pageNum" => ceil($maxRecord/$limit)
-        );*/
     }
     
     public static function getSimilar($id, $arParams = array())

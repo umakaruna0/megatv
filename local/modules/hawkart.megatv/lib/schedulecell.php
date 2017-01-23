@@ -49,9 +49,6 @@ class ScheduleCell
         $dateStart = date("Y-m-d H:i:s", strtotime($arDate["DATE_FROM"]));
         $dateEnd = date("Y-m-d H:i:s", strtotime($arDate["DATE_TO"]));
         
-        //print_r($arChannelIds);
-        //echo $dateStart;
-        
         $arFilter = array(
             "=UF_CHANNEL_ID" => $arChannelIds,
             "=UF_ACTIVE" => 1,
@@ -75,13 +72,13 @@ class ScheduleCell
             'UF_BASE_FORBID_REC' => 'UF_CHANNEL.UF_BASE.UF_FORBID_REC'
         );
         $obCache = new \CPHPCache;
-        if( $obCache->InitCache(86400, serialize($arFilter).serialize($arSelect), "/cell-generate/"))
+        if( $obCache->InitCache(3600, serialize($arFilter).serialize($arSelect), "/cell-generate/"))
         {
         	$arResult["SCHEDULE_LIST"] = $obCache->GetVars();
         }
         elseif($obCache->StartDataCache())
         {
-        	$result = \Hawkart\Megatv\ScheduleTable::getList(array(
+        	$result = ScheduleTable::getList(array(
                 'filter' => $arFilter,
                 'select' => $arSelect,
                 'order' => array("UF_DATE_START" => "ASC")
@@ -129,9 +126,7 @@ class ScheduleCell
     
     public static function generateForTime($datetime, $arChannelProgs, $arChannels)
     {
-        $cols = 0;
-        $q = 0;
-
+        $maxPointer = 0;    //Берем самый большой номер из столбцов в эфире
         $arTimePointers = array();
         foreach($arChannels as $arChannel)
         {
@@ -145,115 +140,40 @@ class ScheduleCell
                 
                 if(strtotime($start)<=strtotime($datetime) && strtotime($datetime)<strtotime($end))
                 {
-                    $arTimePointers[$arChannel["ID"]][] = $key;
+                    $arTimePointers[$arChannel["ID"]][0] = $key;    //Обходим все каналы и получаем столбцы передачи в эфире.
                     $arSchedule["TIME_POINTER"] = true;
-
-                    if($key<BROADCAT_COLS*2)
-                    {
-                        $cols+= $key;
-                        $q++;
-                    } 
                     
-                    $key = 0;
+                    if($maxPointer<$key)
+                       $maxPointer = $key;
+                    
                 }
                 
                 $key++;
             }
             
-            $arTimePointers[$arChannel["ID"]][1] = count($arChannelProgs[$channel_id]);
+            if(empty($arTimePointers[$arChannel["ID"]][0]))
+                $arTimePointers[$arChannel["ID"]][0] = 1;
             
-            /*if(count($arTimePointers[$arChannel["ID"]])<2)
-                unset($arTimePointers[$arChannel["ID"]]);*/
+            $arTimePointers[$arChannel["ID"]][1] = count($arChannelProgs[$channel_id]);
         }
         
         unset($arSchedule);
         
-        //\CDev::pre($arChannelProgs);
-        
-        $avarage = floor($cols/$q);
-        $arData = self::setKeysToCols($avarage, $arTimePointers, $datetime);
+        $arData = self::setKeysToColsNew($maxPointer, $arTimePointers, $datetime);
+        //\CDev::pre($arData);
         
         $arKeys = $arData["keys"];
-        $arClones = $arData["clones"];
-        
-        //\CDev::pre($arKeys); die();
-        //\CDev::pre($arClones);
-        
-        /*$arProgs = array();
-        foreach($arChannels as $arChannel)
-        {
-            $channel_id = $arChannel["ID"];
-            $keys = $arKeys[$channel_id];
-            $key = 1;
-            
-            //\CDev::pre($arChannelProgs[$channel_id]);
-            
-            foreach($arChannelProgs[$channel_id] as $arSchedule)
-            {
-                $arSchedule["GENERATE"] = $datetime;
-                $arSchedule["CLASS"] = $keys[$key];
-                
-                $_arSchedule = $arSchedule;
-                
-                $arProgs[$channel_id][] = $arSchedule;
-                
-                if(count($arClones[$channel_id])>0 && !empty($arClones[$channel_id][$key]))
-                {
-                    $_arSchedule["CLONE"] = true;
-                    $_arSchedule["CLASS"] = $arClones[$channel_id][$key];
-                    $arProgs[$channel_id][] = $_arSchedule;
-                }
-                
-                $key++;
-            }
-        }*/
-        
-        
         $arProgs = array();
         foreach($arChannels as $arChannel)
         {
             $channel_id = $arChannel["ID"];
             $keys = $arKeys[$channel_id];
+            
             $key = 1;
-
             foreach($arChannelProgs[$channel_id] as $arSchedule)
             {
                 $arSchedule["GENERATE"] = $datetime;
-                $arSchedule["CLASS"] = $keys[$key];
-                
-                if(count($arClones[$channel_id])>0)
-                {
-                    $clones = array();
-                    foreach($arClones[$channel_id] as $arClone)
-                    {
-                        if($arClone["key"]==$key)
-                        {
-                            $clones[] = $arClone["class"];
-                        }
-                    }
-                    
-                    if(count($clones)>0)
-                    {
-                        /*$countAdv = self::countByClasses($clones);
-                        for($adv=1; $adv<=$countAdv; $adv++)
-                        {
-                            $arAdv = Tvzavr::getRand();
-                            $arAdv["IS_ADV"] = true;
-                            $arProgs[$channel_id][] = $arAdv;
-                        }*/
-                        
-                        $clones[] = $arSchedule["CLASS"];
-                        //print_r($clones);
-                        $class = self::countByClasses($clones);
-                        $arSchedule["CLASS"] = $class;
-                    }
-                }
-                
-                if(empty($arSchedule["CLASS"]))
-                {
-                    $arSchedule["CLASS"] = "one";
-                }
-                
+                $arSchedule["CLASS"] = $keys[$key];                
                 $arProgs[$channel_id][] = $arSchedule;
 
                 $key++;
@@ -262,9 +182,160 @@ class ScheduleCell
         
         unset($arChannelProgs);
         
+        //\CDev::pre($arProgs);
+        
         return $arProgs;
     }
     
+    
+    /**
+     * 
+     * @param string $pointerColNumber номер столбца по вертикали
+     */
+    public static function setKeysToColsNew($maxPointer, $arTimePointers, $datetime)
+    {
+        //Находим слева и справа самую большую разницу.
+        $maxLeft = 0;   //макс кол-во столбцов слева
+        $maxRight = 0;  //макс кол-во столбцов справа
+        foreach($arTimePointers as $channel_id => $array)
+        {
+            $progPointer = $array[0];    //Порядковый номер программы в столбце                
+            $progsNumber = $array[1];    //Общее кол-во программ
+            
+            $diffLeft = 0;
+            $diffRight = 0;
+            if($maxPointer>0)
+                $diffLeft = $maxPointer - 1;    //кол-во столбцов слева
+                
+            $diffRight = $progsNumber-$progPointer;//$maxPointer;  //кол-во оставшихся столбцов справа
+            
+            if($maxLeft<$diffLeft)
+                $maxLeft = $diffLeft;
+                
+            if($maxRight<$diffRight)
+                $maxRight = $diffRight;
+        }
+        
+        //Подсчитываем кол-во столбцов = макс слева + макс. справа + 1.
+        $totalColsNumber = $maxLeft+$maxRight+1;
+        
+        $arKeys = array();
+        foreach($arTimePointers as $channel_id => $array)
+        {
+            $progPointer = $array[0];    //Порядковый номер программы в столбце                
+            $progsNumber = $array[1];    //Общее кол-во программ
+            $arKeys[$channel_id][$progPointer] = "one"; //на месте столбца $maxPointer
+            
+            $leftCols = 0;
+            if($progPointer>1)
+            {
+                $leftCols = $progPointer-1;
+                $leftArray = range(1, $leftCols);
+                if(count($leftArray)>0)
+                {
+                    $keysResult = self::putArrayIntoQuantityNew($leftArray, $maxLeft);
+                    $arKeys[$channel_id]+= $keysResult;
+                }
+            }
+            
+            if($progsNumber>$progPointer)
+            {
+                if($progPointer+1==$progsNumber)
+                {
+                    $rightArray = array($progPointer+1);
+                }else{
+                    $rightArray = range($progPointer+1, $progsNumber);
+                }
+                
+                if(count($rightArray)>0)
+                {
+                    $keysResult2 = self::putArrayIntoQuantityNew($rightArray, $maxRight);
+                    $arKeys[$channel_id]+= $keysResult2;
+                }
+            }else{
+                $arKeys[$channel_id][$progPointer] = $maxRight;
+            }
+        }
+        
+        if(count($arKeys[$channel_id])!=$progsNumber)
+        {
+            echo $channel_id."<br />";
+            echo "number=".$progsNumber."<br />";
+            echo "pointer=".$progPointer."<br />";
+            echo "maxleft=".$maxLeft."<br />";
+            echo "maxright=".$maxRight."<br />";
+            echo "left=<br />";
+            \CDev::pre($leftArray);
+            \CDev::pre($keysResult);
+            echo "right=<br />";
+            \CDev::pre($rightArray);
+            \CDev::pre($keysResult2);
+            
+            
+            \CDev::pre($arKeys[$channel_id]);
+            
+            //die();
+        }
+        
+        return array(
+            "keys" => $arKeys,
+            "clones" => array()
+        );
+    }
+    
+    public static function putArrayIntoQuantityNew($keys, $numCols)
+    {
+        $count = count($keys);
+        
+        if($numCols > $count*2)
+        {
+            $arParts["DOUBLE"] = $count-1;
+            $q = $numCols - ($count-1)*2;
+            $arParts[$q] = 1;
+        }else{
+            $double = $numCols - $count;
+            $arParts["DOUBLE"] = $double;
+            $arParts["ONE"] = $count-$double;
+        }
+        
+        if(count($arParts["DOUBLE"])>0)
+        {
+            while($arParts["DOUBLE"]>0)
+            {
+                $key = array_shift($keys);
+                $keysResult[$key] = "double";
+                $keys = array_diff($keys, array($key));
+                $arParts["DOUBLE"]--;
+            }
+        }
+        
+        if(count($arParts["ONE"])>0)
+        {
+            while($arParts["ONE"]>0)
+            {
+                $key = array_shift($keys);
+                $keysResult[$key] = "one"; 
+                $keys = array_diff($keys, array($key));
+                $arParts["ONE"]--;
+            }
+        }
+        
+        if(count($keys)>0)
+        {
+            foreach($arParts as $class=>$c)
+            {
+                if($class!="ONE" && $class!="DOUBLE")
+                {
+                    $key = array_shift($keys);
+                    $keysResult[$key] = $class;
+                }
+            }
+        }
+        
+        unset($arParts);
+        return $keysResult;
+    }
+
     /**
      * 
      * @param string $pointerColNumber номер столбца по вертикали
@@ -789,6 +860,9 @@ class ScheduleCell
     {
         $currentDateTime = self::makeFiveMinutes($currentDateTime);
         $path = self::generateFileName($channel_id, $currentDateTime);
+        
+        //echo "save=".$path."<br />";
+        
         file_put_contents($path, json_encode($arChannelSchedules));
     }
     

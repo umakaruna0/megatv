@@ -1089,7 +1089,7 @@ class CEpg
                 $arsFilter = array(
                     ">=UF_DATE" => new \Bitrix\Main\Type\Date(date("Y-m-d"), 'Y-m-d'),
                     //"!UF_IS_PART" => 1,
-                    "UF_IS_PART" => 0,
+                    "=UF_IS_PART" => 0,
                     "=UF_CHANNEL_ID" => (int)$arChannel["ID"]
                 );
                 $result = ScheduleTable::getList(array(
@@ -1114,7 +1114,7 @@ class CEpg
         $date = date('Y-m-d', strtotime("-1 day", strtotime(date("Y-m-d"))));
         $arsFilter = array(
             "<UF_DATETIME_EDIT" => new \Bitrix\Main\Type\Date($date, 'Y-m-d 00:00:00'),
-            "UF_IS_PART" => 0,
+            "=UF_IS_PART" => 0,
         );
         $result = ScheduleTable::getList(array(
             'filter' => $arsFilter,
