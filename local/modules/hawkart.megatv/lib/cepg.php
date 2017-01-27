@@ -984,8 +984,7 @@ class CEpg
                     if(
                         $image_id==0 || 
                         (
-                            !file_exists($_SERVER["DOCUMENT_ROOT"]."/".CFile::getCropedPath($image_id, array(288, 288))) &&
-                            $image_id>0
+                            !file_exists($_SERVER["DOCUMENT_ROOT"]."/".CFile::getCropedPath($image_id, array(288, 288))) && $image_id>0
                         )
                     )
                     {
@@ -1072,6 +1071,7 @@ class CEpg
                             "UF_DATETIME_EDIT" => new \Bitrix\Main\Type\Date(date("Y-m-d H:i:s"), 'Y-m-d H:i:s')
                         );
                         
+                        //update only not parted
                         if(!in_array($schedule_epg_id, $epg_parts))
                             ScheduleTable::Update($schedule_id, $arFields);
                     }
@@ -1094,14 +1094,15 @@ class CEpg
                 );
                 $result = ScheduleTable::getList(array(
                     'filter' => $arsFilter,
-                    'select' => array("ID")
+                    'select' => array("ID", "UF_EPG_ID")
                 ));
                 while ($row = $result->fetch())
                 {
                     if(!in_array($row["ID"], $arScheduleIdsNotDelete))
                     {
                         echo "delete ".$row["ID"]."\r\n";
-                        ScheduleTable::delete($row["ID"]);
+                        //ScheduleTable::delete($row["ID"]);
+                        ScheduleTable::deleteByEpgId($row["UF_EPG_ID"]);
                     }
                 }
             }
@@ -1111,7 +1112,7 @@ class CEpg
         /**
          * Delete not exist schedule
          */
-        $date = date('Y-m-d', strtotime("-1 day", strtotime(date("Y-m-d"))));
+        /*$date = date('Y-m-d', strtotime("-1 day", strtotime(date("Y-m-d"))));
         $arsFilter = array(
             "<UF_DATETIME_EDIT" => new \Bitrix\Main\Type\Date($date, 'Y-m-d 00:00:00'),
             "=UF_IS_PART" => 0,
@@ -1123,7 +1124,7 @@ class CEpg
         while ($row = $result->fetch())
         {
             ScheduleTable::delete($row["ID"]);
-        }
+        }*/
         
         //Make cut images for imported progs 
         self::addCropFiles($arProgCropIds);

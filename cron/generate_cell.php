@@ -14,12 +14,18 @@ if (!is_object($USER))
     $USER=new \CUser;
 
 \CDev::deleteDirectory($_SERVER['DOCUMENT_ROOT'].'/bitrix/cache', 0);
-$fisrt_date = date('d.m.Y', strtotime(\CTimeEx::getCurDate()));
-for($day=0; $day<3; $day++)
-{
-    $curDate = date('d.m.Y', strtotime("+".$day." day", strtotime($fisrt_date)));
-    \Hawkart\Megatv\ScheduleCell::generate($curDate);
-}
 
+\CDev::deleteDirectory($_SERVER["DOCUMENT_ROOT"]."/upload/cell/", 86400*2);
+
+$arCities = \Hawkart\Megatv\CityTable::getLangCityList(15); //RU
+foreach($arCities as $arCity)
+{
+    $fisrt_date = date('d.m.Y', strtotime(\CTimeEx::getCurDate()));
+    for($day=0; $day<3; $day++)
+    {
+        $curDate = date('d.m.Y', strtotime("+".$day." day", strtotime($fisrt_date)));
+        \Hawkart\Megatv\ScheduleCell::generate($curDate, $arCity["ID"]);
+    }
+}
 die();
 ?>

@@ -103,4 +103,70 @@ class CBilling
         }
         
     }
+    
+    public static function getTransaction($USER_ID = false, $arParams = array())
+    {
+        global $USER;
+        \CModule::IncludeModule('sale');
+        
+        if(!$USER_ID)
+        {
+            $USER_ID = $USER->GetID();
+        }
+        
+        $arResult = array();
+        $arItems = array();
+        /*$arResult['REQUEST_CURR'] = $arParams['currency'];
+        $arResult['REQUEST_DATE_FROM'] = trim($arParams['date_from']);
+        $arResult['REQUEST_DATE_TO'] = trim($arParams['date_to']);
+        
+        if (\CModule::IncludeModule('currency'))
+        {
+        	$rsCurrency = CCurrency::GetList(($by='name'), ($order='desc'), LANGUAGE_ID);
+        	while ($arCurrency = $rsCurrency->Fetch())
+        		$arResult['CURRENCY'][$arCurrency['CURRENCY']] = $arCurrency['FULL_NAME'];
+        
+        	if (count($arResult['CURRENCY']) == 1)
+        		$arResult['CURRENCY'] = array();
+        }*/
+        
+        $arFilter = array('=USER_ID' => $USER_ID);
+        /*if ($arResult['REQUEST_CURR'] != '')
+        	$arFilter['CURRENCY'] = $arParams['REQUEST_CURR'];
+        if ($arResult['REQUEST_DATE_FROM'] != '')
+        	$arFilter['>=TRANSACT_DATE'] = $arResult['REQUEST_DATE_FROM'];
+        if ($arResult['REQUEST_DATE_TO'] != '')
+        	$arFilter['<=TRANSACT_DATE'] = $arResult['REQUEST_DATE_TO'];*/
+        
+        $rsTransacts = \CSaleUserTransact::GetList(
+    		array('TRANSACT_DATE' => 'DESC', 'ID' => 'DESC'),
+    		$arFilter,
+    		false, 
+            array("iNumPage" => $arParams['page'], "nPageSize" => $arParams['num']),
+    		array('AMOUNT', 'CURRENCY', 'DEBIT', 'DESCRIPTION', 'TRANSACT_DATE')
+		);
+        while ($arTransact = $rsTransacts->GetNext())
+        {
+        	$arTransact['AMOUNT_FORMATED'] = SaleFormatCurrency($arTransact['AMOUNT'], $arTransact['CURRENCY']);
+        	$arTransact["ICON"] = $arTransact["DEBIT"]=="Y" ? "incoming"  :"outcoming";
+            $arTransact["TITLE"] = $arTransact["DEBIT"]=="Y" ? "Пополнение счета"  :"Списание со счета";
+            $arr = ParseDateTime($arTransact["TRANSACT_DATE"], FORMAT_DATETIME);
+            $arTransact["EVENT_DAY"] = $arr["DD"]." ".ToLower(GetMessage("MONTH_".intval($arr["MM"])."_S"))." ".$arr["YYYY"];
+            
+            $arItem = array(
+                "title" => $arTransact["TITLE"],
+                "description" => $arTransact["DESCRIPTION"],
+                "date" => $arTransact["TRANSACT_DATE"],
+                "date_formated" => $arTransact["EVENT_DAY"],
+                "amount" => $arTransact["AMOUNT"],
+                "amount_formated" => number_format($arTransact["AMOUNT"], 0, "", " "),
+                "currency" => "Р",
+                "icon" => $arTransact["ICON"]
+            );
+            
+            $arItems[] = $arItem;
+        }
+        
+        return $arItems;
+    }
 }

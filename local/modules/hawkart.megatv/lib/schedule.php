@@ -507,4 +507,10 @@ class ScheduleTable extends Entity\DataManager
             "pageNum" => ceil($maxRecord/$limit)
         );
     }
+    
+    public static function deleteByEpgId($epg_id)
+    {
+        global $DB;
+        $DB->Query("DELETE FROM ".self::getTableName()." WHERE UF_EPG_ID='".$epg_id."'");
+    }
 }

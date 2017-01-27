@@ -12,13 +12,19 @@ class ScheduleCell
     /**
      * Cell by 5 minutes interval for all cities
      */
-    public static function generate($curDate)
+    public static function generate($curDate, $city_id = false)
     {
         global $USER, $APPLICATION;
         
         if(!$curDate)
         {
             $curDate = date("Y-m-d H:i:s");
+        }
+        
+        if(!$city_id)
+        {
+            $arGeo = CityTable::getGeoCity();
+            $city_id = $arGeo["ID"];
         }
         
         /**
@@ -28,7 +34,7 @@ class ScheduleCell
         $arChannelIds = array();
         $arResult["CHANNELS"] = array();
         
-        $arResult["ITEMS"] = \Hawkart\Megatv\ChannelTable::getActiveByCity();
+        $arResult["ITEMS"] = ChannelTable::getActiveByCity();
         foreach($arResult["ITEMS"] as $arChannel)
         {
             $arChannels[$arChannel["UF_CHANNEL_BASE_ID"]] = $arChannel;
@@ -72,7 +78,7 @@ class ScheduleCell
             'UF_BASE_FORBID_REC' => 'UF_CHANNEL.UF_BASE.UF_FORBID_REC'
         );
         $obCache = new \CPHPCache;
-        if( $obCache->InitCache(3600, serialize($arFilter).serialize($arSelect), "/cell-generate/"))
+        if( $obCache->InitCache(36000, serialize($arFilter).serialize($arSelect), "/cell-generate/"))
         {
         	$arResult["SCHEDULE_LIST"] = $obCache->GetVars();
         }
@@ -115,7 +121,7 @@ class ScheduleCell
                 $channel_id = $arChannel["ID"];
                 $arChannelSchedules = $arScheduleList[$channel_id];
                 
-                self::save($channel_id, $arChannelSchedules, $currentDateTime);
+                self::save($channel_id, $arChannelSchedules, $currentDateTime, $city_id);
             }
             
             $addMinutes+=5;
@@ -843,10 +849,16 @@ class ScheduleCell
         return $currentDateTime;
     }
     
-    public static function generateFileName($channel_id, $currentDateTime)
+    public static function generateFileName($channel_id, $currentDateTime, $city_id = false)
     {
+        if(!$city_id)
+        {
+            $arGeo = CityTable::getGeoCity();
+            $city_id = $arGeo["ID"];
+        }
+        
         $currentDateTime = self::makeFiveMinutes($currentDateTime);     
-        $dir = $_SERVER["DOCUMENT_ROOT"]."/upload/cell/".$channel_id;
+        $dir = $_SERVER["DOCUMENT_ROOT"]."/upload/cell/".$city_id."-".$channel_id;
         
         if (!file_exists($dir))
             mkdir($dir, 0777, true);
@@ -856,19 +868,26 @@ class ScheduleCell
         return $path;
     }
     
-    public static function save($channel_id, $arChannelSchedules, $currentDateTime)
+    public static function save($channel_id, $arChannelSchedules, $currentDateTime, $city_id = false)
     {
+        if(!$city_id)
+        {
+            $arGeo = CityTable::getGeoCity();
+            $city_id = $arGeo["ID"];
+        }
         $currentDateTime = self::makeFiveMinutes($currentDateTime);
-        $path = self::generateFileName($channel_id, $currentDateTime);
-        
-        //echo "save=".$path."<br />";
-        
+        $path = self::generateFileName($channel_id, $currentDateTime, $city_id);
         file_put_contents($path, json_encode($arChannelSchedules));
     }
     
-    public static function getByChannelAndTime($channel_id, $currentDateTime)
+    public static function getByChannelAndTime($channel_id, $currentDateTime, $city_id = false)
     {        
-        $path = self::generateFileName($channel_id, $currentDateTime);
+        if(!$city_id)
+        {
+            $arGeo = CityTable::getGeoCity();
+            $city_id = $arGeo["ID"];
+        }
+        $path = self::generateFileName($channel_id, $currentDateTime, $city_id);
         $str = file_get_contents($path);
         return json_decode($str, true);
     }

@@ -16,7 +16,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 global $USER, $APPLICATION;
 if (!is_object($USER))
-    $USER = new CUser;
+    $USER = new \CUser;
   
 $app = new Silex\Application();
 $app['debug'] = true;
@@ -102,7 +102,7 @@ $app->get('/users/social', function (Request $request) use ($app)
             "icon" => "tw"
         ),
         "instagram" => array(
-            "icon" => "tw"
+            "icon" => "im"
         ),
         "facebook" => array(
             "icon" => "fb"
@@ -111,7 +111,7 @@ $app->get('/users/social', function (Request $request) use ($app)
     
     foreach($arSocials as $key=>&$arSocial)
     {
-        $arSocial["url"] = "https://tvguru.com/vendor/hybridauth/hybridauth/?provider=".$key;
+        $arSocial["url"] = "https://tvguru.com/vendor/hybridauth/hybridauth/?provider=".$key."&env=dev";
     }
     return $app->json($arSocials, 200);
 });
@@ -122,7 +122,7 @@ $app->get('/users/current', function (Request $request) use ($app)
 
     if($USER->IsAuthorized())
     {
-        $rsUser = CUser::GetByID($USER->GetID());
+        $rsUser = \CUser::GetByID($USER->GetID());
         $arUser = $rsUser->Fetch();
         
         return $app->json(array(
@@ -178,6 +178,39 @@ $app->post('/users/current/pass', function (Request $request) use ($app)
     }else{
         return $app->json(["message" => "User is not authorized."], 401);
     }
+});
+
+$app->get('/users/current/subscription/channels', function (Request $request) use ($app) 
+{
+    global $USER;
+    if(!$USER->IsAuthorized())
+    {
+        return $app->json(["message" => "User is not authorized."], 401);
+    }
+    
+    $result = \Hawkart\Megatv\SubscribeTable::getList(array(
+        'filter' => array("UF_ACTIVE"=>1, "=UF_USER_ID" => $USER->GetID(), ">UF_CHANNEL_ID" => 0),
+        'select' => array("UF_CHANNEL_ID")
+    ));
+    while ($arSub = $result->fetch())
+    {
+        $selectedChannels[] = $arSub["UF_CHANNEL_ID"];
+    }
+    
+    $result = \Hawkart\Megatv\ChannelBaseTable::getList(array(
+        'filter' => array("UF_ACTIVE" => 1),
+        'select' => array("ID", "UF_TITLE", "UF_ICON", "UF_PRICE_H24"),
+        'order' => array("UF_PRICE_H24" => "DESC", "UF_TITLE"=>"ASC")
+    ));
+    while ($arChannel = $result->fetch())
+    {
+        if(in_array($arChannel["ID"], $selectedChannels))
+            $arChannel["SELECTED"] = true;
+    
+        $arChannels[] = $arChannel;
+    }
+    
+    return $app->json($arChannels, 200);
 });
 
 $app->get('/users/current/records/categories', function (Request $request) use ($app) 
@@ -437,7 +470,6 @@ $app->delete('/users/current/records/{id}', function (Silex\Application $app, $i
     }
 });
 
-/*
 $app->put('/users/current/records/{id}', function (Silex\Application $app, $id)
 {
     global $USER;
@@ -452,29 +484,70 @@ $app->put('/users/current/records/{id}', function (Silex\Application $app, $id)
         "id" => $id
     ));
     
-    if( (count($arResult["items"])==0)
+    if( count($arResult["items"])==0)
     {
         return $app->json(["message" => "Record does not exist."], 404);
     }else{
         
         $status = $request->request->get('status');
         
-        $_arRecord = array(
-            "status" => $arRecord["STATUS"],
-        );
+        if($status==0)
+        {
+            $delete = 1;
+        }else{
+            $delete = 0;
+        }
         
         \Hawkart\Megatv\RecordTable::update($id, array(
-            //"UF_DELETED" => 1
+            "UF_DELETED" => $delete
         ));
         
     }
 });
 
+/*
 $app->patch('/users/current/records/{id}', function (Silex\Application $app, $id)
 {
     // ...
 });
 */
+
+$app->get('/users/current/transactions', function (Request $request) use ($app) 
+{
+    global $USER;
+    if(!$USER->IsAuthorized())
+    {
+        return $app->json(["message" => "User is not authorized."], 401);
+    }
+    
+    $arParams = $request->query->get('filter');
+    if(!empty($arParams) && !is_array($arParams))
+    {
+        $arParams = json_decode($arParams, true);
+    }
+    
+    /**
+     * Navigation
+     */
+    $page = 1;
+    $countPerPage = 10;
+    
+    if(!empty($arParams["page"]))
+    {
+        $page = intval($arParams["page"]);
+    }
+    if(!empty($arParams["num"]))
+    {
+        $countPerPage = intval($arParams["num"]);
+    }
+
+    $arItems = \Hawkart\Megatv\CBilling::getTransaction(false, array(
+        "page" => $page,
+        "num" => $countPerPage
+    ));
+    
+    return $app->json($arItems, 200);
+});
 
 $app->get('/channels', function (Request $request) use ($app) 
 {

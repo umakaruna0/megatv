@@ -13,6 +13,21 @@ ini_set('mbstring.internal_encoding', 'UTF-8');
 
 echo $dstart = date("H:i:s")."\r\n";
 
+/*
+$arsFilter = array(
+    ">=UF_DATE" => new \Bitrix\Main\Type\Date(date("Y-m-d"), 'Y-m-d'),
+    "=UF_IS_PART" => 1,
+);
+$result = \Hawkart\Megatv\ScheduleTable::getList(array(
+    'filter' => $arsFilter,
+    'select' => array("ID")
+));
+while ($row = $result->fetch())
+{
+    \Hawkart\Megatv\ScheduleTable::delete($row["ID"]);
+}
+*/
+
 //Удаляем старые файлы лога
 $path = $_SERVER['DOCUMENT_ROOT'].'/logs/sotal/';
 \CDev::deleteOldFiles($path, 86400);
@@ -31,13 +46,19 @@ $epg->import();
 
 \Hawkart\Megatv\ScheduleTable::slice(); 
 \CDev::deleteDirectory($_SERVER['DOCUMENT_ROOT'].'/bitrix/cache', 0);
+\CDev::deleteDirectory($_SERVER["DOCUMENT_ROOT"]."/upload/cell/", 86400*2);
 
-$fisrt_date = date('d.m.Y', strtotime(\CTimeEx::getCurDate()));
-for($day=0; $day<3; $day++)
+$arCities = \Hawkart\Megatv\CityTable::getLangCityList(15); //RU
+foreach($arCities as $arCity)
 {
-    $curDate = date('d.m.Y', strtotime("+".$day." day", strtotime($fisrt_date)));
-    \Hawkart\Megatv\ScheduleCell::generate($curDate);
+    $fisrt_date = date('d.m.Y', strtotime(\CTimeEx::getCurDate()));
+    for($day=0; $day<3; $day++)
+    {
+        $curDate = date('d.m.Y', strtotime("+".$day." day", strtotime($fisrt_date)));
+        \Hawkart\Megatv\ScheduleCell::generate($curDate, $arCity["ID"]);
+    }
 }
+
 \CDev::deleteDirectory($_SERVER['DOCUMENT_ROOT'].'/bitrix/cache', 0);
 echo $dfinish = date("H:i:s")."\r\n";
 
