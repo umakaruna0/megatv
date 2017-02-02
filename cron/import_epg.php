@@ -28,6 +28,8 @@ while ($row = $result->fetch())
 }
 */
 
+mail("hawkart@rambler.ru", "Tvguru epg import success: ".$dstart, "start of import");
+
 //Удаляем старые файлы лога
 $path = $_SERVER['DOCUMENT_ROOT'].'/logs/sotal/';
 \CDev::deleteOldFiles($path, 86400);
@@ -46,18 +48,8 @@ $epg->import();
 
 \Hawkart\Megatv\ScheduleTable::slice(); 
 \CDev::deleteDirectory($_SERVER['DOCUMENT_ROOT'].'/bitrix/cache', 0);
-\CDev::deleteDirectory($_SERVER["DOCUMENT_ROOT"]."/upload/cell/", 86400*2);
 
-$arCities = \Hawkart\Megatv\CityTable::getLangCityList(15); //RU
-foreach($arCities as $arCity)
-{
-    $fisrt_date = date('d.m.Y', strtotime(\CTimeEx::getCurDate()));
-    for($day=0; $day<3; $day++)
-    {
-        $curDate = date('d.m.Y', strtotime("+".$day." day", strtotime($fisrt_date)));
-        \Hawkart\Megatv\ScheduleCell::generate($curDate, $arCity["ID"]);
-    }
-}
+\Hawkart\Megatv\ScheduleCell::generateForWeek();
 
 \CDev::deleteDirectory($_SERVER['DOCUMENT_ROOT'].'/bitrix/cache', 0);
 echo $dfinish = date("H:i:s")."\r\n";
