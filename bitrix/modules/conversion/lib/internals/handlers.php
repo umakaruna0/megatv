@@ -292,6 +292,7 @@ final class Handlers
 		{
 			$done = true;
 
+			\CJSCore::init();
 			DayContext::getInstance();
 
 			// For composite site this script must not be changing often!!!
@@ -316,9 +317,9 @@ final class Handlers
 								request.open("POST", "/bitrix/tools/conversion/ajax_counter.php", true);
 								request.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 								request.send(
-									"SITE_ID="      + encodeURIComponent(BX.message("SITE_ID")) + "&" +
-									"sessid="       + encodeURIComponent(BX.bitrix_sessid())    + "&" +
-									"HTTP_REFERER=" + encodeURIComponent(document.referrer)
+									"SITE_ID="+encodeURIComponent("'.DayContext::getSiteId().'")+
+									"&sessid="+encodeURIComponent(BX.bitrix_sessid())+
+									"&HTTP_REFERER="+encodeURIComponent(document.referrer)
 								);
 							}
 						};

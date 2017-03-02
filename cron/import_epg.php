@@ -49,7 +49,8 @@ $epg->import();
 \Hawkart\Megatv\ScheduleTable::slice(); 
 \CDev::deleteDirectory($_SERVER['DOCUMENT_ROOT'].'/bitrix/cache', 0);
 
-\Hawkart\Megatv\ScheduleCell::generateForWeek();
+\Hawkart\Megatv\ScheduleCell::clearOld($DOCUMENT_ROOT);
+\Hawkart\Megatv\ScheduleCell::generateForWeek($DOCUMENT_ROOT);
 
 \CDev::deleteDirectory($_SERVER['DOCUMENT_ROOT'].'/bitrix/cache', 0);
 echo $dfinish = date("H:i:s")."\r\n";
@@ -57,5 +58,6 @@ echo $dfinish = date("H:i:s")."\r\n";
 mail("hawkart@rambler.ru", "Tvguru epg import success: ".$dstart."-".$dfinish, "success");
 
 echo " --finish loading--";
+\Hawkart\Megatv\ProgTable::generateCodes();
 die();
 ?>

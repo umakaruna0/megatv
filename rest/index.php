@@ -25,17 +25,22 @@ $app->before(function (Request $request)
 {
     //loging
     $rq = \Symfony\Component\HttpFoundation\Request::createFromGlobals();
-    \CDev::log(array(
-        'cookie' => $rq->cookies->all(),
-        'method' => $request->getPathInfo(),
-        'request' => $request->request->all()
-    ), false, "/rest/time_".date("Ymd").".txt");
+    
     
     if (0 === strpos($request->headers->get('Content-Type'), 'application/json')) 
     {
         $data = json_decode($request->getContent(), true);
         $request->request->replace(is_array($data) ? $data : array());
     }
+    
+    \CDev::log(array(
+        'cookie' => $rq->cookies->all(),
+        'method' => $request->getPathInfo(),
+        'request' => $request->request->all(),
+        'files' => $_FILES,
+        'post' => $_POST,
+        'data' => $request->getContent(),
+    ), false, "/rest/time_".date("Ymd").".txt");
 });
 
 $app->post('/login', function (Request $request) use ($app) 
@@ -125,18 +130,97 @@ $app->get('/users/current', function (Request $request) use ($app)
         $rsUser = \CUser::GetByID($USER->GetID());
         $arUser = $rsUser->Fetch();
         
+        \CModule::IncludeModule("iblock");
+        $arrFilter = array(
+            "IBLOCK_ID" => PASSPORT_IB,
+            "ACTIVE" => "Y",
+            "PROPERTY_USER_ID" => $arUser["ID"]
+        );
+        $arSelect = array("ID", "PROPERTY_SERIA_NUMBER", "PROPERTY_WHEN_ISSUED", "PROPERTY_CODE_DIVISION", "PREVIEW_TEXT", "DETAIL_TEXT");
+        $rsRes = \CIBlockElement::GetList( $arOrder, $arrFilter, false, false, $arSelect );
+    	$arPassport = $rsRes->GetNext();
+        $arSeriaNumber = explode(" ", $arPassport["PROPERTY_SERIA_NUMBER_VALUE"]);
+        
         return $app->json(array(
-            "login" => $arUser["LOGIN"],
-            "email" => $arUser["EMAIL"],
-            "phone" => $arUser["PERSONAL_PHONE"],
-            "name" => $USER->GetFullName(),
+            "profile" => array(
+                "name" => $arUser["NAME"],
+                "last_name" => $arUser["LAST_NAME"],
+                "second_name" => $arUser["SECOND_NAME"],
+                "email" => $arUser["EMAIL"],
+                "login" => $arUser["LOGIN"],
+                "birthday" => $arUser["PERSONAL_BIRTHDAY"],
+                "phone" => $arUser["PERSONAL_PHONE"],
+            ),
+            "passport" => array(
+                "seria" => trim($arSeriaNumber[0]),
+                "number" => trim($arSeriaNumber[1]),
+                "who_issued" => $arPassport["PREVIEW_TEXT"],
+                "when_issued" => $arPassport["PROPERTY_WHEN_ISSUED_VALUE"],
+                "code_devision" => $arPassport["PROPERTY_CODE_DIVISION_VALUE"],
+                "address" => $arPassport["DETAIL_TEXT"]
+            ),
+            "avatar" => $arUser['PERSONAL_PHOTO'] ? CFile::GetPath($arUser['PERSONAL_PHOTO']) : '',
             "busy" => $arUser["UF_CAPACITY_BUSY"],
-            "capacity" => $arUser["UF_CAPACITY"]
+            "capacity" => $arUser["UF_CAPACITY"],
+            "budget" => floatval(\CUserEx::getBudget())
         ), 200);
     }else{
         return $app->json(["message" => "User is not authorized."], 401);
     }
 });
+
+$app->get('/users/current/social', function (Request $request) use ($app) 
+{
+    global $USER;
+
+    if($USER->IsAuthorized())
+    {
+        $rsUser = \CUser::GetByID($USER->GetID());
+        $arUser = $rsUser->Fetch();
+        
+        \CModule::IncludeModule("iblock");
+        $arSocials = array();
+        $arrFilter = array(
+            "IBLOCK_ID" => USER_SOCIAL_IB,
+            "ACTIVE" => "Y",
+            "PROPERTY_USER_ID" => $USER->GetID()
+        );
+        $arSelect = array("PROPERTY_SOCIAL_PROVIDER");
+        $rsRes = CIBlockElement::GetList( $arOrder, $arrFilter, false, false, $arSelect );
+    	while( $arItem = $rsRes->GetNext() )
+        {
+            $arSocials[] = strtolower($arItem["PROPERTY_SOCIAL_PROVIDER_VALUE"]);
+    	}
+        
+        $arrFilter = array(
+            "IBLOCK_ID" => SOCIAL_CONFIG_IB,
+            "ACTIVE" => "Y",
+            "PROPERTY_PROJECT_VALUE" => $arSite["NAME"]
+        );
+        $arSelect = array("PROPERTY_PROVIDER", "PROPERTY_ICON", "PROPERTY_COUNT_GB");
+        $rsRes = CIBlockElement::GetList( $arOrder, $arrFilter, false, false, $arSelect );
+        while( $arItem = $rsRes->GetNext() )
+        {
+            $provider = strtolower($arItem["PROPERTY_PROVIDER_VALUE"]);
+            $arSocial = array(
+                "icon" => $arItem["PROPERTY_ICON_VALUE"],
+                "url" => "https://tvguru.com/vendor/hybridauth/hybridauth/?provider=".$provider."&env=dev",
+                "connected" => false
+            );
+            if(in_array($provider, $arSocials))
+            {
+                $arSocial["connected"] = true;
+            }
+            
+            $arResult["SOCIALS"][$provider] = $arSocial;            
+        }
+        
+        return $app->json($arResult["SOCIALS"], 200);
+    }else{
+        return $app->json(["message" => "User is not authorized."], 401);
+    }
+});
+        
 
 $app->post('/users/current', function (Request $request) use ($app) 
 {
@@ -160,8 +244,62 @@ $app->post('/users/current', function (Request $request) use ($app)
             $result = \CUserEx::setProfile($arPost);
         }
         
-        return $app->json($result, 200);
+        if($result["status"]=="error")
+        {
+            return $app->json($result, 400);
+        }else{
+            return $app->json($result, 200);
+        }
 
+    }else{
+        return $app->json(["message" => "User is not authorized."], 401);
+    }
+});
+
+$app->post('/users/current/avatar', function (Request $request) use ($app) 
+{
+    global $USER;
+
+    if($USER->IsAuthorized())
+    {
+        global $USER;
+            
+        $uid = $USER->GetID();
+        $rsUser = CUser::GetByID($uid);
+        $arUser = $rsUser->Fetch();
+        
+        $result["status"]="error";
+
+        if(empty($_FILES["avatar"]["name"]) || $_FILES["avatar"]["type"]!="image/jpeg")
+        {
+            $result["status"]="error";
+        }else{
+            
+            $arFile = array(
+                "name" => $_FILES["avatar"]["name"],
+                "tmp_name" => $_FILES["avatar"]["tmp_name"],
+                "type" => $_FILES["avatar"]["type"],
+                "size" => $_FILES["avatar"]["size"],
+                "del" => "Y",
+                "old_file" => $arUser['PERSONAL_PHOTO'],
+                "MODULE_ID" => "main"
+            );
+            
+            $cuser = new CUser;
+            $cuser->Update($uid, array(
+                "PERSONAL_PHOTO" => $arFile
+            ));
+            
+            $result["status"]="success";
+        }
+        
+        
+        if($result["status"]=="error")
+        {
+            return $app->json($result, 400);
+        }else{
+            return $app->json($result, 200);
+        }
     }else{
         return $app->json(["message" => "User is not authorized."], 401);
     }
@@ -173,8 +311,18 @@ $app->post('/users/current/pass', function (Request $request) use ($app)
 
     if($USER->IsAuthorized())
     {
-        $result = \CUserEx::changePassword($request);
-        return $app->json($result, 200);
+        $post = array(
+            'old_password' => $request->request->get('old_password'),
+            'new_password'  => $request->request->get('new_password'),
+            'new_password2' => $request->request->get('new_password2'),
+        );
+        $result = \CUserEx::changePassword($post);
+        if($result["status"]=="error")
+        {
+            return $app->json($result, 400);
+        }else{
+            return $app->json($result, 200);
+        }
     }else{
         return $app->json(["message" => "User is not authorized."], 401);
     }
@@ -189,29 +337,165 @@ $app->get('/users/current/subscription/channels', function (Request $request) us
     }
     
     $result = \Hawkart\Megatv\SubscribeTable::getList(array(
-        'filter' => array("UF_ACTIVE"=>1, "=UF_USER_ID" => $USER->GetID(), ">UF_CHANNEL_ID" => 0),
-        'select' => array("UF_CHANNEL_ID")
+        'filter' => array("=UF_USER_ID" => $USER->GetID(), ">UF_CHANNEL_ID" => 0),
+        'select' => array("UF_CHANNEL_ID", "ID", "UF_ACTIVE")
     ));
     while ($arSub = $result->fetch())
     {
-        $selectedChannels[] = $arSub["UF_CHANNEL_ID"];
+        $selectedChannels[$arSub["UF_CHANNEL_ID"]] = $arSub;
     }
     
     $result = \Hawkart\Megatv\ChannelBaseTable::getList(array(
-        'filter' => array("UF_ACTIVE" => 1),
+        'filter' => array("=UF_ACTIVE" => 1),
         'select' => array("ID", "UF_TITLE", "UF_ICON", "UF_PRICE_H24"),
         'order' => array("UF_PRICE_H24" => "DESC", "UF_TITLE"=>"ASC")
     ));
     while ($arChannel = $result->fetch())
     {
-        if(in_array($arChannel["ID"], $selectedChannels))
-            $arChannel["SELECTED"] = true;
-    
+        $arSub = $selectedChannels[$arChannel["ID"]];
+        if(intval($arSub["ID"])>0)
+        {
+            $arChannel["SELECTED"] = $arSub["UF_ACTIVE"]==1 ? true : false;
+            $arChannel["SUBSCRIBE_ID"] = $arSub["ID"];
+        }else{
+            $arChannel["SELECTED"] = false;
+            $arChannel["SUBSCRIBE_ID"] = false;
+        }
         $arChannels[] = $arChannel;
     }
     
     return $app->json($arChannels, 200);
 });
+
+$app->post('/users/current/subscription/channels', function (Request $request) use ($app) 
+{
+    global $USER;
+    if(!$USER->IsAuthorized())
+    {
+        return $app->json(["message" => "User is not authorized."], 401);
+    }
+    
+    $channelID = $request->request->get('id');
+    $select = $request->request->get('select');
+
+    //get subcribe channel list
+    $selectedChannels = array();
+    $res = \Hawkart\Megatv\SubscribeTable::getList(array(
+        'filter' => array("=UF_USER_ID" => $USER->GetID(), ">UF_CHANNEL_ID" => 0),
+        'select' => array("UF_CHANNEL_ID", "ID")
+    ));
+    while ($arSub = $res->fetch())
+    {
+        $selectedChannels[$arSub["UF_CHANNEL_ID"]] = $arSub["ID"];
+    }
+    
+    //check disable sub
+    $res = \Hawkart\Megatv\ChannelBaseTable::getList(array(
+        'filter' => array("=UF_FORBID_REC" => 1, "=ID" => $channelID),
+        'select' => array("ID")
+    ));
+    if ($arChannel = $res->fetch())
+    {
+        return $app->json(array("status"=>"error", "message"=>"Нельзя подписаться на канал"), 400);
+    }
+    
+    //update subsribes
+    $result["status"] = "error";
+    $CSubscribe = new \Hawkart\Megatv\CSubscribe("CHANNEL");
+    if(!isset($selectedChannels[$channelID]))
+    {
+        $res = $CSubscribe->setUserSubscribe($channelID);
+    }else{
+        if($select)
+        {
+            $active = 1;
+        }else{
+            $active = 0;
+        }
+        
+        $subscribeID = $selectedChannels[$channelID];
+        $res = $CSubscribe->updateUserSubscribe($subscribeID, array("UF_ACTIVE"=>$active));
+    }
+     
+    if($res)
+    {
+        $result["status"] = "success";  
+    }
+    
+    if($result["status"]=="error")
+    {
+        return $app->json($result, 400);
+    }else{
+        return $app->json($result, 200);
+    }
+});
+
+$app->put('/users/current/subscription/channels/{id}', function (Request $request, Silex\Application $app, $id)
+{
+    global $USER;
+    if(!$USER->IsAuthorized())
+    {
+        return $app->json(["message" => "User is not authorized."], 401);
+    }
+    
+    $select = $request->request->get('SELECTED');
+
+    //get subcribe channel list
+    $selectedChannels = array();
+    $res = \Hawkart\Megatv\SubscribeTable::getList(array(
+        'filter' => array("=UF_USER_ID" => $USER->GetID(), ">UF_CHANNEL_ID" => 0),
+        'select' => array("UF_CHANNEL_ID", "ID")
+    ));
+    while ($arSub = $res->fetch())
+    {
+        $selectedChannels[$arSub["UF_CHANNEL_ID"]] = $arSub["ID"];
+    }
+    
+    //check disable sub
+    $res = \Hawkart\Megatv\ChannelBaseTable::getList(array(
+        'filter' => array("=UF_FORBID_REC" => 1, "=ID" => $id),
+        'select' => array("ID")
+    ));
+    if ($arChannel = $res->fetch())
+    {
+        return $app->json(array("status"=>"error", "message"=>"Нельзя подписаться на канал"), 400);
+    }
+    
+    //update subsribes
+    $result["status"] = "error";
+    $CSubscribe = new \Hawkart\Megatv\CSubscribe("CHANNEL");
+    if(!isset($selectedChannels[$id]))
+    {
+        $res = $CSubscribe->setUserSubscribe($id);
+    }else{
+        if(!empty($select))
+        {
+            $active = 1;
+        }else{
+            $active = 0;
+        }
+        
+        $subscribeID = $selectedChannels[$id];
+        $res = $CSubscribe->updateUserSubscribe($subscribeID, array("UF_ACTIVE" => $active));
+    }
+    
+    //return $app->json(array("to_active" => $active, 'sub_id' => $subscribeID), 200); 
+    
+    if(empty($res["error"]))
+    {
+        $result["status"] = "success";  
+    }else{
+        $result["message"] = $res["error"];
+    }
+    
+    if($result["status"]=="error")
+    {
+        return $app->json($result, 400);
+    }else{
+        return $app->json($result, 200);
+    }
+});
+
 
 $app->get('/users/current/records/categories', function (Request $request) use ($app) 
 {
@@ -226,7 +510,7 @@ $app->get('/users/current/records/categories', function (Request $request) use (
     foreach($arStat["CATS"] as $category => $id)
     {
         $str = \CDev::translit($category, "ru", array("replace_space"=>"-", "replace_other"=>"-"));
-        $arResult["CATEGORIES"][$category] = $str; 
+        $arResult["CATEGORIES"][$category] = $str;
     }
     
     return $app->json($arResult["CATEGORIES"], 200);
@@ -700,7 +984,28 @@ $app->get('/channels/{id}', function (Silex\Application $app, $id)
         $obCache->EndDataCache($arResult); 
     }
     
-    $arChannels = \Hawkart\Megatv\ChannelTable::getActiveByCity();
+    if($USER->IsAuthorized())
+    { 
+        $channel_ids = \Hawkart\Megatv\ChannelTable::getActiveIdByCityByUser();
+    }else{
+        $channel_ids = \Hawkart\Megatv\ChannelTable::getActiveIdByCity();
+    }
+    
+    /*$arChannels = \Hawkart\Megatv\ChannelTable::getActiveByCity();
+    $exist = false;
+    foreach($arChannels as $arChannel)
+    {
+        if($arChannel['ID']==$arResult["ID"]) 
+            $exist = true;
+            
+        break;
+    }
+    
+    if(!$exist && intval($arResult["ID"])==0)
+        return $app->json(["message" => "Channel does not exist."], 404);*/
+    
+    if(!in_array($arResult["ID"], $channel_ids))
+        return $app->json(["message" => "Channel does not exist."], 404);
     
     /**
      * User subscribe channel list.
@@ -716,7 +1021,7 @@ $app->get('/channels/{id}', function (Silex\Application $app, $id)
     }
     
     if( (!in_array($arResult["UF_CHANNEL_BASE_ID"], $subChannels) && $USER->IsAuthorized())
-        || empty($arResult) || intval($arResult["UF_CHANNEL_BASE_ACTIVE"])!=1 || count($arChannels[$arResult["ID"]])==0)
+        || empty($arResult) || intval($arResult["UF_CHANNEL_BASE_ACTIVE"])!=1)
     {
         return $app->json(["message" => "Channel does not exist."], 404);
     }else{
@@ -733,6 +1038,9 @@ $app->get('/channels/{id}/casts', function (Request $request, Silex\Application 
     {
         $arParams = json_decode($arParams, true);
     }
+    
+    $arDatetime = \CTimeEx::getDatetime();
+    $date_now = $arDatetime["SERVER_DATETIME_WITH_OFFSET"];
     
     /**
      * Get records statuses by user
@@ -751,8 +1059,18 @@ $app->get('/channels/{id}/casts', function (Request $request, Silex\Application 
     $arResult["date"] = substr($currentDateTime, 0, 10);
     $arScheduleList = \Hawkart\Megatv\ScheduleCell::getByChannelAndTime(intval($id), $currentDateTime);
     
-    if(count($arScheduleList)==0)
+    if($USER->IsAuthorized())
+    { 
+        $channel_ids = \Hawkart\Megatv\ChannelTable::getActiveIdByCityByUser();
+    }else{
+        $channel_ids = \Hawkart\Megatv\ChannelTable::getActiveIdByCity();
+    }
+    if(!in_array($id, $channel_ids))
         return $app->json(["message" => "Channel does not exist."], 404);
+    
+    
+    if(count($arScheduleList)==0)
+        return $app->json(["message" => "No generated cell for channel."], 404);
         
     $is_half = 0;
     $arHalf = array();
@@ -763,7 +1081,7 @@ $app->get('/channels/{id}/casts', function (Request $request, Silex\Application 
         $arStatus = \Hawkart\Megatv\CScheduleTemplate::status($arProg, $arRecordsStatuses);
         $status = $arStatus["status"];
         
-        if(intval($arProg["UF_BASE_FORBID_REC"])==1 && $USER->IsAuthorized())
+        if(intval($arProg["UF_BASE_FORBID_REC"])==1 && $USER->IsAuthorized() || !\CTimeEx::dateDiff($date_now, $arProg["DATE_END"]))
         {
             $status = "";
         }
@@ -806,8 +1124,19 @@ $app->get('/channels/{id}/casts', function (Request $request, Silex\Application 
             "status" => "status-".$status,
             "rating" => $arProg["UF_RATING"],
             "is_clone" => $arProg["CLONE"],
-            "is_adv" => $arProg["IS_ADV"]                
+            "is_adv" => $arProg["IS_ADV"],
+            "prog_id" => $arProg["UF_PROG_ID"]             
         );
+        
+        if($status=="recording")
+        {
+            $_arRecord["record_id"] = $arRecordsStatuses["RECORDING"][$arProg["ID"]]["ID"];
+        }else if($status=="recorded")
+        {
+            $_arRecord["record_id"] = $arRecordsStatuses["RECORDED"][$arProg["ID"]]["ID"];
+        }else{
+            $_arRecord["record_id"] = "";
+        }
         
         if($arProg["CLASS"]=="half")
         {
@@ -957,14 +1286,171 @@ $app->get('/casts/{id}', function (Silex\Application $app, $id)
         unset($_arResult[$type]);
     }
     
-    $arResult["STATUS"] = \Hawkart\Megatv\CScheduleTemplate::status(array(
+    /**
+     * Get records statuses by user
+     */
+    $arRecordsStatuses = \Hawkart\Megatv\RecordTable::getListStatusesByUser();
+    
+    $arStatus = \Hawkart\Megatv\CScheduleTemplate::status(array(
         "ID" => $arResult["ID"],
         "UF_CHANNEL_ID" => $arResult["UF_CHANNEL_ID"],
         "DATE_START" => $arResult["DATE_START"],
         "DATE_END" => $arResult["DATE_END"]
-    ));
+    ), $arRecordsStatuses);
+    
+    $arResult["status"] = "status-".$arStatus["status"];
+    if($arStatus["status"]=="recording")
+    {
+        $arResult["record_id"] = $arRecordsStatuses["RECORDING"][$arResult["ID"]]["ID"];
+    }else if($arStatus["status"]=="recorded")
+    {
+        $arResult["record_id"] = $arRecordsStatuses["RECORDED"][$arResult["ID"]]["ID"];
+    }else{
+        $arResult["record_id"] = "";
+    }
+    $arResult["prog_id"] = $arResult["UF_PROG_ID"];
     
     return json_encode($arResult);
+});
+
+$app->get('/progs/{id}', function (Silex\Application $app, $id)
+{
+    global $USER;
+    $arResult = array();
+    $arFilter = array("=ID" => $id);
+    $arSelect = array(
+        "ID", "UF_TITLE", "UF_SUB_TITLE", "UF_IMG_PATH" => "UF_IMG.UF_PATH",
+        "UF_RATING", "UF_DESC", "UF_SUB_DESC", "UF_GANRE", "UF_YEAR_LIMIT", "UF_COUNTRY",
+        "UF_YEAR", "UF_DIRECTOR", "UF_PRESENTER", "UF_ACTOR", "UF_CATEGORY"
+    );
+    $obCache = new \CPHPCache;
+    if( $obCache->InitCache(86400, serialize($arFilter).serialize($arSelect), "/prog-detail/"))
+    {
+    	$arProg = $obCache->GetVars();
+    }
+    elseif($obCache->StartDataCache())
+    {
+        $result = \Hawkart\Megatv\ProgTable::getList(array(
+            'filter' => $arFilter,
+            'select' => $arSelect,
+            'limit' => 1
+        ));
+        if ($arProg = $result->fetch())
+        {
+            $arProg["UF_PROG_ID"] = $arProg["ID"];
+            $arProg["PICTURE"]["SRC"] = \Hawkart\Megatv\CFile::getCropedPath($arProg["UF_IMG_PATH"], array(600, 600));
+            $arProg["KEYWORDS"] = array($arProg["UF_CATEGORY"], $arProg["UF_GANRE"]);
+        }
+        unset($arProg["ID"]);
+        $obCache->EndDataCache($arProg);  
+    }
+    
+    if(!empty($arProg))
+        $arResult = array_merge($arResult, $arProg);
+    
+    $arDate = \CTimeEx::getDateTimeFilter($arParams["DATETIME"]["SERVER_DATETIME"]);
+    $dateStart = date("Y-m-d H:i:s");
+    $arFilter = array(
+        "=UF_PROG_ID" => $id,
+        ">=UF_DATE_START" => new \Bitrix\Main\Type\DateTime($dateStart, 'Y-m-d H:i:s'),
+    );
+    $arSelect = array(
+        "ID", "UF_DATE_START", "UF_DATE_END", "UF_DATE", "UF_CHANNEL_ID", "UF_ICON" => "UF_CHANNEL.UF_BASE.UF_ICON",
+    );
+    $obCache = new \CPHPCache;
+    if( $obCache->InitCache(86400, serialize($arFilter).serialize($arSelect), "/shedule-detail/"))
+    {
+    	$arResult = $obCache->GetVars();
+    }
+    elseif($obCache->StartDataCache())
+    {
+        //get channel by code
+        $result = \Hawkart\Megatv\ScheduleTable::getList(array(
+            'filter' => $arFilter,
+            'select' => $arSelect,
+            'limit' => 1
+        ));
+        if ($arShedule = $result->fetch())
+        {
+            $arResult["ID"] = $arShedule["ID"];
+            $arResult["UF_ICON"] = $arShedule["UF_ICON"];
+            $arResult["UF_CHANNEL_ID"] = $arShedule["UF_CHANNEL_ID"];
+            $arResult["UF_DATE_START"] = $arResult["DATE_START"] = \CTimeEx::dateOffset($arShedule['UF_DATE_START']->toString());
+            $arResult["UF_DATE_END"] = $arResult["DATE_END"] = \CTimeEx::dateOffset($arShedule['UF_DATE_END']->toString());
+            $arResult["UF_DATE"] = $arResult["DATE"] = substr($arShedule["DATE_START"], 0, 10);
+            $sec = strtotime($arResult["DATE_END"]) - strtotime($arResult["DATE_START"]);
+            $arResult["DURATION"] = \CTimeEx::secToStr($sec);
+        }
+        $obCache->EndDataCache($arResult); 
+    }
+    
+    if(empty($arResult["DATE_START"]))
+    {
+        $arResult["IS_OLD"] = true;
+    }else{
+        $arResult["IS_OLD"] = false;
+    }
+    
+    foreach(array("UF_DIRECTOR", "UF_PRESENTER", "UF_ACTOR") as $type)
+    {
+        $_arResult[$type] = array();
+        $arPeoples = explode(",", $arResult[$type]);
+    
+        foreach($arPeoples as $actor)
+        {
+            $actor = trim($actor);
+            if(!empty($actor))
+            {
+                $link = \Hawkart\Megatv\PeopleTable::getKinopoiskLinkByName($actor);
+                $link = str_replace("//name", "/name", $link);
+                if(empty($link)) $link = "#";
+                $_arResult[$type][] = array(
+                    "NAME" => $actor,
+                    "LINK" => $link
+                );
+            }
+        }
+        $arResult[$type] = $_arResult[$type];
+        unset($_arResult[$type]);
+    }
+    
+    $arResult["prog_id"] = $arResult["PROG_ID"] = $arResult["UF_PROG_ID"];
+    
+    return json_encode($arResult);
+});
+
+$app->get('/progs/{id}/similar', function (Silex\Application $app, Request $request, $id)
+{
+    global $USER;
+    
+    $arParams = $request->query->get('filter');
+    
+    if(!empty($arParams) && !is_array($arParams))
+    {
+        $arParams = json_decode($arParams, true);
+    }
+    
+    /**
+     * Navigation
+     */
+    $page = 1;
+    $countPerPage = 6;
+    if(!empty($arParams["page"]))
+    {
+        $page = intval($arParams["page"]);
+    }
+    if(!empty($arParams["num"]))
+    {
+        $countPerPage = intval($arParams["num"]);
+    }
+    $offset = ($page-1)*$countPerPage;
+    
+    $arResult = \Hawkart\Megatv\ScheduleTable::getSimilarByProgId($id, array(
+        "limit" => $countPerPage,
+        "offset" => $offset
+    ));
+    
+    return $app->json($arResult, 200);
 });
 
 $app->get('/casts/search/{query}', function (Silex\Application $app, $query)
@@ -1188,6 +1674,47 @@ $app->get('/cities/{id}', function (Silex\Application $app, $id)
             return $app->json($arCity, 200);
     }
     return $app->json(["message" => "No city with such id."], 404);
+});
+
+$app->get('/timetable/state', function (Request $request) use ($app)
+{
+    $arParams = $request->query->get('filter');
+    if(!empty($arParams) && !is_array($arParams))
+    {
+        $arParams = json_decode($arParams, true);
+    }
+    
+    $cell_id = $arParams["id"];
+    
+    session_write_close();
+    $arDatetime = \CTimeEx::getDatetime();
+    $currentDateTime = date("Y-m-d H:i:s", strtotime($arDatetime["SERVER_DATETIME_WITH_OFFSET"]));
+    $current_cell_id = \Hawkart\Megatv\ScheduleCell::makeFiveMinutes($currentDateTime);
+    $current_cell_id = strtotime($current_cell_id);
+    
+    if(empty($cell_id))
+    {
+        return $app->json(array("id" => $current_cell_id), 200);
+    }else{
+
+        if($cell_id!=$current_cell_id)
+        {
+            return $app->json(array("id" => $current_cell_id), 200);
+        }else{
+            
+            while($cell_id==$current_cell_id)
+            {
+                sleep(2);
+                clearstatcache();
+                $arDatetime = \CTimeEx::getDatetime();
+                $currentDateTime = date("Y-m-d H:i:s", strtotime($arDatetime["SERVER_DATETIME_WITH_OFFSET"]));
+                $current_cell_id = \Hawkart\Megatv\ScheduleCell::makeFiveMinutes($currentDateTime);
+                $current_cell_id = strtotime($current_cell_id);
+            }
+            
+            return $app->json(array("id" => $current_cell_id), 200);
+        }
+    }
 });
 
 $app->get('/routes', function () use ($app) 

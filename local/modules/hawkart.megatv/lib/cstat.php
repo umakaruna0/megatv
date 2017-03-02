@@ -28,6 +28,7 @@ class CStat
                     "CHANNELS" => \COption::GetOptionString("grain.customsettings", "STAT_RECORD_CHANNELS_COEFF"),//1,
                     "SERIALS" => \COption::GetOptionString("grain.customsettings", "STAT_RECORD_SERIALS_COEFF"),//1,
                     "GANRES" => \COption::GetOptionString("grain.customsettings", "STAT_RECORD_GANRES_COEFF"),//1
+                    "TOPICS" => \COption::GetOptionString("grain.customsettings", "STAT_RECORD_GANRES_COEFF")
                 );
                 
                 if($recommendations)
@@ -51,6 +52,7 @@ class CStat
                     "CATS" => \COption::GetOptionString("grain.customsettings", "STAT_SCHEDULE_SHOW_CATS_COEFF"),//1
                     "TAGS" => \COption::GetOptionString("grain.customsettings", "STAT_SCHEDULE_SHOW_TAGS_COEFF"),//0.1,
                     "GANRES" => \COption::GetOptionString("grain.customsettings", "STAT_SCHEDULE_SHOW_GANRES_COEFF"),//1
+                    "TOPICS" => \COption::GetOptionString("grain.customsettings", "STAT_SCHEDULE_SHOW_GANRES_COEFF")
                 );
                 
                 if($recommendations)
@@ -69,6 +71,7 @@ class CStat
                     "CHANNELS" => \COption::GetOptionString("grain.customsettings", "STAT_QUATERSHOW_1_CHANNELS_COEFF"),//0.5, 
                     "SERIALS" => \COption::GetOptionString("grain.customsettings", "STAT_QUATERSHOW_1_SERIALS_COEFF"),//1,
                     "GANRES" => \COption::GetOptionString("grain.customsettings", "STAT_QUATERSHOW_1_GANRES_COEFF"),//1
+                    "TOPICS" => \COption::GetOptionString("grain.customsettings", "STAT_QUATERSHOW_1_GANRES_COEFF"),//1
                 );
             break;
             
@@ -79,6 +82,7 @@ class CStat
                     "CHANNELS" => \COption::GetOptionString("grain.customsettings", "STAT_QUATERSHOW_2_CHANNELS_COEFF"),//1, 
                     "SERIALS" => \COption::GetOptionString("grain.customsettings", "STAT_QUATERSHOW_2_SERIALS_COEFF"),//1,
                     "GANRES" => \COption::GetOptionString("grain.customsettings", "STAT_QUATERSHOW_2_GANRES_COEFF"),//1
+                    "" => \COption::GetOptionString("grain.customsettings", "STAT_QUATERSHOW_2_GANRES_COEFF"),//1
                 );
             break;
             
@@ -89,6 +93,7 @@ class CStat
                     "CHANNELS" => \COption::GetOptionString("grain.customsettings", "STAT_QUATERSHOW_3_CHANNELS_COEFF"),//1, 
                     "SERIALS" => \COption::GetOptionString("grain.customsettings", "STAT_QUATERSHOW_3_SERIALS_COEFF"),//1.5,
                     "GANRES" => \COption::GetOptionString("grain.customsettings", "STAT_QUATERSHOW_3_GANRES_COEFF"),//1
+                    "TOPICS" => \COption::GetOptionString("grain.customsettings", "STAT_QUATERSHOW_3_GANRES_COEFF"),//1
                 );
             break;
             
@@ -99,6 +104,7 @@ class CStat
                     "CHANNELS" => \COption::GetOptionString("grain.customsettings", "STAT_QUATERSHOW_4_CHANNELS_COEFF"),//1, 
                     "SERIALS" => \COption::GetOptionString("grain.customsettings", "STAT_QUATERSHOW_4_SERIALS_COEFF"),//2,
                     "GANRES" => \COption::GetOptionString("grain.customsettings", "STAT_QUATERSHOW_4_GANRES_COEFF"),//1
+                    "TOPICS" => \COption::GetOptionString("grain.customsettings", "STAT_QUATERSHOW_4_GANRES_COEFF"),//1
                 );
             break;
         }
@@ -123,7 +129,7 @@ class CStat
             
             $arSelect = array(
                 "UF_CHANNEL_BASE_ID" => "UF_CHANNEL.UF_BASE_ID", "UF_CATEGORY" => "UF_PROG.UF_CATEGORY", 
-                "UF_SERIAL" => "UF_PROG.UF_EPG_ID", "UF_GANRE" => "UF_PROG.UF_GANRE"
+                "UF_SERIAL" => "UF_PROG.UF_EPG_ID", "UF_GANRE" => "UF_PROG.UF_GANRE", "UF_TOPIC" => "UF_PROG.UF_TOPIC"
             );
             $result = RecordTable::getList(array(
                 'filter' => array("=ID" => $prog_id),
@@ -151,6 +157,15 @@ class CStat
                     $arStatistic["GANRES"][trim($ganre)] += floatval($arCount["GANRES"])/count($arGanres);
                 }
             } 
+            
+            if(!empty($arSchedule["UF_TOPIC"]))
+            {
+                $arTopics = explode(",", $arSchedule["UF_TOPIC"]);
+                foreach($arTopics as $ganre)
+                {
+                    $arStatistic["TOPICS"][trim($ganre)] += floatval($arCount["TOPICS"])/count($arTopics);
+                }
+            }
                 
             self::save($arStatistic);
         }
@@ -165,7 +180,7 @@ class CStat
             
             $arSelect = array(
                 "UF_CHANNEL_BASE_ID" => "UF_CHANNEL.UF_BASE_ID", "UF_CATEGORY" => "UF_PROG.UF_CATEGORY", 
-                "UF_SERIAL" => "UF_PROG.UF_EPG_ID", "UF_GANRE" => "UF_PROG.UF_GANRE"
+                "UF_SERIAL" => "UF_PROG.UF_EPG_ID", "UF_GANRE" => "UF_PROG.UF_GANRE", "UF_TOPIC" => "UF_PROG.UF_TOPIC"
             );
             $result = ScheduleTable::getList(array(
                 'filter' => array("=ID" => $prog_id),
@@ -191,6 +206,15 @@ class CStat
                 foreach($arGanres as $ganre)
                 {
                     $arStatistic["GANRES"][trim($ganre)] += floatval($arCount["GANRES"])/count($arGanres);
+                }
+            }
+            
+            if(!empty($arSchedule["UF_TOPIC"]))
+            {
+                $arTopics = explode(",", $arSchedule["UF_TOPIC"]);
+                foreach($arTopics as $ganre)
+                {
+                    $arStatistic["TOPICS"][trim($ganre)] += floatval($arCount["TOPICS"])/count($arTopics);
                 }
             }
             
@@ -227,7 +251,7 @@ class CStat
     }
     
     /**
-     * $arProgs = array("UF_ID", "ID", "UF_GANRE")
+     * $arProgs = array("UF_ID", "ID", "UF_GANRE", "UF_TOPIC")
      */
     public static function getProgsByGanre($arProgs, $arStatistic)
     {
@@ -239,6 +263,33 @@ class CStat
             foreach($arProg["UF_GANRE"] as $ganre)
             {
                 $ganre_rating = $arStatistic["GANRES"][$ganre];
+                $total_rating+= (1/$count) * $ganre_rating;
+            }
+            $arProgsByRating[$arProg["UF_EPG_ID"]] = $total_rating;
+        }
+        
+        uasort($arProgsByRating, function($a, $b){
+            return $b - $a;
+        }); 
+        $arProgsByRatingSorted = array_keys($arProgsByRating);
+        unset($arProgsByRating);
+        
+        return $arProgsByRatingSorted;
+    }
+    
+    /**
+     * $arProgs = array("UF_ID", "ID", "UF_GANRE", "UF_TOPIC")
+     */
+    public static function getProgsByTopic($arProgs, $arStatistic)
+    {
+        $arProgsByRating = array();
+        foreach($arProgs as $arProg)
+        {
+            $count = count($arProg["UF_TOPIC"]);
+            $total_rating = 0;
+            foreach($arProg["UF_TOPIC"] as $ganre)
+            {
+                $ganre_rating = $arStatistic["UF_TOPIC"][$ganre];
                 $total_rating+= (1/$count) * $ganre_rating;
             }
             $arProgsByRating[$arProg["UF_EPG_ID"]] = $total_rating;
@@ -347,6 +398,20 @@ class CStat
     public static function getRecommend($user_id)
     {
         $file = realpath(dirname(__FILE__) . '/../../../')."/data/statistic/".$user_id.".json";
+        $data = file_get_contents($file, FILE_USE_INCLUDE_PATH);
+        return json_decode($data, true);
+    }
+    
+    public static function saveRecommendSchedules($user_id, $json, $DOCUMENT_ROOT = false)
+    {
+        //$file = realpath(dirname(__FILE__) . '/../../../')."/data/statistic/schedule_".$user_id.".json";
+        $file = $DOCUMENT_ROOT."/local/data/statistic/schedule_".$user_id.".json";
+        file_put_contents($file, $json);
+    }
+    
+    public static function getRecommendSchedules($user_id)
+    {
+        $file = realpath(dirname(__FILE__) . '/../../../')."/data/statistic/schedule_".$user_id.".json";
         $data = file_get_contents($file, FILE_USE_INCLUDE_PATH);
         return json_decode($data, true);
     }

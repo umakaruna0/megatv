@@ -63,6 +63,209 @@ class SerialTable extends Entity\DataManager
             }
         }
     }
+    
+    public static function subscribeByEpg($serial_epg_id)
+    {
+        global $USER;
+        $status = "error";
+        $USER_ID = $USER->GetID();
+        $rsUser = \CUser::GetByID($USER_ID);
+        $arUser = $rsUser->Fetch();
+        
+        //money check
+        $budget = \CUserEx::getBudget($USER_ID);
+        if($budget<0)
+        {
+            return array("status"=>"error", "message"=> "Для записи передачи пополните счет.");
+        }
+        
+        //Список записей пользователя
+        $arRecords = array();
+        $result = \Hawkart\Megatv\RecordTable::getList(array(
+            'filter' => array(
+                "=UF_USER_ID" => $USER_ID,
+            ),
+            'select' => array("ID", "SID" => "UF_PROG.UF_EPG_ID", "UF_EPG_ID"),
+            'limit' => 1
+        ));
+        while ($arRecord = $result->fetch())
+        {
+            $arRecords[] = $arRecord["UF_EPG_ID"];
+        }
+        
+        //Получим ид сериала для подписки
+        $result = \Hawkart\Megatv\SerialTable::getList(array(
+            'filter' => array("=UF_EPG_ID" => $serial_epg_id),
+            'select' => array("ID"),
+            'limit' => 1
+        ));
+        $arSerial = $result->fetch();
+        $SID = $arSerial["ID"];
+        
+        //Проверим подисан ли пользователь на сериал
+        $result = \Hawkart\Megatv\SerialSubscribeTable::getList(array(
+            'filter' => array(
+                "=UF_USER_ID" => $USER_ID, 
+                "=UF_SERIAL_ID" => $SID, 
+            ),
+            'select' => array("ID", "UF_ACTIVE"),
+            'limit' => 1
+        ));
+        if ($arRecord = $result->fetch())
+        {
+            if(intval($arRecord["UF_ACTIVE"])==1)
+            {
+                return array("status"=>"error", "message"=> "Вы уже подписаны на данную передачу.");
+            }
+        }else{
+    
+            //Add subscribe to serial
+            \Hawkart\Megatv\SerialSubscribeTable::add(array(
+                'UF_USER_ID' => $USER_ID,
+                'UF_SERIAL_ID' => $SID,
+                'UF_ACTIVE' => 1
+            ));
+            
+            $result = \Hawkart\Megatv\ScheduleTable::getList(array(
+                'filter' => array(
+                    "=UF_PROG.UF_EPG_ID" => $serial_epg_id
+                ),
+                'select' => array(
+                    "ID", "UF_DATE_START", "UF_DATE_END", "UF_DATE", "UF_CHANNEL_BASE_ID" => "UF_CHANNEL.UF_BASE_ID", "UF_PROG_ID",
+                    "UF_CHANNEL_EPG_ID" => "UF_CHANNEL.UF_BASE.UF_EPG_ID", "UF_IMG_PATH" => "UF_PROG.UF_IMG.UF_PATH",
+                    "UF_PROG_EPG_ID" => "UF_PROG.UF_EPG_ID", "UF_EPG_ID", "UF_CHANNEL_ID"
+                )
+            ));
+            while($arSchedule = $result->fetch())
+            {
+                $arSchedule["UF_DATE_START"] = $arSchedule['UF_DATE_START']->toString();
+                $arSchedule["UF_DATE_END"] = $arSchedule['UF_DATE_END']->toString();
+                
+                if(!in_array($arSchedule["UF_EPG_ID"], $arRecords))
+                {
+                    $duration = strtotime($arSchedule["UF_DATE_END"])-strtotime($arSchedule["UF_DATE_START"]);
+                    $minutes = ceil($duration/60);
+                    $gb = $minutes*18.5/1024;
+                    $busy = floatval($arUser["UF_CAPACITY_BUSY"])+$gb;
+                    
+                    if($busy<floatval($arUser["UF_CAPACITY"]))
+                    {
+                        \Hawkart\Megatv\RecordTable::create($arSchedule);
+                                 
+                        //Inc rating for prog
+                        \Hawkart\Megatv\ProgTable::addByEpgRating($arSchedule["UF_PROG_EPG_ID"], 1);
+                        
+                        //change capacity for user 
+                        $cuser = new \CUser;
+                        $cuser->Update($arUser["ID"], array("UF_CAPACITY_BUSY"=>$busy));
+                        $arUser["UF_CAPACITY_BUSY"] = $busy;
+                        
+                        /**
+                         * Данные в статистику
+                         */                
+                        \Hawkart\Megatv\CStat::addByShedule($arSchedule["ID"], "record");
+            
+                        $status = "success";
+                    }
+                }
+            }
+        } 
+        
+        return array("status"=>$status);
+    }
+    
+    /**
+     * Добавляем на запись все программы сериалов, на которые подписан пользователь
+     */
+    public static function subscribeForUsers($USER_ID)
+    {
+        global $USER;
+        $status = "error";
+        $rsUser = \CUser::GetByID($USER_ID);
+        $arUser = $rsUser->Fetch();
+        $busy = floatval($arUser["UF_CAPACITY_BUSY"]);
+        
+        $budget = \CUserEx::getBudget($USER_ID);
+        if($budget<0)
+        {
+            return array("status"=>"error", "message"=> "Для записи передачи пополните счет.");
+        }
+        
+        //Список записей пользователя
+        $arRecords = array();
+        $result = \Hawkart\Megatv\RecordTable::getList(array(
+            'filter' => array(
+                "=UF_USER_ID" => $USER_ID,
+            ),
+            'select' => array("UF_EPG_ID"),
+            'limit' => 1
+        ));
+        while ($arRecord = $result->fetch())
+        {
+            $arRecords[] = $arRecord["UF_EPG_ID"];
+        }
+        
+        //Находим все подписки пользователя на сериал
+        $resultSerial = \Hawkart\Megatv\SerialSubscribeTable::getList(array(
+            'filter' => array(
+                "=UF_USER_ID" => $USER_ID,
+                "=UF_ACTIVE" => 1
+            ),
+            'select' => array("ID", "EPG_ID" => "UF_SERIAL.UF_EPG_ID"),
+            'limit' => 1
+        ));
+        while ($arSerial = $resultSerial->fetch())
+        {        
+            $serial_epg_id = $arSerial["EPG_ID"];
+            
+            $result = \Hawkart\Megatv\ScheduleTable::getList(array(
+                'filter' => array(
+                    "=UF_PROG.UF_EPG_ID" => $serial_epg_id
+                ),
+                'select' => array(
+                    "ID", "UF_DATE_START", "UF_DATE_END", "UF_DATE", "UF_CHANNEL_BASE_ID" => "UF_CHANNEL.UF_BASE_ID", "UF_PROG_ID",
+                    "UF_CHANNEL_EPG_ID" => "UF_CHANNEL.UF_BASE.UF_EPG_ID", "UF_IMG_PATH" => "UF_PROG.UF_IMG.UF_PATH",
+                    "UF_PROG_EPG_ID" => "UF_PROG.UF_EPG_ID", "UF_EPG_ID", "UF_CHANNEL_ID"
+                )
+            ));
+            while($arSchedule = $result->fetch())
+            {
+                $arSchedule["UF_DATE_START"] = $arSchedule['UF_DATE_START']->toString();
+                $arSchedule["UF_DATE_END"] = $arSchedule['UF_DATE_END']->toString();
+                
+                //проверяем поставлена ли на запись
+                if(!in_array($arSchedule["UF_EPG_ID"], $arRecords))
+                {
+                    $duration = strtotime($arSchedule["UF_DATE_END"])-strtotime($arSchedule["UF_DATE_START"]);
+                    $minutes = ceil($duration/60);
+                    $gb = $minutes*18.5/1024;
+                    $busy += $gb;
+                    
+                    if($busy<floatval($arUser["UF_CAPACITY"]))
+                    {
+                        \Hawkart\Megatv\RecordTable::create($arSchedule);
+                                 
+                        //Inc rating for prog
+                        \Hawkart\Megatv\ProgTable::addByEpgRating($arSchedule["UF_PROG_EPG_ID"], 1);
+                        
+                        //change capacity for user 
+                        $cuser = new \CUser;
+                        $cuser->Update($arUser["ID"], array("UF_CAPACITY_BUSY"=>$busy));
+                        $arUser["UF_CAPACITY_BUSY"] = $busy;
+                        
+                        /**
+                         * Данные в статистику
+                         */                
+                        \Hawkart\Megatv\CStat::addByShedule($arSchedule["ID"], "record");
+            
+                        $status = "success";
+                    }
+                }
+            }
+        }
+        
+        $SID = $arSerial["ID"];
+    }
 
 	/**
 	 * Returns entity map definition

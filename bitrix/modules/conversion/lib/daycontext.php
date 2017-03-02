@@ -12,11 +12,19 @@ use Bitrix\Main\ArgumentTypeException;
 final class DayContext extends Internals\BaseContext
 {
 	/** Add value to counter. If counter not exists set counter to value.
+	 * @param Date      $day   - counter date
 	 * @param string    $name  - counter name
 	 * @param int|float $value - number to add
 	 */
-	public function addCounter($name, $value)
+	public function addCounter($day, $name, $value = null)
 	{
+		if (func_num_args() == 2)
+		{
+			$value = $name;
+			$name  = $day;
+			$day   = new Date();
+		}
+
 		if (($id = $this->id) === null)
 		{
 			$value = (float) $value;
@@ -32,7 +40,7 @@ final class DayContext extends Internals\BaseContext
 		}
 		else
 		{
-			parent::addCounter(new Date(), $name, $value);
+			parent::addCounter($day, $name, $value);
 		}
 	}
 

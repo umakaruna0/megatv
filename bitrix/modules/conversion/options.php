@@ -102,15 +102,14 @@ $tabControl->Begin();
 			<td width="40%">
 				<?
 
-				if (@include_once($_SERVER['DOCUMENT_ROOT'].'/bitrix/modules/'.$name.'/install/index.php'))
+				$title = $name;
+				if ($info = \CModule::createModuleObject($name))
 				{
-					$module = new $name();
-					echo $module ? $module->MODULE_NAME : $name;
+					if (!empty($info->MODULE_NAME))
+						$title = $info->MODULE_NAME;
 				}
-				else
-				{
-					echo $name;
-				}
+
+				echo $title;
 
 				?>
 			</td>

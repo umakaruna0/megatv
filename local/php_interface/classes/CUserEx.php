@@ -222,7 +222,7 @@ class CUserEx
         if(intval($user_id)>0)
         {
             $result = \Hawkart\Megatv\ChannelBaseTable::getList(array(
-                'filter' => array("UF_ACTIVE" => 1, "!UF_PRICE_H24" => true, "!UF_FORBID_REC"=>1),
+                'filter' => array("=UF_ACTIVE" => 1, "!UF_PRICE_H24" => true, "!UF_FORBID_REC"=>1),
                 'select' => array("ID")
             ));
             while ($arChannel = $result->fetch())
@@ -403,7 +403,7 @@ class CUserEx
                 
         		if(intval($USER_ID)>0)
                 {
-                    self::subcribeOnFreeChannels($USER_ID);
+                    //self::subcribeOnFreeChannels($USER_ID);
                     
                     $arFields["USER_ID"] = $USER_ID;
                     $event = new \CEvent;
@@ -500,7 +500,7 @@ class CUserEx
     {
         global $USER;
         $result = array();
-        $result['status'] = false;
+        $result['status'] = 'error';
         
         $rsUser = \CUser::GetByID($USER->GetID());
         $arUser = $rsUser->Fetch();
@@ -518,13 +518,13 @@ class CUserEx
             if($rsUsers->NavNext(true, "f_"))
             {
                 $result['errors']['email'] = "Такая электроная почта существует на сайте.";
-            }else if(!\CDev::check_email($arPost["EMAIL"]))
+            }else if(!\CDev::check_email($arPost["email"]))
             {
                 $result['errors']["email"] = "Неверный формат данных";
             }
         }
         
-        if(empty($arPost["name"]))
+        /*if(empty($arPost["name"]))
         {
             $result['errors']['name'] = "Введите имя.";
         }
@@ -535,9 +535,9 @@ class CUserEx
         if(empty($arPost["second_name"]))
         {
             $result['errors']['second_name'] = "Введите отчество.";
-        }
+        }*/
         
-        if(!empty($arPost["birthday"]) && !preg_match("/^([0-9]{2})+([\/]{1})+([0-9]{2})+([\/]{1})+([0-9]{4})$/", $arPost["PERSONAL_BIRTHDAY"]))
+        if(!empty($arPost["birthday"]) && !preg_match("/^([0-9]{2})+([\.]{1})+([0-9]{2})+([\.]{1})+([0-9]{4})$/", $arPost["birthday"]))
         {
             $result['errors']["birthday"] = "Неверный формат.";
         }else{
@@ -553,13 +553,26 @@ class CUserEx
         {
             $сuser = new CUser;
             $fields = Array(
-                "NAME"              => $arPost["name"],
-                "LAST_NAME"         => $arPost["last_name"],
-                "SECOND_NAME"       => $arPost["second_name"],
-                "EMAIL"             => $arPost["email"],
-                "PERSONAL_BIRTHDAY" => $arPost["birthday"],  
+                "EMAIL"             => $arPost["email"],  
                 "PERSONAL_PHONE"    => $arPost["phone"]
             );
+            
+            if(!empty($arPost["name"]))
+            {
+                $fields["NAME"] = $arPost["name"];
+            }
+            if(!empty($arPost["last_name"]))
+            {
+                $fields["LAST_NAME"] = $arPost["last_name"];
+            }
+            if(!empty($arPost["second_name"]))
+            {
+                $fields["SECOND_NAME"] = $arPost["second_name"];
+            }
+            if(!empty($arPost["birthday"]))
+            {
+                $fields["PERSONAL_BIRTHDAY"] = $arPost["birthday"];
+            }
             
             $message = "Данные успешно изменены.";
             if(empty($arUser["EMAIL"]) && !empty($arPost["email"]))
@@ -588,7 +601,7 @@ class CUserEx
             $сuser->Update($arUser["ID"], $fields);
             $strError = $сuser->LAST_ERROR;
                      
-            $result['status'] = true;
+            $result['status'] = "success";
             $result['message'] = $message;
         }
         
@@ -598,9 +611,10 @@ class CUserEx
     public static function setPassport($arPost = array())
     {
         global $USER;
+        \CModule::IncludeModule("iblock");
         
         $result = array();
-        $result['status'] = false;
+        $result['status'] = "error";
         
         $seria = preg_replace("/[^0-9]/", '', $arPost["seria"]);
         $number = $arPost["number"];
@@ -624,7 +638,7 @@ class CUserEx
             $result['errors']['who_issued'] = "Заполните поле.";
         }
         
-        if(!preg_match("/^([0-9]{2})+([\/]{1})+([0-9]{2})+([\/]{1})+([0-9]{4})$/", $when_issued))
+        if(!preg_match("/^([0-9]{2})+([\.]{1})+([0-9]{2})+([\.]{1})+([0-9]{4})$/", $when_issued))
         {
             $result['errors']["when_issued"] = "Неверный формат.";
         }else{
@@ -676,7 +690,7 @@ class CUserEx
                 $el->Add($arLoadProductArray);
             }
    
-            $result['status'] = true;
+            $result['status'] = "success";
             $result['message'] = "Данные успешно изменены.";
         }
         
@@ -688,22 +702,23 @@ class CUserEx
         global $USER;
         
         $result = array();
-        $result['status'] = false;
+        $result['status'] = "error";
         
         $rsUser = \CUser::GetByID($USER->GetID());
         $arUser = $rsUser->Fetch();
     
         $salt = substr($arUser['PASSWORD'], 0, (strlen($arUser['PASSWORD']) - 32));
         $realPassword = substr($arUser['PASSWORD'], -32);
-        $old_password = md5($salt.$_POST['old_password']);
+        $old_password = $request['old_password'];
+        $old_password = md5($salt.$old_password);
     
         if($old_password!=$realPassword)
         {
             $result['errors']["old_password"] = "Старый пароль введен неправильно!";
         }
     
-        $password = htmlspecialcharsbx($request->request->get['new_password']);
-        $password2 = htmlspecialcharsbx($request->request->get['new_password2']);
+        $password = htmlspecialcharsbx($request['new_password']);
+        $password2 = htmlspecialcharsbx($request['new_password2']);
     
         if(strlen($password)<6 || strlen($password2)<6)
         {
@@ -724,7 +739,7 @@ class CUserEx
             );
             $cuser->Update($USER->GetID(), $arFields);
             
-            $result['status'] = true;
+            $result['status'] = "success";
             $result['message'] = "Пароль успешно изменен.";
         }
         

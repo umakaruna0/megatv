@@ -43,6 +43,7 @@ CModule::AddAutoloadClasses(
         '\CNotifyEx' => $sClassesPath.'CNotifyEx.php',
         '\YoutubeClient' => $sClassesPath.'YoutubeClient.php',
         '\VkClient' => $sClassesPath.'VkClient.php',
+        '\Snoopy' => $sClassesPath.'Snoopy.php',
 	)
 );
 

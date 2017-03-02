@@ -28,7 +28,11 @@ else:
         //LocalRedirect("/?login=Y&social-error=".$e->getMessage()); die();
     }
     
-    if($errcode==0 && !empty($userProfile))
+    if($USER->IsAuthorized())
+    {
+        CSocialAuth::connectToUser($USER->GetID(), $provider_name, $userProfile);
+    }
+    else if($errcode==0 && !empty($userProfile))
     {
         $USER_ID = CSocialAuth::getUserByProviderAndId($provider_name, $userProfile);
     

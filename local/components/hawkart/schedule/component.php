@@ -14,7 +14,7 @@ $arFilter = array("=UF_CODE" => $arParams["ELEMENT_CODE"]);
 $arSelect = array(
     "ID", "UF_TITLE", "UF_SUB_TITLE", "UF_IMG_PATH" => "UF_IMG.UF_PATH",
     "UF_RATING", "UF_DESC", "UF_SUB_DESC", "UF_GANRE", "UF_YEAR_LIMIT", "UF_COUNTRY",
-    "UF_YEAR", "UF_DIRECTOR", "UF_PRESENTER", "UF_ACTOR", "UF_CATEGORY"
+    "UF_YEAR", "UF_DIRECTOR", "UF_PRESENTER", "UF_ACTOR", "UF_CATEGORY", "UF_EPG_ID"
 );
 $obCache = new \CPHPCache;
 if( $obCache->InitCache(86400, serialize($arFilter).serialize($arSelect), "/prog-detail/"))
@@ -144,6 +144,30 @@ foreach(array("UF_DIRECTOR", "UF_PRESENTER", "UF_ACTOR") as $type)
     }
     $arResult[$type] = $_arResult[$type];
     unset($_arResult[$type]);
+}
+
+$result = \Hawkart\Megatv\SerialTable::getList(array(
+    'filter' => array("=UF_EPG_ID" => $arResult["UF_EPG_ID"]),
+    'select' => array("ID"),
+    'limit' => 1
+));
+$arResult["SERIAL"] = $result->fetch();
+
+global $USER;
+if($USER->IsAuthorized() && $arResult["SERIAL"]["ID"]>0)
+{
+    $result = \Hawkart\Megatv\SerialSubscribeTable::getList(array(
+        'filter' => array(
+            "=UF_USER_ID" => $USER->GetID(), 
+            "=UF_SERIAL_ID" => $arResult["SERIAL"]["ID"], 
+        ),
+        'select' => array("ID", "UF_ACTIVE"),
+        'limit' => 1
+    ));
+    if ($arRecord = $result->fetch())
+    {
+        $arResult["SERIAL"] = array();
+    }
 }
 
 /**

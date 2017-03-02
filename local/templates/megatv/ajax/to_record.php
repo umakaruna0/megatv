@@ -69,7 +69,7 @@ if($USER->IsAuthorized() && $prog_time>0)
     }
     
     //money check
-    $budget = \CUserEx::getBudget($user_id);
+    $budget = \CUserEx::getBudget($USER_ID);
     if($budget<0)
     {
         exit(json_encode(array("status"=>"error", "error"=> "Для записи передачи пополните счет.")));

@@ -13,6 +13,7 @@ global $USER, $APPLICATION;
 if (!is_object($USER))
     $USER=new \CUser;
 
-//\Hawkart\Megatv\ScheduleCell::generateForWeek();
+\Hawkart\Megatv\ScheduleCell::clearOld($DOCUMENT_ROOT);
+\Hawkart\Megatv\ScheduleCell::generateForWeek($DOCUMENT_ROOT);
 die();
 ?>

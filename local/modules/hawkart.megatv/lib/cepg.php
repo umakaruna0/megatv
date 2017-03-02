@@ -1108,24 +1108,6 @@ class CEpg
             }
         }
         
-        
-        /**
-         * Delete not exist schedule
-         */
-        /*$date = date('Y-m-d', strtotime("-1 day", strtotime(date("Y-m-d"))));
-        $arsFilter = array(
-            "<UF_DATETIME_EDIT" => new \Bitrix\Main\Type\Date($date, 'Y-m-d 00:00:00'),
-            "=UF_IS_PART" => 0,
-        );
-        $result = ScheduleTable::getList(array(
-            'filter' => $arsFilter,
-            'select' => array("ID")
-        ));
-        while ($row = $result->fetch())
-        {
-            ScheduleTable::delete($row["ID"]);
-        }*/
-        
         //Make cut images for imported progs 
         self::addCropFiles($arProgCropIds);
         

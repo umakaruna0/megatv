@@ -328,4 +328,35 @@ $(document).on('ready', function(){
         }
     });
     
+    function subscribeSerial(broadcastID)
+    {
+        e.preventDefault();
+        alert(1);
+        var broadcastID = $(this).data("id");
+        pageModule = $('[data-module="page"]').get(0);
+        authentication = Box.Application.getModuleConfig(pageModule, 'authentication');
+        
+        if (authentication === true) 
+        {
+            if(broadcastID!==undefined)
+            {
+        		$.ajax({
+        			type: 'GET',
+        			dataType: 'html',
+        			url: "/local/templates/megatv/ajax/serial_subscribe.php",
+        			data: {
+        				broadcastID: broadcastID,
+        			},
+        			success: function (data) 
+                    {
+                        
+                        console.log(data);
+        			}
+        		});
+            }
+        }else{
+            $("#mod-signin-overlay-1").addClass("is-visible");
+            return;
+        }
+    }    
 });

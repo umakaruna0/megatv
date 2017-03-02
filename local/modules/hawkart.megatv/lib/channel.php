@@ -95,7 +95,8 @@ class ChannelTable extends Entity\DataManager
             $arFilter = array(
                 "=UF_ACTIVE" => 1, 
                 "=UF_USER_ID" => $USER->GetID(), 
-                ">UF_CHANNEL_ID" => 0
+                ">UF_CHANNEL_ID" => 0,
+                "=UF_CHANNEL.UF_ACTIVE" => 1,
             );
             $arSelect = array("UF_CHANNEL_ID");
             $result = SubscribeTable::getList(array(

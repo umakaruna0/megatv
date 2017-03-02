@@ -272,8 +272,15 @@ class RecordTable extends Entity\DataManager
         $arDatetime = \CTimeEx::getDatetime();
         $date_now = $arDatetime["SERVER_DATETIME_WITH_OFFSET"];
         
+        if(intval($arParams['user_id'])>0)
+        {
+            $user_id = intval($arParams['user_id']);
+        }else{
+            $user_id = $USER->GetID();
+        }
+        
         $arFilter = array(
-            "=UF_USER_ID" => $USER->GetID(), 
+            "=UF_USER_ID" => $user_id, 
             "=UF_DELETED" => 0
         );
         
@@ -306,19 +313,28 @@ class RecordTable extends Entity\DataManager
             $arRecord["PICTURE"]["SRC"] = CFile::getCropedPath($arRecord["UF_IMG_PATH"], array(300, 300), true);
             $arRecord["DETAIL_PAGE_URL"] = "/channels/".$arRecord["UF_CHANNEL_CODE"]."/".$arRecord["UF_PROG_CODE"]."/";
             
-            $arRecord["STATUS"] = "";
-            if(!empty($arRecord["DATE_START"]))
+            $arRecord["STATUS"] = "status-recording";
+            if(!empty($arRecord["UF_DATE_START"]))
             {
                 $arRecord["DATE_START"] = \CTimeEx::dateOffset($arRecord["UF_DATE_START"]->toString());
                 $minutes = intval(strtotime($date_now)-strtotime($arRecord["UF_DATE_START"]))/60;
             }
             
+            if(!empty($arRecord["UF_DATE_END"]))
+                $arRecord["DATE_END"] = \CTimeEx::dateOffset($arRecord["UF_DATE_END"]->toString());
+            
             if((!\CTimeEx::dateDiff($arRecord["DATE_START"], $date_now) || $minutes<5) && !empty($arRecord["DATE_START"]) && !empty($arRecord["UF_URL"]))
             {
                 $arRecord["STATUS"] = "status-recording";
-            }elseif(!empty($arRecord["UF_URL"]))
+            }
+            elseif(!empty($arRecord["UF_URL"]))
             {
                 $arRecord["STATUS"] = "status-recorded";
+            }
+            
+            if(\CTimeEx::dateDiff($arRecord["DATE_END"], $date_now) && empty($arRecord["UF_URL"]))
+            {
+                $arRecord["STATUS"] = "status-error";
             }
             
             $arResult["RECORDS"][] = $arRecord;
@@ -353,6 +369,7 @@ class RecordTable extends Entity\DataManager
             {
                 $path = $_SERVER["DOCUMENT_ROOT"].$arRecord["PICTURE"]["SRC"];
                 $path = SITE_TEMPLATE_PATH."/ajax/img_grey.php?path=".urlencode($path);
+                $arRecord["STATUS"] = "viewed";
             }else{
                 $path = $arRecord["PICTURE"]["SRC"];
             }
@@ -361,6 +378,7 @@ class RecordTable extends Entity\DataManager
                 "id" => $arRecord["ID"],
                 "time" => $time,
         		"date" => $date,
+                "prog_id" => $arRecord["UF_PROG_ID"],
         		"link" => $arRecord["DETAIL_PAGE_URL"],
         		"name" => $arRecord["UF_NAME"],
         		"image" => $path,
@@ -368,6 +386,7 @@ class RecordTable extends Entity\DataManager
                     "link" => $arResult["CATEGORIES"][$arRecord["UF_CATEGORY"]],
                     "name" => $arRecord["UF_CATEGORY"]
                 ),
+                "video_url" => $arRecord["UF_URL"],
                 "status" => $arRecord["STATUS"],
             );
         

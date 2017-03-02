@@ -663,3 +663,7 @@ color: #ffba00;
 .category-logo:hover{
     color: #fff !important;
 }
+
+ul.disqus-footer{
+    display: none !important;
+}

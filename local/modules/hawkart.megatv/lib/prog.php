@@ -270,7 +270,7 @@ class ProgTable extends Entity\DataManager
                 "=UF_ACTIVE" => 1,
             ),
             'select' => array(
-                "ID", "UF_EPG_ID", "UF_GANRE",
+                "ID", "UF_EPG_ID", "UF_GANRE", "UF_TOPIC"
             ),
             'order' => array("UF_RATING" => "DESC"),
         ));
@@ -282,6 +282,7 @@ class ProgTable extends Entity\DataManager
             $ids[] = $arSchedule["UF_EPG_ID"];
             
             $arSchedule["UF_GANRE"] = explode(",", $arSchedule["UF_GANRE"]);
+            $arSchedule["UF_TOPIC"] = explode(",", $arSchedule["UF_TOPIC"]);
             $arProgs[] = $arSchedule;
         }
         

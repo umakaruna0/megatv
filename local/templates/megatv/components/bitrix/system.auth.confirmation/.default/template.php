@@ -1,3 +1,21 @@
+<?
+if(isset($_GET["confirm_user_id"]) && isset($_GET["confirm_code"]))
+{
+    $chekword = trim($_GET["confirm_code"]);
+    $rsUser = CUser::GetByID(intval($_GET["confirm_user_id"]));
+	if($arResult["USER"] = $rsUser->GetNext())
+	{
+        if(strlen($chekword) > 0 && $chekword == $arResult["USER"]["~CONFIRM_CODE"])
+        {
+            global $USER;
+            $USER->Authorize($arResult["USER"]["ID"], true);
+            LocalRedirect("/");
+        }
+    }
+}
+?>
+
+
 <form action="<?= $templateFolder ?>/ajax.php" data-type="signup-code-form" id="signup-code-form">
     <div class="js-msg-block form__msg-block msg-block"></div>
     <input type="hidden" name="ajax_key" value="<?=md5('ajax_'.LICENSE_KEY)?>" />

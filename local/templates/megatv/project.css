@@ -8,3 +8,11 @@
 .site-footer .footer-content .copyrights a{
     margin: 0 10px;
 }
+
+.record-serial
+{
+    background: #fff;
+    padding: 5px 10px;
+    text-decoration: none;
+    display: inline-block;
+}

@@ -4,7 +4,7 @@ namespace Hawkart\Megatv;
 
 use Bitrix\Main\Entity;
 use Bitrix\Main\Localization;
-use Snoopy\Snoopy;
+//use Snoopy\Snoopy;
 
 Localization\Loc::loadMessages(__FILE__);
 
@@ -26,7 +26,7 @@ class Kinopoisk{
      */
     public function __construct($kinopoiskLogin=null, $kinopoiskPass=null)
     {
-        $this->snoopy = new Snoopy();
+        $this->snoopy = new \Snoopy();
         $this->snoopy->maxredirs = 2;
         if($kinopoiskLogin && $kinopoiskPass) $this->auth = array(
             'shop_user[login]' => $kinopoiskLogin,
@@ -55,10 +55,39 @@ class Kinopoisk{
         
         $url = "https://www.kinopoisk.ru/index.php?level=7&from=forma&result=adv&m_act[from]=forma&m_act[what]=actor&m_act[find]=".$actor;
         $this->snoopy->fetch($url);
-        
         $mainPage = $this->snoopy -> results;
         $mainPage = iconv('windows-1251' , 'utf-8', $mainPage);
-
+        $pattern = '#<a href="/name/(\d+)/sr/1/".*?data-url="(.*?)".*?class="js-serp-metrika".*?data-type="person".*?>(.*?)</a>#si';
+        if (preg_match($pattern, $mainPage, $matches)) 
+        {
+            if(intval($matches[1])>0 && !empty($matches[2]) && strpos($matches[2], $matches[1])!==false)
+            {
+                return "https://www.kinopoisk.ru". $matches[2];
+            }
+        }
+        
+        return false;
+    }
+    
+    public static function searchByCurl($kinopoiskLogin=null, $kinopoiskPass=null, $actor)
+    {
+        $ch = curl_init();
+        $userAgent = "User-Agent: Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US)";
+        $target_url = "https://www.kinopoisk.ru/index.php?level=7&from=forma&result=adv&m_act[from]=forma&m_act[what]=actor&m_act[find]=".$actor;
+        $cookie = dirname(__FILE__).'/cookie.txt';
+        $post = "shop_user%5Blogin%5D=$kinopoiskLogin&shop_user%5Bpass%5D=$kinopoiskPass&shop_user%5Bmem%5D=on&auth=%E2%EE%E9%F2%E8+%ED%E0+%F1%E0%E9%F2";
+        curl_setopt($ch, CURLOPT_USERAGENT, $userAgent);
+        curl_setopt($ch, CURLOPT_URL,$target_url);
+        curl_setopt($ch, CURLOPT_FAILONERROR, true);
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $post);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER,true);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 100);
+        curl_setopt($ch, CURLOPT_COOKIEFILE, $cookie);
+        curl_setopt($ch, CURLOPT_COOKIEJAR, $cookie);
+        $html = curl_exec($ch);
+        $mainPage = iconv('windows-1251' , 'utf-8', $html);
         $pattern = '#<a href="/name/(\d+)/sr/1/".*?data-url="(.*?)".*?class="js-serp-metrika".*?data-type="person".*?>(.*?)</a>#si';
         if (preg_match($pattern, $mainPage, $matches)) 
         {

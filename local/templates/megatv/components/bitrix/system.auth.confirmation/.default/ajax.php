@@ -77,16 +77,16 @@ if(!$USER->IsAuthorized() && count($result['errors'])==0)
 				    $obUser->Update($arResult["USER"]["ID"], array(
                         "ACTIVE" => "Y", 
                         "CONFIRM_CODE" => "",
-                        "PASSWORD"          	=> $PASS_1,
-                        "CONFIRM_PASSWORD"  	=> $PASS_1,
+                        //"PASSWORD"          	=> $PASS_1,
+                        //"CONFIRM_PASSWORD"  	=> $PASS_1,
                     ));
                     
                     //Меняем пароль и отправляем письмо с данными
                     $arFields = $arResult["USER"];
                     $arFields["PASSWORD"] = $PASS_1;
                     
-                    $event = new CEvent;
-                    $event->SendImmediate("USER_INFO_AFTER_CONFIRM", SITE_ID, $arFields);
+                    //$event = new CEvent;
+                    //$event->SendImmediate("USER_INFO_AFTER_CONFIRM", SITE_ID, $arFields);
                     
                     $USER->Authorize($arResult["USER"]["ID"], true);
                     

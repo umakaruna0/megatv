@@ -38,7 +38,8 @@ class CSubscribe
         
         //снимаемм деньги
         if(!$this->pay($SUBSCRIBE_TO, $USER_ID))
-            return false;
+            return array("error" => "Недостаточно средств на счете");
+            //return false;
         
         //добавляем ГБ
         if($this->type!="CHANNEL")

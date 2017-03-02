@@ -73,4 +73,25 @@ class SubscribeTable extends Entity\DataManager
         $DB->Query("DELETE FROM ".self::getTableName(), false);
         $DB->Query("ALTER TABLE ".self::getTableName()." AUTO_INCREMENT=1", false);
     }
+    
+    public static function deleteDuplicate()
+    {
+        $selectedChannels = array();
+        $res = self::getList(array(
+            'filter' => array(">UF_CHANNEL_ID" => 0),
+            'select' => array("UF_CHANNEL_ID", "ID", "UF_USER_ID")
+        ));
+        while ($arSub = $res->fetch())
+        {
+            $xid = $arSub["UF_CHANNEL_ID"]."-".$arSub["UF_USER_ID"];
+            
+            if(intval($selectedChannels[$xid])>0)
+            {
+                self::delete($arSub["ID"]);
+                //echo "delete=".$arSub["ID"]."  = ".$selectedChannels[$xid]."<br />";
+            }else{
+                $selectedChannels[$xid] = $arSub["ID"];
+            }
+        }
+    }
 }

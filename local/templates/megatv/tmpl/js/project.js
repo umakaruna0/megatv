@@ -37,6 +37,39 @@
     	}
     }
 
+    function subscribeSerial(broadcastID)
+    {
+        pageModule = $('[data-module="page"]').get(0);
+        authentication = Box.Application.getModuleConfig(pageModule, 'authentication');
+        
+        if (authentication === true) 
+        {
+            if(broadcastID!==undefined)
+            {
+        		$.ajax({
+        			type: 'GET',
+        			dataType: 'json',
+        			url: "/local/templates/megatv/ajax/serial_subscribe.php",
+        			data: {
+        				broadcastID: broadcastID,
+        			},
+        			success: function (data) 
+                    {
+                        if(data.status=="error")
+                        {
+                            alert(data.error);                            
+                        }else{
+                            alert("Вы успешно подписаны на будующие передачи!");
+                        }
+        			}
+        		});
+            }
+        }else{
+            $("#mod-signin-overlay-1").addClass("is-visible");
+            return;
+        }
+    }
+
 (function($) 
 {    
     $.fn.scrollPagination = function(options) {

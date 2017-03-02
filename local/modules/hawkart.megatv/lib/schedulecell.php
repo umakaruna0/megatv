@@ -10,6 +10,33 @@ Localization\Loc::loadMessages(__FILE__);
 class ScheduleCell
 {
     /**
+     * Generate cell for all cities to closest 3 day
+     */
+    public static function generateForWeek($DOCUMENT_ROOT = false)
+    {
+        if(!$DOCUMENT_ROOT)
+            $DOCUMENT_ROOT = $_SERVER["DOCUMENT_ROOT"];
+        
+        \CDev::deleteDirectory($DOCUMENT_ROOT.'/bitrix/cache', 0);
+        \CDev::deleteOldFiles($DOCUMENT_ROOT."/upload/cell/", 86400*2);
+
+        $arCities = CityTable::getLangCityList(15); //RU
+        $fisrt_date = date('d.m.Y', strtotime(\CTimeEx::getCurDate()));
+        $arCities = array(
+            array("id"=>1),
+            array("id"=>2),
+        );
+        foreach($arCities as $arCity)
+        {
+            for($day=0; $day<3; $day++)
+            {
+                $curDate = date('d.m.Y', strtotime("+".$day." day", strtotime($fisrt_date)));
+                self::generate($curDate, $arCity["id"]);
+            }
+        }
+    }
+    
+    /**
      * Cell by 5 minutes interval for all cities
      */
     public static function generate($curDate, $city_id = false)
@@ -56,7 +83,7 @@ class ScheduleCell
         $dateEnd = date("Y-m-d H:i:s", strtotime($arDate["DATE_TO"]));
         
         $arFilter = array(
-            "=UF_CHANNEL_ID" => $arChannelIds,
+            "=UF_CHANNEL_ID" => \Hawkart\Megatv\ChannelTable::getActiveIdByCity(),
             "=UF_ACTIVE" => 1,
             array(
                 "LOGIC" => "OR",
@@ -120,7 +147,6 @@ class ScheduleCell
             {
                 $channel_id = $arChannel["ID"];
                 $arChannelSchedules = $arScheduleList[$channel_id];
-                
                 self::save($channel_id, $arChannelSchedules, $currentDateTime, $city_id);
             }
             
@@ -130,6 +156,14 @@ class ScheduleCell
         }
     }
     
+    /**
+     * 
+     * @param string $datetime дата, для которой генерируется сетка
+     * @param array $arChannelProgs список программ разбитый по каналам
+     * @param array $arChannels каналы
+     * 
+     * @return array $arProgs программы с ключами
+     */
     public static function generateForTime($datetime, $arChannelProgs, $arChannels)
     {
         $maxPointer = 0;    //Берем самый большой номер из столбцов в эфире
@@ -188,8 +222,6 @@ class ScheduleCell
         
         unset($arChannelProgs);
         
-        //\CDev::pre($arProgs);
-        
         return $arProgs;
     }
     
@@ -221,6 +253,12 @@ class ScheduleCell
             if($maxRight<$diffRight)
                 $maxRight = $diffRight;
         }
+        
+        if($maxRight>0)
+            $maxRight = ceil($maxRight/2);
+        
+        if($maxLeft>0)
+            $maxLeft = ceil($maxLeft/2);
         
         //Подсчитываем кол-во столбцов = макс слева + макс. справа + 1.
         $totalColsNumber = $maxLeft+$maxRight+1;
@@ -261,28 +299,33 @@ class ScheduleCell
             }else{
                 $arKeys[$channel_id][$progPointer] = $maxRight;
             }
+
+            //check generated cell for channel
+            $count+=self::countByClasses($arKeys[$channel_id]);
+            
+            //if(count($arKeys[$channel_id])!=$progsNumber)
+            if($count!=$totalColsNumber)
+            {
+                echo $channel_id."\r\n";
+                print_r($arKeys[$channel_id]);
+                echo $count."  ".$totalColsNumber."\r\n";
+                echo "number=".$progsNumber."\r\n";
+                echo "pointer=".$progPointer."\r\n";
+                echo "maxleft=".$maxLeft."\r\n";
+                echo "maxright=".$maxRight."\r\n";
+                /*echo "left=\r\n";
+                \CDev::pre($leftArray);
+                \CDev::pre($keysResult);
+                echo "right=\r\n";
+                \CDev::pre($rightArray);
+                \CDev::pre($keysResult2);
+                
+                
+                \CDev::pre($arKeys[$channel_id]);*/
+                
+                //die();
+            }
         }
-        
-        if(count($arKeys[$channel_id])!=$progsNumber)
-        {
-            echo $channel_id."<br />";
-            echo "number=".$progsNumber."<br />";
-            echo "pointer=".$progPointer."<br />";
-            echo "maxleft=".$maxLeft."<br />";
-            echo "maxright=".$maxRight."<br />";
-            echo "left=<br />";
-            \CDev::pre($leftArray);
-            \CDev::pre($keysResult);
-            echo "right=<br />";
-            \CDev::pre($rightArray);
-            \CDev::pre($keysResult2);
-            
-            
-            \CDev::pre($arKeys[$channel_id]);
-            
-            //die();
-        }
-        
         return array(
             "keys" => $arKeys,
             "clones" => array()
@@ -291,49 +334,71 @@ class ScheduleCell
     
     public static function putArrayIntoQuantityNew($keys, $numCols)
     {
+        $keysResult = array();
         $count = count($keys);
         
-        if($numCols > $count*2)
+        //Если элементов > столбцов
+        if($count >= $numCols)
         {
-            $arParts["DOUBLE"] = $count-1;
-            $q = $numCols - ($count-1)*2;
-            $arParts[$q] = 1;
+            $ostatok = $numCols*2 - $count;
+            $arParts["ONE"] = $ostatok;
+            if($count-$ostatok > 0)
+                $arParts["HALF"] = ($count-$ostatok)/2;
         }else{
-            $double = $numCols - $count;
-            $arParts["DOUBLE"] = $double;
-            $arParts["ONE"] = $count-$double;
-        }
-        
-        if(count($arParts["DOUBLE"])>0)
-        {
-            while($arParts["DOUBLE"]>0)
+            if($numCols > $count*2)
             {
-                $key = array_shift($keys);
-                $keysResult[$key] = "double";
-                $keys = array_diff($keys, array($key));
-                $arParts["DOUBLE"]--;
+                $c = ceil($numCols/$count);
+                $arParts[$c] = $count-1;
+                
+                $diff = $numCols - ($count-1) * $c;
+                
+                if($diff==1)
+                {
+                    $arParts["ONE"] = 1;
+                }elseif ($diff==2){
+                    $arParts["DOUBLE"] = 1;
+                }elseif($diff>0){
+                    $arParts[$diff] = 1;
+                }
+            }else{
+                $double = $numCols - $count;
+                $arParts["DOUBLE"] = $double;
+                if($count-$double > 0)
+                    $arParts["ONE"] = $count-$double;
             }
         }
         
-        if(count($arParts["ONE"])>0)
+        echo "count=".$count."  cols=".$numCols."\r\n";
+        print_r($arParts);
+        
+        if(count($arParts["HALF"])>0)
         {
-            while($arParts["ONE"]>0)
+            while($arParts["HALF"]>0)
             {
                 $key = array_shift($keys);
-                $keysResult[$key] = "one"; 
-                $keys = array_diff($keys, array($key));
-                $arParts["ONE"]--;
+                $key_2 = array_shift($keys);
+                $keysResult[$key] = "half";
+                $keysResult[$key_2] = "half";
+                $keys = array_diff($keys, array($key, $key_2));
+                $arParts["HALF"]--;
             }
+            unset($arParts["HALF"]);
         }
-        
+            
         if(count($keys)>0)
         {
-            foreach($arParts as $class=>$c)
+            foreach($arParts as $class=>$countParts)
             {
-                if($class!="ONE" && $class!="DOUBLE")
+                if($class=="ONE" || $class=="DOUBLE")
+                {
+                    $class = strtolower($class);
+                }
+                while($countParts>0)
                 {
                     $key = array_shift($keys);
                     $keysResult[$key] = $class;
+                    $keys = array_diff($keys, array($key));
+                    $countParts--;
                 }
             }
         }
@@ -342,489 +407,20 @@ class ScheduleCell
         return $keysResult;
     }
 
-    /**
-     * 
-     * @param string $pointerColNumber номер столбца по вертикали
-     */
-    public static function setKeysToCols($pointerColNumber, $arTimePointers, $datetime)
-    {
-        //Чтобы больше варяций по возможным столбцам было
-        $pointers = array($pointerColNumber, $pointerColNumber-1, $pointerColNumber+1);
-        if($pointerColNumber==1)
-        {
-            $pointers = array($pointerColNumber, $pointerColNumber+1, $pointerColNumber+2);
-        }
-        if($pointerColNumber==0)
-        {
-            $pointers = array($pointerColNumber+2, $pointerColNumber+1);
-        }
-        
-        if($pointerColNumber>2)
-        {
-            $pointers[] = $pointerColNumber-2;
-        }
-        if($pointerColNumber>3)
-        {
-            $pointers[] = $pointerColNumber-3;
-        }
-        if($pointerColNumber>4)
-        {
-            $pointers[] = $pointerColNumber-4;
-        }
-        
-        $pointers = range(1, BROADCAT_COLS);
- 
-        //Разброс от возможного столбца делаем в 1 столбец влево/вправо
-        foreach($pointers as $pointerColNumber)
-        {
-            $success = true;
-            $arKeys = array();
-            $arClones = array();
-            
-            foreach($arTimePointers as $channel_id => $array)
-            {
-                $leftArray = array();
-                $rightArray = array();
-                $keysResult = array();
-                $keysResult2 = array();
-                $progPointerPrev = false;
-                $progPointerNext = false;
-                $arKeys[$channel_id] = array();
-                $arClones[$channel_id] = array();
-                
-                $progPointer = $array[0];    //Порядковый номер программы в столбце                
-                $progsNumber = $array[1];    //Общее кол-во программ
-                
-                //Если первый столбец, то массив пустой
-                if($progPointer==1)
-                {
-                    $leftArray = array();
-                }else{
-                    $leftArray = range(1, $progPointer-1);
-                }
-                
-                /*if($progsNumber<$pointerColNumber)
-                {
-                    $success = false;
-                    $arKeys = array();
-                    break;
-                }*/
-                
-                //Если последний столбец, то массив пустой
-                if($pointerColNumber==BROADCAT_COLS)
-                {
-                    if($progPointer+1==$progsNumber)
-                    {
-                        $rightArray = array($progPointer+1);
-                    }else{
-                        $rightArray = array();
-                    }
-                }else{
-                    
-                    if($progPointer+1>$progsNumber)
-                    {
-                        $rightArray = array();
-                    }else{
-                        $rightArray = range($progPointer+1, $progsNumber);
-                    }
-                }
-                
-                $leftCols = $pointerColNumber-1;    //кол-во столбцов слева
-                $rightCols = BROADCAT_COLS-$pointerColNumber;   //кол-во столбцов справа
-                
-                $progPointerClass = "one";
-                
-                if((count($leftArray)+1)/($leftCols+1)==2)//Проверяем, вмещается и без половинок
-                {
-                    $progPointerClass = "half";
-                    $progPointerPrev = "half";
-                    $leftArray = range(1, $progPointer-2);
-                }
-                //если программа*2 меньше, чем столбцов, то ставим двойную картинку
-                else if(count($leftArray)*2<$leftCols)
-                {
-                    $leftCols = $pointerColNumber-2;             
-                    $progPointerClass = "double";
-                } 
-                else if(count($leftArray)/2>$leftCols) //Если количество передач/2 больше, чем столбцов
-                {
-                    $success = false;
-                    $arKeys = array();
-                    break;
-                }
-                
-                //Если количество передач/2 больше, чем столбцов
-                if(count($rightArray)/2>$rightCols)
-                {
-                    $success = false;
-                    $arKeys = array();
-                    break;
-                }
-                else if($rightCols==0 && (count($rightArray)+1)/($rightCols+1)==2  && $progPointerClass!="half")
-                {
-                    $progPointerClass = "half";
-                    $progPointerNext = "half";
-                    
-                    if($progPointer+2>$progsNumber)
-                    {
-                        $rightArray = array();
-                    }else{
-                        $rightArray = array($progPointer+2, $progsNumber);
-                    }
-                }
-                else if(count($rightArray)*2<$rightCols && $progPointerClass!="half")
-                {
-                    $rightCols = BROADCAT_COLS-$pointerColNumber-1;
-                    $progPointerClass = "double";
-                }
-                
-                
-                if(count($leftArray)>0)
-                {
-                    $keysResult = self::putArrayIntoQuantity($leftArray, $leftCols);
-                    $arKeys[$channel_id] = $keysResult;
-                }
-                
-                $arClonesLeft = self::checkAddClone($leftArray, $leftCols, $keysResult, $progPointer);
-                
-                $keysColomn = array($progPointer => $progPointerClass);
-                if($progPointerPrev)
-                    $keysColomn[$progPointer-1] = $progPointerPrev;
-                    
-                if($progPointerNext)
-                    $keysColomn[$progPointer+1] = $progPointerNext;
-                    
-                $arKeys[$channel_id]+=$keysColomn;
-                
-                if(count($rightCols)>0)
-                {
-                    $keysResult2 = self::putArrayIntoQuantity($rightArray, $rightCols);
-                    $arKeys[$channel_id]+=$keysResult2;
-                }
-                
-                $arClonesRight = self::checkAddClone($rightArray, $rightCols, $keysResult2, $progPointer);
-                
-                if($arClonesLeft)
-                {
-                    $arClones[$channel_id] = $arClonesLeft;
-                }
-                
-                if($arClonesRight)
-                {
-                    $arClones[$channel_id]+= $arClonesRight;
-                }
-                
-                $count = 0;
-                $count += self::countByClasses($arKeys[$channel_id]);
-
-                if(count($arClones[$channel_id])>0)
-                {
-                    //$count+=self::countByClasses($arClones[$channel_id]);
-                    foreach($arClones[$channel_id] as $arClone)
-                    {
-                        if($arClone["class"]=="one")
-                        {
-                            $count+=1;
-                        }else if($arClone["class"]=="double"){
-                            $count+=2;
-                        }
-                    }
-                }
-                
-                if($count!=BROADCAT_COLS)
-                {
-                    /*echo "<h1>".$datetime."</h1><hr>";
-                    echo "col=".$pointerColNumber."<br />";
-                    \CDev::pre($array);
-                    echo "COUNT=". $count."<br />";
-                    echo "progPointer=".$progPointer."<br />";
-                    echo "progPointerClass=".$progPointerClass."<br />";
-                    
-                    
-                    echo "leftCols=".$leftCols."<br />";
-                    echo "rightCols=".$rightCols."<br />";
-                    
-                    echo "<h1>LEFT</h1><hr>";
-                    \CDev::pre($leftArray);
-                    \CDev::pre($keysResult);
-                    echo "clones="; 
-                    print_r($arClonesLeft);                    
-                    //\CDev::pre($arKeys);
-                    
-                    
-                    echo "<h1>RIGHT</h1><hr>";
-                    \CDev::pre($rightArray);
-                    \CDev::pre($keysResult2);
-                    echo "clones=";
-                    print_r($arClonesRight);*/ 
-                    
-                    $success = false;
-                    $arKeys = array();
-                    break;
-                }
-            }
-            
-            if($success)
-                break;
-        }
-        
-        if(!$success)
-        {
-            echo "<h1>".$datetime."</h1><hr>";
-                    echo "col=".$pointerColNumber."<br />";
-                    \CDev::pre($array);
-                    echo "COUNT=". $count."<br />";
-                    echo "progPointer=".$progPointer."<br />";
-                    echo "progPointerClass=".$progPointerClass."<br />";
-                    
-                    
-                    echo "leftCols=".$leftCols."<br />";
-                    echo "rightCols=".$rightCols."<br />";
-                    
-                    echo "<h1>LEFT</h1><hr>";
-                    \CDev::pre($leftArray);
-                    \CDev::pre($keysResult);
-                    echo "clones="; 
-                    print_r($arClonesLeft);                    
-                    //\CDev::pre($arKeys);
-                    
-                    
-                    echo "<h1>RIGHT</h1><hr>";
-                    \CDev::pre($rightArray);
-                    \CDev::pre($keysResult2);
-                    echo "clones=";
-                    print_r($arClonesRight);
-            //\CDev::pre($pointers);
-            //\CDev::pre($arTimePointers);
-            //die();
-        }
-        
-        return array(
-            "keys" => $arKeys,
-            "clones" => $arClones
-        );
-    }
-    
-    public static function checkAddClone($array, $cols, $keysResult, $progPointer)
-    {
-        $clones = array();
-        $count = 0;
-        
-        if(count($keysResult)>0)
-        {
-            $count+=self::countByClasses($keysResult);
-        }
-        
-        if($cols>$count)
-        {
-            $diff = $cols-$count;
-            
-            $countArray = count($array);
-            
-            $c = 0;
-            while($c!=$diff)
-            {
-                if($diff-$c>=2)
-                {
-                    $key = array_shift($array);
-                    if($countArray>0 && $key>=0)
-                    {
-                        $clones[] = array("key"=>$key, "class" => "double");
-                    }else{
-                        $clones[] = array("key"=>$progPointer, "class" => "double");
-                        //$clones[$progPointer] = "double";
-                    }
-                    
-                    $c+=2;
-                }
-                else
-                {
-                    $key = array_shift($array);
-                    if($countArray>0 && $key>=0)
-                    {
-                        $clones[] = array("key"=>$key, "class" => "one");
-                        //$clones[$key] = "one";
-                    }else{
-                        $clones[] = array("key"=>$progPointer, "class" => "one");
-                        //$clones[$progPointer] = "one";
-                    }
-                    $c+=1;
-                }
-            }
-            
-            return $clones;
-        }else{
-            return false;
-        }
-    }
-    
-    public static function putArrayIntoQuantity($keys, $numCols)
-    {
-        $count = count($keys);
-        if($count>$numCols*2)
-        {
-            $arParts["HALF"] = $numCols;
-            $needDelete = $count - $numCols*2;
-        }else{
-            if($count>=$numCols)  //больше 12 колонок
-            {
-                $ostatok = $numCols*2 - $count;
-                $arParts["ONE"] = $ostatok;
-                $arParts["HALF"] = ($count-$ostatok)/2;
-            }else{
-                if($numCols>$count*2)
-                {
-                    $arParts["DOUBLE"] = $count;//floor($count/2);
-                    $arParts["ONE"] = $count - $arParts["DOUBLE"];
-                }else{
-                    $double = $numCols - $count;
-                    $arParts["DOUBLE"] = $double;
-                    $arParts["ONE"] = $count-$double;
-                }
-            }
-        }
-        
-        $keysResult = array();
-        if(count($arParts["HALF"])==0)
-        {
-            if(count($arParts["DOUBLE"])>0)
-            {
-                while($arParts["DOUBLE"]>0)
-                {
-                    $key = array_shift($keys);
-                    $keysResult[$key] = "double";
-                    $keys = array_diff($keys, array($key));
-                    $arParts["DOUBLE"]--;
-                }
-            }
-            
-            if(count($arParts["ONE"])>0)
-            {
-                while($arParts["ONE"]>0)
-                {
-                    $key = array_shift($keys);
-                    $keysResult[$key] = "one"; 
-                    $keys = array_diff($keys, array($key));
-                    $arParts["ONE"]--;
-                }
-            }
-        }else{
-            $allKeysReverse = array_reverse($keys);
-            
-            //Получили ключи с худшим рейтингом в количестве = количеству нужных половин * 2
-            $halfKeys = array();
-            for($i=0; $i<$arParts["HALF"]*2; $i++)
-            {
-                $halfKeys[] = $allKeysReverse[$i];
-            }
-            
-            //проверим сколько из этих ключей являются парами
-            $countHalfs = 0;
-            $halfKeysDelete = array();
-            sort($halfKeys);    //отсортируем
-            for($i=1; $i<count($halfKeys); $i=$i+2)
-            {
-                if(abs($halfKeys[$i]-$halfKeys[$i-1])==1)
-                {
-                    $keys = array_diff($keys, array($halfKeys[$i], $halfKeys[$i-1]));
-                    $halfKeysDelete[] = $halfKeys[$i];
-                    $halfKeysDelete[] = $halfKeys[$i-1];
-                    $keysResult[$halfKeys[$i]] = "half";
-                    $keysResult[$halfKeys[$i-1]] = "half";
-                    $countHalfs++;
-                }
-            }
-            $halfKeys = array_diff($halfKeys, $halfKeysDelete);
-
-            //если остались половинуи, то берем соседние половинок
-            $diff = 0;
-            $halfKeysDelete = array();
-            if(count($arParts["HALF"])>$countHalfs)
-            {
-                $diff = $arParts["HALF"]-$countHalfs;
-
-                foreach($halfKeys as $key)
-                {
-                    $key_1 = $key-1;
-                    $key_2 = $key+1;
-                    if(in_array($key_1, $keys))
-                    {
-                        $keysResult["CLASS"] = "half"; 
-                        $keysResult["CLASS"] = "half";
-                        $halfKeysDelete[] = $key;
-                        $halfKeysDelete[] = $key_1;
-                        $keys = array_diff($keys, array($key, $key_1));
-                        $diff--;
-                    }
-                    elseif(in_array($key_2, $keys))
-                    {
-                        $keysResult[$key] = "half"; 
-                        $keysResult[$key_2] = "half";
-                        $halfKeysDelete[] = $key;
-                        $halfKeysDelete[] = $key_2;
-                        $keys = array_diff($keys, array($key, $key_2));
-                        $diff--;
-                    }
-                    
-                    if($diff==0)
-                        break;
-                }
-                $halfKeys = array_diff($halfKeys, $halfKeysDelete);
-            }
-            
-            //если остались половинки, то берем соседние половинок
-            if($diff>0)
-            {
-                if(count($halfKeys)>0)
-                {
-                    foreach($halfKeys as $key)
-                    {
-                        $keysResult[$key] = "one"; 
-                        $keys = array_diff($keys, array($key));
-                        $arParts["ONE"]--;
-                    }
-                }
-            }
-            
-            if(count($arParts["DOUBLE"])>0)
-            {
-                while($arParts["DOUBLE"]>0)
-                {
-                    $key = array_shift($keys);
-                    $keysResult[$key] = "double"; 
-                    $keys = array_diff($keys, array($key));
-                    $arParts["DOUBLE"]--;
-                }
-            }
-            
-            if(count($arParts["ONE"])>0)
-            {
-                while($arParts["ONE"]>0)
-                {
-                    $key = array_shift($keys);
-                    $keysResult[$key] = "one"; 
-                    $keys = array_diff($keys, array($key));
-                    $arParts["ONE"]--;
-                }
-            }
-            
-        }                   
-        
-        unset($arParts);
-        return $keysResult;
-    }
-    
     public static function countByClasses($keysResult)
     {
         $count = 0;
         foreach($keysResult as $class)
         {
+            $class = strtolower($class);
             if($class=="one"){
                 $count+=1;
             }else if($class=="double"){
                 $count+=2;
-            }else{
+            }else if($class=="half"){
                 $count+=0.5;
+            }else{
+                $count+=intval($class);
             }
         }
         
@@ -858,13 +454,13 @@ class ScheduleCell
         }
         
         $currentDateTime = self::makeFiveMinutes($currentDateTime);     
-        $dir = $_SERVER["DOCUMENT_ROOT"]."/upload/cell/".$city_id."-".$channel_id;
+        $dir = $_SERVER["DOCUMENT_ROOT"]."/upload/cell/".$city_id."/".$channel_id;
         
         if (!file_exists($dir))
             mkdir($dir, 0777, true);
         
         $path = $dir."/".strtotime($currentDateTime).".json";
-        
+        chmod($path, 0777);
         return $path;
     }
     
@@ -877,6 +473,7 @@ class ScheduleCell
         }
         $currentDateTime = self::makeFiveMinutes($currentDateTime);
         $path = self::generateFileName($channel_id, $currentDateTime, $city_id);
+        chmod($path, 0777);
         file_put_contents($path, json_encode($arChannelSchedules));
     }
     
@@ -888,7 +485,31 @@ class ScheduleCell
             $city_id = $arGeo["ID"];
         }
         $path = self::generateFileName($channel_id, $currentDateTime, $city_id);
+
         $str = file_get_contents($path);
         return json_decode($str, true);
+    }
+    
+    public static function clearOld($root_path = false)
+    {
+        if(!$root_path)
+            $root_path = $_SERVER["DOCUMENT_ROOT"];
+        
+        $arCities = CityTable::getLangCityList(15);
+        $fisrt_date = date('d.m.Y', strtotime(\CTimeEx::getCurDate()));
+        $arCities = array(
+            array("id"=>1),
+            array("id"=>2),
+        );
+        foreach($arCities as $arCity)
+        {
+            for($ch=1; $ch<200; $ch++)
+            {
+                if (file_exists($root_path."/upload/cell/".$arCity["id"]."/".$ch))
+                {
+                    \CDev::deleteOldFiles($root_path."/upload/cell/".$arCity["id"]."/".$ch."/", 86400*2);
+                }
+            }   
+        }
     }
 }

@@ -56,7 +56,11 @@
                     <p><?=strip_tags($arResult["UF_DESC"])?></p>
                     <?if(!empty($arResult["UF_SUB_DESC"])):?>
                         <p><?=strip_tags($arResult["UF_SUB_DESC"])?></p>
-                    <?endif;?>	
+                    <?endif;?>
+                    
+                    <?if(intval($arResult["SERIAL"]["ID"])>0):?>
+                        <a href="#" class="record-serial" onclick="subscribeSerial(<?=$arResult["ID"]?>); return false;" data-id="<?=$arResult["ID"]?>">Поставить на запись будующие серии</a>
+                    <?endif;?>
                 </div>
 				<div class="broadcast-info-col-1">
 					<dl class="info-list">
@@ -129,5 +133,30 @@
 			</div>
 		</div>
 		<span class="channel-back-logo"><span data-icon="<?=$arResult["UF_ICON"]?>"></span></span>
+        
+        
+        
+        <div id="disqus_thread"></div>
+        <script>
+        
+        /**
+        *  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+        *  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables*/
+        
+        var disqus_config = function () {
+        //this.page.url = PAGE_URL;  // Replace PAGE_URL with your page's canonical URL variable
+        this.page.identifier = <?=$arResult["UF_PROG_ID"]?>; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+        };
+        
+        (function() { // DON'T EDIT BELOW THIS LINE
+        var d = document, s = d.createElement('script');
+        s.src = '//tvguru-com.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+        })();
+        </script>
+        <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+
+        
 	</div><!-- /.block-body -->
 </section><!-- /.broadcast-card -->

@@ -256,8 +256,7 @@ class ScheduleTable extends Entity\DataManager
         $row = $result->fetch();
         $row = array_merge($row, $arFields);
         unset($row["ID"]);
-        //\CDev::pre($row);
-        
+
         $result = self::add($row);
         if ($result->isSuccess())
         {
@@ -301,41 +300,58 @@ class ScheduleTable extends Entity\DataManager
                 $recording_ids[] = $schedule_id;
             }
             
+            $arFilter = array(">=UF_DATE_START" => new \Bitrix\Main\Type\DateTime($dateStart, 'Y-m-d H:i:s'));
             $arFilter["=UF_CHANNEL_ID"] = ChannelTable::getActiveIdByCityByUser();
     
             if(count($recording_ids)>0)
                 $arFilter["!=ID"] = $recording_ids;
+                
+            $arFilter["=ID"] = \Hawkart\Megatv\CStat::getRecommendSchedules($USER->GetID());
             
-            $arRecommend = CStat::getRecommend($USER->GetID());
-            
-            $arRecommendSorted = array();
-            $key = 0;
-            
-            if(count($arRecommend)>0)
+            if(!empty($request["category"]))
             {
-                do {
-                    
-                    $countThree = 0;
-                    foreach($arRecommend as $by_what=>$epg_ids)
-                    {
-                        $value = str_replace('"', "", $epg_ids[$key]);
-                        if(intval($value)>0 && !in_array($value, $arRecommendSorted))
-                        {
-                            $arRecommendSorted[] = $value;
-                        }
-                        
-                        if(intval($value)>0)
-                        {
-                            $countThree++;
-                        }
-                    }
-
-                    $key++;
-   
-                } while ($countThree > 0);
+                $arFilter["=UF_PROG.UF_CATEGORY"] = htmlspecialcharsbx(urldecode($request["category"]));
             }
             
+            /*$obCache = new \CPHPCache;
+            if( $obCache->InitCache(86400, "userStatSorted-".$USER->GetID(), "/user-stat/"))
+            {
+            	$arRecommendSorted = $obCache->GetVars();
+            }
+            elseif($obCache->StartDataCache())
+            {
+                $arRecommend = CStat::getRecommend($USER->GetID());
+                
+                $arRecommendSorted = array();
+                $key = 0;
+                
+                if(count($arRecommend)>0)
+                {
+                    do {
+                        
+                        $countThree = 0;
+                        foreach($arRecommend as $by_what=>$epg_ids)
+                        {
+                            $value = str_replace('"', "", $epg_ids[$key]);
+                            if(intval($value)>0 && !in_array($value, $arRecommendSorted))
+                            {
+                                $arRecommendSorted[] = $value;
+                            }
+                            
+                            if(intval($value)>0)
+                            {
+                                $countThree++;
+                            }
+                        }
+    
+                        $key++;
+       
+                    } while ($countThree > 0);
+                }
+                $obCache->EndDataCache($arRecommendSorted); 
+            }
             $arFilter["=UF_PROG.UF_EPG_ID"] = $arRecommendSorted;
+            $arFilter[] = new \Bitrix\Main\DB\SqlExpression('@ IN (UF_PROG.UF_EPG_ID)', $arRecommendSorted);*/
         }
         
         $arNav = array(
@@ -386,6 +402,44 @@ class ScheduleTable extends Entity\DataManager
         return self::getListModel($arFilter, $arNav);
     }
     
+    public static function getSimilarByProgId($id, $arParams = array())
+    {
+        /**
+         * Get sid & category for schedule
+         */
+        $arFilter = array("=ID" => $id);
+        $arSelect = array(
+            "CATEGORY" => "UF_CATEGORY", "SID" => "UF_EPG_ID"
+        );
+        $result = ProgTable::getList(array(
+            'filter' => $arFilter,
+            'select' => $arSelect,
+            'limit' => 1
+        ));
+        $arProg = $result->fetch();
+        
+        /**
+         * Get similar list
+         */
+        $arDate = \CTimeEx::getDateTimeFilter($arTime["SERVER_DATETIME"]);
+        $dateStart = date("Y-m-d H:i:s");
+        $arChannelsActive = ChannelTable::getActiveIdByCityByUser();
+        $arFilter = array(
+            array(
+                "LOGIC" => "OR",
+                array("UF_PROG.UF_EPG_ID" => $arProg["SID"]),
+                array("UF_PROG.UF_CATEGORY" => $arProg["CATEGORY"]),
+            ),
+            //"=UF_PROG.UF_EPG_ID" => $arProg["SID"],
+            "=UF_CHANNEL_ID" => $arChannelsActive,
+            ">=UF_DATE_START" => new \Bitrix\Main\Type\DateTime($dateStart, 'Y-m-d H:i:s'),
+        );
+        $arNav = array(
+            "limit" => intval($arParams["limit"]), 
+            "offset" => intval($arParams["offset"])
+        );
+        return self::getListModel($arFilter, $arNav);
+    }
     
     public static function getListModel($arFilter, $arNav = array(), $arOrder = array(), $arGroup = array())
     {
@@ -430,15 +484,24 @@ class ScheduleTable extends Entity\DataManager
         
         if(count($arGroup)>0)
             $arGetList["group"] = $arGroup;
-            
-        $result = self::getList($arGetList);
-        while ($arSchedule = $result->fetch())
+        
+        $obCache = new \CPHPCache;
+        if( $obCache->InitCache(600, serialize($arGetList), "/getListModel/"))
         {
-            $arSchedule["UF_DATE_START"] = $arSchedule["DATE_START"] = \CTimeEx::dateOffset($arSchedule['UF_DATE_START']->toString());
-            $arSchedule["UF_DATE_END"] = $arSchedule["DATE_END"] = \CTimeEx::dateOffset($arSchedule['UF_DATE_END']->toString());
-            $arSchedule["UF_DATE"] = $arSchedule["DATE"] = substr($arSchedule["DATE_START"], 0, 10);
-            $arSchedule["DETAIL_PAGE_URL"] = "/channels/".$arSchedule["UF_CHANNEL_CODE"]."/".$arSchedule["UF_PROG_CODE"]."/?event=".$arSchedule["ID"];
-            $arResult["PROGS"][] = $arSchedule;
+        	$arResult["PROGS"] = $obCache->GetVars();
+        }
+        elseif($obCache->StartDataCache())
+        {
+            $result = self::getList($arGetList);
+            while ($arSchedule = $result->fetch())
+            {
+                $arSchedule["UF_DATE_START"] = $arSchedule["DATE_START"] = \CTimeEx::dateOffset($arSchedule['UF_DATE_START']->toString());
+                $arSchedule["UF_DATE_END"] = $arSchedule["DATE_END"] = \CTimeEx::dateOffset($arSchedule['UF_DATE_END']->toString());
+                $arSchedule["UF_DATE"] = $arSchedule["DATE"] = substr($arSchedule["DATE_START"], 0, 10);
+                $arSchedule["DETAIL_PAGE_URL"] = "/channels/".$arSchedule["UF_CHANNEL_CODE"]."/".$arSchedule["UF_PROG_CODE"]."/?event=".$arSchedule["ID"];
+                $arResult["PROGS"][] = $arSchedule;
+            }
+            $obCache->EndDataCache($arResult["PROGS"]); 
         }
         
         $arResult["CATEGORIES"] = array();
@@ -472,6 +535,7 @@ class ScheduleTable extends Entity\DataManager
             
             $_arItem = array(
                 "id" => $arSchedule["ID"],
+                "prog_id" => $arSchedule["PROG_ID"],
                 "channel_id" => $arSchedule["UF_CHANNEL_ID"],
                 "time" => $time,
             	"date" => substr($arSchedule["DATE_START"], 0, 10),
