@@ -457,7 +457,6 @@ $arCustomSettings = array (
         'DEFAULT_VALUE' => '1',
         'SIZE' => '20',
       ),
-      
       20 => 
       array (
         'NAME' => 'STAT_QUATERSHOW_3_CATS_COEFF',
@@ -558,8 +557,7 @@ $arCustomSettings = array (
         'DEFAULT_VALUE' => '1',
         'SIZE' => '20',
       ),
-      
-            25 => 
+      25 => 
       array (
         'NAME' => 'STAT_QUATERSHOW_4_CATS_COEFF',
         'LANG' => 
@@ -659,8 +657,45 @@ $arCustomSettings = array (
         'DEFAULT_VALUE' => '1',
         'SIZE' => '20',
       ),
-      
-      
+    ),
+  ),
+  3 => 
+  array (
+    'LANG' => 
+    array (
+      'ru' => 
+      array (
+        'NAME' => 'recaptcha',
+        'TITLE' => 'recaptcha',
+      ),
+      'en' => 
+      array (
+        'NAME' => 'recaptcha',
+        'TITLE' => 'recaptcha',
+      ),
+    ),
+    'FIELDS' => 
+    array (
+      1 => 
+      array (
+        'NAME' => 'RECAPTCHA_SECRET',
+        'LANG' => 
+        array (
+          'ru' => 
+          array (
+            'NAME' => 'RECAPTCHA_SECRET',
+            'TOOLTIP' => 'RECAPTCHA_SECRET',
+          ),
+          'en' => 
+          array (
+            'NAME' => 'RECAPTCHA_SECRET',
+            'TOOLTIP' => 'RECAPTCHA_SECRET',
+          ),
+        ),
+        'TYPE' => 'text',
+        'DEFAULT_VALUE' => '',
+        'SIZE' => '20',
+      ),
     ),
   ),
 );

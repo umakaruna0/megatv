@@ -38,7 +38,7 @@ class CFile
      */
     public static function add($arFields)
     {        
-        if(file_exists($arFields["path_from"]))
+        if(file_exists($arFields["path_from"]) && filesize($arFields["path_from"])>0)
         {
             if (!empty($arFields["path_to"]) && file_exists($arFields["path_to"]))
                 return;

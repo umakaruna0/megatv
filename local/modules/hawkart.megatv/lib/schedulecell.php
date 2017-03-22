@@ -17,15 +17,15 @@ class ScheduleCell
         if(!$DOCUMENT_ROOT)
             $DOCUMENT_ROOT = $_SERVER["DOCUMENT_ROOT"];
         
-        \CDev::deleteDirectory($DOCUMENT_ROOT.'/bitrix/cache', 0);
+        //\CDev::deleteDirectory($DOCUMENT_ROOT.'/bitrix/cache', 0);
+        BXClearCache(true);
         \CDev::deleteOldFiles($DOCUMENT_ROOT."/upload/cell/", 86400*2);
 
         $arCities = CityTable::getLangCityList(15); //RU
         $fisrt_date = date('d.m.Y', strtotime(\CTimeEx::getCurDate()));
-        $arCities = array(
-            array("id"=>1),
-            array("id"=>2),
-        );
+        /*$arCities = array(
+            array("id"=>80)
+        );*/
         foreach($arCities as $arCity)
         {
             for($day=0; $day<3; $day++)
@@ -52,7 +52,12 @@ class ScheduleCell
         {
             $arGeo = CityTable::getGeoCity();
             $city_id = $arGeo["ID"];
+        }else{
+            \Hawkart\Megatv\CityTable::setGeoCity($city_id);
+            $_SESSION["USER_GEO"]["ID"] = $city_id;
         }
+        
+        //print_r($_SESSION["USER_GEO"]); die();
         
         /**
          * Get channels by current city
@@ -297,13 +302,15 @@ class ScheduleCell
                     $arKeys[$channel_id]+= $keysResult2;
                 }
             }else{
-                $arKeys[$channel_id][$progPointer] = $maxRight;
+                if($maxRight>0)
+                    $arKeys[$channel_id][$progPointer] = $maxRight;
             }
 
             //check generated cell for channel
-            $count+=self::countByClasses($arKeys[$channel_id]);
+            $count=self::countByClasses($arKeys[$channel_id]);
             
             //if(count($arKeys[$channel_id])!=$progsNumber)
+            echo $channel_id."\r\n";
             if($count!=$totalColsNumber)
             {
                 echo $channel_id."\r\n";
@@ -497,10 +504,9 @@ class ScheduleCell
         
         $arCities = CityTable::getLangCityList(15);
         $fisrt_date = date('d.m.Y', strtotime(\CTimeEx::getCurDate()));
-        $arCities = array(
-            array("id"=>1),
-            array("id"=>2),
-        );
+        /*$arCities = array(
+            array("id"=>80)
+        );*/
         foreach($arCities as $arCity)
         {
             for($ch=1; $ch<200; $ch++)

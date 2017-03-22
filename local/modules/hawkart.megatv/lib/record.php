@@ -291,11 +291,12 @@ class RecordTable extends Entity\DataManager
         
         if(!empty($arParams["id"]))
         {
+            unset($arFilter["=UF_DELETED"]);
             $arFilter["=ID"] = intval($arParams["id"]);
         }
         
         $arSelect = array(
-            "ID", "UF_DATE_START", "UF_DATE_END", "UF_PROG_ID", "UF_WATCHED", "UF_PROGRESS_PERS",
+            "ID", "UF_DATE_START", "UF_DATE_END", "UF_PROG_ID", "UF_WATCHED", "UF_PROGRESS_PERS", "UF_CHANNEL_ID",
             "UF_TITLE" => "UF_PROG.UF_TITLE", "UF_SUB_TITLE" => "UF_PROG.UF_SUB_TITLE", "UF_IMG_PATH" => "UF_PROG.UF_IMG.UF_PATH",
             "UF_CATEGORY" => "UF_PROG.UF_CATEGORY", "UF_URL", "UF_CHANNEL_CODE" => "UF_CHANNEL.UF_BASE.UF_CODE",
             "UF_PROG_CODE" => "UF_PROG.UF_CODE", "UF_EPG_ID"
@@ -369,10 +370,12 @@ class RecordTable extends Entity\DataManager
             {
                 $path = $_SERVER["DOCUMENT_ROOT"].$arRecord["PICTURE"]["SRC"];
                 $path = SITE_TEMPLATE_PATH."/ajax/img_grey.php?path=".urlencode($path);
-                $arRecord["STATUS"] = "viewed";
+                $arRecord["STATUS"] = "status-viewed";
             }else{
                 $path = $arRecord["PICTURE"]["SRC"];
             }
+            
+            $duration = strtotime($arRecord["DATE_END"])-strtotime($arRecord["DATE_START"]);
             
             $_arRecord = array(
                 "id" => $arRecord["ID"],
@@ -382,13 +385,27 @@ class RecordTable extends Entity\DataManager
         		"link" => $arRecord["DETAIL_PAGE_URL"],
         		"name" => $arRecord["UF_NAME"],
         		"image" => $path,
+                "channel_id" => $arRecord["UF_CHANNEL_ID"],
         		"category" => array(
                     "link" => $arResult["CATEGORIES"][$arRecord["UF_CATEGORY"]],
                     "name" => $arRecord["UF_CATEGORY"]
                 ),
-                "video_url" => $arRecord["UF_URL"],
+                "video_url" => str_replace(array("http://86.110.197.202", "https://86.110.197.202"), "https://dev.tvguru.com", $arRecord["UF_URL"]),
                 "status" => $arRecord["STATUS"],
+                "position" => $arRecord["UF_PROGRESS_PERS"],
+                "duration" => $duration
             );
+            
+            $arProg = \Hawkart\Megatv\ProgTable::detailForRest($arRecord["UF_PROG_ID"]);
+            unset($arProg["DATE_END"]);
+            unset($arProg["DATE_START"]);
+            unset($arProg["DURATION"]);
+            unset($arProg["DATE"]);
+            unset($arProg["UF_DATE_END"]);
+            unset($arProg["UF_DATE_START"]);
+            unset($arProg["UF_DATE"]);
+            
+            $_arRecord = array_merge($_arRecord, $arProg);
         
             $arRecords[] = $_arRecord;
             unset($_arRecord);

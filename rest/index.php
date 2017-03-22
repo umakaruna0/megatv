@@ -5,6 +5,7 @@ ini_set('max_execution_time', 30);
 define("NO_KEEP_STATISTIC", true);
 define("NOT_CHECK_PERMISSIONS", true);
 set_time_limit(0);
+session_start();
 
 require($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/include/prolog_before.php");
 require($_SERVER['DOCUMENT_ROOT'].'/bitrix/modules/main/include/prolog_admin_before.php');
@@ -19,7 +20,7 @@ if (!is_object($USER))
     $USER = new \CUser;
   
 $app = new Silex\Application();
-$app['debug'] = true;
+$app['debug'] = false;
 
 $app->before(function (Request $request) 
 {
@@ -34,6 +35,7 @@ $app->before(function (Request $request)
     }
     
     \CDev::log(array(
+        'session' => $_SESSION,
         'cookie' => $rq->cookies->all(),
         'method' => $request->getPathInfo(),
         'request' => $request->request->all(),
@@ -73,6 +75,7 @@ $app->post('/users', function (Request $request) use ($app)
         'login' => $request->request->get('login'),
         'password'  => $request->request->get('pass'),
         'agree' => $request->request->get('agree'),
+        'g-recaptcha-response' => $request->request->get('g-recaptcha-response'),
     );
     
     $result = \CUserEx::signup($post);
@@ -686,8 +689,38 @@ $app->post('/users/current/records', function (Request $request) use ($app)
         }    
     }
     
-    return $app->json(array("status" => "success"), 200);
+    //return $app->json(array("status" => "success"), 200);
+    return $app->json([], 200);
+    //header("Status: 200"); die();
 });
+
+
+/*$app->post('/users/current/records/{id}', function (Request $request) use ($app) 
+{  
+    global $USER;
+    if(!$USER->IsAuthorized())
+    {
+        return $app->json(["message" => "User is not authorized."], 401);
+    }
+    
+    $record_id = intval($request->request->get('id'));
+    $progressInSeconds = intval($request->request->get('progressInSeconds'));
+    $progressPosition = intval($request->request->get('progressPosition'));
+    if($USER->IsAuthorized() && $record_id>0)
+    {
+        $arFields = array(
+            "UF_PROGRESS_SECS" => $progressInSeconds,
+            "UF_PROGRESS_PERS" => $progressPosition
+        );
+        
+        if($progressPosition>75)
+            $arFields["UF_WATCHED"] = 1;
+        
+        \Hawkart\Megatv\RecordTable::update($record_id, $arFields);    
+    }
+    
+    return $app->json(array("status" => "success"), 200);
+});*/
 
 $app->get('/users/current/records/{id}', function (Silex\Application $app, $id)
 {
@@ -709,6 +742,48 @@ $app->get('/users/current/records/{id}', function (Silex\Application $app, $id)
     }else{
         return $app->json($arResult["items"][0], 200);
     }
+});
+
+$app->get('/users/current/records/{id}/similar', function (Silex\Application $app, Request $request, $id)
+{
+    global $USER;
+    
+    $arParams = $request->query->get('filter');
+    
+    if(!empty($arParams) && !is_array($arParams))
+    {
+        $arParams = json_decode($arParams, true);
+    }
+    
+    $arResult = \Hawkart\Megatv\RecordTable::getListByUser(array(
+        "limit" => 1,
+        "offset" => 0,
+        "id" => $id
+    ));
+    
+    $prog_id = $arResult["items"][0]["prog_id"];
+    
+    /**
+     * Navigation
+     */
+    $page = 1;
+    $countPerPage = 6;
+    if(!empty($arParams["page"]))
+    {
+        $page = intval($arParams["page"]);
+    }
+    if(!empty($arParams["num"]))
+    {
+        $countPerPage = intval($arParams["num"]);
+    }
+    $offset = ($page-1)*$countPerPage;
+    
+    $arResult = \Hawkart\Megatv\ScheduleTable::getSimilarByProgId($prog_id, array(
+        "limit" => $countPerPage,
+        "offset" => $offset
+    ));
+    
+    return $app->json($arResult, 200);
 });
 
 $app->delete('/users/current/records/{id}', function (Silex\Application $app, $id)
@@ -754,7 +829,7 @@ $app->delete('/users/current/records/{id}', function (Silex\Application $app, $i
     }
 });
 
-$app->put('/users/current/records/{id}', function (Silex\Application $app, $id)
+$app->put('/users/current/records/{id}', function (Request $request, Silex\Application $app, $id)
 {
     global $USER;
     if(!$USER->IsAuthorized())
@@ -773,28 +848,30 @@ $app->put('/users/current/records/{id}', function (Silex\Application $app, $id)
         return $app->json(["message" => "Record does not exist."], 404);
     }else{
         
-        $status = $request->request->get('status');
+        $position = intval($request->request->get('position'));
+        $arFields = array();
         
-        if($status==0)
+        if($position>0 && intval($arResult["items"][0]["duration"])>0)
         {
-            $delete = 1;
-        }else{
-            $delete = 0;
+            $arFields["UF_PROGRESS_PERS"] = $position;
+        
+            if($position/$arResult["items"][0]["duration"]*100>75)
+            {
+                $arFields["UF_WATCHED"] = 1;
+            }else{
+                $arFields["UF_WATCHED"] = 0;
+            } 
         }
         
-        \Hawkart\Megatv\RecordTable::update($id, array(
-            "UF_DELETED" => $delete
-        ));
+        if(count($arFields)>0)
+        {
+            \Hawkart\Megatv\RecordTable::update($id, $arFields);
+        }
         
+        //return $app->json(array("status" => "success"), 200);
+        return $app->json([], 200);
     }
 });
-
-/*
-$app->patch('/users/current/records/{id}', function (Silex\Application $app, $id)
-{
-    // ...
-});
-*/
 
 $app->get('/users/current/transactions', function (Request $request) use ($app) 
 {
@@ -1154,6 +1231,12 @@ $app->get('/channels/{id}/casts', function (Request $request, Silex\Application 
             $arResult["items"][] = array($arProg["CLASS"] => $_arRecord);
         }
     }
+    
+    
+    $arGeo = \Hawkart\Megatv\CityTable::getGeoCity();
+    $city_id = $arGeo["ID"];
+    
+    $arResult["city_id"] = $city_id;
         
     return $app->json($arResult, 200);
 });
@@ -1188,6 +1271,116 @@ $app->get('/casts/{id}/similar', function (Silex\Application $app, Request $requ
         "limit" => $countPerPage,
         "offset" => $offset
     ));
+    
+    return $app->json($arResult, 200);
+});
+
+$app->get('/casts/search', function (Silex\Application $app, Request $request)
+{
+    global $USER;
+    $arResult = array();
+    
+    //Query
+    $query = $request->query->get('query');
+    $query = htmlspecialcharsbx(urldecode($query));
+    if(strlen($query)==0)
+        return $app->json(["message" => "Empty query string."], 404);
+    
+    /**
+     * Navigation
+     */
+    $arParams = $request->query->get('filter');
+    if(!empty($arParams) && !is_array($arParams))
+    {
+        $arParams = json_decode($arParams, true);
+    }
+    $page = 1;
+    $countPerPage = 6;
+    if(!empty($arParams["page"]))
+    {
+        $page = intval($arParams["page"]);
+    }
+    if(!empty($arParams["num"]))
+    {
+        $countPerPage = intval($arParams["num"]);
+    }
+    $offset = ($page-1)*$countPerPage;
+    
+    $dateStart = date("Y-m-d H:00:00");
+    $arFilter = array(
+        "=UF_PROG.UF_ACTIVE" => 1,
+        ">=UF_DATE_START" => new \Bitrix\Main\Type\DateTime($dateStart, 'Y-m-d H:i:s'),
+        '%UF_PROG.UF_TITLE' => strtolower($query)
+    );
+    if($USER->IsAuthorized())
+    { 
+        $arFilter["=UF_CHANNEL_ID"] = \Hawkart\Megatv\ChannelTable::getActiveIdByCityByUser();
+    }else{
+        $arFilter["=UF_CHANNEL_ID"] = \Hawkart\Megatv\ChannelTable::getActiveIdByCity();
+    }
+    $arSelect = array(
+        "ID", "UF_CODE", "UF_DATE_START", "UF_TITLE" => "UF_PROG.UF_TITLE", "UF_PROG_ID",
+        "UF_SUB_TITLE" => "UF_PROG.UF_SUB_TITLE", "UF_IMG_PATH" => "UF_PROG.UF_IMG.UF_PATH",
+        "UF_CHANNEL_CODE" => "UF_CHANNEL.UF_BASE.UF_CODE", "UF_ID" => "UF_PROG.UF_EPG_ID",
+        "UF_PROG_CODE" => "UF_PROG.UF_CODE"
+    );
+    
+    $obCache = new \CPHPCache;
+    if( $obCache->InitCache(3600*3, serialize($arFilter).serialize($arSelect).$countPerPage."-".$offset, "/search-ajax/"))
+    {
+    	$arResult = $obCache->GetVars();
+    }
+    elseif($obCache->StartDataCache())
+    {
+        $arExclude = array();
+        $result = \Hawkart\Megatv\ScheduleTable::getList(array(
+            'filter' => $arFilter,
+            'select' => $arSelect,
+            'limit' => $countPerPage,
+            'offset' => $offset,
+            'order' => array("UF_PROG.UF_RATING" => "DESC"),
+        ));
+        while ($arSchedule = $result->fetch())
+        {
+            /*if(in_array($arSchedule["UF_ID"], $arExclude))
+            {
+                continue;
+            }else{
+                $arExclude[] = $arSchedule["UF_ID"];
+            }*/
+            
+            $arSchedule["UF_DATE_START"] = $arSchedule["DATE_START"] = $arSchedule['UF_DATE_START']->toString();
+            
+            $arJson = array();
+            $arJson["date"] = substr($arSchedule["UF_DATE_START"], 11, 5)." | ".substr($arSchedule["UF_DATE_START"], 0, 10);
+            $arJson["title"] = $arSchedule["UF_TITLE"];
+            if($arSchedule["UF_IMG_PATH"])
+            {
+                $src = \Hawkart\Megatv\CFile::getCropedPath($arSchedule["UF_IMG_PATH"], array(300, 300));
+                //$renderImage = CFile::ResizeImageGet($src, Array("width"=>60, "height"=>60));
+                $arJson["thumbnail"] = $src;
+            }
+            else
+            {
+                $arJson["thumbnail"] = "null";
+            }
+                
+            $arJson["id"] = $arSchedule["ID"];
+            //$arJson["tokens"] = array();
+            $arJson["prog_id"] = $arSchedule["UF_PROG_ID"];
+            $arJson["link"] = "/channels/".$arSchedule["UF_CHANNEL_CODE"]."/".$arSchedule["UF_PROG_CODE"]."/?event=".$arSchedule["ID"];
+            $arResult["items"][] = $arJson;
+        }
+        
+        $maxRecord = \Hawkart\Megatv\ScheduleTable::getList([
+           'select' => [new \Bitrix\Main\Entity\ExpressionField('CNT', 'COUNT(*)')],
+           'filter' => $arFilter,
+        ])->fetch()['CNT'];
+        
+        $arResult["pageNum"] = ceil($maxRecord/$countPerPage);
+        
+        $obCache->EndDataCache($arResult);
+    }
     
     return $app->json($arResult, 200);
 });
@@ -1316,105 +1509,8 @@ $app->get('/casts/{id}', function (Silex\Application $app, $id)
 $app->get('/progs/{id}', function (Silex\Application $app, $id)
 {
     global $USER;
-    $arResult = array();
-    $arFilter = array("=ID" => $id);
-    $arSelect = array(
-        "ID", "UF_TITLE", "UF_SUB_TITLE", "UF_IMG_PATH" => "UF_IMG.UF_PATH",
-        "UF_RATING", "UF_DESC", "UF_SUB_DESC", "UF_GANRE", "UF_YEAR_LIMIT", "UF_COUNTRY",
-        "UF_YEAR", "UF_DIRECTOR", "UF_PRESENTER", "UF_ACTOR", "UF_CATEGORY"
-    );
-    $obCache = new \CPHPCache;
-    if( $obCache->InitCache(86400, serialize($arFilter).serialize($arSelect), "/prog-detail/"))
-    {
-    	$arProg = $obCache->GetVars();
-    }
-    elseif($obCache->StartDataCache())
-    {
-        $result = \Hawkart\Megatv\ProgTable::getList(array(
-            'filter' => $arFilter,
-            'select' => $arSelect,
-            'limit' => 1
-        ));
-        if ($arProg = $result->fetch())
-        {
-            $arProg["UF_PROG_ID"] = $arProg["ID"];
-            $arProg["PICTURE"]["SRC"] = \Hawkart\Megatv\CFile::getCropedPath($arProg["UF_IMG_PATH"], array(600, 600));
-            $arProg["KEYWORDS"] = array($arProg["UF_CATEGORY"], $arProg["UF_GANRE"]);
-        }
-        unset($arProg["ID"]);
-        $obCache->EndDataCache($arProg);  
-    }
     
-    if(!empty($arProg))
-        $arResult = array_merge($arResult, $arProg);
-    
-    $arDate = \CTimeEx::getDateTimeFilter($arParams["DATETIME"]["SERVER_DATETIME"]);
-    $dateStart = date("Y-m-d H:i:s");
-    $arFilter = array(
-        "=UF_PROG_ID" => $id,
-        ">=UF_DATE_START" => new \Bitrix\Main\Type\DateTime($dateStart, 'Y-m-d H:i:s'),
-    );
-    $arSelect = array(
-        "ID", "UF_DATE_START", "UF_DATE_END", "UF_DATE", "UF_CHANNEL_ID", "UF_ICON" => "UF_CHANNEL.UF_BASE.UF_ICON",
-    );
-    $obCache = new \CPHPCache;
-    if( $obCache->InitCache(86400, serialize($arFilter).serialize($arSelect), "/shedule-detail/"))
-    {
-    	$arResult = $obCache->GetVars();
-    }
-    elseif($obCache->StartDataCache())
-    {
-        //get channel by code
-        $result = \Hawkart\Megatv\ScheduleTable::getList(array(
-            'filter' => $arFilter,
-            'select' => $arSelect,
-            'limit' => 1
-        ));
-        if ($arShedule = $result->fetch())
-        {
-            $arResult["ID"] = $arShedule["ID"];
-            $arResult["UF_ICON"] = $arShedule["UF_ICON"];
-            $arResult["UF_CHANNEL_ID"] = $arShedule["UF_CHANNEL_ID"];
-            $arResult["UF_DATE_START"] = $arResult["DATE_START"] = \CTimeEx::dateOffset($arShedule['UF_DATE_START']->toString());
-            $arResult["UF_DATE_END"] = $arResult["DATE_END"] = \CTimeEx::dateOffset($arShedule['UF_DATE_END']->toString());
-            $arResult["UF_DATE"] = $arResult["DATE"] = substr($arShedule["DATE_START"], 0, 10);
-            $sec = strtotime($arResult["DATE_END"]) - strtotime($arResult["DATE_START"]);
-            $arResult["DURATION"] = \CTimeEx::secToStr($sec);
-        }
-        $obCache->EndDataCache($arResult); 
-    }
-    
-    if(empty($arResult["DATE_START"]))
-    {
-        $arResult["IS_OLD"] = true;
-    }else{
-        $arResult["IS_OLD"] = false;
-    }
-    
-    foreach(array("UF_DIRECTOR", "UF_PRESENTER", "UF_ACTOR") as $type)
-    {
-        $_arResult[$type] = array();
-        $arPeoples = explode(",", $arResult[$type]);
-    
-        foreach($arPeoples as $actor)
-        {
-            $actor = trim($actor);
-            if(!empty($actor))
-            {
-                $link = \Hawkart\Megatv\PeopleTable::getKinopoiskLinkByName($actor);
-                $link = str_replace("//name", "/name", $link);
-                if(empty($link)) $link = "#";
-                $_arResult[$type][] = array(
-                    "NAME" => $actor,
-                    "LINK" => $link
-                );
-            }
-        }
-        $arResult[$type] = $_arResult[$type];
-        unset($_arResult[$type]);
-    }
-    
-    $arResult["prog_id"] = $arResult["PROG_ID"] = $arResult["UF_PROG_ID"];
+    $arResult = \Hawkart\Megatv\ProgTable::detailForRest($id);
     
     return json_encode($arResult);
 });
@@ -1449,82 +1545,6 @@ $app->get('/progs/{id}/similar', function (Silex\Application $app, Request $requ
         "limit" => $countPerPage,
         "offset" => $offset
     ));
-    
-    return $app->json($arResult, 200);
-});
-
-$app->get('/casts/search/{query}', function (Silex\Application $app, $query)
-{
-    global $USER;
-    $arResult = array();
-    
-    $query = htmlspecialcharsbx(urldecode($query));
-    
-    if(strlen($query)==0)
-        return $app->json(["message" => "Empty query string."], 404);
-    
-    $dateStart = date("Y-m-d H:00:00");
-    $arFilter = array(
-        "=UF_PROG.UF_ACTIVE" => 1,
-        ">=UF_DATE_START" => new \Bitrix\Main\Type\DateTime($dateStart, 'Y-m-d H:i:s'),
-        '%UF_PROG.UF_TITLE' => strtolower($query)
-    );
-    if($USER->IsAuthorized())
-    { 
-        $arFilter["=UF_CHANNEL_ID"] = \Hawkart\Megatv\ChannelTable::getActiveIdByCityByUser();
-    }else{
-        $arFilter["=UF_CHANNEL_ID"] = \Hawkart\Megatv\ChannelTable::getActiveIdByCity();
-    }
-    $arSelect = array(
-        "ID", "UF_CODE", "UF_DATE_START", "UF_TITLE" => "UF_PROG.UF_TITLE",
-        "UF_SUB_TITLE" => "UF_PROG.UF_SUB_TITLE", "UF_IMG_PATH" => "UF_PROG.UF_IMG.UF_PATH",
-        "UF_CHANNEL_CODE" => "UF_CHANNEL.UF_BASE.UF_CODE", "UF_ID" => "UF_PROG.UF_EPG_ID", "UF_PROG_CODE" => "UF_PROG.UF_CODE"
-    );
-    
-    $obCache = new \CPHPCache;
-    if( $obCache->InitCache(3600, serialize($arFilter).serialize($arSelect), "/search-ajax/"))
-    {
-    	$arResult = $obCache->GetVars();
-    }
-    elseif($obCache->StartDataCache())
-    {
-        $arExclude = array();
-        $result = \Hawkart\Megatv\ScheduleTable::getList(array(
-            'filter' => $arFilter,
-            'select' => $arSelect,
-            'order' => array("UF_PROG.UF_RATING" => "DESC"),
-        ));
-        while ($arSchedule = $result->fetch())
-        {
-            if(in_array($arSchedule["UF_ID"], $arExclude))
-            {
-                continue;
-            }else{
-                $arExclude[] = $arSchedule["UF_ID"];
-            }
-            
-            $arSchedule["UF_DATE_START"] = $arSchedule["DATE_START"] = $arSchedule['UF_DATE_START']->toString();
-            
-            $arJson = array();
-            $arJson["date"] = substr($arSchedule["UF_DATE_START"], 11, 5)." | ".substr($arSchedule["UF_DATE_START"], 0, 10);
-            $arJson["title"] = $arSchedule["UF_TITLE"];
-            if($arSchedule["UF_IMG_PATH"])
-            {
-                $src = \Hawkart\Megatv\CFile::getCropedPath($arSchedule["UF_IMG_PATH"], array(300, 300));
-                //$renderImage = CFile::ResizeImageGet($src, Array("width"=>60, "height"=>60));
-                $arJson["thumbnail"] = $src;
-            }
-            else
-            {
-                $arJson["thumbnail"] = "null";
-            }
-                
-            $arJson["tokens"] = array();
-            $arJson["link"] = "/channels/".$arSchedule["UF_CHANNEL_CODE"]."/".$arSchedule["UF_PROG_CODE"]."/?event=".$arSchedule["ID"];
-            $arResult[] = $arJson;
-        }
-        $obCache->EndDataCache($arResult);
-    }
     
     return $app->json($arResult, 200);
 });
@@ -1654,6 +1674,7 @@ $app->post('/cities', function (Request $request) use ($app)
 {  
     $city_id = intval($request->request->get('city_id'));
     \Hawkart\Megatv\CityTable::setGeoCity($city_id);
+    \Hawkart\Megatv\GuestTable::setCity($city_id);
     return $app->json(["status" => "success"], 200);
 });
 
@@ -1685,8 +1706,10 @@ $app->get('/timetable/state', function (Request $request) use ($app)
     }
     
     $cell_id = $arParams["id"];
-    
+    session_start();
+    $guest_id = $_SESSION["SESS_IP"];
     session_write_close();
+    
     $arDatetime = \CTimeEx::getDatetime();
     $currentDateTime = date("Y-m-d H:i:s", strtotime($arDatetime["SERVER_DATETIME_WITH_OFFSET"]));
     $current_cell_id = \Hawkart\Megatv\ScheduleCell::makeFiveMinutes($currentDateTime);
@@ -1701,8 +1724,10 @@ $app->get('/timetable/state', function (Request $request) use ($app)
         {
             return $app->json(array("id" => $current_cell_id), 200);
         }else{
+
+            $city_id = $current_city_id = \Hawkart\Megatv\GuestTable::getCity($guest_id);
             
-            while($cell_id==$current_cell_id)
+            while($cell_id==$current_cell_id && $city_id==$current_city_id)
             {
                 sleep(2);
                 clearstatcache();
@@ -1710,9 +1735,10 @@ $app->get('/timetable/state', function (Request $request) use ($app)
                 $currentDateTime = date("Y-m-d H:i:s", strtotime($arDatetime["SERVER_DATETIME_WITH_OFFSET"]));
                 $current_cell_id = \Hawkart\Megatv\ScheduleCell::makeFiveMinutes($currentDateTime);
                 $current_cell_id = strtotime($current_cell_id);
+                $current_city_id = \Hawkart\Megatv\GuestTable::getCity($guest_id);
             }
             
-            return $app->json(array("id" => $current_cell_id), 200);
+            return $app->json(array("id" => $current_cell_id/*, "city_id" => $current_city_id, "g" => $guest_id*/), 200);
         }
     }
 });

@@ -13,7 +13,7 @@ echo date("H:i:s")."\r\n";
 $rsUsers = CUser::GetList(($by="id"), ($order="asc"), Array("ACTIVE" => "Y"), array("FIELDS"=>array("ID")));
 while($arUser = $rsUsers->GetNext())
 {
-    \Hawkart\Megatv\SerialTable::subscribeForUsers($arUser["ID"]);
+    //\Hawkart\Megatv\SerialTable::subscribeForUsers($arUser["ID"]);
 }
 echo date("H:i:s")."\r\n";
 die();

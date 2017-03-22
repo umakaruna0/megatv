@@ -50,6 +50,7 @@ IncludeTemplateLangFile(__FILE__);
         
         </script>
         <!-- Google Analytics -->
+        <script src='https://www.google.com/recaptcha/api.js'></script>
 	</head>
 	<body
         <?if($APPLICATION->GetCurDir()=="/personal/records/"):?> class="page-records"<?endif;?>

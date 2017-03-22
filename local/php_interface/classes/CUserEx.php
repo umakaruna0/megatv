@@ -302,7 +302,6 @@ class CUserEx
     
     public static function signup($request)
     {
-        //CComponentUtil::__IncludeLang("/local/templates/megatv/components/bitrix/system.auth.registration/.default/ajax.php");
         CComponentUtil::__IncludeLang("/local/templates/megatv/components/bitrix/system.auth.registration/.default", "ajax.php", "ru");
         
         global $USER;
@@ -314,14 +313,9 @@ class CUserEx
         $result['message'] = '';
         $result['errors'] = array();
         
-        /*if (!check_bitrix_sessid()) 
-        {
-            $result['errors']["login"] = GetMessage('AUTH_ERROR_SESSION_EXPIRED');
-        }*/
         
-        if(!$USER->IsAuthorized() && count($result['errors'])==0)
+        if(!$USER->IsAuthorized())
         {
-            //$EMAIL = htmlspecialcharsbx(strip_tags($request["login"]));
             $EMAIL = urldecode($request["login"]);
             $password = htmlspecialcharsbx($request["password"]);
             
@@ -335,11 +329,12 @@ class CUserEx
                 
                 if(\CDev::check_phone($phone))
                 {
-                    $rsUsers = \CUser::GetList(($by="EMAIL"), ($order="desc"), Array("PERSONAL_PHONE" =>$phone));
+                    $rsUsers = \CUser::GetList(($by="EMAIL"), ($order="desc"), Array("=PERSONAL_PHONE" =>$phone));
                     if($arUser = $rsUsers->GetNext())
                     {
                         if($arUser["ACTIVE"]=="N")
                         {
+                            $result['errors']["login"] = "Пользователь уже зарегистрирован, но не активирован";
                             return $result;
                         }
                         $result['errors']["login"] = GetMessage('AUTH_ERROR_PHONE_EXIST');
@@ -350,21 +345,41 @@ class CUserEx
                     {
                         if($arUser["ACTIVE"]!="Y")
                         {
+                            $result['errors']["login"] = "Пользователь уже зарегистрирован, но не активирован";
                             return $result;
                         }
                         $result['errors']["login"] = GetMessage('AUTH_ERROR_EMAIL_EXIST');
                     }
                 }
             }
-        
-            /*if($AGREE!="on")
-            {
-                $result['errors']["agree"] = GetMessage('AUTH_ERROR_AGREE');
-            }*/
             
             if(strlen($password)<6)
             {
                 $result['errors']["password"] = GetMessage('AUTH_ERROR_PASSWORD');
+            }
+            
+            if(count($result['errors'])>0)
+            {
+                return $result;
+            }
+            
+            //Check recaptcha
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL, "https://www.google.com/recaptcha/api/siteverify");
+            curl_setopt($ch, CURLOPT_HEADER, 0);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1); 
+            curl_setopt($ch, CURLOPT_POST, 1);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, [
+                'secret' => \COption::GetOptionString("grain.customsettings", "RECAPTCHA_SECRET"),
+                'response' => $request['g-recaptcha-response'],
+                'remoteip' => $_SERVER['REMOTE_ADDR']
+            ]);
+            $resp = json_decode(curl_exec($ch));
+            curl_close($ch);
+            
+            if (!$resp->success) 
+            {
+                $result['errors']["captcha"] = $resp->{'error-codes'};
             }
             
             if(count($result['errors'])==0)
@@ -385,8 +400,8 @@ class CUserEx
                 	"CONFIRM_PASSWORD"  	=> $password,
                 	"EMAIL"			        => $EMAIL,
                     "GROUP_ID"              => $arrGroups,
-                    "CHECKWORD"             => md5(CMain::GetServerUniqID().uniqid()),
-                    "CONFIRM_CODE"          => randString(8),
+                    //"CHECKWORD"             => md5(CMain::GetServerUniqID().uniqid()),
+                    //"CONFIRM_CODE"          => randString(8),
                     "USER_IP"               => $_SERVER["REMOTE_ADDR"],
                     "USER_HOST"             => @gethostbyaddr($_SERVER["REMOTE_ADDR"])
                 );
@@ -411,20 +426,19 @@ class CUserEx
                     
                     if(\CDev::check_phone($phone))
                     {
-                        $checkword = mb_substr(md5(uniqid(rand(),true)), 0, 8);
+                        /*$checkword = mb_substr(md5(uniqid(rand(),true)), 0, 8);
                         $cuser = new CUser;
                         $cuser->Update($USER_ID, array(
                             "UF_PHONE_CHECKWORD" => $checkword
                         ));
                         
                         $text = GetMessage('AUTH_ACTIVATE_CODE_TEXT').$checkword;
-                        \CEchogroupSmsru::Send($phone, $text);
+                        \CEchogroupSmsru::Send($phone, $text);*/
                         $result['message'] = "<font style='color:green'>".GetMessage('AUTH_REGISTER_SUCCESS_TEXT_1')."</font><br />";
                     }else{
                         
                         //$event->SendImmediate("NEW_USER_CONFIRM", SITE_ID, $arFields);
                         $result['message'] = "<font style='color:green'>".GetMessage('AUTH_REGISTER_SUCCESS_TEXT_2')."</font><br />";
-                    
                         self::capacityAdd($USER_ID, 1);   // за мэйл +1ГБ
                     }
                 }

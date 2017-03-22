@@ -9,6 +9,10 @@ header('Content-Type: text/html; charset=utf-8');
 ini_set('mbstring.func_overload', '2');
 ini_set('mbstring.internal_encoding', 'UTF-8');
 
+global $USER, $APPLICATION;
+if(!is_object($USER))
+    $USER = new CUser;
+
 //\Hawkart\Megatv\ProgTable::generateCodes(); die();
 
 echo $dstart = date("H:i:s")."\r\n";
@@ -40,22 +44,25 @@ $epg->importChannels(); //!!!
 $epg->importChannelCity();
 $epg->import();
 
-\CDev::deleteDirectory($_SERVER['DOCUMENT_ROOT'].'/bitrix/cache', 0);
+mail("hawkart@rambler.ru", "Tvguru epg import success: ".$dstart."-".$dfinish, "success");
+BXClearCache(true);
 
 \Hawkart\Megatv\ScheduleTable::connectByTitle();
 
-\CDev::deleteDirectory($_SERVER['DOCUMENT_ROOT'].'/bitrix/cache', 0);
+mail("hawkart@rambler.ru", "Tvguru epg import connectByTitle", "success");
+BXClearCache(true);
 
 \Hawkart\Megatv\ScheduleTable::slice(); 
-\CDev::deleteDirectory($_SERVER['DOCUMENT_ROOT'].'/bitrix/cache', 0);
+BXClearCache(true);
+
+mail("hawkart@rambler.ru", "Tvguru epg import slice", "success");
 
 \Hawkart\Megatv\ScheduleCell::clearOld($DOCUMENT_ROOT);
 \Hawkart\Megatv\ScheduleCell::generateForWeek($DOCUMENT_ROOT);
-
-\CDev::deleteDirectory($_SERVER['DOCUMENT_ROOT'].'/bitrix/cache', 0);
+BXClearCache(true);
 echo $dfinish = date("H:i:s")."\r\n";
 
-mail("hawkart@rambler.ru", "Tvguru epg import success: ".$dstart."-".$dfinish, "success");
+mail("hawkart@rambler.ru", "Tvguru epg import generateForWeek", "success");
 
 echo " --finish loading--";
 \Hawkart\Megatv\ProgTable::generateCodes();

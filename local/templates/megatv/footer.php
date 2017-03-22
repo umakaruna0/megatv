@@ -179,6 +179,5 @@
            }(document, 'script', 'facebook-jssdk'));
         </script>
         <!-- Facebook social -->
-
 	</body>
 </html>

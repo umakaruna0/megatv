@@ -11,8 +11,8 @@ class CSocialAuth
         $arrFilter = array(
             "IBLOCK_ID" => USER_SOCIAL_IB,
             "ACTIVE" => "Y",
-            "PROPERTY_SOCIAL_PROVIDER" => $providerName,
-            "PROPERTY_SOCIAL_ID" => $userProfile["identifier"]
+            "=PROPERTY_SOCIAL_PROVIDER" => $providerName,
+            "=PROPERTY_SOCIAL_ID" => $userProfile["identifier"]
         );
         $arSelect = array("PROPERTY_USER_ID");
         $rsRes = \CIBlockElement::GetList( $arOrder, $arrFilter, false, false, $arSelect );
@@ -49,24 +49,39 @@ class CSocialAuth
     public static function connectToUser($userID, $providerName, $userProfile)
     {
         CModule::IncludeModule("iblock");
-        $el = new \CIBlockElement;
         
-        $PROP = array();
-        $PROP["USER_ID"] = $userID;
-        $PROP["SOCIAL_PROVIDER"] = $providerName;
-        $PROP["SOCIAL_ID"] = $userProfile["identifier"];
         
-        $arLoadProductArray = Array(
-            "IBLOCK_SECTION_ID" => false,
-            "IBLOCK_ID"      => USER_SOCIAL_IB,
-            "PROPERTY_VALUES"=> $PROP,
-            "NAME"           => trim("Пользователь №".$userID),
-            "ACTIVE"         => "Y",
+        $arrFilter = array(
+            "IBLOCK_ID" => USER_SOCIAL_IB,
+            "ACTIVE" => "Y",
+            "=PROPERTY_SOCIAL_PROVIDER" => $providerName,
+            "=PROPERTY_SOCIAL_ID" => $userProfile["identifier"]
         );
-        
-        $el->Add($arLoadProductArray);
-        
-        \CUserEx::capacityAdd($userID, 1);
+        $arSelect = array("PROPERTY_USER_ID");
+        $rsRes = \CIBlockElement::GetList( $arOrder, $arrFilter, false, false, $arSelect );
+		if( $arItem = $rsRes->GetNext() )
+        {
+            $userID = intval($arItem["PROPERTY_USER_ID_VALUE"]);
+		}else{
+		  
+            $el = new \CIBlockElement;
+            $PROP = array();
+            $PROP["USER_ID"] = $userID;
+            $PROP["SOCIAL_PROVIDER"] = $providerName;
+            $PROP["SOCIAL_ID"] = $userProfile["identifier"];
+            
+            $arLoadProductArray = Array(
+                "IBLOCK_SECTION_ID" => false,
+                "IBLOCK_ID"      => USER_SOCIAL_IB,
+                "PROPERTY_VALUES"=> $PROP,
+                "NAME"           => trim("Пользователь №".$userID),
+                "ACTIVE"         => "Y",
+            );
+            
+            $el->Add($arLoadProductArray);
+            
+            \CUserEx::capacityAdd($userID, 1);
+        }
     }
     
     public static function createUser($providerName, $userProfile)

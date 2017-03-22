@@ -313,6 +313,109 @@ class ProgTable extends Entity\DataManager
         return $arCats;
     }
     
+    public static function detailForRest($id)
+    {
+        $arResult = array();
+        $arFilter = array("=ID" => $id);
+        $arSelect = array(
+            "ID", "UF_TITLE", "UF_SUB_TITLE", "UF_IMG_PATH" => "UF_IMG.UF_PATH",
+            "UF_RATING", "UF_DESC", "UF_SUB_DESC", "UF_GANRE", "UF_YEAR_LIMIT", "UF_COUNTRY",
+            "UF_YEAR", "UF_DIRECTOR", "UF_PRESENTER", "UF_ACTOR", "UF_CATEGORY"
+        );
+        $obCache = new \CPHPCache;
+        if( $obCache->InitCache(86400, serialize($arFilter).serialize($arSelect), "/prog-detail/"))
+        {
+        	$arProg = $obCache->GetVars();
+        }
+        elseif($obCache->StartDataCache())
+        {
+            $result = \Hawkart\Megatv\ProgTable::getList(array(
+                'filter' => $arFilter,
+                'select' => $arSelect,
+                'limit' => 1
+            ));
+            if ($arProg = $result->fetch())
+            {
+                $arProg["UF_PROG_ID"] = $arProg["ID"];
+                $arProg["PICTURE"]["SRC"] = \Hawkart\Megatv\CFile::getCropedPath($arProg["UF_IMG_PATH"], array(600, 600));
+                $arProg["KEYWORDS"] = array($arProg["UF_CATEGORY"], $arProg["UF_GANRE"]);
+            }
+            unset($arProg["ID"]);
+            $obCache->EndDataCache($arProg);  
+        }
+        
+        if(!empty($arProg))
+            $arResult = array_merge($arResult, $arProg);
+        
+        $arDate = \CTimeEx::getDateTimeFilter($arParams["DATETIME"]["SERVER_DATETIME"]);
+        $dateStart = date("Y-m-d H:i:s");
+        $arFilter = array(
+            "=UF_PROG_ID" => $id,
+            ">=UF_DATE_START" => new \Bitrix\Main\Type\DateTime($dateStart, 'Y-m-d H:i:s'),
+        );
+        $arSelect = array(
+            "ID", "UF_DATE_START", "UF_DATE_END", "UF_DATE", "UF_CHANNEL_ID", "UF_ICON" => "UF_CHANNEL.UF_BASE.UF_ICON",
+        );
+        $obCache = new \CPHPCache;
+        if( $obCache->InitCache(86400, serialize($arFilter).serialize($arSelect), "/shedule-detail/"))
+        {
+        	$arResult = $obCache->GetVars();
+        }
+        elseif($obCache->StartDataCache())
+        {
+            //get channel by code
+            $result = \Hawkart\Megatv\ScheduleTable::getList(array(
+                'filter' => $arFilter,
+                'select' => $arSelect,
+                'limit' => 1
+            ));
+            if ($arShedule = $result->fetch())
+            {
+                $arResult["ID"] = $arShedule["ID"];
+                $arResult["UF_ICON"] = $arShedule["UF_ICON"];
+                $arResult["UF_CHANNEL_ID"] = $arShedule["UF_CHANNEL_ID"];
+                $arResult["UF_DATE_START"] = $arResult["DATE_START"] = \CTimeEx::dateOffset($arShedule['UF_DATE_START']->toString());
+                $arResult["UF_DATE_END"] = $arResult["DATE_END"] = \CTimeEx::dateOffset($arShedule['UF_DATE_END']->toString());
+                $arResult["UF_DATE"] = $arResult["DATE"] = substr($arShedule["DATE_START"], 0, 10);
+                $sec = strtotime($arResult["DATE_END"]) - strtotime($arResult["DATE_START"]);
+                $arResult["DURATION"] = \CTimeEx::secToStr($sec);
+            }
+            $obCache->EndDataCache($arResult); 
+        }
+        
+        if(empty($arResult["DATE_START"]))
+        {
+            $arResult["IS_OLD"] = true;
+        }else{
+            $arResult["IS_OLD"] = false;
+        }
+        
+        foreach(array("UF_DIRECTOR", "UF_PRESENTER", "UF_ACTOR") as $type)
+        {
+            $_arResult[$type] = array();
+            $arPeoples = explode(",", $arResult[$type]);
+        
+            foreach($arPeoples as $actor)
+            {
+                $actor = trim($actor);
+                if(!empty($actor))
+                {
+                    $link = \Hawkart\Megatv\PeopleTable::getKinopoiskLinkByName($actor);
+                    $link = str_replace("//name", "/name", $link);
+                    if(empty($link)) $link = "#";
+                    $_arResult[$type][] = array(
+                        "NAME" => $actor,
+                        "LINK" => $link
+                    );
+                }
+            }
+            $arResult[$type] = $_arResult[$type];
+            unset($_arResult[$type]);
+        }
+        
+        return $arResult;
+    }
+    
     /**
      * Clear table
      */
@@ -321,5 +424,35 @@ class ProgTable extends Entity\DataManager
         global $DB;
         $DB->Query("DELETE FROM ".self::getTableName(), false);
         $DB->Query("ALTER TABLE ".self::getTableName()." AUTO_INCREMENT=1", false);
+    }
+    
+    
+    /**
+     * Delete empty images, bugfix
+     */
+    public static function updateOriginPicsEmpty()
+    {
+        $arFilter = [];
+        $arSelect = [
+            "ID", "IMG" => "UF_IMG.UF_PATH", "UF_IMG_ID"
+        ];
+        $result = self::getList(array(
+            'filter' => $arFilter,
+            'select' => $arSelect,
+        ));
+        while ($arProg = $result->fetch())
+        {
+            if(filesize($_SERVER["DOCUMENT_ROOT"].$arProg["IMG"])==0)
+            {
+                echo $_SERVER["DOCUMENT_ROOT"].$arProg["IMG"]."<br />";
+                echo $arProg["UF_IMG_ID"]."<br />";
+                
+                ImageTable::delete($arProg["UF_IMG_ID"]);
+                
+                self::update($arProg["ID"], array(
+                    "UF_IMG_ID" => 0
+                ));
+            }
+        }
     }
 }

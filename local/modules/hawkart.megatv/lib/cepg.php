@@ -835,6 +835,22 @@ class CEpg
             $epg_parts[] = $row["UF_EPG_ID"];
         }
         
+        /*
+        foreach($this->href_channels as $channel_epg_id => $xml_urls)
+        {
+            $arScheduleIdsNotDelete = array();
+            $arChannel = $arChannels[$channel_epg_id];
+            $active = intval($arBaseChannels[$arChannel["UF_BASE_EPG_ID"]]["UF_ACTIVE"]);
+            
+            if(intval($arChannel["ID"])<=0 || empty($arChannel["ID"])  || $active!=1 || empty($channel_epg_id))
+                continue;
+            
+            print_r($arChannel);
+            print_r($xml_urls);
+        }
+        die();
+        */
+        
         foreach($this->href_channels as $channel_epg_id => $xml_urls)
         {
             $arScheduleIdsNotDelete = array();

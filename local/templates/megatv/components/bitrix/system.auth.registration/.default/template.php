@@ -1,6 +1,5 @@
 <?if(!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED!==true)die();
 ?>
-
 <div class="standart-form" data-module="signup-overlay">
 	<h3 class="form-title standart-form__form-title"><?=GetMessage('AUTH_REGISTER')?></h3>
     <?require($_SERVER["DOCUMENT_ROOT"].SITE_TEMPLATE_PATH."/include/social-auth.php");?>

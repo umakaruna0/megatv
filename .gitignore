@@ -30,6 +30,7 @@ web.config
 *.tar.gz
 /local/*.xml
 /local/*.json
+/local/data/statistic/*.json
 __*
 syslog
 

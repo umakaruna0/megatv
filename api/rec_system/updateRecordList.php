@@ -22,7 +22,9 @@ $arJson = json_decode($post, true);
 foreach($arJson as $json)
 {
     if(!empty($json["ID"]) && !empty($json["LINK"]))
+    {
         $DB->Query("UPDATE ".$table." SET UF_URL='".$json["LINK"]."' WHERE UF_EPG_ID=".$json["ID"], false);
+    } 
 }
 
 echo json_encode(array("result" => "true"));

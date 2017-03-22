@@ -171,6 +171,7 @@ class CityTable extends Entity\DataManager
             $_SESSION["USER_GEO"]["COUNTRY_ISO"] = "RU"; 
         
         $currentGeo = $_SESSION["USER_GEO"];
+        GuestTable::setCity($currentGeo["ID"]);
         
         return $_SESSION["USER_GEO"];
     }
@@ -195,6 +196,7 @@ class CityTable extends Entity\DataManager
         }
         
         $currentGeo = $_SESSION["USER_GEO"];
+        //GuestTable::setCity($currentGeo["ID"]);
         
         return $_SESSION["USER_GEO"];
     }
