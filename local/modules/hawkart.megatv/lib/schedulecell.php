@@ -190,7 +190,6 @@ class ScheduleCell
                     
                     if($maxPointer<$key)
                        $maxPointer = $key;
-                    
                 }
                 
                 $key++;
@@ -285,6 +284,16 @@ class ScheduleCell
                     $keysResult = self::putArrayIntoQuantityNew($leftArray, $maxLeft);
                     $arKeys[$channel_id]+= $keysResult;
                 }
+            }else{
+                if($maxLeft>0)
+                {
+                    if($maxLeft==1)
+                    {
+                        $arKeys[$channel_id][$progPointer] = "double";
+                    }else{
+                        $arKeys[$channel_id][$progPointer] = $maxLeft+1;
+                    }
+                }
             }
             
             if($progsNumber>$progPointer)
@@ -303,7 +312,14 @@ class ScheduleCell
                 }
             }else{
                 if($maxRight>0)
-                    $arKeys[$channel_id][$progPointer] = $maxRight;
+                {
+                    if($maxRight==1)
+                    {
+                        $arKeys[$channel_id][$progPointer] = "double";
+                    }else{
+                        $arKeys[$channel_id][$progPointer] = $maxRight+1;
+                    }
+                }
             }
 
             //check generated cell for channel
@@ -311,15 +327,19 @@ class ScheduleCell
             
             //if(count($arKeys[$channel_id])!=$progsNumber)
             echo $channel_id."\r\n";
+            //print_r($arKeys[$channel_id]);
             if($count!=$totalColsNumber)
             {
                 echo $channel_id."\r\n";
+                echo "maxpointer=".$maxPointer."\r\n";
                 print_r($arKeys[$channel_id]);
                 echo $count."  ".$totalColsNumber."\r\n";
                 echo "number=".$progsNumber."\r\n";
                 echo "pointer=".$progPointer."\r\n";
                 echo "maxleft=".$maxLeft."\r\n";
                 echo "maxright=".$maxRight."\r\n";
+                print_r($rightArray);
+                print_r($keysResult2);
                 /*echo "left=\r\n";
                 \CDev::pre($leftArray);
                 \CDev::pre($keysResult);
@@ -354,7 +374,7 @@ class ScheduleCell
         }else{
             if($numCols > $count*2)
             {
-                $c = ceil($numCols/$count);
+                /*$c = ceil($numCols/$count);
                 $arParts[$c] = $count-1;
                 
                 $diff = $numCols - ($count-1) * $c;
@@ -366,7 +386,8 @@ class ScheduleCell
                     $arParts["DOUBLE"] = 1;
                 }elseif($diff>0){
                     $arParts[$diff] = 1;
-                }
+                }*/
+                $arParts = self::splitNumber($count, $numCols);
             }else{
                 $double = $numCols - $count;
                 $arParts["DOUBLE"] = $double;
@@ -412,6 +433,36 @@ class ScheduleCell
         
         unset($arParts);
         return $keysResult;
+    }
+    
+    public static function splitNumber($cols, $total)
+    {
+        $array = range(1, $total);
+        $min   = floor($total / $cols);  //  минимальное количество элементов в столбце
+        $extra = $total - $min * $cols;  //  "лишние" элементы
+        
+        $prevCol = 0;          //  количество элементов, которое уже распределено по колонкам
+        $colNums = array();
+        for($q = 0; $q < $cols; $q++)
+        {
+            //  если еще есть лишние элементы, то добавляем один из них к текущей колонке
+            $colNum = $extra-- > 0 ? $min + 1 : $min;
+            $colNums[$colNum]++;
+        }
+        
+        if(intval($colNums[1])>0)
+        {
+            $colNums["ONE"] = intval($colNums[1]);
+            unset($colNums[1]);
+        }
+        
+        if(intval($colNums[2])>0)
+        {
+            $colNums["DOUBLE"] = intval($colNums[2]);
+            unset($colNums[2]);
+        }
+        
+        return $colNums;
     }
 
     public static function countByClasses($keysResult)

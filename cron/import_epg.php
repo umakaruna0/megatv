@@ -32,7 +32,7 @@ while ($row = $result->fetch())
 }
 */
 
-mail("hawkart@rambler.ru", "Tvguru epg import success: ".$dstart, "start of import");
+mail("hawkart@rambler.ru", "Tvguru epg import started at ".$dstart, "start of import");
 
 //Удаляем старые файлы лога
 $path = $_SERVER['DOCUMENT_ROOT'].'/logs/sotal/';
@@ -44,8 +44,11 @@ $epg->importChannels(); //!!!
 $epg->importChannelCity();
 $epg->import();
 
-mail("hawkart@rambler.ru", "Tvguru epg import success: ".$dstart."-".$dfinish, "success");
+echo $dfinish = date("H:i:s")."\r\n";
+mail("hawkart@rambler.ru", "Tvguru epg import finished at ".$dstart."-".$dfinish, "success");
 BXClearCache(true);
+
+//die();
 
 \Hawkart\Megatv\ScheduleTable::connectByTitle();
 

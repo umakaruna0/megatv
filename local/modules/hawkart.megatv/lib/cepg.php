@@ -74,7 +74,11 @@ class CEpg
             $attr = $_arChannel->attributes();
             $channel_epg_id = trim((string)$attr["id"]);
             
-            foreach($_arChannel->{'broadcast-city'}->city as $_arCity)
+            $city_xml_path = (string) $_arChannel->{'geo-data'};
+            $city_xml = simplexml_load_file($city_xml_path);
+            
+            //foreach($_arChannel->{'broadcast-city'}->city as $_arCity)
+            foreach($city_xml->channel->{'broadcast-city'}->city as $_arCity)
             {
                 $json = json_encode($_arCity);
                 $arCity = json_decode($json, TRUE);

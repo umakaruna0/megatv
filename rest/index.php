@@ -1,7 +1,7 @@
 <?php
 $DOCUMENT_ROOT = $_SERVER["DOCUMENT_ROOT"] = realpath(dirname(__FILE__) . '/../');
 ini_set('max_execution_time', 30);
-
+ini_set("session.cache_limiter", 0);
 define("NO_KEEP_STATISTIC", true);
 define("NOT_CHECK_PERMISSIONS", true);
 set_time_limit(0);
@@ -21,12 +21,14 @@ if (!is_object($USER))
   
 $app = new Silex\Application();
 $app['debug'] = false;
+$app->register(new Silex\Provider\HttpCacheServiceProvider(), array(
+    'http_cache.cache_dir' => __DIR__.'/cache/',
+));
 
 $app->before(function (Request $request) 
 {
     //loging
     $rq = \Symfony\Component\HttpFoundation\Request::createFromGlobals();
-    
     
     if (0 === strpos($request->headers->get('Content-Type'), 'application/json')) 
     {
@@ -34,7 +36,7 @@ $app->before(function (Request $request)
         $request->request->replace(is_array($data) ? $data : array());
     }
     
-    \CDev::log(array(
+    /*\CDev::log(array(
         'session' => $_SESSION,
         'cookie' => $rq->cookies->all(),
         'method' => $request->getPathInfo(),
@@ -42,7 +44,7 @@ $app->before(function (Request $request)
         'files' => $_FILES,
         'post' => $_POST,
         'data' => $request->getContent(),
-    ), false, "/rest/time_".date("Ymd").".txt");
+    ), false, "/rest/time_".date("Ymd").".txt");*/
 });
 
 $app->post('/login', function (Request $request) use ($app) 
@@ -1233,12 +1235,60 @@ $app->get('/channels/{id}/casts', function (Request $request, Silex\Application 
     }
     
     
-    $arGeo = \Hawkart\Megatv\CityTable::getGeoCity();
-    $city_id = $arGeo["ID"];
+    //$arGeo = \Hawkart\Megatv\CityTable::getGeoCity();
+    //$city_id = $arGeo["ID"];
+    //$arResult["city_id"] = $city_id;
     
-    $arResult["city_id"] = $city_id;
+    return new Response(
+        json_encode($arResult),
+        200,
+        ['Content-Type' => 'application/json', 'Cache-Control' => 's-maxage=3600, public']
+    );
+    //return $app->json($arResult, 200);
+});
+
+$app->get('/channels/{id}/casts_test', function (Request $request, Silex\Application $app, $id)
+{
+    global $USER;
+    
+    $arParams = $request->query->get('filter');
+    if(!empty($arParams) && !is_array($arParams))
+    {
+        $arParams = json_decode($arParams, true);
+    }
+    
+    $arRecordsStatuses = \Hawkart\Megatv\RecordTable::getListStatusesByUser();
+    
+    $curDate = $date = date("d.m.Y H:i:s");
+    if(!empty($arParams["date"]))
+    {
+        $date = $arParams["date"];
+    }
+    
+    $currentDateTime = date("Y-m-d H:i:s", strtotime($date));
+
+    $arResult = array();
+    $arResult["date"] = substr($currentDateTime, 0, 10);
+    $arScheduleList = \Hawkart\Megatv\ScheduleCell::getByChannelAndTime(intval($id), $currentDateTime);
+    
+    /*if($USER->IsAuthorized())
+    { 
+        $channel_ids = \Hawkart\Megatv\ChannelTable::getActiveIdByCityByUser();
+    }else{
+        $channel_ids = \Hawkart\Megatv\ChannelTable::getActiveIdByCity();
+    }
+    if(!in_array($id, $channel_ids))
+        return $app->json(["message" => "Channel does not exist."], 404);
+    
+    
+    if(count($arScheduleList)==0)
+        return $app->json(["message" => "No generated cell for channel."], 404);*/
         
-    return $app->json($arResult, 200);
+    return new Response(
+        json_encode($arScheduleList),
+        200,
+        ['Content-Type' => 'application/json', 'Cache-Control' => 's-maxage=3600, public']
+    );
 });
 
 $app->get('/casts/{id}/similar', function (Silex\Application $app, Request $request, $id)
@@ -1503,7 +1553,13 @@ $app->get('/casts/{id}', function (Silex\Application $app, $id)
     }
     $arResult["prog_id"] = $arResult["UF_PROG_ID"];
     
-    return json_encode($arResult);
+    return new Response(
+        json_encode($arResult),
+        200,
+        ['Content-Type' => 'application/json', 'Cache-Control' => 's-maxage=36000, public']
+    );
+    
+    //return json_encode($arResult);
 });
 
 $app->get('/progs/{id}', function (Silex\Application $app, $id)
@@ -1760,4 +1816,5 @@ $app->get('/routes', function () use ($app)
     die();
 });
 
-$app->run();
+//$app->run();
+$app['http_cache']->run();
