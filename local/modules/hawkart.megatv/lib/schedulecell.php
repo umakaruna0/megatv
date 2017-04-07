@@ -143,7 +143,7 @@ class ScheduleCell
         while($addMinuteCount<288)
         {
             $currentDateTime = date('d.m.Y H:i:s', strtotime("+".$addMinutes." minutes", strtotime($datetime)));
-            //$currentDateTime = "15.11.2016 23:40:00";
+            //$currentDateTime = "04.04.2017 13:50:00";
             $currentDateTime = \CTimeEx::dateOffset($currentDateTime);
             
             $arScheduleList = self::generateForTime($currentDateTime, $arResult["SCHEDULE_LIST"], $arResult["CHANNELS"]);
@@ -202,6 +202,9 @@ class ScheduleCell
         }
         
         unset($arSchedule);
+        
+        //print_r($arTimePointers);
+        //echo $maxPointer."\r\n"; die();
         
         $arData = self::setKeysToColsNew($maxPointer, $arTimePointers, $datetime);
         //\CDev::pre($arData);

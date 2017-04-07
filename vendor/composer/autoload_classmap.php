@@ -11,7 +11,7 @@ return array(
     'BaseFacebook' => $vendorDir . '/hybridauth/hybridauth/hybridauth/Hybrid/thirdparty/Facebook/base_facebook.php',
     'DivisionByZeroError' => $vendorDir . '/symfony/polyfill-php70/Resources/stubs/DivisionByZeroError.php',
     'Error' => $vendorDir . '/symfony/polyfill-php70/Resources/stubs/Error.php',
-    'Eventviva\\ImageResize' => $vendorDir . '/eventviva/php-image-resize/src/ImageResize.php',
+    'Eventviva\\ImageResize' => $vendorDir . '/eventviva/php-image-resize/lib/ImageResize.php',
     'Facebook' => $vendorDir . '/hybridauth/hybridauth/hybridauth/Hybrid/thirdparty/Facebook/facebook.php',
     'FacebookApiException' => $vendorDir . '/hybridauth/hybridauth/hybridauth/Hybrid/thirdparty/Facebook/base_facebook.php',
     'Hybrid_Auth' => $vendorDir . '/hybridauth/hybridauth/hybridauth/Hybrid/Auth.php',

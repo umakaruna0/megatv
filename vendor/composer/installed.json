@@ -324,53 +324,6 @@
         ]
     },
     {
-        "name": "eventviva/php-image-resize",
-        "version": "1.5.5",
-        "version_normalized": "1.5.5.0",
-        "source": {
-            "type": "git",
-            "url": "https://github.com/eventviva/php-image-resize.git",
-            "reference": "87e7200ad2e24beb9ec9862f6f2c11d93dee8838"
-        },
-        "dist": {
-            "type": "zip",
-            "url": "https://api.github.com/repos/eventviva/php-image-resize/zipball/87e7200ad2e24beb9ec9862f6f2c11d93dee8838",
-            "reference": "87e7200ad2e24beb9ec9862f6f2c11d93dee8838",
-            "shasum": ""
-        },
-        "require": {
-            "ext-exif": "*",
-            "ext-gd": "*",
-            "php": ">=5.3.0"
-        },
-        "time": "2016-08-17 17:41:24",
-        "type": "library",
-        "installation-source": "dist",
-        "autoload": {
-            "classmap": [
-                "src"
-            ]
-        },
-        "notification-url": "https://packagist.org/downloads/",
-        "license": [
-            "MIT"
-        ],
-        "authors": [
-            {
-                "name": "Aditya Patadia",
-                "homepage": "http://aditya.patadia.org/"
-            }
-        ],
-        "description": "PHP class to re-size and scale images",
-        "homepage": "https://github.com/eventviva/php-image-resize",
-        "keywords": [
-            "image",
-            "php",
-            "resize",
-            "scale"
-        ]
-    },
-    {
         "name": "gregwar/cache",
         "version": "v1.0.12",
         "version_normalized": "1.0.12.0",
@@ -1534,5 +1487,52 @@
         ],
         "description": "Symfony Security Component",
         "homepage": "https://symfony.com"
+    },
+    {
+        "name": "eventviva/php-image-resize",
+        "version": "1.6.3",
+        "version_normalized": "1.6.3.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/eventviva/php-image-resize.git",
+            "reference": "e2c84b6db5fe6c45af27e7fc9f37d5874037a0ff"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/eventviva/php-image-resize/zipball/e2c84b6db5fe6c45af27e7fc9f37d5874037a0ff",
+            "reference": "e2c84b6db5fe6c45af27e7fc9f37d5874037a0ff",
+            "shasum": ""
+        },
+        "require": {
+            "ext-exif": "*",
+            "ext-gd": "*",
+            "php": ">=5.3.0"
+        },
+        "time": "2017-03-13 06:49:18",
+        "type": "library",
+        "installation-source": "dist",
+        "autoload": {
+            "classmap": [
+                "lib"
+            ]
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "MIT"
+        ],
+        "authors": [
+            {
+                "name": "Aditya Patadia",
+                "homepage": "http://aditya.patadia.org/"
+            }
+        ],
+        "description": "PHP class to re-size and scale images",
+        "homepage": "https://github.com/eventviva/php-image-resize",
+        "keywords": [
+            "image",
+            "php",
+            "resize",
+            "scale"
+        ]
     }
 ]

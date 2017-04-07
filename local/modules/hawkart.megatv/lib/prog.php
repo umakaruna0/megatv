@@ -220,7 +220,11 @@ class ProgTable extends Entity\DataManager
 			),
             'UF_EXTERNAL_RESOURCE' =>array(
 				'data_type' => 'string',
-			)
+			),
+            'UF_IMG_LIST' =>array(
+                'data_type' => 'text',
+                'serialized' => true
+			),
 		);
 	}
     
@@ -454,5 +458,29 @@ class ProgTable extends Entity\DataManager
                 ));
             }
         }
+    }
+    
+    public static function getImages($prog_id)
+    {
+        $result = self::getList(array(
+            'filter' => array("=ID" => $prog_id),
+            'select' => array("UF_IMG_LIST"),
+            'limit' => 1
+        ));
+        if ($arProg = $result->fetch())
+        {
+            return $arProg["UF_IMG_LIST"];
+        }
+        
+        return array();
+    }
+    
+    public static function addToImageList($prog_id, $img_to, $class="one")
+    {
+        $arImages = self::getImages($prog_id);
+        $arImages[$class][] = $img_to;
+        self::update($prog_id, array(
+            "UF_IMG_LIST" => $arImages
+        ));
     }
 }

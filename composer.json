@@ -3,7 +3,7 @@
         "hybridauth/hybridauth": "^2.6",
         "google/apiclient": "^1.1",
         "guzzlehttp/guzzle": "^6.2",
-        "eventviva/php-image-resize": "1.5.*",
+        "eventviva/php-image-resize": "^1.6",
         "gregwar/image": "2.*",
         "silex/silex": "~1.1",
         "symfony/security": "^3.2"

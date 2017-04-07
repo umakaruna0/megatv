@@ -36,7 +36,7 @@ class ImageTable extends Entity\DataManager
 			'UF_EXTERNAL_ID' => array(
 				'data_type' => 'string',
 				'title'     => Localization\Loc::getMessage('image_entity_external_id_field'),
-                'required'  => true,
+                //'required'  => true,
 			),
             'UF_PATH' => array(
 				'data_type' => 'string',
@@ -51,6 +51,13 @@ class ImageTable extends Entity\DataManager
 				'data_type' => 'integer',
 				'title'     => Localization\Loc::getMessage('image_entity_height_field')
 			),
+            'UF_PROG_ID' => array(
+				'data_type' => 'integer'
+			),
+            'UF_PROG' => array(
+				'data_type' => '\Hawkart\Megatv\ProgTable',
+                'reference' => array('=this.UF_PROG_ID' => 'ref.ID'),
+			)
 		);
 	}
     

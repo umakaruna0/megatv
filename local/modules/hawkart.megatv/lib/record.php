@@ -237,6 +237,10 @@ class RecordTable extends Entity\DataManager
 				'data_type' => 'boolean',
 				'values'    => array(0, 1)
 			),
+            'UF_ERROR' => array(
+				'data_type' => 'boolean',
+				'values'    => array(0, 1)
+			),
             'UF_URL' => array(
 				'data_type' => 'string',
 			),

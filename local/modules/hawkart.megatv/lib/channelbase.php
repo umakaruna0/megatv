@@ -183,6 +183,9 @@ class ChannelBaseTable extends Entity\DataManager
             'UF_DESCRIPTION' => array(
 				'data_type' => 'string',
 			),
+            'UF_IMG_PATH' =>  array(
+				'data_type' => 'string',
+			),
             'UF_DEFAULT_SHOW' => array(
 				'data_type' => 'boolean',
 			),
@@ -211,5 +214,58 @@ class ChannelBaseTable extends Entity\DataManager
         global $DB;
         $DB->Query("DELETE FROM ".self::getTableName(), false);
         $DB->Query("ALTER TABLE ".self::getTableName()." AUTO_INCREMENT=1", false);
+    }
+    
+    /**
+     * Сортировка каналов по количеству передач за день
+     */
+    public static function sortByDailyProgCount()
+    {
+        $arBaseChannels = array();
+        $arChannels = array();
+        $currentDateTime = date("Y-m-d H:i:s");
+        $arFilter = array(
+            "=UF_BASE.UF_ACTIVE" => 1
+        );
+        $arSelect = array("ID", "UF_BASE_ID");
+        $result = ChannelTable::getList(array(
+            'filter' => $arFilter,
+            'select' => $arSelect
+        ));
+        while ($arChannel = $result->fetch())
+        {
+            $arBaseChannels[] = $arChannel["UF_BASE_ID"];
+            $arScheduleList = ScheduleCell::getByChannelAndTime(intval($arChannel["ID"]), $currentDateTime);
+        
+            if(count($arScheduleList)>0 && count($arScheduleList)>intval($arChannels[$arChannel["UF_BASE_ID"]]))
+            {
+                $arChannels[$arChannel["UF_BASE_ID"]] = count($arScheduleList);
+            }
+        }
+        
+        $arBaseChannels = array_unique($arBaseChannels);
+        arsort($arChannels);
+        
+        $excluded = array();
+        foreach($arBaseChannels as $base_channel_id)
+        {
+            $sort = intval($arChannels[$base_channel_id]);
+            if($sort>0)
+            {
+                self::update($base_channel_id, array(
+                    "UF_SORT" => $sort
+                ));
+            }else{
+                $excluded[] = $base_channel_id;
+            }
+        }
+        
+        $sort = 0;
+        foreach($excluded as $base_channel_id)
+        {
+            self::update($base_channel_id, array(
+                "UF_SORT" => $sort
+            ));
+        }
     }
 }

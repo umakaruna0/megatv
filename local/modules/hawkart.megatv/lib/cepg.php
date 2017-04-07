@@ -15,6 +15,7 @@ class CEpg
     private static $ftpFile = 'TV_Pack.xml';
     protected static $origin_dir = "/upload/epg_original/";
     protected static $cut_dir = "/upload/epg_cut/";
+    protected static $channel_dir = "/upload/epg_channel/";
     
     public function __construct($dir = false)
     {
@@ -201,7 +202,7 @@ class CEpg
         $arBaseChannels = array();
         $result = ChannelBaseTable::getList(array(
             'filter' => array(),
-            'select' => array("UF_EPG_ID", "ID", "UF_ACTIVE"),
+            'select' => array("UF_EPG_ID", "ID", "UF_ACTIVE", "UF_IMG_PATH"),
             'order' => array("ID" => "ASC")
         ));
         while ($row = $result->fetch())
@@ -241,6 +242,29 @@ class CEpg
             $arHrefChannels[$epg_id][] = $href;
             
 
+            if(intval($arBaseChannels[$epg_id]["ID"])>0 && empty($arBaseChannels[$epg_id]["UF_IMG_PATH"]))
+            {
+                $attr = $_arChannel->{'icon'}->attributes();
+                $img_url = trim((string)$attr["src"]);
+                
+                $path_parts = pathinfo($img_url);
+                $file_name = $path_parts["filename"];
+                $img_path_to = self::$channel_dir . $file_name . ".". $path_parts['extension'];
+                
+                file_put_contents($_SERVER['DOCUMENT_ROOT'].$img_path_to, file_get_contents($img_url));
+                $image = new \Eventviva\ImageResize($_SERVER['DOCUMENT_ROOT'].$img_path_to);
+                $image->resizeToWidth(135);
+                $image->save($_SERVER['DOCUMENT_ROOT'].$img_path_to);
+                
+                $arBaseChannels[$epg_id]["UF_IMG_PATH"] = $img_path_to;
+                
+                ChannelBaseTable::update($arBaseChannels[$epg_id]["ID"], array(
+                    "UF_IMG_PATH" => $img_path_to
+                ));
+                
+                echo $epg_id." ".$img_url."\r\n";
+            }
+
             //включим базовые каналы в админке
             /*if( (!empty($base_epg_id) && $base_epg_id==$epg_id) || empty($base_epg_id) )
             {
@@ -258,8 +282,13 @@ class CEpg
             
             if(!empty($base_epg_id) && $base_epg_id!=$epg_id)
             {
-                ChannelBaseTable::delete($epg_id);
-                unset($arBaseChannels[$epg_id]);
+                //print_r($arBaseChannels[$epg_id]);
+                if(!empty($epg_id) && intval($arBaseChannels[$epg_id]["ID"])>0)
+                {
+                    //echo $arBaseChannels[$epg_id]["ID"]."\r\n";
+                    ChannelBaseTable::delete($arBaseChannels[$epg_id]["ID"]);
+                    unset($arBaseChannels[$epg_id]);
+                }
                 
                 if(!is_array($arBaseChannels[$base_epg_id]))
                 {
@@ -327,6 +356,8 @@ class CEpg
         $this->base_channels = $arBaseChannels;
         $this->channels = $arChannels;
         $this->href_channels = $arHrefChannels;
+        
+        //die();
         
         return $arChannels;
     }
@@ -839,21 +870,27 @@ class CEpg
             $epg_parts[] = $row["UF_EPG_ID"];
         }
         
-        /*
-        foreach($this->href_channels as $channel_epg_id => $xml_urls)
+        
+        /*foreach($this->href_channels as $channel_epg_id => $xml_urls)
         {
             $arScheduleIdsNotDelete = array();
             $arChannel = $arChannels[$channel_epg_id];
             $active = intval($arBaseChannels[$arChannel["UF_BASE_EPG_ID"]]["UF_ACTIVE"]);
             
-            if(intval($arChannel["ID"])<=0 || empty($arChannel["ID"])  || $active!=1 || empty($channel_epg_id))
-                continue;
+            //if(intval($arChannel["ID"])<=0 || empty($arChannel["ID"])  || $active!=1 || empty($channel_epg_id))
+                //continue;
+                
+            if($arChannel["ID"]==137)
+            {
+                print_r($arChannel);
+                print_r($xml_urls);
+                print_r($arBaseChannels[$arChannel["UF_BASE_EPG_ID"]]);
+            }
             
-            print_r($arChannel);
-            print_r($xml_urls);
+            
         }
-        die();
-        */
+        die();*/
+        
         
         foreach($this->href_channels as $channel_epg_id => $xml_urls)
         {

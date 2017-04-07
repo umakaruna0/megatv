@@ -56,7 +56,7 @@ class CScheduleTemplate
         }
         $arSubscriptionChannels = ChannelTable::getActiveIdByCityByUser();
         
-        $schedule = $arProg["ID"];
+        $schedule = intval($arProg["ID"]);
 
         $arDatetime = \CTimeEx::getDatetime();
         $date_now = $arDatetime["SERVER_DATETIME_WITH_OFFSET"];
@@ -73,7 +73,7 @@ class CScheduleTemplate
         {
             $status = "recording";
         }
-        else if(isset($arRecordsStatuses["RECORDED"][$schedule]))
+        else if(intval($arRecordsStatuses["RECORDED"][$schedule]["ID"])>0)
         {
             $status = "recorded";
         }

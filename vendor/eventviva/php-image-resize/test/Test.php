@@ -1,8 +1,12 @@
 <?php
 
-include __DIR__.'/../src/ImageResize.php';
+include __DIR__.'/../lib/ImageResize.php';
 
 use \Eventviva\ImageResize;
+
+if (version_compare(PHP_VERSION, '7.0.0') >= 0) {
+    class_alias('PHPUnit\Framework\TestCase', 'PHPUnit_Framework_TestCase');
+}
 
 class ImageResizeTest extends PHPUnit_Framework_TestCase
 {
@@ -209,6 +213,17 @@ class ImageResizeTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(50, $resize->getDestHeight());
     }
 
+    public function testFreeCrop()
+    {
+        $image = $this->createImage(200, 100, 'png');
+        $resize = new ImageResize($image);
+
+        $resize->freecrop(50, 50 , $x = 20, $y = 20);
+
+        $this->assertEquals(50, $resize->getDestWidth());
+        $this->assertEquals(50, $resize->getDestHeight());
+    }
+
     public function testCropPosition()
     {
         $image = $this->createImage(200, 100, 'png');
@@ -402,3 +417,4 @@ class ImageResizeTest extends PHPUnit_Framework_TestCase
     }
 
 }
+// It's pretty easy to get your attention these days, isn't it? :D

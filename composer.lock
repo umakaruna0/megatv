@@ -4,21 +4,21 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "04c82aad683d734d03917227ec6405b4",
-    "content-hash": "f7900ec9458da8fb06637c4a2a40f463",
+    "hash": "36014555a0936d64580c63e861085909",
+    "content-hash": "95aef0532be1cbdac0a43d8547de36c6",
     "packages": [
         {
             "name": "eventviva/php-image-resize",
-            "version": "1.5.5",
+            "version": "1.6.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/eventviva/php-image-resize.git",
-                "reference": "87e7200ad2e24beb9ec9862f6f2c11d93dee8838"
+                "reference": "e2c84b6db5fe6c45af27e7fc9f37d5874037a0ff"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/eventviva/php-image-resize/zipball/87e7200ad2e24beb9ec9862f6f2c11d93dee8838",
-                "reference": "87e7200ad2e24beb9ec9862f6f2c11d93dee8838",
+                "url": "https://api.github.com/repos/eventviva/php-image-resize/zipball/e2c84b6db5fe6c45af27e7fc9f37d5874037a0ff",
+                "reference": "e2c84b6db5fe6c45af27e7fc9f37d5874037a0ff",
                 "shasum": ""
             },
             "require": {
@@ -29,7 +29,7 @@
             "type": "library",
             "autoload": {
                 "classmap": [
-                    "src"
+                    "lib"
                 ]
             },
             "notification-url": "https://packagist.org/downloads/",
@@ -50,7 +50,7 @@
                 "resize",
                 "scale"
             ],
-            "time": "2016-08-17 17:41:24"
+            "time": "2017-03-13 06:49:18"
         },
         {
             "name": "facebook/graph-sdk",

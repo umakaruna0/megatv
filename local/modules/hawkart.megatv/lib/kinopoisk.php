@@ -57,10 +57,11 @@ class Kinopoisk{
         $this->snoopy->fetch($url);
         $mainPage = $this->snoopy -> results;
         $mainPage = iconv('windows-1251' , 'utf-8', $mainPage);
-        $pattern = '#<a href="/name/(\d+)/sr/1/".*?data-url="(.*?)".*?class="js-serp-metrika".*?data-type="person".*?>(.*?)</a>#si';
+        /*$pattern = '#<a href="/name/(\d+)/sr/1/".*?data-url="(.*?)".*?class="js-serp-metrika".*?data-type="person".*?>(.*?)</a>#si';*/
+        $pattern = '#<a href="/name/(\d+)/sr/1/".*?data-url="(.*?)".*?class="js-serp-metrika".*?data-type="person".*?>'.$actor.'</a>#si';
         if (preg_match($pattern, $mainPage, $matches)) 
         {
-            if(intval($matches[1])>0 && !empty($matches[2]) && strpos($matches[2], $matches[1])!==false)
+            if(intval($matches[1])>0 && !empty($matches[2])/* && strpos($matches[2], $matches[1])!==false*/)
             {
                 return "https://www.kinopoisk.ru". $matches[2];
             }

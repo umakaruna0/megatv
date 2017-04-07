@@ -32,9 +32,9 @@ class ChannelTable extends Entity\DataManager
             'ID', 'UF_CHANNEL_ID', 'UF_CHANNEL_BASE_ID' => 'UF_CHANNEL.UF_BASE.ID', 
             'UF_TITLE' => 'UF_CHANNEL.UF_BASE.UF_TITLE', 'UF_ICON' => 'UF_CHANNEL.UF_BASE.UF_ICON',
             'UF_CODE' => 'UF_CHANNEL.UF_BASE.UF_CODE', "UF_IS_NEWS" => 'UF_CHANNEL.UF_BASE.UF_IS_NEWS',
-            'UF_PRICE' => 'UF_CHANNEL.UF_BASE.UF_PRICE_H24'
+            'UF_PRICE' => 'UF_CHANNEL.UF_BASE.UF_PRICE_H24', "UF_IMG" => 'UF_CHANNEL.UF_BASE.UF_IMG_PATH'
         );
-        $arSort = array("UF_CHANNEL.UF_BASE.UF_SORT" => "ASC");
+        $arSort = array("UF_CHANNEL.UF_BASE.UF_SORT" => "DESC");
         $obCache = new \CPHPCache;
         if( $obCache->InitCache(86400, serialize($arFilter).serialize($arSelect).serialize($arSort), "/channels_active/"))
         {

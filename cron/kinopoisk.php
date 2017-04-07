@@ -10,6 +10,15 @@ ini_set('mbstring.func_overload', '2');
 ini_set('mbstring.internal_encoding', 'UTF-8');
 
 $result = \Hawkart\Megatv\PeopleTable::getList(array(
+    'filter' => array("!UF_KINOPOISK_LINK" => false),
+    'select' => array("UF_TITLE", "ID"),
+));
+while ($row = $result->fetch())
+{
+    \Hawkart\Megatv\PeopleTable::update($row["ID"], ["UF_KINOPOISK_LINK" => ""]);
+}
+
+$result = \Hawkart\Megatv\PeopleTable::getList(array(
     'filter' => array("UF_KINOPOISK_LINK" => false),
     'select' => array("UF_TITLE", "ID"),
     'limit' => 300
@@ -21,6 +30,7 @@ while ($row = $result->fetch())
         "UF_KINOPOISK_LINK" => $url
     ));
     
+    die();
     sleep(2);
 }
 

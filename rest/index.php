@@ -358,6 +358,7 @@ $app->get('/users/current/subscription/channels', function (Request $request) us
     while ($arChannel = $result->fetch())
     {
         $arSub = $selectedChannels[$arChannel["ID"]];
+        $arChannel["UF_PRICE_H24"] = intval($arChannel["UF_PRICE_H24"]);
         if(intval($arSub["ID"])>0)
         {
             $arChannel["SELECTED"] = $arSub["UF_ACTIVE"]==1 ? true : false;
@@ -1119,7 +1120,8 @@ $app->get('/channels/{id}/casts', function (Request $request, Silex\Application 
     }
     
     $arDatetime = \CTimeEx::getDatetime();
-    $date_now = $arDatetime["SERVER_DATETIME_WITH_OFFSET"];
+    //$date_now = $arDatetime["SERVER_DATETIME_WITH_OFFSET"];
+    $date_now = $arDatetime["SERVER_DATETIME"];
     
     /**
      * Get records statuses by user
@@ -1132,7 +1134,8 @@ $app->get('/channels/{id}/casts', function (Request $request, Silex\Application 
         $date = $arParams["date"];
     }
     
-    $currentDateTime = date("Y-m-d H:i:s", strtotime($date));
+    $currentDateTime = date("Y-m-d", strtotime($date)).date(" H:i:s");
+    //$currentDateTime = "2017-04-05 07:57:00";
 
     $arResult = array();
     $arResult["date"] = substr($currentDateTime, 0, 10);
@@ -1156,19 +1159,32 @@ $app->get('/channels/{id}/casts', function (Request $request, Silex\Application 
     
     foreach($arScheduleList as &$arProg)
     {
+        $status = "";
         $time = substr($arProg['UF_DATE_START'], 11, 5);       
         $arStatus = \Hawkart\Megatv\CScheduleTemplate::status($arProg, $arRecordsStatuses);
         $status = $arStatus["status"];
         
-        if(intval($arProg["UF_BASE_FORBID_REC"])==1 && $USER->IsAuthorized() || !\CTimeEx::dateDiff($date_now, $arProg["DATE_END"]))
+        if($status!="recording" && $status!="recorded" && $status!="viewed")
         {
-            $status = "";
+            if(intval($arProg["UF_BASE_FORBID_REC"])==1 && $USER->IsAuthorized() || !\CTimeEx::dateDiff($date_now, $arProg["DATE_END"]))
+            {
+                $status = "";
+            }
         }
         
-        if($curDate!=$date)
+        /*if($arProg["ID"]=="531684" && $USER->IsAdmin())
+        {
+            echo $date_now;
+            echo "status=".$status;
+            echo \CTimeEx::dateDiff($date_now, $arProg["DATE_END"]);
+            \CDev::pre($arStatus);
+            print_r($arProg); die();   
+        }*/
+        
+        /*if(substr(date("Y-m-d H:i:s", strtotime($curDate)), 0, 10)!=substr(date("Y-m-d H:i:s", strtotime($date)), 0, 10))
         {
             $arProg["TIME_POINTER"] = false;
-        }
+        }*/
         
         if($arProg["IS_ADV"])
         {
@@ -1204,7 +1220,7 @@ $app->get('/channels/{id}/casts', function (Request $request, Silex\Application 
             "rating" => $arProg["UF_RATING"],
             "is_clone" => $arProg["CLONE"],
             "is_adv" => $arProg["IS_ADV"],
-            "prog_id" => $arProg["UF_PROG_ID"]             
+            "prog_id" => $arProg["UF_PROG_ID"]         
         );
         
         if($status=="recording")
@@ -1238,6 +1254,7 @@ $app->get('/channels/{id}/casts', function (Request $request, Silex\Application 
     //$arGeo = \Hawkart\Megatv\CityTable::getGeoCity();
     //$city_id = $arGeo["ID"];
     //$arResult["city_id"] = $city_id;
+    //$arResult["STATUSES"] = $arRecordsStatuses;
     
     return new Response(
         json_encode($arResult),
@@ -1247,6 +1264,7 @@ $app->get('/channels/{id}/casts', function (Request $request, Silex\Application 
     //return $app->json($arResult, 200);
 });
 
+/*
 $app->get('/channels/{id}/casts_test', function (Request $request, Silex\Application $app, $id)
 {
     global $USER;
@@ -1271,25 +1289,13 @@ $app->get('/channels/{id}/casts_test', function (Request $request, Silex\Applica
     $arResult["date"] = substr($currentDateTime, 0, 10);
     $arScheduleList = \Hawkart\Megatv\ScheduleCell::getByChannelAndTime(intval($id), $currentDateTime);
     
-    /*if($USER->IsAuthorized())
-    { 
-        $channel_ids = \Hawkart\Megatv\ChannelTable::getActiveIdByCityByUser();
-    }else{
-        $channel_ids = \Hawkart\Megatv\ChannelTable::getActiveIdByCity();
-    }
-    if(!in_array($id, $channel_ids))
-        return $app->json(["message" => "Channel does not exist."], 404);
-    
-    
-    if(count($arScheduleList)==0)
-        return $app->json(["message" => "No generated cell for channel."], 404);*/
-        
     return new Response(
         json_encode($arScheduleList),
         200,
         ['Content-Type' => 'application/json', 'Cache-Control' => 's-maxage=3600, public']
     );
 });
+*/
 
 $app->get('/casts/{id}/similar', function (Silex\Application $app, Request $request, $id)
 {
@@ -1556,7 +1562,7 @@ $app->get('/casts/{id}', function (Silex\Application $app, $id)
     return new Response(
         json_encode($arResult),
         200,
-        ['Content-Type' => 'application/json', 'Cache-Control' => 's-maxage=36000, public']
+        ['Content-Type' => 'application/json', 'Cache-Control' => 's-maxage=3600, public']
     );
     
     //return json_encode($arResult);
@@ -1816,5 +1822,5 @@ $app->get('/routes', function () use ($app)
     die();
 });
 
-//$app->run();
-$app['http_cache']->run();
+$app->run();
+//$app['http_cache']->run();

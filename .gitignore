@@ -2,6 +2,7 @@
 /bitrix/
 /test/
 /rest/*.txt
+/rest/cache/
 
 # import & export
 /*.xml

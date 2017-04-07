@@ -15,5 +15,7 @@ if (!is_object($USER))
 
 \Hawkart\Megatv\ScheduleCell::clearOld($DOCUMENT_ROOT);
 \Hawkart\Megatv\ScheduleCell::generateForWeek($DOCUMENT_ROOT);
+
+mail("hawkart@rambler.ru", "Tvguru cell generated", "success");
 die();
 ?>
