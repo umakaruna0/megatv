@@ -1186,7 +1186,13 @@ $app->get('/channels/{id}/casts', function (Request $request, Silex\Application 
             $arProg["TIME_POINTER"] = false;
         }*/
         
-        if($arProg["IS_ADV"])
+        $img_path = $arProg['IMAGE'];
+        if($status=="viewed")
+        {
+            $img_path = SITE_TEMPLATE_PATH."/ajax/img_grey.php?&path=".urlencode($_SERVER["DOCUMENT_ROOT"].$img_path);
+        }
+        
+        /*if($arProg["IS_ADV"])
         {
             $img_path = $arProg["PICTURE"];
         }else{
@@ -1203,7 +1209,7 @@ $app->get('/channels/{id}/casts', function (Request $request, Silex\Application 
             {
                 $img_path = SITE_TEMPLATE_PATH."/ajax/img_grey.php?&path=".urlencode($_SERVER["DOCUMENT_ROOT"].$img_path);
             }
-        }
+        }*/
         
         $_arRecord = array(
             "id" => $arProg["ID"],

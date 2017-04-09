@@ -38,8 +38,10 @@ mail("hawkart@rambler.ru", "Tvguru epg import started at ".$dstart, "start of im
 $path = $_SERVER['DOCUMENT_ROOT'].'/logs/sotal/';
 \CDev::deleteOldFiles($path, 86400);
 
+//\Hawkart\Megatv\ChannelBaseTable::turnOnAll();
+
 //Загружаем и импортируем данные из EPG
-$epg = new \Hawkart\Megatv\CEpg();
+$epg = new \Hawkart\Megatv\CEpgNew();
 $epg->importChannels(); //!!!
 $epg->importChannelCity();
 $epg->import();

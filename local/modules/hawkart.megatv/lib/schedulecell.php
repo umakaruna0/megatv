@@ -107,7 +107,7 @@ class ScheduleCell
             "ID", "UF_DATE_START", "UF_DATE_END", "UF_DATE", "UF_CHANNEL_ID", "UF_PROG_ID",
             "UF_TITLE" => "UF_PROG.UF_TITLE", "UF_SUB_TITLE" => "UF_PROG.UF_SUB_TITLE", "UF_IMG_PATH" => "UF_PROG.UF_IMG.UF_PATH",
             "UF_RATING" => "UF_PROG.UF_RATING", "UF_PROG_CODE" => "UF_PROG.UF_CODE",
-            'UF_BASE_FORBID_REC' => 'UF_CHANNEL.UF_BASE.UF_FORBID_REC'
+            'UF_BASE_FORBID_REC' => 'UF_CHANNEL.UF_BASE.UF_FORBID_REC', 'UF_IMAGES' => 'UF_PROG.UF_IMG_LIST'
         );
         $obCache = new \CPHPCache;
         if( $obCache->InitCache(36000, serialize($arFilter).serialize($arSelect), "/cell-generate/"))
@@ -220,9 +220,9 @@ class ScheduleCell
             foreach($arChannelProgs[$channel_id] as $arSchedule)
             {
                 $arSchedule["GENERATE"] = $datetime;
-                $arSchedule["CLASS"] = $keys[$key];                
+                $arSchedule["CLASS"] = $keys[$key];
+                $arSchedule["IMAGE"] = CImage::getImageByClass($arSchedule["UF_IMAGES"], $arSchedule["CLASS"]);                
                 $arProgs[$channel_id][] = $arSchedule;
-
                 $key++;
             }
         }

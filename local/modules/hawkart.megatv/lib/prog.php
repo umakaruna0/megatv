@@ -225,6 +225,9 @@ class ProgTable extends Entity\DataManager
                 'data_type' => 'text',
                 'serialized' => true
 			),
+            'UF_EPG_IMG' => array(
+                'data_type' => 'string',
+            )
 		);
 	}
     
@@ -479,6 +482,13 @@ class ProgTable extends Entity\DataManager
     {
         $arImages = self::getImages($prog_id);
         $arImages[$class][] = $img_to;
+        self::update($prog_id, array(
+            "UF_IMG_LIST" => $arImages
+        ));
+    }
+    
+    public static function saveImageList($prog_id, $arImages)
+    {
         self::update($prog_id, array(
             "UF_IMG_LIST" => $arImages
         ));

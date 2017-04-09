@@ -268,4 +268,20 @@ class ChannelBaseTable extends Entity\DataManager
             ));
         }
     }
+    
+    public static function turnOnAll()
+    {
+        $arFilter = array(
+            "!UF_ACTIVE" => 1
+        );
+        $arSelect = array("ID", "UF_TITLE");
+        $result = self::getList(array(
+            'filter' => $arFilter,
+            'select' => $arSelect
+        ));
+        while ($arChannel = $result->fetch())
+        {
+            self::update($arChannel["ID"], ["UF_ACTIVE" => 1]);
+        }
+    }
 }

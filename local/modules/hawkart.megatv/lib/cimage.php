@@ -10,7 +10,8 @@ Localization\Loc::loadMessages(__FILE__);
 class CImage
 {
     protected static $cut_dir = "/upload/epg_cut_new/";
-    protected static $epg_dir = "/upload/epg_original/";
+    protected static $channel_dir = "/upload/epg_channel/";
+    protected static $temp_dir = "/upload/tmp/";
     
     public static function getTemplates()
     {
@@ -31,6 +32,10 @@ class CImage
                 "width" => 864,
                 "height" => 288
             ),
+            "detail" =>  array(
+                "width" => 600,
+                "height" => 600
+            ),
             /*"4" => array(
                 "width" => 1152,
                 "height" => 288
@@ -49,58 +54,61 @@ class CImage
      * 
      * @return string $path
      */
-    public static function copyToServer($img_url)
+    public static function copyToServer($img_url, $temp = false)
     {
-        $path = self::getName($img_url);
+        $path = self::getName($img_url, $temp);
         file_put_contents($_SERVER["DOCUMENT_ROOT"] . $path, file_get_contents($img_url));
         
         return $path;
     }
     
-    public static function getName($img_url)
+    public static function getName($img_url, $temp=false)
     {
         $path_parts = pathinfo($img_url);
         $file_name = $path_parts["filename"];
-        $path = self::$cut_dir . $file_name . ".jpg";
+        $dir = (!$temp) ? self::$cut_dir : self::$temp_dir;
+        $path = $dir . $file_name . ".jpg";
         
         return $path;
     }
     
-    public static function crop($prog_id, $arIcons)
+    public static function crop($prog_id, $img_url)
     {
         $DOCUMENT_ROOT = $_SERVER["DOCUMENT_ROOT"];
         $arTemplates = self::getTemplates();
         
         $imgs = array();
-        foreach($arIcons as $key=>$arIcon)
-        {
-            $img_url = $arIcon["@attributes"]["src"];
+        
+        //copy image to server
+        $img_path = self::copyToServer($img_url, true);
+        
+        //Get faces cords
+        $arCords = FaceDetect::getCord($DOCUMENT_ROOT.$img_path);
+        $arSize = FaceDetect::getSizeByFaceCords($arCords);
+        //$img_output = FaceDetect::check($img_path);
+        
+        //Wi, Hi — размеры оригинала
+        list($Wi, $Hi, $type, $attr) = getimagesize($DOCUMENT_ROOT.$img_path);
+        
+        //crop face
+        foreach($arTemplates as $class => $arTemplate)
+        {            
+            //Wr и Hr — ширина и высота будущей картинки
+            $Wr = $arTemplate["width"];
+            $Hr = $arTemplate["height"];
             
-            //copy image to server
-            $img_path = self::copyToServer($img_url);
+            $img_path_to = str_replace(array(".jpg", self::$temp_dir), array("", self::$cut_dir), $img_path)."_".$Wr."_".$Hr.".jpg";
             
-            //Get faces cords
-            $arCords = FaceDetect::getCord($DOCUMENT_ROOT.$img_path);
-            $arSize = FaceDetect::getSizeByFaceCords($arCords);
-            $img_output = FaceDetect::check($img_path);
-            
-            //Wi, Hi — размеры оригинала
-            list($Wi, $Hi, $type, $attr) = getimagesize($DOCUMENT_ROOT.$img_path);
-            
-            $addImages = array();
-            
-            //crop face
-            foreach($arTemplates as $class => $arTemplate)
+            if($arTemplate["width"]>$Wi || $arTemplate["height"]>$Hi)
             {
-                if($arTemplate["width"]>$Wi || $arTemplate["height"]>$Hi)
-                    continue;
+                $image = new \Eventviva\ImageResize($DOCUMENT_ROOT.$img_path);
+                $image->crop($Wr, $Hr);
+                $image->save($DOCUMENT_ROOT.$img_path_to);
+                continue;
+            }
                 
-                //Wr и Hr — ширина и высота будущей картинки
-                $Wr = $arTemplate["width"];
-                $Hr = $arTemplate["height"];
-                
-                $img_path_to = str_replace(".jpg", "", $img_path)."_f".$class.".jpg";
-                
+            if(!file_exists($DOCUMENT_ROOT.$img_path_to))
+            {
                 if(count($arCords)>0)
                 {
                     //Вычисляем пропорции конечного изображения
@@ -153,54 +161,81 @@ class CImage
                     $image->crop($Wr, $Hr);
                     $image->save($DOCUMENT_ROOT.$img_path_to);
                 }
-                
-                $imgs[$class][] = $img_path_to;
-                
-                unset($image);
-                $addImages[] = $img_url;
             }
             
-            $addImages = array_unique($addImages);
+            $imgs[$class][] = $img_path_to;
             
-            unlink($DOCUMENT_ROOT.$img_path);
+            unset($image);
         }
         
-        return array(
-            "croped" => $imgs,
-            "urls" => $addImages
-        );
+        unlink($DOCUMENT_ROOT.$img_path);
+
+        return $imgs;
     }
     
-    public static function saveProgImages($prog_id, $arIcons)
+    public static function getBiggestByEpgIcons($arIcons)
     {
-        $arData = self::crop($prog_id, $arIcons);
-        
-        //get img from db by prog_id
-        $urls = array();
-        $result = ImageTable::getList(array(
-            'filter' => array("=UF_PROG_ID" => $prog_id),
-            'select' => array('UF_PATH')
-        ));
-        while ($row = $result->fetch())
+        $url = false;
+        $max_width = false;
+        foreach($arIcons as $arIcon)
         {
-            $urls[] = $row["UF_IMG_PATH"];
-        }
-        
-        foreach($arData["urls"] as $url)
-        {
-            if(!in_array($url, $urls))
+            $width = intval($arIcon["@attributes"]["width"]);
+            if(!$max_width || $width>$max_width)
             {
-                ImageTable::add(array(
-                    "UF_PROG_ID" => $prog_id,
-                    "UF_PATH" => $url
-                ));
+                $max_width = $width;
+                $url = $arIcon["@attributes"]["src"];
             }
         }
         
-        //save to prop json
-        ProgTable($prog_id, array(
-            "UF_IMG_LIST" => $arData["croped"]
+        return $url;
+    }
+    
+    public static function cropForProgList($arProgList)
+    {
+        foreach($arProgList as $prog_id => $image_path)
+        {
+            if(!empty($image_path))
+            {
+                $arImages = self::crop($prog_id, $image_path);
+                if(count($arImages)>0)
+                    ProgTable::saveImageList($prog_id, $arImages);
+            }
+        }
+    }
+    
+        
+    public static function transferImages()
+    {
+        $result = ProgTable::getList(array(
+            'filter' => array("!UF_IMG_LIST" => false),
+            'select' => array("ID", "UF_IMG_LIST")
         ));
+        while ($arProg = $result->fetch())
+        {
+            $arImages = $arProg["UF_IMG_LIST"];
+            foreach($arImages as &$arImage)
+            {
+                foreach($arImage as &$img)
+                {
+                    $img = str_replace(self::$temp_dir, self::$cut_dir, $img);
+                }
+            }
+            
+            //print_r($arImages); die();
+            ProgTable::saveImageList($arProg["ID"], $arImages);
+        }
+    }
+    
+    public static function getImageByClass($arImages, $class)
+    {
+        $images = $arImages[$class];
+        if(empty($images[array_rand($images)]))
+        {
+            $image = $arImages["double"][0];
+        }else{
+            $image = $images[array_rand($images)];
+        }
+        return $image;
     }
     
     public static function getDir()
@@ -208,8 +243,13 @@ class CImage
         return self::$cut_dir;
     }
     
-    public static function deleteOldCrops()
+    public static function getTempDir()
     {
-        
+        return self::$temp_dir;
+    }
+    
+    public static function getChannelDir()
+    {
+        return self::$channel_dir;
     }
 }

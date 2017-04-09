@@ -586,7 +586,7 @@ $(function () {
                         var cropjpg = result.toDataURL('image/jpeg');
                         $.ajax({
                             type: 'POST',
-                            url: '/test/crop/ajax.php',
+                            url: '/local/admin/crop/ajax.php',
                             data: {
                                 pngimageData: cropjpg,
                                 action: "saveCrop",
@@ -628,7 +628,7 @@ $(function () {
         {
             $.ajax({
                 type: 'POST',
-                url: '/test/crop/ajax.php',
+                url: '/local/admin/crop/ajax.php',
                 data: {
                     url: dataUrl,
                     action: "uploadByUrl"
@@ -718,14 +718,17 @@ $(function () {
     
     function getImagesByProgId(prog_id)
     {
-        $.post('/test/crop/ajax.php', {'prog_id':prog_id, 'action':'getImagesByProgId'},
+        $.post('/local/admin/crop/ajax.php', {'prog_id':prog_id, 'action':'getImagesByProgId'},
             function (response) 
             {
                 $(".thumbnails").html("");
                 $.each(response.images, function(i, img)
                 {
-                    $(".thumbnails").append('<div class="col-sm-6 col-md-3"><div class="thumbnail"><a class="close" href="#">×</a><img src="'+img+'" style="width:100%;"></div></div>');
+                    $(".thumbnails").append('<div class="col-sm-3 col-md-2"><div class="thumbnail"><a class="close" href="#">×</a><img src="'+img+'" style="width:100%;"></div></div>');
                 });
+                
+                $("#urlData").val(response.epg_image);
+                //console.log();
             },
             'json'
         );
@@ -737,7 +740,7 @@ $(function () {
         //источник данных
         source: function (query, process) {
             return $.post(
-                '/test/crop/ajax.php', 
+                '/local/admin/crop/ajax.php', 
                 {'q':query, 'action' : 'searchProg'},
                 function (response) 
                 {
@@ -786,7 +789,7 @@ $(function () {
         var thumbn = $(this).closest(".thumbnail");
         var img = thumbn.find("img").attr("src");
             
-        $.post('/test/crop/ajax.php', {'prog_id':$("#prog_id").val(), 'image':img, 'action':'deleteImage'},
+        $.post('/local/admin/crop/ajax.php', {'prog_id':$("#prog_id").val(), 'image':img, 'action':'deleteImage'},
             function (response) 
             {
                 //console.log(thumbn);

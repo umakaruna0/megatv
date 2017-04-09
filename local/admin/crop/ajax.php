@@ -10,6 +10,7 @@ if(!is_object($USER))
 //server side php
 $action = htmlspecialchars($_POST["action"]);
 $dir = \Hawkart\Megatv\CImage::getDir();
+$dir_temp = \Hawkart\Megatv\CImage::getTempDir();
 
 switch($action)
 {
@@ -18,7 +19,7 @@ switch($action)
         $img_url = htmlspecialchars($_POST["url"]);
         $path_parts = pathinfo($img_url);
         $file_name = $path_parts["filename"];
-        $path = "/test/crop/temp/" . $file_name . ".jpg";
+        $path = $dir_temp . $file_name . ".jpg";
         
         file_put_contents($_SERVER["DOCUMENT_ROOT"] . $path, file_get_contents($img_url));
         
@@ -78,6 +79,17 @@ switch($action)
         $prog_id = intval($_POST["prog_id"]);
         $arImages = \Hawkart\Megatv\ProgTable::getImages($prog_id);
         
+        $result = \Hawkart\Megatv\ProgTable::getList(array(
+            'filter' => array("=ID"=>$prog_id),
+            'select' => array("UF_EPG_IMG"),
+            'limit' => 1
+        ));
+        if($arProg = $result->fetch())
+        {
+            $epg_img = $arProg["UF_EPG_IMG"];
+        }
+        
+        
         $images = array();
         foreach($arImages as $arList)
         {
@@ -92,7 +104,7 @@ switch($action)
         
         unset($arImages);
         
-        echo json_encode(array("images" => $images));
+        echo json_encode(array("images" => $images, "epg_image" => $epg_img));
     break;
     
     case "deleteImage":
@@ -116,9 +128,7 @@ switch($action)
         
         unset($arImages);
         
-        \Hawkart\Megatv\ProgTable::update($prog_id, array(
-            "UF_IMG_LIST" => $images
-        ));
+        \Hawkart\Megatv\ProgTable::saveImageList($prog_id, $images);
         
         unlink($_SERVER["DOCUMENT_ROOT"].$img_path);
         
