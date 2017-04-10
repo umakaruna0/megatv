@@ -471,7 +471,7 @@ class ScheduleTable extends Entity\DataManager
             "UF_PROG_CODE" => "UF_PROG.UF_CODE", "UF_TITLE" => "UF_PROG.UF_TITLE", 
             "UF_SUB_TITLE" => "UF_PROG.UF_SUB_TITLE", "UF_IMG_PATH" => "UF_PROG.UF_IMG.UF_PATH",
             "UF_CHANNEL_CODE" => "UF_CHANNEL.UF_BASE.UF_CODE", "RATING" => "UF_PROG.UF_RATING",
-            "UF_CATEGORY" => "UF_PROG.UF_CATEGORY",
+            "UF_CATEGORY" => "UF_PROG.UF_CATEGORY", "UF_IMAGES" => "UF_PROG.UF_IMG_LIST"
         );
         
         $arGetList = array(
@@ -527,7 +527,8 @@ class ScheduleTable extends Entity\DataManager
             $time = substr($arSchedule['UF_DATE_START'], 11, 5);       
             $arStatus = CScheduleTemplate::status($arSchedule, $arRecordsStatuses);
             $status = $arStatus["status"];
-            $img_path = CFile::getCropedPath($arSchedule["UF_IMG_PATH"], array(288, 288));
+            //$img_path = CFile::getCropedPath($arSchedule["UF_IMG_PATH"], array(288, 288));
+            $img_path = \Hawkart\Megatv\CImage::getImageByClass($arSchedule["UF_IMAGES"], "one");
             if($status=="viewed")
             {
                 $img_path = SITE_TEMPLATE_PATH."/ajax/img_grey.php?&path=".urlencode($_SERVER["DOCUMENT_ROOT"].$img_path);

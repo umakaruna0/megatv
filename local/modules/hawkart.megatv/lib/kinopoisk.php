@@ -92,6 +92,7 @@ class Kinopoisk{
         $pattern = '#<a href="/name/(\d+)/sr/1/".*?data-url="(.*?)".*?class="js-serp-metrika".*?data-type="person".*?>(.*?)</a>#si';
         if (preg_match($pattern, $mainPage, $matches)) 
         {
+            //print_r($matches);
             if(intval($matches[1])>0 && !empty($matches[2]) && strpos($matches[2], $matches[1])!==false)
             {
                 return "https://www.kinopoisk.ru". $matches[2];

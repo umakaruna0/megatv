@@ -303,7 +303,7 @@ class RecordTable extends Entity\DataManager
             "ID", "UF_DATE_START", "UF_DATE_END", "UF_PROG_ID", "UF_WATCHED", "UF_PROGRESS_PERS", "UF_CHANNEL_ID",
             "UF_TITLE" => "UF_PROG.UF_TITLE", "UF_SUB_TITLE" => "UF_PROG.UF_SUB_TITLE", "UF_IMG_PATH" => "UF_PROG.UF_IMG.UF_PATH",
             "UF_CATEGORY" => "UF_PROG.UF_CATEGORY", "UF_URL", "UF_CHANNEL_CODE" => "UF_CHANNEL.UF_BASE.UF_CODE",
-            "UF_PROG_CODE" => "UF_PROG.UF_CODE", "UF_EPG_ID"
+            "UF_PROG_CODE" => "UF_PROG.UF_CODE", "UF_EPG_ID", "UF_IMAGES" => "UF_PROG.UF_IMG_LIST"
         );
         $result = self::getList(array(
             'filter' => $arFilter,
@@ -370,13 +370,12 @@ class RecordTable extends Entity\DataManager
                 $arRecord["UF_NAME"] = substr($arRecord["UF_NAME"], 0, 25)."...";
             }
             
+            $path = \Hawkart\Megatv\CImage::getImageByClass($arRecord["UF_IMAGES"], "one");
             if($arRecord["UF_WATCHED"])
             {
-                $path = $_SERVER["DOCUMENT_ROOT"].$arRecord["PICTURE"]["SRC"];
+                $path = $_SERVER["DOCUMENT_ROOT"].$path;
                 $path = SITE_TEMPLATE_PATH."/ajax/img_grey.php?path=".urlencode($path);
                 $arRecord["STATUS"] = "status-viewed";
-            }else{
-                $path = $arRecord["PICTURE"]["SRC"];
             }
             
             $duration = strtotime($arRecord["DATE_END"])-strtotime($arRecord["DATE_START"]);

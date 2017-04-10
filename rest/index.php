@@ -1384,7 +1384,7 @@ $app->get('/casts/search', function (Silex\Application $app, Request $request)
         "ID", "UF_CODE", "UF_DATE_START", "UF_TITLE" => "UF_PROG.UF_TITLE", "UF_PROG_ID",
         "UF_SUB_TITLE" => "UF_PROG.UF_SUB_TITLE", "UF_IMG_PATH" => "UF_PROG.UF_IMG.UF_PATH",
         "UF_CHANNEL_CODE" => "UF_CHANNEL.UF_BASE.UF_CODE", "UF_ID" => "UF_PROG.UF_EPG_ID",
-        "UF_PROG_CODE" => "UF_PROG.UF_CODE"
+        "UF_PROG_CODE" => "UF_PROG.UF_CODE", "UF_IMAGES" => "UF_PROG.UF_IMG_LIST"
     );
     
     $obCache = new \CPHPCache;
@@ -1416,7 +1416,7 @@ $app->get('/casts/search', function (Silex\Application $app, Request $request)
             $arJson = array();
             $arJson["date"] = substr($arSchedule["UF_DATE_START"], 11, 5)." | ".substr($arSchedule["UF_DATE_START"], 0, 10);
             $arJson["title"] = $arSchedule["UF_TITLE"];
-            if($arSchedule["UF_IMG_PATH"])
+            /*if($arSchedule["UF_IMG_PATH"])
             {
                 $src = \Hawkart\Megatv\CFile::getCropedPath($arSchedule["UF_IMG_PATH"], array(300, 300));
                 //$renderImage = CFile::ResizeImageGet($src, Array("width"=>60, "height"=>60));
@@ -1425,7 +1425,10 @@ $app->get('/casts/search', function (Silex\Application $app, Request $request)
             else
             {
                 $arJson["thumbnail"] = "null";
-            }
+            }*/
+            
+            $src = \Hawkart\Megatv\CImage::getImageByClass($arSchedule["UF_IMAGES"], "one");
+            $arJson["thumbnail"] = $src;
                 
             $arJson["id"] = $arSchedule["ID"];
             //$arJson["tokens"] = array();
@@ -1489,9 +1492,9 @@ $app->get('/casts/{id}', function (Silex\Application $app, $id)
     
     $arFilter = array("=ID" => $arResult["UF_PROG_ID"]);
     $arSelect = array(
-        "ID", "UF_TITLE", "UF_SUB_TITLE", "UF_IMG_PATH" => "UF_IMG.UF_PATH",
+        "ID", "UF_TITLE", "UF_SUB_TITLE", //"UF_IMG_PATH" => "UF_IMG.UF_PATH",
         "UF_RATING", "UF_DESC", "UF_SUB_DESC", "UF_GANRE", "UF_YEAR_LIMIT", "UF_COUNTRY",
-        "UF_YEAR", "UF_DIRECTOR", "UF_PRESENTER", "UF_ACTOR", "UF_CATEGORY"
+        "UF_YEAR", "UF_DIRECTOR", "UF_PRESENTER", "UF_ACTOR", "UF_CATEGORY", "UF_IMG_LIST"
     );
     $obCache = new \CPHPCache;
     if( $obCache->InitCache(86400, serialize($arFilter).serialize($arSelect), "/prog-detail/"))
@@ -1508,7 +1511,8 @@ $app->get('/casts/{id}', function (Silex\Application $app, $id)
         if ($arProg = $result->fetch())
         {
             $arProg["UF_PROG_ID"] = $arProg["ID"];
-            $arProg["PICTURE"]["SRC"] = \Hawkart\Megatv\CFile::getCropedPath($arProg["UF_IMG_PATH"], array(600, 600));
+            //$arProg["PICTURE"]["SRC"] = \Hawkart\Megatv\CFile::getCropedPath($arProg["UF_IMG_PATH"], array(600, 600));
+            $arProg["PICTURE"]["SRC"] = \Hawkart\Megatv\CImage::getImageByClass($arProg["UF_IMG_LIST"], "one");
             $arProg["KEYWORDS"] = array($arProg["UF_CATEGORY"], $arProg["UF_GANRE"]);
         }
         unset($arProg["ID"]);

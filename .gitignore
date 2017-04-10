@@ -29,8 +29,10 @@ web.config
 *.tmp
 *.txt
 *.tar.gz
+*.json
 /local/*.xml
 /local/*.json
+/local/data/
 /local/data/statistic/
 /local/data/statistic/*.json
 __*
